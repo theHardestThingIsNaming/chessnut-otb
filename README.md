@@ -17,7 +17,9 @@ Android app for the Chessnut Air smart board. Play over the board with clocks, v
 - A move history you can step back through during the game.
 
 ### Opening trainer
-- Everyday openings, a gambits section and a meme openings section (Bongcloud, the Cow, Kilkenny Gambit, Jerome, Alien and more). Filters for gambits, White, Black, memes and unrated openings.
+- Everyday openings, a gambits section and a meme openings section (Bongcloud, the Cow, Kilkenny Gambit, Jerome, Alien and more). Filters for gambits, White's, Black's, memes and openings not yet played. The chosen opening shows its start position, moves and progress.
+- **Learn every line**: each opening is split into lines the way a coach writes a repertoire: one move for your side, the opponent's most common replies. A game follows one line. With Explain off it is graded from memory with spaced repetition, and the list shows how many lines you know. Reviews that come due appear at the top. See all lines by variation name, and tap one to drill it.
+- **Your own moves**: play a different book move than the line's on your turn, and the trainer offers to make it your move. The opening's lines are rebuilt around your choices.
 - **Sorted by win rate**: how often the opening's side wins on Lichess, using club-level rapid and classical games. Fetched with your Lichess login and cached for a month. Your best accuracy in each opening shows alongside.
 - **Explain**: arrows for the top three book moves, with a key from main line to third. Out of book, the arrows switch to the engine's top three. With Explain off, moves are scored instead.
 - **Ideas**: speaks the idea behind each move, from about 560 written notes on main lines, meme lines and the engine's strongest branches. Other moves get a rule-based description, which also flags sacrifices.
@@ -38,6 +40,8 @@ Android app for the Chessnut Air smart board. Play over the board with clocks, v
 - Move ratings from brilliant to blunder, a colour-coded move table, material balance, the opening name, and toggleable arrows for the best move, better moves and threats.
 - **Learn from mistakes**: practise every position where a mistake or blunder was played. Find a better move on the phone, get hints, and see positions come back on a schedule.
 - **Auto-upload**: club games from the board go to your Lichess account once saved, with an offline queue. Older games can be uploaded from the analysis menu. Turn it off in Settings.
+- **Share** any game as a Lichess link from the game list or the analysis screen. It is uploaded first if needed, without needing a login; the PGN is shared instead when Lichess can't be reached.
+- **A short list**: only the newest five games outside folders are kept. Move a game into a folder to keep it. Before an older game is deleted, its mistakes to practise and its opening score are saved.
 - Paste or share a PGN into the app. Games can be sorted into folders.
 
 The board protocol lives in `:core` (`app.chessnut.otb.protocol`) and is tested against a fake board. The command that deletes a stored game is only sent during the import on connect, and only after that game is saved on the phone.
