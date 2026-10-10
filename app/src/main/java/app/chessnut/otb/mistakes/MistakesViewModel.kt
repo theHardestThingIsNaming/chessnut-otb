@@ -12,6 +12,7 @@ import app.chessnut.otb.analysis.Score
 import app.chessnut.otb.analysis.Terminal
 import app.chessnut.otb.engine.StockfishProcess
 import app.chessnut.otb.engine.UciEngine
+import app.chessnut.otb.lichess.LichessVault
 import app.chessnut.otb.play.PlayPosition
 import app.chessnut.otb.repertoire.Drill
 import app.chessnut.otb.repertoire.LineReview
@@ -71,7 +72,7 @@ class MistakesViewModel(application: Application, private val gameId: String?) :
             val games = app.store.all().filter { gameId == null || it.id == gameId }
             val all = games.flatMap { game ->
                 val analysis = app.store.loadAnalysis(game.id) ?: return@flatMap emptyList()
-                MistakeDeck.collect(game, analysis, app.myName)
+                MistakeDeck.collect(game, analysis, listOfNotNull(app.myName, LichessVault(app).username()))
             }
             val known = reviews.all()
             // Due first (most overdue first), then the rest by when they come back.

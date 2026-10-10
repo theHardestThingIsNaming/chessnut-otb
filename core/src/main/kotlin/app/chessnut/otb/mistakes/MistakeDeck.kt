@@ -25,14 +25,15 @@ data class Mistake(
 
 object MistakeDeck {
     /**
-     * Mistakes and blunders from one analysed game. When [myName] names one of
-     * the players, only that side's moves count; otherwise both sides' do.
+     * Mistakes and blunders from one analysed game. When one of [myNames] (the
+     * name set in the app, the Lichess username) is a player, only that side's
+     * moves count; otherwise both sides' do.
      */
-    fun collect(game: SavedGame, analysis: GameAnalysis, myName: String): List<Mistake> {
+    fun collect(game: SavedGame, analysis: GameAnalysis, myNames: List<String>): List<Mistake> {
         if (game.sanMoves.isEmpty()) return emptyList()
         val replay = runCatching { ChessLines.replay(game.sanMoves) }.getOrNull() ?: return emptyList()
         val report = AccuracyCalculator.report(game.sanMoves, replay.uci, analysis)
-        val side = mySide(game, myName)
+        val side = mySide(game, myNames)
         return report.moves.mapNotNull { move ->
             if (move.classification != MoveClass.Mistake && move.classification != MoveClass.Blunder) return@mapNotNull null
             if (side != null && move.whiteMoved != side) return@mapNotNull null
@@ -42,11 +43,10 @@ object MistakeDeck {
     }
 
     /** True for White, false for Black, null when the game does not say which side is the player. */
-    fun mySide(game: SavedGame, myName: String): Boolean? {
-        val me = myName.trim()
-        if (me.isEmpty()) return null
-        val white = game.white.equals(me, ignoreCase = true) || game.white == "Me"
-        val black = game.black.equals(me, ignoreCase = true) || game.black == "Me"
+    fun mySide(game: SavedGame, myNames: List<String>): Boolean? {
+        val names = myNames.map { it.trim() }.filter { it.isNotEmpty() } + "Me"
+        val white = names.any { game.white.equals(it, ignoreCase = true) }
+        val black = names.any { game.black.equals(it, ignoreCase = true) }
         return when {
             white && !black -> true
             black && !white -> false

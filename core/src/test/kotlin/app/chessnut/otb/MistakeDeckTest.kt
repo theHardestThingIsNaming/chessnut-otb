@@ -33,7 +33,7 @@ class MistakeDeckTest {
 
     @Test
     fun collectsTheBlunderWithTheEnginesMove() {
-        val found = MistakeDeck.collect(game("", ""), analysis, "")
+        val found = MistakeDeck.collect(game("", ""), analysis, emptyList())
         val blunder = found.single { it.playedSan == "Nf6" }
         assertEquals(MoveClass.Blunder, blunder.classification)
         assertEquals("g7g6", blunder.bestUci)
@@ -43,8 +43,11 @@ class MistakeDeckTest {
 
     @Test
     fun onlyMySideWhenMyNameIsAPlayer() {
-        assertTrue(MistakeDeck.collect(game("Ciaran", "Bob"), analysis, "Ciaran").none { !it.whiteToMove })
-        assertTrue(MistakeDeck.collect(game("Bob", "Ciaran"), analysis, "Ciaran").any { it.playedSan == "Nf6" })
+        assertTrue(MistakeDeck.collect(game("Ciaran", "Bob"), analysis, listOf("Ciaran")).none { !it.whiteToMove })
+        assertTrue(MistakeDeck.collect(game("Bob", "Ciaran"), analysis, listOf("Ciaran")).any { it.playedSan == "Nf6" })
+        // An online game names the Lichess account, not the app's name.
+        val online = MistakeDeck.collect(game("JoseRobertoGomes", "CaptainTimeout"), analysis, listOf("Ciaran", "CaptainTimeout"))
+        assertTrue(online.isNotEmpty() && online.all { !it.whiteToMove })
     }
 
     @Test
