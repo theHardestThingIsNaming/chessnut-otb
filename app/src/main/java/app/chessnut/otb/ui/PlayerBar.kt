@@ -35,10 +35,12 @@ fun PlayerBar(
     name: String,
     white: Boolean,
     fen: String?,
-    millis: Long,
+    millis: Long?,
     running: Boolean,
     modifier: Modifier = Modifier,
     flagged: Boolean = false,
+    /** Shown where the clock goes when there is no clock, such as the side's accuracy in a review. */
+    badge: String? = null,
 ) {
     val (byWhite, byBlack) = remember(fen) { fen?.let(Material::captured) ?: ("" to "") }
     val taken = if (white) byWhite else byBlack
@@ -80,6 +82,18 @@ fun PlayerBar(
                 }
             }
         }
-        ClockFace(millis, white, running, Modifier.width(116.dp), flagged = flagged)
+        when {
+            millis != null -> ClockFace(millis, white, running, Modifier.width(116.dp), flagged = flagged)
+            badge != null -> Text(
+                badge,
+                color = if (white) Palette.Ink else Palette.Text,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(if (white) Palette.Paper else Palette.SurfaceHigh)
+                    .padding(horizontal = 10.dp, vertical = 4.dp),
+            )
+        }
     }
 }

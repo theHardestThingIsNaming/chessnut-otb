@@ -66,7 +66,6 @@ import kotlin.math.sin
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.chessnut.otb.analysis.ChessLines
-import app.chessnut.otb.analysis.Material
 import app.chessnut.otb.analysis.MoveClass
 import app.chessnut.otb.analysis.MoveReport
 import app.chessnut.otb.analysis.Score
@@ -78,7 +77,6 @@ import app.chessnut.otb.ui.FlipMark
 import app.chessnut.otb.ui.GambitMark
 import app.chessnut.otb.ui.MoreMark
 import app.chessnut.otb.ui.Palette
-import app.chessnut.otb.ui.PieceIcon
 import app.chessnut.otb.ui.clubAppBarColors
 import app.chessnut.otb.ui.clubChipColors
 import app.chessnut.otb.ui.clubPanel
@@ -91,6 +89,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import app.chessnut.otb.GameShare
 import app.chessnut.otb.ui.ShareMark
 import app.chessnut.otb.ui.BackButton
+import app.chessnut.otb.ui.PlayerBar
+import androidx.compose.foundation.layout.Spacer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -182,6 +182,8 @@ fun ReviewScreen(model: ReviewViewModel, onBack: () -> Unit, onPractise: () -> U
         ) {
             AccuracyRow(ui, onAnalyse = model::reanalyse)
             Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                ReviewPlayer(game.black, white = false, ui, Modifier, show = !ui.flipped)
+                ReviewPlayer(game.white, white = true, ui, Modifier, show = ui.flipped)
                 ChessBoard(
                     fen = ui.fen,
                     flipped = ui.flipped,
@@ -193,6 +195,8 @@ fun ReviewScreen(model: ReviewViewModel, onBack: () -> Unit, onPractise: () -> U
                     onSquare = model::tapSquare,
                     onDrag = model::drop,
                 )
+                ReviewPlayer(game.white, white = true, ui, Modifier, show = !ui.flipped)
+                ReviewPlayer(game.black, white = false, ui, Modifier, show = ui.flipped)
                 EvalStrip(ui.engine?.score, ui.engine?.terminal, ui.fen)
             }
             NavigationRow(ui, model)
@@ -263,6 +267,22 @@ private fun AccuracyRow(ui: ReviewState, onAnalyse: () -> Unit) {
     }
 }
 
+/** A player above or below the board: name, what they have taken, and their accuracy once analysed. */
+@Composable
+private fun ReviewPlayer(name: String, white: Boolean, ui: ReviewState, modifier: Modifier, show: Boolean) {
+    if (!show) return
+    val accuracy = ui.report?.let { if (white) it.whiteAccuracy else it.blackAccuracy }
+    PlayerBar(
+        name = name.ifBlank { if (white) "White" else "Black" },
+        white = white,
+        fen = ui.fen,
+        millis = null,
+        running = false,
+        modifier = modifier,
+        badge = accuracy?.let { String.format(Locale.ROOT, "%.1f", it) },
+    )
+}
+
 @Composable
 private fun SideSummary(label: String, value: Double?, light: Boolean, moves: List<MoveReport>) {
     Row(
@@ -278,13 +298,7 @@ private fun SideSummary(label: String, value: Double?, light: Boolean, moves: Li
                 .background(if (light) Color.White else Palette.Surface)
                 .border(1.dp, if (light) Color.White else Palette.AccentDim, androidx.compose.foundation.shape.CircleShape),
         )
-        Text(
-            value?.let { String.format(Locale.ROOT, "%.1f", it) } ?: "–",
-            color = Palette.Text,
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp,
-            modifier = Modifier.padding(start = 6.dp).width(52.dp),
-        )
+        Spacer(Modifier.width(8.dp))
         listOf(
             MoveClass.Brilliant,
             MoveClass.Best,
@@ -387,7 +401,6 @@ private fun markTint(kind: MoveClass): Color = when (kind) {
 
 @Composable
 private fun EvalStrip(score: Score?, terminal: Terminal?, fen: String) {
-    val balance = remember(fen) { Material.balance(fen) }
     val whiteShare = when {
         terminal == Terminal.Checkmate -> if (fen.split(' ')[1] == "w") 0f else 1f
         terminal == Terminal.Stalemate -> 0.5f
@@ -414,19 +427,6 @@ private fun EvalStrip(score: Score?, terminal: Terminal?, fen: String) {
         }
         if (label.isNotEmpty()) {
             Text(label, color = Palette.Text, fontSize = 13.sp, fontWeight = FontWeight.Medium)
-        }
-        if (!balance.even) {
-            for (piece in balance.whiteExtra) PieceIcon(piece, Modifier.size(16.dp))
-            for (piece in balance.blackExtra) PieceIcon(piece, Modifier.size(16.dp))
-            Text(
-                when {
-                    balance.points > 0 -> "+${balance.points}"
-                    else -> "−${-balance.points}"
-                },
-                color = Palette.Text,
-                fontWeight = FontWeight.Bold,
-                fontSize = 13.sp,
-            )
         }
     }
 }
