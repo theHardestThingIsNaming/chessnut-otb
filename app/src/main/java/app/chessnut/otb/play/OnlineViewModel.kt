@@ -20,12 +20,7 @@ import app.chessnut.otb.lichess.LichessVault
 import app.chessnut.otb.lichess.OnlineControl
 import app.chessnut.otb.lichess.OnlineTable
 import app.chessnut.otb.lichess.OngoingGame
-import app.chessnut.otb.ui.squareIndex
-import app.chessnut.otb.ui.squareName
 import com.github.bhlangonijr.chesslib.Board
-import com.github.bhlangonijr.chesslib.Piece
-import com.github.bhlangonijr.chesslib.PieceType
-import com.github.bhlangonijr.chesslib.Square
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -41,6 +36,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
+import app.chessnut.otb.chess.MoveInput
 
 data class OnlineUi(
     val username: String? = null,
@@ -60,6 +56,7 @@ data class OnlineUi(
     val promptUci: String? = null,
     val lastUci: String? = null,
     val selected: Int? = null,
+    val targets: Set<Int> = emptySet(),
     val finished: String? = null,
     val thinking: Boolean = false,
     /** A game is underway, so leaving resigns it. */
@@ -346,33 +343,17 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
     fun tap(square: Int) {
         val current = table ?: return
         if (!playing || physical() || thinking || finished != null || prompt != null || !current.userToMove) return
-        val board = Board().apply { loadFromFen(fen) }
-        val from = selected
-        if (from != null) {
-            val move = board.legalMoves().filter {
-                squareIndex(it.from.value().lowercase()) == from && squareIndex(it.to.value().lowercase()) == square
-            }.firstOrNull { it.promotion == Piece.NONE || it.promotion.pieceType == PieceType.QUEEN }
-            if (move != null) {
+        when (val tap = MoveInput.tap(fen, selected, square)) {
+            is MoveInput.Tap.Play -> {
                 selected = null
                 publish()
-                send(move.toString().lowercase())
-                return
+                send(tap.uci)
+            }
+            is MoveInput.Tap.Select -> {
+                selected = tap.square
+                publish()
             }
         }
-        val piece = board.getPiece(Square.valueOf(squareName(square).uppercase()))
-        val own = piece != Piece.NONE && piece.pieceSide == board.sideToMove
-        selected = if (own && from != square) square else null
-        publish()
-    }
-
-    fun targets(): Set<Int> {
-        val from = selected ?: return emptySet()
-        if (finished != null || prompt != null) return emptySet()
-        val board = Board().apply { loadFromFen(fen) }
-        return board.legalMoves()
-            .filter { squareIndex(it.from.value().lowercase()) == from }
-            .map { squareIndex(it.to.value().lowercase()) }
-            .toSet()
     }
 
     /** Offers a draw, or accepts the opponent's offer. Lichess uses the same call for both. */
@@ -896,6 +877,7 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
             promptUci = prompt,
             lastUci = lastUci,
             selected = selected,
+            targets = if (finished != null || prompt != null) emptySet() else MoveInput.targets(fen, selected),
             finished = finished,
             thinking = thinking,
             live = playing && finished == null && current?.live != false,

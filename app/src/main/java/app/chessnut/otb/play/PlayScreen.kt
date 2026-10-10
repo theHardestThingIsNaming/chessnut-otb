@@ -2,6 +2,8 @@
 
 package app.chessnut.otb.play
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import app.chessnut.otb.openings.OpeningCatalog
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -17,7 +19,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -46,25 +47,17 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.chessnut.otb.live.TimeControl
 import app.chessnut.otb.ui.Arrow
-import app.chessnut.otb.ui.BoardFrame
 import app.chessnut.otb.ui.ChessBoard
 import app.chessnut.otb.ui.ClockMark
 import app.chessnut.otb.ui.FlagMark
@@ -73,10 +66,12 @@ import app.chessnut.otb.ui.Palette
 import app.chessnut.otb.ui.PlayerBar
 import app.chessnut.otb.ui.clubAppBarColors
 import app.chessnut.otb.ui.clubChipColors
-import app.chessnut.otb.ui.clubOutlinedButtonColors
 import app.chessnut.otb.ui.clubTextButtonColors
-import app.chessnut.otb.ui.squareIndex
 import app.chessnut.otb.ui.KeepScreenOn
+import app.chessnut.otb.ui.moveSquares
+import app.chessnut.otb.ui.GameAction
+import app.chessnut.otb.ui.ActionTone
+import app.chessnut.otb.ui.NavKey
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -166,9 +161,7 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
             )
             BoxWithConstraints(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
                 val side = minOf(maxWidth, maxHeight)
-                BoardFrame(Modifier.size(side)) {
-                    ChessBoard(fen = START_FEN, flipped = !ui.userWhite)
-                }
+                ChessBoard(fen = START_FEN, modifier = Modifier.size(side), flipped = !ui.userWhite)
             }
         } else {
             OpeningCheck("Explain the opening", ui.explain, viewModel::setExplain)
@@ -300,17 +293,7 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
         Arrow.ofUci(ui.promptUci, Palette.ArrowBetter),
         Arrow.ofUci(ui.rejectUci, Palette.Blunder),
     )
-    val highlights = buildSet {
-        for (uci in listOfNotNull(ui.hintUci, ui.promptUci)) {
-            if (uci.length >= 4) {
-                add(squareIndex(uci.substring(0, 2)))
-                add(squareIndex(uci.substring(2, 4)))
-            }
-        }
-    }
-    val last = ui.lastUci?.let { uci ->
-        if (uci.length < 4) null else squareIndex(uci.substring(0, 2)) to squareIndex(uci.substring(2, 4))
-    }
+    val highlights = moveSquares(ui.hintUci) + moveSquares(ui.promptUci)
     Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(ui.status, color = if (ui.retry) Palette.Error else Palette.Text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
@@ -355,18 +338,16 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                 }
             }
         }
-        BoardFrame(Modifier.fillMaxWidth().aspectRatio(1f)) {
-            ChessBoard(
-                fen = ui.fen,
-                flipped = !ui.userWhite,
-                lastMove = last,
-                selected = ui.selected,
-                targets = viewModel.targets(),
-                arrows = arrows,
-                highlights = highlights,
-                onSquare = viewModel::tap,
-            )
-        }
+        ChessBoard(
+            fen = ui.fen,
+            flipped = !ui.userWhite,
+            lastUci = ui.lastUci,
+            selected = ui.selected,
+            targets = ui.targets,
+            arrows = arrows,
+            highlights = highlights,
+            onSquare = viewModel::tap,
+        )
         if (ui.bookSans.isNotEmpty()) BookKey(ui.bookSans, ui.explainedByEngine)
         Text(numbered(ui.san), color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -433,51 +414,36 @@ private fun BotGame(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
             }
         }
         PlayerBar("Bot ${ui.elo}", opponentWhite, ui.fen, topMillis, topRunning, flagged = topFlagged)
-        BoardFrame(Modifier.fillMaxWidth().aspectRatio(1f)) {
-            ChessBoard(
-                fen = ui.fen,
-                flipped = !ui.userWhite,
-                lastMove = ui.lastUci?.let { uci ->
-                    if (uci.length < 4) null else squareIndex(uci.substring(0, 2)) to squareIndex(uci.substring(2, 4))
-                },
-                selected = ui.selected,
-                targets = if (ui.browsing) emptySet() else viewModel.targets(),
-                arrows = listOfNotNull(
-                    Arrow.ofUci(ui.hintUci, Palette.ArrowBest),
-                    Arrow.ofUci(ui.promptUci, Palette.ArrowBest),
-                ),
-                highlights = moveSquares(ui.hintUci) + moveSquares(ui.promptUci),
-                onSquare = viewModel::tap,
-            )
-        }
+        ChessBoard(
+            fen = ui.fen,
+            flipped = !ui.userWhite,
+            lastUci = ui.lastUci,
+            selected = ui.selected,
+            targets = ui.targets,
+            arrows = listOfNotNull(
+                Arrow.ofUci(ui.hintUci, Palette.ArrowBest),
+                Arrow.ofUci(ui.promptUci, Palette.ArrowBest),
+            ),
+            highlights = moveSquares(ui.hintUci) + moveSquares(ui.promptUci),
+            onSquare = viewModel::tap,
+        )
         PlayerBar("You", ui.userWhite, ui.fen, bottomMillis, bottomRunning, flagged = bottomFlagged)
         if (ui.playing && ui.finished == null) {
-            val youLight = ui.userWhite
             Row(Modifier.fillMaxWidth().height(48.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                BotAction(
-                    "Draw",
-                    { HalfMark(if (youLight) Palette.Ink else Palette.Gold, Modifier.size(16.dp)) },
-                    viewModel::offerDraw,
-                    fill = if (youLight) Color(0xFFF7F0E4) else Color(0xFF2A241C),
-                    text = if (youLight) Palette.Ink else Palette.Gold,
-                    modifier = Modifier.weight(1f).fillMaxHeight().clip(RoundedCornerShape(12.dp)),
-                )
-                BotAction(
-                    "Resign",
-                    { FlagMark(Palette.Error, Modifier.size(16.dp)) },
-                    viewModel::resign,
-                    fill = if (youLight) Color(0xFFF3D4C8) else Color(0xFF3A221C),
-                    text = Palette.Error,
-                    modifier = Modifier.weight(1f).fillMaxHeight().clip(RoundedCornerShape(12.dp)),
-                )
+                GameAction("Draw", ui.userWhite, viewModel::offerDraw, Modifier.weight(1f).fillMaxHeight()) {
+                    HalfMark(it, Modifier.size(16.dp))
+                }
+                GameAction("Resign", ui.userWhite, viewModel::resign, Modifier.weight(1f).fillMaxHeight(), tone = ActionTone.Danger) {
+                    FlagMark(it, Modifier.size(16.dp))
+                }
             }
         }
         if (ui.playing) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                HistoryKey("|<", "Start", ui.glancePly > 0, Modifier.weight(1f)) { viewModel.glanceTo(0) }
-                HistoryKey("<", "Back", ui.glancePly > 0, Modifier.weight(1f)) { viewModel.glanceBy(-1) }
-                HistoryKey(">", "Forward", ui.browsing, Modifier.weight(1f)) { viewModel.glanceBy(1) }
-                HistoryKey(">|", "Current", ui.browsing, Modifier.weight(1f)) { viewModel.glanceTo(ui.moveCount) }
+                NavKey("|<", Modifier.weight(1f), ui.glancePly > 0, "Start") { viewModel.glanceTo(0) }
+                NavKey("<", Modifier.weight(1f), ui.glancePly > 0, "Back") { viewModel.glanceBy(-1) }
+                NavKey(">", Modifier.weight(1f), ui.browsing, "Forward") { viewModel.glanceBy(1) }
+                NavKey(">|", Modifier.weight(1f), ui.browsing, "Current") { viewModel.glanceTo(ui.moveCount) }
             }
         }
         if (!ui.playing) {
@@ -500,43 +466,6 @@ private fun BotGame(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                     colors = clubTextButtonColors(),
                 ) { Text("Analyse", color = Palette.Gold) }
             }
-        }
-    }
-}
-
-@Composable
-private fun HistoryKey(label: String, description: String, enabled: Boolean, modifier: Modifier, onClick: () -> Unit) {
-    val shape = RoundedCornerShape(10.dp)
-    Box(
-        modifier
-            .semantics { contentDescription = description }
-            .clip(shape)
-            .background(Palette.SurfaceHigh)
-            .border(1.dp, if (enabled) Palette.Gold else Palette.Outline, shape)
-            .clickable(enabled = enabled, onClick = onClick)
-            .padding(vertical = 8.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(label, color = if (enabled) Palette.Gold else Palette.Text.copy(alpha = 0.35f), fontSize = 18.sp, fontWeight = FontWeight.Bold)
-    }
-}
-
-@Composable
-private fun BotAction(
-    label: String,
-    icon: @Composable () -> Unit,
-    onClick: () -> Unit,
-    fill: Color,
-    text: Color,
-    modifier: Modifier,
-) {
-    Box(
-        modifier.background(fill).clickable(onClick = onClick).padding(horizontal = 4.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            icon()
-            Text(label, color = text, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, maxLines = 1)
         }
     }
 }
@@ -571,10 +500,6 @@ private fun bookArrowColor(rank: Int) = when (rank) {
     else -> Palette.ArrowBook
 }
 
-private fun moveSquares(uci: String?): Set<Int> {
-    if (uci == null || uci.length < 4) return emptySet()
-    return setOf(squareIndex(uci.substring(0, 2)), squareIndex(uci.substring(2, 4)))
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

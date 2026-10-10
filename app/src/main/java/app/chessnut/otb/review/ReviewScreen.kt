@@ -1,5 +1,7 @@
 package app.chessnut.otb.review
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import app.chessnut.otb.games.GameSource
 import androidx.compose.ui.platform.LocalContext
 import android.widget.Toast
@@ -16,7 +18,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -42,10 +43,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -74,9 +73,7 @@ import app.chessnut.otb.analysis.Score
 import app.chessnut.otb.analysis.Terminal
 import app.chessnut.otb.openings.OpeningBook
 import app.chessnut.otb.ui.Arrow
-import app.chessnut.otb.ui.squareIndex
 import app.chessnut.otb.ui.BackMark
-import app.chessnut.otb.ui.BoardFrame
 import app.chessnut.otb.ui.ChessBoard
 import app.chessnut.otb.ui.FlipMark
 import app.chessnut.otb.ui.GambitMark
@@ -89,6 +86,8 @@ import app.chessnut.otb.ui.clubPanel
 import app.chessnut.otb.ui.clubTextButtonColors
 import java.util.Locale
 import app.chessnut.otb.ui.KeepScreenOn
+import app.chessnut.otb.chess.uciSquares
+import app.chessnut.otb.ui.NavKey
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -172,19 +171,17 @@ fun ReviewScreen(model: ReviewViewModel, onBack: () -> Unit, onPractise: () -> U
         ) {
             AccuracyRow(ui, onAnalyse = model::reanalyse)
             Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                BoardFrame(Modifier.fillMaxWidth().aspectRatio(1f)) {
-                    ChessBoard(
-                        fen = ui.fen,
-                        flipped = ui.flipped,
-                        lastMove = ui.lastMove,
-                        selected = ui.selected,
-                        targets = remember(ui.selected, ui.fen) { model.targets() },
-                        arrows = boardArrows(ui),
-                        highlights = gambitHighlights(ui),
-                        onSquare = model::tapSquare,
-                        onDrag = model::drop,
-                    )
-                }
+                ChessBoard(
+                    fen = ui.fen,
+                    flipped = ui.flipped,
+                    lastUci = ui.lastUci,
+                    selected = ui.selected,
+                    targets = remember(ui.selected, ui.fen) { ui.targets },
+                    arrows = boardArrows(ui),
+                    highlights = gambitHighlights(ui),
+                    onSquare = model::tapSquare,
+                    onDrag = model::drop,
+                )
                 EvalStrip(ui.engine?.score, ui.engine?.terminal, ui.fen)
             }
             NavigationRow(ui, model)
@@ -232,7 +229,7 @@ private fun gambitHighlights(ui: ReviewState): Set<Int> {
     val line = shownSan(ui)
     return OpeningBook.view(line).gambits.mapNotNull { gambit ->
         val uci = runCatching { ChessLines.replay(line + gambit.san.last()).uci.last() }.getOrNull() ?: return@mapNotNull null
-        if (uci.length < 4) null else squareIndex(uci.substring(2, 4))
+        uciSquares(uci)?.second
     }.toSet()
 }
 
@@ -469,22 +466,6 @@ private fun NavigationRow(ui: ReviewState, model: ReviewViewModel) {
                 TextButton(onClick = model::backToGame, colors = clubTextButtonColors()) { Text("Back to game", color = Palette.Gold) }
             }
         }
-    }
-}
-
-@Composable
-private fun NavKey(label: String, modifier: Modifier = Modifier, enabled: Boolean = true, onClick: () -> Unit) {
-    val shape = RoundedCornerShape(10.dp)
-    Box(
-        modifier
-            .clip(shape)
-            .background(Palette.SurfaceHigh)
-            .border(1.dp, if (enabled) Palette.Gold else Palette.Outline, shape)
-            .clickable(enabled = enabled, onClick = onClick)
-            .padding(vertical = 10.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(label, color = if (enabled) Palette.Gold else Palette.Text.copy(alpha = 0.35f), fontSize = 18.sp, fontWeight = FontWeight.Bold)
     }
 }
 

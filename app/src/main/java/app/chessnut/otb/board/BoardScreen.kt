@@ -1,8 +1,9 @@
 package app.chessnut.otb.board
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -15,7 +16,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,10 +42,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,16 +52,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.chessnut.otb.live.LiveEnd
 import app.chessnut.otb.live.LiveSnapshot
 import app.chessnut.otb.live.TimeControl
-import app.chessnut.otb.ui.BoardFrame
 import app.chessnut.otb.ui.ChessBoard
 import app.chessnut.otb.ui.Palette
 import app.chessnut.otb.ui.ClockMark
@@ -74,9 +69,10 @@ import app.chessnut.otb.ui.clubChipColors
 import app.chessnut.otb.ui.clubOutlinedButtonColors
 import app.chessnut.otb.ui.clubPanel
 import app.chessnut.otb.ui.clubTextButtonColors
-import app.chessnut.otb.ui.formatClock
-import app.chessnut.otb.ui.squareIndex
 import app.chessnut.otb.ui.KeepScreenOn
+import app.chessnut.otb.ui.GameAction
+import app.chessnut.otb.ui.ActionTone
+import app.chessnut.otb.ui.ClockFace
 
 private val bluetoothPermissions: Array<String> =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -265,9 +261,6 @@ private fun LiveGamePanel(
     log: List<String>,
 ) {
     val live = ui.live
-    val lastMove = live.lastUci?.takeIf { it.length >= 4 }?.let {
-        squareIndex(it.substring(0, 2)) to squareIndex(it.substring(2, 4))
-    }
     val playing = live.started && !live.ended
     val showActions = !live.ended
     var tools by remember { mutableStateOf(false) }
@@ -305,12 +298,11 @@ private fun LiveGamePanel(
         )
         BoxWithConstraints(Modifier.fillMaxWidth().weight(1f, fill = true), contentAlignment = Alignment.Center) {
             val size = minOf(maxWidth, maxHeight)
-            BoardFrame(Modifier.width(size)) {
-                ChessBoard(
-                    fen = ui.livePlacement ?: "8/8/8/8/8/8/8/8",
-                    lastMove = lastMove,
-                )
-            }
+            ChessBoard(
+                fen = ui.livePlacement ?: "8/8/8/8/8/8/8/8",
+                modifier = Modifier.width(size),
+                lastUci = live.lastUci,
+            )
         }
         Text(
             statusLine(live),
@@ -421,89 +413,30 @@ private fun PlayerStrip(
     onDraw: () -> Unit,
     onResign: () -> Unit,
 ) {
-    val shape = RoundedCornerShape(12.dp)
-    val background = if (light) Palette.Paper else Color(0xFF1A1610)
-    val labelColor = if (light) Color(0xFF5C5348) else Palette.TextMuted
-    val clockColor = when {
-        flagged -> Palette.Error
-        running -> if (light) Color(0xFF8A5A12) else Palette.Gold
-        light -> Palette.Ink
-        else -> Palette.Text
-    }
-    val border = when {
-        flagged -> Palette.Error
-        running -> Palette.Gold
-        light -> Color(0xFFC4B8A4)
-        else -> Palette.Gold
-    }
-    val drawActive = drawLabel != "Draw"
     val body = @Composable {
         Row(
-            Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min)
-                .clip(shape)
-                .background(background)
-                .border(2.dp, border, shape),
+            Modifier.fillMaxWidth().height(IntrinsicSize.Min),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Column(
-                Modifier.weight(1.2f).padding(horizontal = 12.dp, vertical = 8.dp),
-            ) {
-                Text(name, color = labelColor, fontSize = 12.sp, fontWeight = FontWeight.Medium)
-                Text(formatClock(millis), fontFamily = FontFamily.Monospace, fontSize = 32.sp, fontWeight = FontWeight.Bold, color = clockColor)
+            Column(Modifier.weight(1.2f)) {
+                Text(name, color = Palette.TextMuted, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                ClockFace(millis, light, running, Modifier.fillMaxWidth(), flagged = flagged, fontSize = 32.sp)
             }
             if (playing) {
-                Box(Modifier.width(1.dp).fillMaxHeight().background(border.copy(alpha = 0.7f)))
-                StripAction(
-                    label = drawLabel,
-                    icon = { HalfMark(if (drawActive) Palette.OnGold else if (light) Palette.Ink else Palette.Gold) },
-                    onClick = onDraw,
-                    fill = when {
-                        drawActive -> Palette.Gold
-                        light -> Color(0xFFF7F0E4)
-                        else -> Color(0xFF2A241C)
-                    },
-                    text = when {
-                        drawActive -> Palette.OnGold
-                        light -> Palette.Ink
-                        else -> Palette.Gold
-                    },
-                    modifier = Modifier.weight(0.85f).fillMaxHeight(),
+                GameAction(
+                    drawLabel,
+                    light,
+                    onDraw,
+                    Modifier.weight(0.85f).fillMaxHeight(),
+                    tone = if (drawLabel != "Draw") ActionTone.Active else ActionTone.Plain,
+                    icon = { HalfMark(it) },
                 )
-                Box(Modifier.width(1.dp).fillMaxHeight().background(border.copy(alpha = 0.7f)))
-                StripAction(
-                    label = "Resign",
-                    icon = { FlagMark(Palette.Error) },
-                    onClick = onResign,
-                    fill = if (light) Color(0xFFF3D4C8) else Color(0xFF3A221C),
-                    text = Palette.Error,
-                    modifier = Modifier.weight(0.85f).fillMaxHeight(),
-                )
+                GameAction("Resign", light, onResign, Modifier.weight(0.85f).fillMaxHeight(), tone = ActionTone.Danger, icon = { FlagMark(it) })
             }
         }
     }
     if (facingAway) Box(Modifier.fillMaxWidth().rotate(180f)) { body() } else body()
-}
-
-@Composable
-private fun StripAction(
-    label: String,
-    icon: @Composable () -> Unit,
-    onClick: () -> Unit,
-    fill: Color,
-    text: Color,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier.background(fill).clickable(onClick = onClick).padding(horizontal = 6.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            icon()
-            Text(label, color = text, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, textAlign = TextAlign.Center, maxLines = 1)
-        }
-    }
 }
 
 private fun moveLine(sans: List<String>): String = buildString {

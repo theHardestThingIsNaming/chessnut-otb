@@ -30,12 +30,7 @@ import app.chessnut.otb.openings.MoveIdeas
 import app.chessnut.otb.openings.OpeningCatalog
 import app.chessnut.otb.openings.OpeningFilter
 import app.chessnut.otb.protocol.LedCodec
-import app.chessnut.otb.ui.squareIndex
-import app.chessnut.otb.ui.squareName
 import com.github.bhlangonijr.chesslib.Board
-import com.github.bhlangonijr.chesslib.Piece
-import com.github.bhlangonijr.chesslib.PieceType
-import com.github.bhlangonijr.chesslib.Square
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -54,6 +49,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
+import app.chessnut.otb.chess.MoveInput
 
 enum class PlayKind { Bot, Trainer }
 
@@ -94,6 +90,7 @@ data class PlayUi(
     val flaggedWhite: Boolean = false,
     val flaggedBlack: Boolean = false,
     val selected: Int? = null,
+    val targets: Set<Int> = emptySet(),
     val lastUci: String? = null,
     /** Ply on screen. Equal to [moveCount] when the live position is showing. */
     val glancePly: Int = 0,
@@ -430,32 +427,17 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             return
         }
         if (!userToMove()) return
-        val board = Board().apply { loadFromFen(fen) }
-        val from = selected
-        if (from != null) {
-            val move = board.legalMoves().filter {
-                squareIndex(it.from.value().lowercase()) == from && squareIndex(it.to.value().lowercase()) == square
-            }.firstOrNull { it.promotion == Piece.NONE || it.promotion.pieceType == PieceType.QUEEN }
-            if (move != null) {
+        when (val tap = MoveInput.tap(fen, selected, square)) {
+            is MoveInput.Tap.Play -> {
                 selected = null
                 publish()
-                playUci(move.toString().lowercase())
-                return
+                playUci(tap.uci)
+            }
+            is MoveInput.Tap.Select -> {
+                selected = tap.square
+                publish()
             }
         }
-        val piece = board.getPiece(Square.valueOf(squareName(square).uppercase()))
-        val own = piece != Piece.NONE && piece.pieceSide == board.sideToMove
-        selected = if (own && from != square) square else null
-        publish()
-    }
-
-    fun targets(): Set<Int> {
-        val from = selected ?: return emptySet()
-        val board = Board().apply { loadFromFen(fen) }
-        return board.legalMoves()
-            .filter { squareIndex(it.from.value().lowercase()) == from }
-            .map { squareIndex(it.to.value().lowercase()) }
-            .toSet()
     }
 
     /** Saves a trainer game once, so the opening list can show accuracy. */
@@ -1222,6 +1204,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 flaggedWhite = clock.flaggedWhite,
                 flaggedBlack = clock.flaggedBlack,
                 selected = if (at == null) selected else null,
+                targets = if (at == null) MoveInput.targets(fen, selected) else emptySet(),
                 lastUci = shownLast,
                 glancePly = at ?: sanMoves.size,
                 moveCount = sanMoves.size,

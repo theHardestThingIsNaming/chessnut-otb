@@ -28,7 +28,7 @@ object Palette {
     val LightSquare = Color(0xFFEBECD0)
     val DarkSquare = Color(0xFF739552)
     val LastMove = Color(0x99FFFF33)
-    val Selected = Color(0x8020A0FF)
+    val Selected = Color(0x99FFFF33)
     val Inaccuracy = Color(0xFFE6C84F)
     val Mistake = Color(0xFFE69F3C)
     val Blunder = Color(0xFFE05A47)

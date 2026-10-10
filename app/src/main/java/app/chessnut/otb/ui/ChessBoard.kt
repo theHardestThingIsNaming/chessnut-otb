@@ -33,6 +33,8 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
+import app.chessnut.otb.chess.squaresOf
+import app.chessnut.otb.chess.uciSquares
 
 internal class PieceStroke(
     val d: String,
@@ -70,34 +72,14 @@ private val parsedPieces: Map<Char, List<ParsedStroke>> by lazy {
         }
 }
 
-/** Square index 0..63 with a1 = 0, h8 = 63. */
-fun squareName(index: Int): String = "${'a' + index % 8}${index / 8 + 1}"
-
-fun squareIndex(name: String): Int = (name[1] - '1') * 8 + (name[0] - 'a')
-
-/** Expands a FEN (or just its placement) into 64 squares, a1 first; '.' is empty. */
-fun squaresOf(fen: String): CharArray {
-    val squares = CharArray(64) { '.' }
-    val ranks = fen.substringBefore(' ').split('/')
-    for ((row, rank) in ranks.withIndex()) {
-        var file = 0
-        for (c in rank) {
-            if (c.isDigit()) {
-                file += c.digitToInt()
-            } else {
-                if (file < 8 && row < 8) squares[(7 - row) * 8 + file] = c
-                file++
-            }
-        }
-    }
-    return squares
-}
+/** Both squares of a UCI move, for highlighting a hint or prompt. */
+fun moveSquares(uci: String?): Set<Int> = uciSquares(uci)?.toList()?.toSet().orEmpty()
 
 data class Arrow(val from: Int, val to: Int, val color: Color) {
     companion object {
         fun ofUci(uci: String?, color: Color): Arrow? {
-            if (uci == null || uci.length < 4) return null
-            return Arrow(squareIndex(uci.substring(0, 2)), squareIndex(uci.substring(2, 4)), color)
+            val (from, to) = uciSquares(uci) ?: return null
+            return Arrow(from, to, color)
         }
     }
 }
@@ -107,7 +89,7 @@ fun ChessBoard(
     fen: String,
     modifier: Modifier = Modifier,
     flipped: Boolean = false,
-    lastMove: Pair<Int, Int>? = null,
+    lastUci: String? = null,
     selected: Int? = null,
     targets: Set<Int> = emptySet(),
     arrows: List<Arrow> = emptyList(),
@@ -117,6 +99,7 @@ fun ChessBoard(
     onDrag: ((Int, Int) -> Unit)? = null,
 ) {
     val squares = squaresOf(fen)
+    val lastMove = uciSquares(lastUci)
     val measurer = rememberTextMeasurer()
     var dragFrom by remember { mutableStateOf<Int?>(null) }
     var dragAt by remember { mutableStateOf<Offset?>(null) }

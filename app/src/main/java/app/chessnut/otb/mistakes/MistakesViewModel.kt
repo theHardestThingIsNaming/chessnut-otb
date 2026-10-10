@@ -16,12 +16,7 @@ import app.chessnut.otb.lichess.LichessVault
 import app.chessnut.otb.play.PlayPosition
 import app.chessnut.otb.repertoire.Drill
 import app.chessnut.otb.repertoire.LineReview
-import app.chessnut.otb.ui.squareIndex
-import app.chessnut.otb.ui.squareName
 import com.github.bhlangonijr.chesslib.Board
-import com.github.bhlangonijr.chesslib.Piece
-import com.github.bhlangonijr.chesslib.PieceType
-import com.github.bhlangonijr.chesslib.Square
 import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,6 +27,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import app.chessnut.otb.chess.MoveInput
 
 data class MistakesUi(
     val loading: Boolean = true,
@@ -191,26 +187,15 @@ class MistakesViewModel(application: Application, private val gameId: String?) :
     fun tap(square: Int) {
         val current = state.value
         if (current.mistake == null || current.solved || current.checking) return
-        val board = Board().apply { loadFromFen(current.fen) }
-        val from = current.selected
-        if (from != null) {
-            val move = board.legalMoves().filter {
-                squareIndex(it.from.value().lowercase()) == from && squareIndex(it.to.value().lowercase()) == square
-            }.firstOrNull { it.promotion == Piece.NONE || it.promotion.pieceType == PieceType.QUEEN }
-            if (move != null) {
+        when (val tap = MoveInput.tap(current.fen, current.selected, square)) {
+            is MoveInput.Tap.Play -> {
                 state.update { it.copy(selected = null, targets = emptySet()) }
-                answer(move.toString().lowercase())
-                return
+                answer(tap.uci)
+            }
+            is MoveInput.Tap.Select -> state.update {
+                it.copy(selected = tap.square, targets = MoveInput.targets(current.fen, tap.square))
             }
         }
-        val piece = board.getPiece(Square.valueOf(squareName(square).uppercase()))
-        val own = piece != Piece.NONE && piece.pieceSide == board.sideToMove
-        val selected = if (own && from != square) square else null
-        val targets = if (selected == null) emptySet() else board.legalMoves()
-            .filter { squareIndex(it.from.value().lowercase()) == selected }
-            .map { squareIndex(it.to.value().lowercase()) }
-            .toSet()
-        state.update { it.copy(selected = selected, targets = targets) }
     }
 
     private fun answer(uci: String) {

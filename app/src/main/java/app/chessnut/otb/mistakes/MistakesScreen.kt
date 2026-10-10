@@ -1,11 +1,11 @@
 package app.chessnut.otb.mistakes
 
+import androidx.compose.runtime.getValue
 import androidx.compose.foundation.layout.width
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,20 +20,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.chessnut.otb.ui.Arrow
-import app.chessnut.otb.ui.BoardFrame
 import app.chessnut.otb.ui.ChessBoard
 import app.chessnut.otb.ui.KeepScreenOn
 import app.chessnut.otb.ui.Palette
 import app.chessnut.otb.ui.clubAppBarColors
 import app.chessnut.otb.ui.clubTextButtonColors
-import app.chessnut.otb.ui.squareIndex
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,20 +76,18 @@ fun MistakesScreen(model: MistakesViewModel, onBack: () -> Unit, onOpenGame: (St
                 if (ui.checking) CircularProgressIndicator(Modifier.size(22.dp), color = Palette.Gold, strokeWidth = 2.dp)
             }
             if (mistake == null) return@Column
-            BoardFrame(Modifier.fillMaxWidth().aspectRatio(1f)) {
-                ChessBoard(
-                    fen = ui.fen,
-                    flipped = !mistake.whiteToMove,
-                    lastMove = ui.lastUci?.takeIf { it.length >= 4 }?.let { squareIndex(it.substring(0, 2)) to squareIndex(it.substring(2, 4)) },
-                    selected = ui.selected,
-                    targets = ui.targets,
-                    arrows = listOfNotNull(
-                        Arrow.ofUci(ui.bestUci, Palette.ArrowBest),
-                        Arrow.ofUci(ui.wrongUci, Palette.Blunder),
-                    ),
-                    onSquare = model::tap,
-                )
-            }
+            ChessBoard(
+                fen = ui.fen,
+                flipped = !mistake.whiteToMove,
+                lastUci = ui.lastUci,
+                selected = ui.selected,
+                targets = ui.targets,
+                arrows = listOfNotNull(
+                    Arrow.ofUci(ui.bestUci, Palette.ArrowBest),
+                    Arrow.ofUci(ui.wrongUci, Palette.Blunder),
+                ),
+                onSquare = model::tap,
+            )
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (!ui.solved) {
                     Button(

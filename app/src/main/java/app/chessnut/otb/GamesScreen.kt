@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -48,7 +46,6 @@ import app.chessnut.otb.board.BoardLinkSection
 import app.chessnut.otb.board.BoardViewModel
 import app.chessnut.otb.games.GameSource
 import app.chessnut.otb.games.SavedGame
-import app.chessnut.otb.ui.BoardFrame
 import app.chessnut.otb.ui.BoardMark
 import app.chessnut.otb.ui.BookMark
 import app.chessnut.otb.ui.ChessBoard
@@ -378,9 +375,7 @@ private fun GameRow(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            BoardFrame(Modifier.size(68.dp), inset = 2.dp) {
-                ChessBoard(fen = fen, coordinates = false)
-            }
+            ChessBoard(fen = fen, modifier = Modifier.size(68.dp), coordinates = false)
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(game.title, style = MaterialTheme.typography.titleMedium, color = Palette.Text)
                 val details = listOfNotNull(

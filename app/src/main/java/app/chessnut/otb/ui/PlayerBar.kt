@@ -17,14 +17,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.chessnut.otb.analysis.Material
+import app.chessnut.otb.ui.ClockFace
 
 /**
  * One side of the table, laid out like Chess.com: a king badge in the player's
@@ -36,15 +34,15 @@ import app.chessnut.otb.analysis.Material
 fun PlayerBar(
     name: String,
     white: Boolean,
-    fen: String,
+    fen: String?,
     millis: Long,
     running: Boolean,
     modifier: Modifier = Modifier,
     flagged: Boolean = false,
 ) {
-    val (byWhite, byBlack) = remember(fen) { Material.captured(fen) }
+    val (byWhite, byBlack) = remember(fen) { fen?.let(Material::captured) ?: ("" to "") }
     val taken = if (white) byWhite else byBlack
-    val lead = remember(fen) { Material.balance(fen).points }.let { if (white) it else -it }
+    val lead = remember(fen) { fen?.let { Material.balance(it).points } ?: 0 }.let { if (white) it else -it }
     Row(
         modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -82,26 +80,6 @@ fun PlayerBar(
                 }
             }
         }
-        val (fill, ink) = when {
-            flagged -> Palette.Blunder to Color.White
-            white && running -> Color.White to Color(0xFF312E2B)
-            white -> Color(0xFF989795) to Color(0xFF4B4847)
-            running -> Color(0xFF1C1A18) to Color.White
-            else -> Color(0xFF262421) to Color(0xFF8B8987)
-        }
-        Text(
-            formatClock(millis),
-            color = ink,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 20.sp,
-            style = TextStyle(fontFeatureSettings = "tnum"),
-            textAlign = TextAlign.End,
-            maxLines = 1,
-            modifier = Modifier
-                .width(116.dp)
-                .clip(RoundedCornerShape(4.dp))
-                .background(fill)
-                .padding(horizontal = 12.dp, vertical = 5.dp),
-        )
+        ClockFace(millis, white, running, Modifier.width(116.dp), flagged = flagged)
     }
 }

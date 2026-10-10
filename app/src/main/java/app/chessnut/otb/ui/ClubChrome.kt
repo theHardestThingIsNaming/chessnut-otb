@@ -20,7 +20,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -79,11 +78,6 @@ fun Modifier.clubPanel(): Modifier {
     return clip(shape)
         .background(Palette.Surface)
         .border(1.dp, Palette.GoldDim, shape)
-}
-
-@Composable
-fun BoardFrame(modifier: Modifier = Modifier, inset: Dp = 0.dp, content: @Composable () -> Unit) {
-    Box(modifier.padding(inset)) { content() }
 }
 
 @Composable

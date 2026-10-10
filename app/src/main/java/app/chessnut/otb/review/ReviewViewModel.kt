@@ -18,11 +18,7 @@ import app.chessnut.otb.analysis.Terminal
 import app.chessnut.otb.engine.StockfishProcess
 import app.chessnut.otb.engine.UciEngine
 import app.chessnut.otb.games.SavedGame
-import app.chessnut.otb.ui.squareIndex
 import com.github.bhlangonijr.chesslib.Board
-import com.github.bhlangonijr.chesslib.Piece
-import com.github.bhlangonijr.chesslib.PieceType
-import com.github.bhlangonijr.chesslib.Square
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -36,6 +32,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import app.chessnut.otb.chess.MoveInput
 
 /** A move played on the board while exploring away from the game. */
 data class SideMove(val san: String, val uci: String, val fen: String)
@@ -80,10 +77,10 @@ data class ReviewState(
         return move.takeIf { it.bestUci != null && it.bestUci != uci.getOrNull(cursor - 1) }
     }
 
-    val lastMove: Pair<Int, Int>? get() {
-        val uciMove = side.lastOrNull()?.uci ?: uci.getOrNull(cursor - 1) ?: return null
-        return squareIndex(uciMove.substring(0, 2)) to squareIndex(uciMove.substring(2, 4))
-    }
+    val lastUci: String? get() = side.lastOrNull()?.uci ?: uci.getOrNull(cursor - 1)
+
+    /** Where the held piece can go. */
+    val targets: Set<Int> get() = MoveInput.targets(fen, selected)
 }
 
 class ReviewViewModel(application: Application, private val gameId: String) : AndroidViewModel(application) {
@@ -177,46 +174,20 @@ class ReviewViewModel(application: Application, private val gameId: String) : An
 
     fun tapSquare(square: Int) {
         val s = state.value
-        val board = Board().apply { loadFromFen(s.fen) }
-        val from = s.selected
-        if (from != null) {
-            val move = board.legalMoves().filter {
-                squareIndex(it.from.value().lowercase()) == from && squareIndex(it.to.value().lowercase()) == square
-            }.let { candidates ->
-                candidates.firstOrNull { it.promotion == Piece.NONE || it.promotion.pieceType == PieceType.QUEEN }
-            }
-            if (move != null) {
-                play(move.toString().lowercase())
-                return
-            }
+        when (val tap = MoveInput.tap(s.fen, s.selected, square)) {
+            is MoveInput.Tap.Play -> play(tap.uci)
+            is MoveInput.Tap.Select -> state.update { it.copy(selected = tap.square) }
         }
-        val piece = board.getPiece(Square.valueOf(squareNameUpper(square)))
-        val own = piece != Piece.NONE && piece.pieceSide == board.sideToMove
-        state.update { it.copy(selected = if (own && from != square) square else null) }
     }
 
     fun drop(from: Int, to: Int) {
         if (from == to) return
-        val s = state.value
-        val board = Board().apply { loadFromFen(s.fen) }
-        val move = board.legalMoves().filter {
-            squareIndex(it.from.value().lowercase()) == from && squareIndex(it.to.value().lowercase()) == to
-        }.firstOrNull { it.promotion == Piece.NONE || it.promotion.pieceType == PieceType.QUEEN }
-        if (move == null) {
+        val uci = MoveInput.drop(state.value.fen, from, to)
+        if (uci == null) {
             state.update { it.copy(selected = null) }
             return
         }
-        play(move.toString().lowercase())
-    }
-
-    fun targets(): Set<Int> {
-        val s = state.value
-        val from = s.selected ?: return emptySet()
-        val board = Board().apply { loadFromFen(s.fen) }
-        return board.legalMoves()
-            .filter { squareIndex(it.from.value().lowercase()) == from }
-            .map { squareIndex(it.to.value().lowercase()) }
-            .toSet()
+        play(uci)
     }
 
     /** Plays [uci] from the shown position: follows the game if it is the game's move, otherwise explores. */
@@ -337,7 +308,6 @@ class ReviewViewModel(application: Application, private val gameId: String) : An
         threatEngine?.close()
     }
 
-    private fun squareNameUpper(index: Int): String = "${'A' + index % 8}${index / 8 + 1}"
 
     private companion object {
         const val THREAT_DEPTH = 14

@@ -1,18 +1,15 @@
 package app.chessnut.otb.play
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -37,25 +33,18 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.chessnut.otb.lichess.LichessSignIn
 import app.chessnut.otb.lichess.OnlineControl
 import app.chessnut.otb.ui.Arrow
-import app.chessnut.otb.ui.BoardFrame
 import app.chessnut.otb.ui.ChessBoard
 import app.chessnut.otb.ui.FlagMark
 import app.chessnut.otb.ui.HalfMark
@@ -64,8 +53,10 @@ import app.chessnut.otb.ui.PlayerBar
 import app.chessnut.otb.ui.clubAppBarColors
 import app.chessnut.otb.ui.clubChipColors
 import app.chessnut.otb.ui.clubTextButtonColors
-import app.chessnut.otb.ui.squareIndex
 import app.chessnut.otb.ui.KeepScreenOn
+import app.chessnut.otb.ui.moveSquares
+import app.chessnut.otb.ui.GameAction
+import app.chessnut.otb.ui.ActionTone
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -232,50 +223,32 @@ private fun Table(ui: OnlineUi, viewModel: OnlineViewModel, modifier: Modifier, 
             }
         }
         PlayerBar(ui.opponent, opponentLight, ui.fen, topMillis, topRunning)
-        BoardFrame(Modifier.fillMaxWidth().aspectRatio(1f)) {
-            ChessBoard(
-                fen = ui.fen,
-                flipped = !ui.userWhite,
-                lastMove = ui.lastUci?.let { uci ->
-                    if (uci.length < 4) null else squareIndex(uci.substring(0, 2)) to squareIndex(uci.substring(2, 4))
-                },
-                selected = ui.selected,
-                targets = viewModel.targets(),
-                arrows = listOfNotNull(Arrow.ofUci(ui.promptUci, Palette.ArrowBest)),
-                highlights = moveSquares(ui.promptUci),
-                onSquare = viewModel::tap,
-            )
-        }
+        ChessBoard(
+            fen = ui.fen,
+            flipped = !ui.userWhite,
+            lastUci = ui.lastUci,
+            selected = ui.selected,
+            targets = ui.targets,
+            arrows = listOfNotNull(Arrow.ofUci(ui.promptUci, Palette.ArrowBest)),
+            highlights = moveSquares(ui.promptUci),
+            onSquare = viewModel::tap,
+        )
         PlayerBar(ui.username ?: "You", ui.userWhite, ui.fen, bottomMillis, bottomRunning)
         if (ui.finished == null) {
-            val youLight = ui.userWhite
             Row(Modifier.fillMaxWidth().height(48.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Action(
-                    if (ui.drawOffered) "Accept draw" else "Draw",
-                    { HalfMark(if (youLight) Palette.Ink else Palette.Gold, Modifier.size(16.dp)) },
-                    viewModel::draw,
-                    fill = if (youLight) Color(0xFFF7F0E4) else Color(0xFF2A241C),
-                    text = if (youLight) Palette.Ink else Palette.Gold,
-                    modifier = Modifier.weight(1f).fillMaxHeight().clip(RoundedCornerShape(12.dp)),
-                )
-                if (ui.drawOffered) {
-                    Action(
-                        "Decline",
-                        {},
-                        viewModel::declineDraw,
-                        fill = if (youLight) Color(0xFFF7F0E4) else Color(0xFF2A241C),
-                        text = if (youLight) Palette.Ink else Palette.Gold,
-                        modifier = Modifier.weight(1f).fillMaxHeight().clip(RoundedCornerShape(12.dp)),
-                    )
+                GameAction(if (ui.drawOffered) "Accept draw" else "Draw", ui.userWhite, viewModel::draw, Modifier.weight(1f).fillMaxHeight()) {
+                    HalfMark(it, Modifier.size(16.dp))
                 }
-                Action(
+                if (ui.drawOffered) {
+                    GameAction("Decline", ui.userWhite, viewModel::declineDraw, Modifier.weight(1f).fillMaxHeight())
+                }
+                GameAction(
                     if (ui.canAbort) "Abort" else "Resign",
-                    { FlagMark(Palette.Error, Modifier.size(16.dp)) },
+                    ui.userWhite,
                     viewModel::resign,
-                    fill = if (youLight) Color(0xFFF3D4C8) else Color(0xFF3A221C),
-                    text = Palette.Error,
-                    modifier = Modifier.weight(1f).fillMaxHeight().clip(RoundedCornerShape(12.dp)),
-                )
+                    Modifier.weight(1f).fillMaxHeight(),
+                    tone = ActionTone.Danger,
+                ) { FlagMark(it, Modifier.size(16.dp)) }
             }
         } else {
             Button(
@@ -304,24 +277,3 @@ private fun Table(ui: OnlineUi, viewModel: OnlineViewModel, modifier: Modifier, 
     }
 }
 
-@Composable
-private fun Action(
-    label: String,
-    icon: @Composable () -> Unit,
-    onClick: () -> Unit,
-    fill: Color,
-    text: Color,
-    modifier: Modifier,
-) {
-    Box(modifier.background(fill).clickable(onClick = onClick), contentAlignment = Alignment.Center) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            icon()
-            Text(label, color = text, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, maxLines = 1)
-        }
-    }
-}
-
-private fun moveSquares(uci: String?): Set<Int> {
-    if (uci == null || uci.length < 4) return emptySet()
-    return setOf(squareIndex(uci.substring(0, 2)), squareIndex(uci.substring(2, 4)))
-}
