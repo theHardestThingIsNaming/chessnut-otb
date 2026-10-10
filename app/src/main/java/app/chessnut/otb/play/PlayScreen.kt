@@ -647,19 +647,23 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
         Row(Modifier.fillMaxWidth().height(52.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             GameAction("Openings", light = false, onClick = viewModel::leave, modifier = Modifier.weight(1f).fillMaxHeight())
             if (ui.lineDone) {
+                val next = if (ui.reviewLast) "Finish review" else "Next line"
                 GameAction(
                     "Analyse",
                     light = false,
                     onClick = { viewModel.analyse()?.let(onAnalyse) },
                     modifier = Modifier.weight(1f).fillMaxHeight(),
                 )
-                PrimaryAction(
-                if (ui.reviewLast) "Finish review" else "Next line",
-                Modifier.weight(1.3f).fillMaxHeight(),
-                onClick = viewModel::nextLine,
-            )
+                // After a miss, another go at the same line comes first.
+                if (ui.lineClean) {
+                    GameAction("Try again", light = false, onClick = viewModel::againLine, modifier = Modifier.weight(1f).fillMaxHeight())
+                    PrimaryAction(next, Modifier.weight(1.3f).fillMaxHeight(), onClick = viewModel::nextLine)
+                } else {
+                    GameAction(next, light = false, onClick = viewModel::nextLine, modifier = Modifier.weight(1f).fillMaxHeight())
+                    PrimaryAction("Try again", Modifier.weight(1.3f).fillMaxHeight(), onClick = viewModel::againLine)
+                }
             } else {
-                GameAction("Restart", light = false, onClick = viewModel::start, modifier = Modifier.weight(1f).fillMaxHeight())
+                GameAction("Restart", light = false, onClick = viewModel::againLine, modifier = Modifier.weight(1f).fillMaxHeight())
                 PrimaryAction(
                     "Hint",
                     Modifier.weight(1.3f).fillMaxHeight(),

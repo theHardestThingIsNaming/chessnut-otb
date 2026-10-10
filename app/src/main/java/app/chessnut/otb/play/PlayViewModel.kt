@@ -161,6 +161,8 @@ data class PlayUi(
     val lineLabel: String? = null,
     /** The drilled line is over, so the next one can start. */
     val lineDone: Boolean = false,
+    /** The finished line was played cleanly. */
+    val lineClean: Boolean = false,
     /** How the drilled line went, kept on screen while play goes on. */
     val lineNote: String? = null,
     /** Every line of the chosen opening, for picking one to drill. */
@@ -262,6 +264,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private val treeCache = mutableMapOf<Pair<String, Boolean>, List<List<String>>>()
     private var lineLabelShown: String? = null
     private var lineNote: String? = null
+    private var lineClean = false
     /** Depth run past the book: good moves so far, whether it has ended, and the record going in. */
     private var depthRun: Int? = null
     private var depthOver = false
@@ -816,6 +819,19 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         nextReview()
     }
 
+    /** Plays the same line again from the first move, as when you missed it and want another go. */
+    fun againLine() {
+        val line = drillLine
+        val label = lineLabelShown
+        if (line != null) pinnedLine = line
+        start()
+        // A review keeps its "Review 2 of 5" place.
+        if (reviewing && label != null) {
+            lineLabelShown = label
+            publish()
+        }
+    }
+
     /** The next line: the next due review in a session, otherwise the next line of this opening. */
     fun nextLine() {
         if (reviewing) nextReview() else start()
@@ -1222,6 +1238,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         drillGraded = true
         val now = System.currentTimeMillis()
         val clean = !drillMissed && onLine
+        lineClean = clean
         // Where you left the line, and what it plays there, to learn from the miss.
         val split = sanMoves.indices.firstOrNull { it < line.size && sanMoves[it] != line[it] }
         val expected = split?.let { "${moveNumber(it)}${line[it]}" }
@@ -1782,6 +1799,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 explainedByEngine = explained.isNotEmpty() && legalBookSteps().isEmpty(),
                 lineLabel = if (kind == PlayKind.Trainer) lineLabelShown else null,
                 lineDone = kind == PlayKind.Trainer && drillGraded,
+                lineClean = lineClean,
                 lineNote = if (kind == PlayKind.Trainer) lineNote else null,
                 reviewing = reviewing,
                 depthRun = if (kind == PlayKind.Trainer) depthRun else null,
