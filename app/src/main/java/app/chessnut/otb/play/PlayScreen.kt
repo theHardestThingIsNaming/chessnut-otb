@@ -484,6 +484,13 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                         .padding(12.dp),
                 )
             }
+            ui.retryMove?.let { move ->
+                Button(
+                    onClick = viewModel::retryLine,
+                    colors = ButtonDefaults.buttonColors(containerColor = Palette.SurfaceHigh, contentColor = Palette.Text),
+                    modifier = Modifier.fillMaxWidth(),
+                ) { Text("Take back and play $move") }
+            }
             ui.choiceOffer?.let { move ->
                 OutlinedButton(onClick = viewModel::adoptChoice, colors = clubOutlinedButtonColors(), modifier = Modifier.fillMaxWidth()) {
                     Text("Play $move here from now on", color = Palette.Accent)

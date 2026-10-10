@@ -140,6 +140,8 @@ data class PlayUi(
     val idea: String? = null,
     /** The latest story about the opening, when History is on. */
     val story: String? = null,
+    /** After a miss, the line's move to take back and play instead, such as "7. O-O". */
+    val retryMove: String? = null,
 )
 
 class PlayViewModel(application: Application) : AndroidViewModel(application) {
@@ -206,6 +208,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private var lineLabelShown: String? = null
     private var lineNote: String? = null
     private var ideaMove: String? = null
+    /** The ply where you left the line, to take back to. */
+    private var retryAt: Int? = null
     private var idea: String? = null
     private var story: String? = null
     /** A line picked from the list, drilled next instead of the scheduled one. */
@@ -494,6 +498,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         if (awaitingBoard) lightSquares(if (setupWrong.size <= MAX_SETUP_HINTS) setupWrong else emptyList())
         lineLabelShown = lineLabel()
         lineNote = null
+        retryAt = null
         ideaMove = null
         idea = null
         story = null
@@ -950,6 +955,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         val expected = split?.let { "${moveNumber(it)}${line[it]}" }
         val bookToo = split != null && !drillMissed
         val name = openingName
+        // On the phone you can take the move back and play the line's; a physical board would need the pieces moved back.
+        retryAt = split?.takeIf { !physical && (it % 2 == 0) == userWhite }
         // A different book move on your turn can become your move here.
         choiceOffer = if (drillBook && name != null && split != null && (split % 2 == 0) == userWhite &&
             sanMoves[split] in OpeningBook.replies(sanMoves.take(split), name)
@@ -1000,6 +1007,39 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         synchronized(treeCache) {
             treeCache.getOrPut(name to white) { OpeningTree.lines(name, white, app.moveChoices.of(name, white)) }
         }
+
+    /**
+     * Takes the game back to where you left the line and lights the line's
+     * move, so you play it straight away. The miss still counts.
+     */
+    fun retryLine() {
+        val at = retryAt ?: return
+        val line = drillLine ?: return
+        val expected = line.getOrNull(at) ?: return
+        job?.cancel()
+        job = null
+        busy = false
+        var position = Board().fen
+        val kept = uciMoves.take(at)
+        for (uci in kept) position = PlayPosition.after(position, uci)?.second ?: return
+        while (sanMoves.size > at) sanMoves.removeAt(sanMoves.lastIndex)
+        while (uciMoves.size > at) uciMoves.removeAt(uciMoves.lastIndex)
+        fen = position
+        lastUci = kept.lastOrNull()
+        finished = null
+        prompt = null
+        selected = null
+        rejectUci = null
+        retry = false
+        glance = null
+        retryAt = null
+        choiceOffer = null
+        ideaMove = null
+        idea = null
+        hint = PlayPosition.uciOfSan(fen, expected)
+        status = "Play ${moveNumber(at)}$expected"
+        publish()
+    }
 
     /** Makes the offered book move your move in this opening, and rebuilds its lines around it. */
     fun adoptChoice() {
@@ -1447,6 +1487,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 lineDone = kind == PlayKind.Trainer && drillGraded,
                 lineNote = if (kind == PlayKind.Trainer) lineNote else null,
                 choiceOffer = choiceOffer?.let { (before, move) -> "${moveNumber(before.size)}$move" },
+                retryMove = retryAt?.let { at -> drillLine?.getOrNull(at)?.let { "${moveNumber(at)}$it" } },
                 variation = if (kind == PlayKind.Trainer) OpeningBook.view(sanMoves).name else null,
                 ideaMove = if (kind == PlayKind.Trainer && at == null) ideaMove else null,
                 idea = if (kind == PlayKind.Trainer && at == null) idea else null,
