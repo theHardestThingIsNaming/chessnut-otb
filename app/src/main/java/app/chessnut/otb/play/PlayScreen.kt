@@ -271,6 +271,39 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
     }
 }
 
+/** What the coach says: the idea behind the last move, and the opening's history as it comes up. */
+@Composable
+private fun CoachCard(ui: PlayUi) {
+    var expanded by remember(ui.story) { mutableStateOf(false) }
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(Palette.Surface)
+            .padding(12.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        if (ui.idea != null) {
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text(ui.ideaMove.orEmpty(), color = Palette.Accent, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium)
+                Text(ui.idea, color = Palette.Text, style = MaterialTheme.typography.bodyMedium)
+            }
+        }
+        ui.story?.let { story ->
+            Column(Modifier.clickable { expanded = !expanded }) {
+                Text("History", color = Palette.Gold, style = MaterialTheme.typography.labelMedium)
+                Text(
+                    story,
+                    color = Palette.TextMuted,
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = if (expanded) Int.MAX_VALUE else 3,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
+    }
+}
+
 /** The chosen opening: where it starts, its moves, and how much of it you know. */
 @Composable
 private fun SelectedOpening(name: String, ui: PlayUi, onTrainLine: (Int) -> Unit) {
@@ -370,9 +403,14 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
     val highlights = moveSquares(ui.hintUci) + moveSquares(ui.promptUci)
     Column(modifier.padding(bottom = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            ui.variation?.takeIf { it != ui.openingName }?.let { name ->
+                Text(name, color = Palette.Accent, style = MaterialTheme.typography.titleSmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            }
+            // A bare move or the opening's name repeats what the board and title already say.
+            val status = if (ui.status == ui.openingName || ui.status == ui.san.lastOrNull()) "" else ui.status
+            if (status.isNotEmpty() || ui.thinking) Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    if (ui.status == ui.openingName) "" else ui.status,
+                    status,
                     color = if (ui.retry) Palette.Error else Palette.Text,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.weight(1f),
@@ -432,6 +470,7 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                 onSquare = viewModel::tap,
             )
             if (ui.bookSans.isNotEmpty()) BookKey(ui.bookSans, ui.explainedByEngine)
+            if (ui.idea != null || ui.story != null) CoachCard(ui)
             ui.lineNote?.let { note ->
                 Text(
                     note,

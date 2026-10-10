@@ -133,6 +133,13 @@ data class PlayUi(
     val lines: List<LineView> = emptyList(),
     /** A book move you played instead of the line's, offered as your move from now on, such as "4. c3". */
     val choiceOffer: String? = null,
+    /** The named variation the game is in now. */
+    val variation: String? = null,
+    /** The last move, numbered, and the idea behind it, when Ideas is on. */
+    val ideaMove: String? = null,
+    val idea: String? = null,
+    /** The latest story about the opening, when History is on. */
+    val story: String? = null,
 )
 
 class PlayViewModel(application: Application) : AndroidViewModel(application) {
@@ -198,6 +205,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private val treeCache = mutableMapOf<Pair<String, Boolean>, List<List<String>>>()
     private var lineLabelShown: String? = null
     private var lineNote: String? = null
+    private var ideaMove: String? = null
+    private var idea: String? = null
+    private var story: String? = null
     /** A line picked from the list, drilled next instead of the scheduled one. */
     private var pinnedLine: List<String>? = null
     /** The moves before, and the book move you chose there, when it differs from the line. */
@@ -484,6 +494,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         if (awaitingBoard) lightSquares(if (setupWrong.size <= MAX_SETUP_HINTS) setupWrong else emptyList())
         lineLabelShown = lineLabel()
         lineNote = null
+        ideaMove = null
+        idea = null
+        story = null
         choiceOffer = null
         status = when {
             awaitingBoard -> setupStatus(setupWrong)
@@ -907,10 +920,13 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         )
     }
 
-    /** Speaks [story] once per game, when history is on. */
+    /** Shows [story] once per game when history is on, and speaks it when sound is on. */
     private fun tell(story: String?) {
-        if (story == null || !state.value.history || !app.phoneSounds) return
-        if (told.add(story)) speech.narrate(story)
+        if (story == null || !state.value.history) return
+        if (!told.add(story)) return
+        this.story = story
+        publish()
+        if (app.phoneSounds) speech.narrate(story)
     }
 
     /** The next move of the line being drilled, while the game still follows it. */
@@ -1121,8 +1137,12 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             val mate = ChessLines.terminalOf(fen) == Terminal.Checkmate
             speech.say(step.first, mate = mate)
         }
-        if (kind == PlayKind.Trainer && state.value.ideas && app.phoneSounds) {
-            MoveIdeas.explain(sanMoves, before, uci)?.let(speech::narrate)
+        if (kind == PlayKind.Trainer && state.value.ideas) {
+            val explained = MoveIdeas.explain(sanMoves, before, uci)
+            ideaMove = "${moveNumber(sanMoves.lastIndex)}${step.first}"
+            idea = explained
+            publish()
+            if (explained != null && app.phoneSounds) speech.narrate(explained)
         }
         if (kind == PlayKind.Trainer) {
             OpeningBook.view(sanMoves).name?.let { tell(OpeningLore.exact(it)) }
@@ -1427,6 +1447,10 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 lineDone = kind == PlayKind.Trainer && drillGraded,
                 lineNote = if (kind == PlayKind.Trainer) lineNote else null,
                 choiceOffer = choiceOffer?.let { (before, move) -> "${moveNumber(before.size)}$move" },
+                variation = if (kind == PlayKind.Trainer) OpeningBook.view(sanMoves).name else null,
+                ideaMove = if (kind == PlayKind.Trainer && at == null) ideaMove else null,
+                idea = if (kind == PlayKind.Trainer && at == null) idea else null,
+                story = if (kind == PlayKind.Trainer) story else null,
             )
         }
     }
