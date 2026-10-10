@@ -90,7 +90,7 @@ fun BoardLinkSection(model: BoardViewModel, modifier: Modifier = Modifier, compa
     val connected = ui.connected
     // On the home screen the board is one line; the full panel opens only to change how it connects or to pick a board.
     var open by remember { mutableStateOf(false) }
-    val needsPanel = connected == null && (ui.needsPermission || (ui.found.size > 1 && !ui.scanning && ui.busy == null))
+    val needsPanel = connected == null && (ui.needsPermission || (ui.found.isNotEmpty() && !ui.scanning && ui.busy == null))
     if (compact && !open && !needsPanel) {
         val busy = ui.scanning || ui.busy != null
         Row(
@@ -235,7 +235,11 @@ fun BoardScreen(model: BoardViewModel, onBack: () -> Unit, onAnalyze: (String) -
         ) {
             if (ui.connected == null) {
                 BoardLinkSection(model)
-                LogView(ui.log, Modifier.weight(1f))
+                var showLog by remember { mutableStateOf(false) }
+                TextButton(onClick = { showLog = !showLog }, colors = clubTextButtonColors()) {
+                    Text(if (showLog) "Hide connection log" else "Show connection log", color = Palette.TextMuted)
+                }
+                if (showLog) LogView(ui.log, Modifier.weight(1f))
             } else {
                 LiveGamePanel(
                     ui,
