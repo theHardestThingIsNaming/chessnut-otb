@@ -1036,7 +1036,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             drillBook && explain -> if (onLine) {
                 "End of this line. Turn off Explain to test yourself on it."
             } else {
-                "This line plays $expected. You'll see it again."
+                "You've left the main line, which continues $expected."
             }
             drillBook && name != null -> {
                 val review = app.lineProgress.grade(name, userWhite, line, clean, now)
