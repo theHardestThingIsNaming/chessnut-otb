@@ -373,14 +373,14 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         }
         drillLine = when {
             drillLines.isEmpty() -> null
-            !drillBook -> Drill.next(drillLines, app.repertoire.reviews())
+            !drillBook -> Drill.next(drillLines, app.repertoire.reviews(), System.currentTimeMillis())
             ui.explain -> {
                 // Explaining shows each line in turn, those not yet learned first.
                 val learned = app.lineProgress.learned(trained!!, ui.userWhite)
                 val fresh = drillLines.filter { Drill.key(it) !in learned }.ifEmpty { drillLines }
                 fresh[lineCursor++ % fresh.size]
             }
-            else -> Drill.next(drillLines, app.lineProgress.reviews(trained!!, ui.userWhite))
+            else -> Drill.next(drillLines, app.lineProgress.reviews(trained!!, ui.userWhite), System.currentTimeMillis())
         }
         if (ui.kind == PlayKind.Trainer && ui.openingName == null) return
         kind = ui.kind
@@ -1222,7 +1222,14 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                     }
                 if (rows.isEmpty()) null else OpeningSection(section.title, rows)
             }
-            state.update { it.copy(openingQuery = query, sections = sections) }
+            // Book openings with reviews that have come due, first, so learned lines don't slip.
+            val now = System.currentTimeMillis()
+            val dueRows = if (query.isNotBlank()) emptyList() else started.filter { it.second == side }.mapNotNull { (name, white) ->
+                val overdue = Drill.overdue(bookLines(name, white), app.lineProgress.reviews(name, white), now)
+                if (overdue == 0) null else OpeningRow(name, scores[name], rates[name], due = overdue)
+            }.sortedByDescending { it.due }
+            val shown = if (dueRows.isEmpty()) sections else listOf(OpeningSection(DUE_SECTION, dueRows)) + sections
+            state.update { it.copy(openingQuery = query, sections = shown) }
             fetchOpeningStats()
         }
     }
@@ -1254,6 +1261,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
 
         /** Explain shows only the strongest few book moves, best first. */
         const val MAX_BOOK_ARROWS = 3
+
+        const val DUE_SECTION = "Due for review"
 
         /** More wrong squares than this means the board is still being set up, so no hint. */
         const val MAX_SETUP_HINTS = 6

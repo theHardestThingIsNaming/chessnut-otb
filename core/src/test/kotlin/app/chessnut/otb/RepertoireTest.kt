@@ -61,7 +61,12 @@ class RepertoireTest {
         val a = listOf("e4", "e5")
         val b = listOf("e4", "c5")
         val reviews = mapOf(Drill.key(a) to LineReview(2, 500), Drill.key(b) to LineReview(1, 100))
-        assertEquals(b, Drill.next(listOf(a, b), reviews))
+        assertEquals(b, Drill.next(listOf(a, b), reviews, now = 1000))
+        // A review that has come due goes before a line never drilled; otherwise new lines come first.
+        val fresh = listOf("d4")
+        assertEquals(b, Drill.next(listOf(fresh, a, b), reviews, now = 1000))
+        assertEquals(fresh, Drill.next(listOf(a, fresh, b), reviews, now = 50))
+        assertEquals(2, Drill.overdue(listOf(fresh, a, b), reviews, now = 1000))
         assertEquals(2, Drill.due(listOf(a, b), reviews, now = 1000))
     }
 }

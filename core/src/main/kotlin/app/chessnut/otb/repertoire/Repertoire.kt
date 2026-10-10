@@ -15,9 +15,21 @@ object Drill {
 
     fun key(line: List<String>): String = line.joinToString(" ")
 
-    /** The line to drill next: the most overdue, then any never drilled, in order. */
-    fun next(lines: List<List<String>>, reviews: Map<String, LineReview>): List<String>? =
-        lines.minByOrNull { reviews[key(it)]?.dueAt ?: 0L }
+    /**
+     * The line to drill next: the most overdue review first, so nothing you
+     * learned slips; then the first line never drilled; then whichever comes
+     * due soonest.
+     */
+    fun next(lines: List<List<String>>, reviews: Map<String, LineReview>, now: Long): List<String>? {
+        val overdue = lines.filter { reviews[key(it)]?.let { r -> r.dueAt <= now } == true }
+        overdue.minByOrNull { reviews.getValue(key(it)).dueAt }?.let { return it }
+        lines.firstOrNull { key(it) !in reviews }?.let { return it }
+        return lines.minByOrNull { reviews[key(it)]?.dueAt ?: 0L }
+    }
+
+    /** Lines drilled before whose review date has come. */
+    fun overdue(lines: List<List<String>>, reviews: Map<String, LineReview>, now: Long): Int =
+        lines.count { reviews[key(it)]?.let { r -> r.dueAt <= now } == true }
 
     fun due(lines: List<List<String>>, reviews: Map<String, LineReview>, now: Long): Int =
         lines.count { (reviews[key(it)]?.dueAt ?: 0L) <= now }
