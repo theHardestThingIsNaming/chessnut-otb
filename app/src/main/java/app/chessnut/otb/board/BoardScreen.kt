@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -73,6 +72,7 @@ import app.chessnut.otb.ui.ClockFace
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.size
 import app.chessnut.otb.ui.BackButton
+import androidx.compose.ui.platform.LocalDensity
 
 private val bluetoothPermissions: Array<String> =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -296,46 +296,51 @@ private fun LiveGamePanel(
             )
             TextButton(onClick = onDisconnect, colors = clubTextButtonColors()) { Text("Disconnect", color = Palette.Accent) }
         }
-        PlayerStrip(
-            name = "Black",
-            millis = live.blackMillis,
-            running = playing && !live.toMoveWhite,
-            flagged = live.flaggedBlack,
-            light = false,
-            facingAway = true,
-            playing = showActions,
-            drawLabel = drawLabel(offered = live.blackOfferedDraw, opponentOffered = live.whiteOfferedDraw),
-            onDraw = onDrawBlack,
-            onResign = onResignBlack,
-        )
-        BoxWithConstraints(Modifier.fillMaxWidth().weight(1f, fill = true), contentAlignment = Alignment.Center) {
-            val size = minOf(maxWidth, maxHeight)
-            ChessBoard(
-                fen = ui.livePlacement ?: "8/8/8/8/8/8/8/8",
-                modifier = Modifier.width(size),
-                lastUci = live.lastUci,
-            )
+        BoxWithConstraints(Modifier.fillMaxWidth().weight(1f)) {
+            // The board takes what it can while leaving each clock a usable strip; the strips share the rest.
+            val boardSide = minOf(maxWidth, maxHeight - MIN_STRIP * 2 - 32.dp).coerceAtLeast(120.dp)
+            Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                PlayerStrip(
+                    name = "Black",
+                    millis = live.blackMillis,
+                    running = playing && !live.toMoveWhite,
+                    flagged = live.flaggedBlack,
+                    light = false,
+                    facingAway = true,
+                    playing = showActions,
+                    drawLabel = drawLabel(offered = live.blackOfferedDraw, opponentOffered = live.whiteOfferedDraw),
+                    onDraw = onDrawBlack,
+                    onResign = onResignBlack,
+                    modifier = Modifier.weight(1f),
+                )
+                ChessBoard(
+                    fen = ui.livePlacement ?: "8/8/8/8/8/8/8/8",
+                    modifier = Modifier.size(boardSide).align(Alignment.CenterHorizontally),
+                    lastUci = live.lastUci,
+                )
+                Text(
+                    statusLine(live),
+                    color = if (live.ended) Palette.Accent else Palette.TextMuted,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = if (live.ended) FontWeight.Bold else FontWeight.Normal,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                PlayerStrip(
+                    name = "White",
+                    millis = live.whiteMillis,
+                    running = playing && live.toMoveWhite,
+                    flagged = live.flaggedWhite,
+                    light = true,
+                    facingAway = false,
+                    playing = showActions,
+                    drawLabel = drawLabel(offered = live.whiteOfferedDraw, opponentOffered = live.blackOfferedDraw),
+                    onDraw = onDrawWhite,
+                    onResign = onResignWhite,
+                    modifier = Modifier.weight(1f),
+                )
+            }
         }
-        Text(
-            statusLine(live),
-            color = if (live.ended) Palette.Accent else Palette.TextMuted,
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = if (live.ended) FontWeight.Bold else FontWeight.Normal,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-        )
-        PlayerStrip(
-            name = "White",
-            millis = live.whiteMillis,
-            running = playing && live.toMoveWhite,
-            flagged = live.flaggedWhite,
-            light = true,
-            facingAway = false,
-            playing = showActions,
-            drawLabel = drawLabel(offered = live.whiteOfferedDraw, opponentOffered = live.blackOfferedDraw),
-            onDraw = onDrawWhite,
-            onResign = onResignWhite,
-        )
         if (live.ended && ui.lastSavedGameId != null) {
             Button(onClick = onAnalyze, modifier = Modifier.fillMaxWidth()) { Text("Analyze this game") }
         }
@@ -399,6 +404,9 @@ private fun TimeControlChip(current: TimeControl, enabled: Boolean, onSelect: (T
     }
 }
 
+private val MIN_STRIP = 76.dp
+
+/** One player's side of the table: a clock that grows with the room it has, and their draw and resign buttons. */
 @Composable
 private fun PlayerStrip(
     name: String,
@@ -411,31 +419,33 @@ private fun PlayerStrip(
     drawLabel: String,
     onDraw: () -> Unit,
     onResign: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    val body = @Composable {
+    BoxWithConstraints(modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        val rowHeight = maxHeight.coerceIn(MIN_STRIP, 132.dp)
+        val clockSize = with(LocalDensity.current) { (rowHeight * 0.42f).toSp() }
         Row(
-            Modifier.fillMaxWidth().height(IntrinsicSize.Min),
+            Modifier.fillMaxWidth().height(rowHeight).then(if (facingAway) Modifier.rotate(180f) else Modifier),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Column(Modifier.weight(1.2f)) {
+            Column(Modifier.weight(1.3f).fillMaxHeight()) {
                 Text(name, color = Palette.TextMuted, fontSize = 12.sp, fontWeight = FontWeight.Medium)
-                ClockFace(millis, light, running, Modifier.fillMaxWidth(), flagged = flagged, fontSize = 32.sp)
+                ClockFace(millis, light, running, Modifier.fillMaxWidth().weight(1f), flagged = flagged, fontSize = clockSize)
             }
             if (playing) {
                 GameAction(
                     drawLabel,
                     light,
                     onDraw,
-                    Modifier.weight(0.85f).fillMaxHeight(),
+                    Modifier.weight(0.8f).fillMaxHeight(),
                     tone = if (drawLabel != "Draw") ActionTone.Active else ActionTone.Plain,
                     icon = { HalfMark(it) },
                 )
-                GameAction("Resign", light, onResign, Modifier.weight(0.85f).fillMaxHeight(), tone = ActionTone.Danger, icon = { FlagMark(it) })
+                GameAction("Resign", light, onResign, Modifier.weight(0.8f).fillMaxHeight(), tone = ActionTone.Danger, icon = { FlagMark(it) })
             }
         }
     }
-    if (facingAway) Box(Modifier.fillMaxWidth().rotate(180f)) { body() } else body()
 }
 
 private fun moveLine(sans: List<String>): String = buildString {

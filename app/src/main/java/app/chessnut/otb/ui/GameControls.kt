@@ -39,19 +39,23 @@ fun ClockFace(
         running -> Color(0xFF1C1A18) to Color.White
         else -> Color(0xFF262421) to Color(0xFF8B8987)
     }
-    Text(
-        formatClock(millis),
-        color = ink,
-        fontWeight = FontWeight.SemiBold,
-        fontSize = fontSize,
-        style = TextStyle(fontFeatureSettings = "tnum"),
-        textAlign = TextAlign.End,
-        maxLines = 1,
-        modifier = modifier
+    Box(
+        modifier
             .clip(RoundedCornerShape(4.dp))
             .background(fill)
             .padding(horizontal = 12.dp, vertical = 5.dp),
-    )
+        contentAlignment = Alignment.CenterEnd,
+    ) {
+        Text(
+            formatClock(millis),
+            color = ink,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = fontSize,
+            style = TextStyle(fontFeatureSettings = "tnum"),
+            textAlign = TextAlign.End,
+            maxLines = 1,
+        )
+    }
 }
 
 enum class ActionTone { Plain, Active, Danger }
