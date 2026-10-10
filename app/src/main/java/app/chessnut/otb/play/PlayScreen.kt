@@ -77,6 +77,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.OutlinedButton
 import app.chessnut.otb.ui.clubOutlinedButtonColors
 import app.chessnut.otb.ui.BackButton
+import app.chessnut.otb.ui.PrimaryAction
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -99,7 +100,7 @@ fun PlayScreen(viewModel: PlayViewModel, onBack: () -> Unit, mode: PlayKind = Pl
                             ui.playing && ui.kind == PlayKind.Trainer -> ui.openingName ?: "Trainer"
                             ui.kind == PlayKind.Bot && ui.playing -> "Bot ${ui.elo}"
                             ui.kind == PlayKind.Bot -> "Bot"
-                            else -> "Play"
+                            else -> "Openings"
                         },
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -129,23 +130,15 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
     var importing by remember { mutableStateOf(false) }
     if (importing) StudyDialog(ui, viewModel, onDismiss = { importing = false })
     Column(modifier.padding(bottom = 8.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(
-                selected = ui.kind == PlayKind.Bot,
-                onClick = { viewModel.setKind(PlayKind.Bot) },
-                label = { Text("Bot") },
-                colors = clubChipColors(),
-            )
-            FilterChip(
-                selected = ui.kind == PlayKind.Trainer,
-                onClick = { viewModel.setKind(PlayKind.Trainer) },
-                label = { Text("Opening trainer") },
-                colors = clubChipColors(),
-            )
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(selected = ui.userWhite, onClick = { viewModel.setUserWhite(true) }, label = { Text("White") }, colors = clubChipColors())
             FilterChip(selected = !ui.userWhite, onClick = { viewModel.setUserWhite(false) }, label = { Text("Black") }, colors = clubChipColors())
+            if (ui.kind == PlayKind.Trainer) {
+                Box(Modifier.width(8.dp))
+                FilterChip(selected = ui.explain, onClick = { viewModel.setExplain(!ui.explain) }, label = { Text("Explain") }, colors = clubChipColors())
+                FilterChip(selected = ui.ideas, onClick = { viewModel.setIdeas(!ui.ideas) }, label = { Text("Ideas") }, colors = clubChipColors())
+                FilterChip(selected = ui.history, onClick = { viewModel.setHistory(!ui.history) }, label = { Text("History") }, colors = clubChipColors())
+            }
         }
         if (ui.kind == PlayKind.Bot) {
             Text("Strength", color = Palette.TextMuted, style = MaterialTheme.typography.titleSmall)
@@ -169,11 +162,6 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
                 ChessBoard(fen = START_FEN, modifier = Modifier.size(side), flipped = !ui.userWhite)
             }
         } else {
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FilterChip(selected = ui.explain, onClick = { viewModel.setExplain(!ui.explain) }, label = { Text("Explain") }, colors = clubChipColors())
-                FilterChip(selected = ui.ideas, onClick = { viewModel.setIdeas(!ui.ideas) }, label = { Text("Ideas") }, colors = clubChipColors())
-                FilterChip(selected = ui.history, onClick = { viewModel.setHistory(!ui.history) }, label = { Text("History") }, colors = clubChipColors())
-            }
             Text(
                 if (ui.explain) {
                     "Learning: arrows show the book moves. Turn off Explain to test yourself, one line at a time."
@@ -313,7 +301,7 @@ private fun SelectedOpening(name: String, ui: PlayUi, onTrainLine: (Int) -> Unit
             }
             val progress = when {
                 row?.learned != null && row.lines != null -> "${row.learned} of ${row.lines} lines learned"
-                row?.due != null -> if (row.due > 0) "${row.due} lines due" else "All lines reviewed"
+                row?.due != null -> if (row.due > 0) "${row.due} ${if (row.due == 1) "line" else "lines"} due" else "All lines reviewed"
                 else -> "Not trained yet"
             }
             Text(progress, color = Palette.Text, style = MaterialTheme.typography.bodySmall)
@@ -380,103 +368,110 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
         Arrow.ofUci(ui.rejectUci, Palette.Blunder),
     )
     val highlights = moveSquares(ui.hintUci) + moveSquares(ui.promptUci)
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(ui.status, color = if (ui.retry) Palette.Error else Palette.Text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-            if (ui.thinking) {
-                CircularProgressIndicator(
-                    Modifier.padding(4.dp).size(22.dp),
-                    color = Palette.Accent,
-                    strokeWidth = 2.dp,
+    Column(modifier.padding(bottom = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    if (ui.status == ui.openingName) "" else ui.status,
+                    color = if (ui.retry) Palette.Error else Palette.Text,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.weight(1f),
                 )
-            }
-        }
-        if (ui.kind == PlayKind.Trainer) {
-            FlowRow(itemVerticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FilterChip(
-                    selected = ui.explain,
-                    onClick = { viewModel.setExplain(!ui.explain) },
-                    label = { Text("Explain") },
-                    colors = clubChipColors(),
-                )
-                FilterChip(
-                    selected = ui.ideas,
-                    onClick = { viewModel.setIdeas(!ui.ideas) },
-                    label = { Text("Ideas") },
-                    colors = clubChipColors(),
-                )
-                FilterChip(
-                    selected = ui.history,
-                    onClick = { viewModel.setHistory(!ui.history) },
-                    label = { Text("History") },
-                    colors = clubChipColors(),
-                )
-                ui.lineLabel?.let { label ->
-                    Text(label, color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium)
-                }
-                if (ui.san.isNotEmpty() && !ui.inTheory) {
-                    Text(
-                        "Out of theory",
-                        color = Palette.OnAccent,
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier
-                            .background(Palette.Accent, RoundedCornerShape(50))
-                            .padding(horizontal = 12.dp, vertical = 4.dp),
+                if (ui.thinking) {
+                    CircularProgressIndicator(
+                        Modifier.padding(4.dp).size(22.dp),
+                        color = Palette.Accent,
+                        strokeWidth = 2.dp,
                     )
                 }
             }
-        }
-        ChessBoard(
-            fen = ui.fen,
-            flipped = !ui.userWhite,
-            lastUci = ui.lastUci,
-            selected = ui.selected,
-            targets = ui.targets,
-            arrows = arrows,
-            highlights = highlights,
-            onSquare = viewModel::tap,
-        )
-        if (ui.bookSans.isNotEmpty()) BookKey(ui.bookSans, ui.explainedByEngine)
-        ui.lineNote?.let { note ->
-            Text(
-                note,
-                color = Palette.Text,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Palette.SurfaceHigh)
-                    .border(1.dp, Palette.Accent, RoundedCornerShape(12.dp))
-                    .padding(12.dp),
+            if (ui.kind == PlayKind.Trainer) {
+                FlowRow(itemVerticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FilterChip(
+                        selected = ui.explain,
+                        onClick = { viewModel.setExplain(!ui.explain) },
+                        label = { Text("Explain") },
+                        colors = clubChipColors(),
+                    )
+                    FilterChip(
+                        selected = ui.ideas,
+                        onClick = { viewModel.setIdeas(!ui.ideas) },
+                        label = { Text("Ideas") },
+                        colors = clubChipColors(),
+                    )
+                    FilterChip(
+                        selected = ui.history,
+                        onClick = { viewModel.setHistory(!ui.history) },
+                        label = { Text("History") },
+                        colors = clubChipColors(),
+                    )
+                    ui.lineLabel?.let { label ->
+                        Text(label, color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium)
+                    }
+                    if (ui.san.isNotEmpty() && !ui.inTheory) {
+                        Text(
+                            "Out of theory",
+                            color = Palette.OnAccent,
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier
+                                .background(Palette.Accent, RoundedCornerShape(50))
+                                .padding(horizontal = 12.dp, vertical = 4.dp),
+                        )
+                    }
+                }
+            }
+            ChessBoard(
+                fen = ui.fen,
+                flipped = !ui.userWhite,
+                lastUci = ui.lastUci,
+                selected = ui.selected,
+                targets = ui.targets,
+                arrows = arrows,
+                highlights = highlights,
+                onSquare = viewModel::tap,
             )
-        }
-        ui.choiceOffer?.let { move ->
-            OutlinedButton(onClick = viewModel::adoptChoice, colors = clubOutlinedButtonColors(), modifier = Modifier.fillMaxWidth()) {
-                Text("Play $move here from now on", color = Palette.Accent)
+            if (ui.bookSans.isNotEmpty()) BookKey(ui.bookSans, ui.explainedByEngine)
+            ui.lineNote?.let { note ->
+                Text(
+                    note,
+                    color = Palette.Text,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Palette.SurfaceHigh)
+                        .border(1.dp, Palette.Accent, RoundedCornerShape(12.dp))
+                        .padding(12.dp),
+                )
             }
+            ui.choiceOffer?.let { move ->
+                OutlinedButton(onClick = viewModel::adoptChoice, colors = clubOutlinedButtonColors(), modifier = Modifier.fillMaxWidth()) {
+                    Text("Play $move here from now on", color = Palette.Accent)
+                }
+            }
+            Text(numbered(ui.san), color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium)
         }
-        Text(numbered(ui.san), color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium)
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        // The actions stay along the bottom, under the thumb.
+        Row(Modifier.fillMaxWidth().height(52.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            GameAction("Openings", light = false, onClick = viewModel::leave, modifier = Modifier.weight(1f).fillMaxHeight())
             if (ui.lineDone) {
-                Button(
-                    onClick = viewModel::start,
-                    colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent, contentColor = Palette.OnAccent),
-                ) { Text("Next line") }
+                GameAction(
+                    "Analyse",
+                    light = false,
+                    onClick = { viewModel.analyse()?.let(onAnalyse) },
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                )
+                PrimaryAction("Next line", Modifier.weight(1.3f).fillMaxHeight(), onClick = viewModel::start)
             } else {
-                Button(
-                    onClick = viewModel::hint,
+                GameAction("Restart", light = false, onClick = viewModel::start, modifier = Modifier.weight(1f).fillMaxHeight())
+                PrimaryAction(
+                    "Hint",
+                    Modifier.weight(1.3f).fillMaxHeight(),
                     enabled = ui.finished == null && !ui.awaitingBoard,
-                    colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent, contentColor = Palette.OnAccent),
-                ) { Text("Hint") }
-                TextButton(onClick = viewModel::start, colors = clubTextButtonColors()) { Text("Restart", color = Palette.Accent) }
+                    onClick = viewModel::hint,
+                )
             }
-            TextButton(onClick = viewModel::leave, colors = clubTextButtonColors()) { Text("Openings", color = Palette.Accent) }
-            TextButton(
-                onClick = { viewModel.analyse()?.let(onAnalyse) },
-                enabled = ui.san.isNotEmpty(),
-                colors = clubTextButtonColors(),
-            ) { Text("Analyse", color = Palette.Accent) }
         }
     }
 }
