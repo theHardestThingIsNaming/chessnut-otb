@@ -1268,9 +1268,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 val days = Drill.days(review, now)
                 when {
                     clean -> "Nice one! Line learned: $learned of ${drillLines.size}. ${seeYou(days)}"
-                    bookToo -> "That's a book move too, but this line continues $expected. We'll come back to it tomorrow."
-                    expected != null -> "Good effort! This line continues $expected, and we'll come back to it tomorrow."
-                    else -> "Nearly there! It wasn't quite clean, so we'll come back to it tomorrow."
+                    bookToo -> "That's a book move too, but this line continues $expected. Queuing this line for review."
+                    expected != null -> "Good effort! This line continues $expected. Queuing this line for review."
+                    else -> "Nearly there! It wasn't quite clean. Queuing this line for review."
                 }
             }
             else -> {
@@ -1278,8 +1278,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 val days = Drill.days(review, now)
                 when {
                     clean -> "Nice one! Line complete. ${seeYou(days)}"
-                    expected != null -> "Good effort! Your repertoire continues $expected, and we'll come back to it tomorrow."
-                    else -> "Good effort! This one strayed from your repertoire, so we'll come back to it tomorrow."
+                    expected != null -> "Good effort! Your repertoire continues $expected. Queuing this line for review."
+                    else -> "Good effort! This one strayed from your repertoire. Queuing this line for review."
                 }
             }
         }
