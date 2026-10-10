@@ -55,6 +55,9 @@ import app.chessnut.otb.review.POSITION_PREFIX
 
 enum class PlayKind { Bot, Trainer }
 
+/** The bot's time menu entry for untimed play. */
+const val NO_CLOCK = "No clock"
+
 /** [winRate] is how often the opening's side wins on Lichess, as a percentage, once fetched. */
 data class OpeningRow(
     val name: String,
@@ -147,6 +150,8 @@ data class PlayUi(
     val learnedTotal: Int = 0,
     val openingsStarted: Int = 0,
     val dueTotal: Int = 0,
+    /** Bot games are played with clocks; off for untimed play, such as from a set-up position. */
+    val timed: Boolean = true,
     /** The bot game starts from this position instead of the usual start, such as one set up on the board. */
     val startFen: String? = null,
     /** A review session is running through due lines from several openings. */
@@ -220,6 +225,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private var lineNote: String? = null
     /** Where a bot game starts, when not from the usual position. */
     private var startFen: String? = null
+    private var timed = true
+    /** Whether games were timed before a set-up position turned the clock off, to restore after. */
+    private var timedBeforePosition: Boolean? = null
     private var ideaMove: String? = null
     /** The ply where you left the line, to take back to. */
     private var retryAt: Int? = null
@@ -266,14 +274,24 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     fun setStartPosition(fen: String, userWhite: Boolean) {
         if (playing) leave()
         startFen = fen
-        state.update { it.copy(kind = PlayKind.Bot, startFen = fen, userWhite = userWhite) }
+        // A position you set up is for thinking it through, so it starts untimed.
+        if (timedBeforePosition == null) timedBeforePosition = timed
+        timed = false
+        state.update { it.copy(kind = PlayKind.Bot, startFen = fen, userWhite = userWhite, timed = false, controlLabel = NO_CLOCK) }
     }
 
     /** Back to games from the usual starting position. */
     fun clearStartPosition() {
         if (playing) return
         startFen = null
+        restoreTiming()
         state.update { it.copy(startFen = null) }
+        publish()
+    }
+
+    private fun restoreTiming() {
+        timedBeforePosition?.let { timed = it }
+        timedBeforePosition = null
     }
 
     /** Where this game began. */
@@ -293,7 +311,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setTime(label: String) {
         if (sanMoves.isNotEmpty()) return
-        clock.setControl(TimeControl.fromLabel(label), System.currentTimeMillis())
+        timed = label != NO_CLOCK
+        if (timed) clock.setControl(TimeControl.fromLabel(label), System.currentTimeMillis())
         publish()
     }
 
@@ -715,6 +734,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     fun leave() {
         endReview()
         startFen = null
+        restoreTiming()
         state.update { it.copy(startFen = null) }
         job?.cancel()
         job = null
@@ -942,8 +962,10 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private fun kickoff() {
         awaitingBoard = false
         if (kind == PlayKind.Bot) {
-            clock.begin(System.currentTimeMillis(), whiteFirst = whiteToMove(fen))
-            watchClock()
+            if (timed) {
+                clock.begin(System.currentTimeMillis(), whiteFirst = whiteToMove(fen))
+                watchClock()
+            }
             status = if (userWhite) "You have White · $elo" else "You have Black · $elo"
         } else if (kind == PlayKind.Trainer) {
             status = openingName ?: "Opening trainer"
@@ -1575,7 +1597,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 awaitingBoard = awaitingBoard,
                 retry = retry,
                 finished = finished,
-                controlLabel = clock.control.label,
+                controlLabel = if (timed) clock.control.label else NO_CLOCK,
+                timed = timed,
                 whiteMillis = clock.remaining(white = true, now = System.currentTimeMillis()),
                 blackMillis = clock.remaining(white = false, now = System.currentTimeMillis()),
                 whiteRunning = clock.running && clock.whiteToMove,

@@ -637,7 +637,7 @@ private fun BotGame(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
         }
         // Before the game starts, show where it will begin.
         val shown = if (!ui.playing) ui.startFen ?: ui.fen else ui.fen
-        PlayerBar("Bot ${ui.elo}", opponentWhite, shown, topMillis, topRunning, flagged = topFlagged)
+        PlayerBar("Bot ${ui.elo}", opponentWhite, shown, topMillis.takeIf { ui.timed }, topRunning, flagged = topFlagged)
         ChessBoard(
             fen = shown,
             flipped = !ui.userWhite,
@@ -651,7 +651,7 @@ private fun BotGame(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
             highlights = moveSquares(ui.hintUci) + moveSquares(ui.promptUci),
             onSquare = viewModel::tap,
         )
-        PlayerBar("You", ui.userWhite, shown, bottomMillis, bottomRunning, flagged = bottomFlagged)
+        PlayerBar("You", ui.userWhite, shown, bottomMillis.takeIf { ui.timed }, bottomRunning, flagged = bottomFlagged)
         if (ui.playing && ui.finished == null) {
             Row(Modifier.fillMaxWidth().height(48.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 GameAction("Draw", ui.userWhite, viewModel::offerDraw, Modifier.weight(1f).fillMaxHeight()) {
@@ -744,6 +744,13 @@ private fun BotTimeChip(label: String, enabled: Boolean, onSelect: (String) -> U
             Text(label, color = if (enabled) Palette.Accent else Palette.TextMuted, fontWeight = FontWeight.Bold)
         }
         ExposedDropdownMenu(expanded = open && enabled, onDismissRequest = { open = false }) {
+            DropdownMenuItem(
+                text = { Text(NO_CLOCK) },
+                onClick = {
+                    onSelect(NO_CLOCK)
+                    open = false
+                },
+            )
             TimeControl.Presets.forEach { preset ->
                 DropdownMenuItem(
                     text = { Text(preset.label) },
