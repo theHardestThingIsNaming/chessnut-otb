@@ -162,6 +162,7 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
                 ChessBoard(fen = START_FEN, modifier = Modifier.size(side), flipped = !ui.userWhite)
             }
         } else {
+            if (ui.openingsStarted > 0) ProgressCard(ui, viewModel::startReview)
             Text(
                 if (ui.explain) {
                     "Learning: arrows show the book moves. Turn off Explain to test yourself, one line at a time."
@@ -268,6 +269,37 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
             colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent, contentColor = Palette.OnAccent),
             modifier = Modifier.fillMaxWidth(),
         ) { Text(if (ui.kind == PlayKind.Bot) "Play" else "Train") }
+    }
+}
+
+/** How much you know across every opening, and the day's review when lines are due. */
+@Composable
+private fun ProgressCard(ui: PlayUi, onReview: () -> Unit) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(Palette.Surface)
+            .padding(start = 14.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(
+                "${ui.learnedTotal} ${if (ui.learnedTotal == 1) "line" else "lines"} learned",
+                color = Palette.Text,
+                fontWeight = FontWeight.Bold,
+            )
+            Text(
+                "In ${ui.openingsStarted} ${if (ui.openingsStarted == 1) "opening" else "openings"}" +
+                    if (ui.dueTotal > 0) " · ${ui.dueTotal} due today" else " · nothing due",
+                color = if (ui.dueTotal > 0) Palette.Gold else Palette.TextMuted,
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
+        if (ui.dueTotal > 0) {
+            PrimaryAction("Review ${ui.dueTotal}", Modifier.height(40.dp).width(116.dp), onClick = onReview)
+        }
     }
 }
 
@@ -403,16 +435,19 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
     val highlights = moveSquares(ui.hintUci) + moveSquares(ui.promptUci)
     Column(modifier.padding(bottom = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            ui.variation?.takeIf { it != ui.openingName }?.let { name ->
-                Text(name, color = Palette.Accent, style = MaterialTheme.typography.titleSmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
-            }
-            // A bare move or the opening's name repeats what the board and title already say.
+            // One line of fixed height, so the board never jumps: the status when there is one, otherwise the variation.
             val status = if (ui.status == ui.openingName || ui.status == ui.san.lastOrNull()) "" else ui.status
-            if (status.isNotEmpty() || ui.thinking) Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    status,
-                    color = if (ui.retry) Palette.Error else Palette.Text,
+                    status.ifEmpty { ui.variation ?: ui.openingName.orEmpty() },
+                    color = when {
+                        status.isEmpty() -> Palette.Accent
+                        ui.retry -> Palette.Error
+                        else -> Palette.Text
+                    },
                     style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f),
                 )
                 if (ui.thinking) {
@@ -443,19 +478,18 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                         label = { Text("History") },
                         colors = clubChipColors(),
                     )
-                    ui.lineLabel?.let { label ->
-                        Text(label, color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium)
-                    }
+                    // Out of theory takes the line label's place, so the row never wraps and moves the board.
                     if (ui.san.isNotEmpty() && !ui.inTheory) {
                         Text(
                             "Out of theory",
-                            color = Palette.OnAccent,
+                            color = Palette.Gold,
                             fontWeight = FontWeight.Bold,
                             style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier
-                                .background(Palette.Accent, RoundedCornerShape(50))
-                                .padding(horizontal = 12.dp, vertical = 4.dp),
                         )
+                    } else {
+                        ui.lineLabel?.let { label ->
+                            Text(label, color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium, maxLines = 1)
+                        }
                     }
                 }
             }
@@ -508,7 +542,11 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                     onClick = { viewModel.analyse()?.let(onAnalyse) },
                     modifier = Modifier.weight(1f).fillMaxHeight(),
                 )
-                PrimaryAction("Next line", Modifier.weight(1.3f).fillMaxHeight(), onClick = viewModel::start)
+                PrimaryAction(
+                if (ui.reviewLast) "Finish review" else "Next line",
+                Modifier.weight(1.3f).fillMaxHeight(),
+                onClick = viewModel::nextLine,
+            )
             } else {
                 GameAction("Restart", light = false, onClick = viewModel::start, modifier = Modifier.weight(1f).fillMaxHeight())
                 PrimaryAction(

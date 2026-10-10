@@ -142,6 +142,14 @@ data class PlayUi(
     val story: String? = null,
     /** After a miss, the line's move to take back and play instead, such as "7. O-O". */
     val retryMove: String? = null,
+    /** Across every opening you drill: lines learned, openings started, and lines due for review. */
+    val learnedTotal: Int = 0,
+    val openingsStarted: Int = 0,
+    val dueTotal: Int = 0,
+    /** A review session is running through due lines from several openings. */
+    val reviewing: Boolean = false,
+    /** No review lines are left after this one. */
+    val reviewLast: Boolean = false,
 )
 
 class PlayViewModel(application: Application) : AndroidViewModel(application) {
@@ -210,6 +218,15 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private var ideaMove: String? = null
     /** The ply where you left the line, to take back to. */
     private var retryAt: Int? = null
+
+    /** One line in a review session. */
+    private data class ReviewItem(val opening: String, val white: Boolean, val line: List<String>)
+
+    /** Due lines still to come in the review session, most overdue first. */
+    private val reviewQueue = ArrayDeque<ReviewItem>()
+    private var reviewTotal = 0
+    private var reviewing = false
+    private var explainBeforeReview = false
     private var idea: String? = null
     private var story: String? = null
     /** A line picked from the list, drilled next instead of the scheduled one. */
@@ -622,7 +639,57 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         return saved.id
     }
 
+    /** Starts a session through every due line, from memory, across all the openings you drill. */
+    fun startReview() {
+        if (playing) return
+        val now = System.currentTimeMillis()
+        val items = app.lineProgress.started().flatMap { (name, white) ->
+            val reviews = app.lineProgress.reviews(name, white)
+            bookLines(name, white).mapNotNull { line ->
+                val due = reviews[Drill.key(line)]?.dueAt ?: return@mapNotNull null
+                if (due <= now) due to ReviewItem(name, white, line) else null
+            }
+        }.sortedBy { it.first }.map { it.second }
+        if (items.isEmpty()) return
+        reviewQueue.clear()
+        reviewQueue.addAll(items)
+        reviewTotal = items.size
+        explainBeforeReview = explain
+        reviewing = true
+        nextReview()
+    }
+
+    /** The next line: the next due review in a session, otherwise the next line of this opening. */
+    fun nextLine() {
+        if (reviewing) nextReview() else start()
+    }
+
+    private fun nextReview() {
+        val item = reviewQueue.removeFirstOrNull()
+        if (item == null) {
+            endReview()
+            leave()
+            return
+        }
+        // Reviews are from memory, so the arrows stay off.
+        explain = false
+        state.update { it.copy(kind = PlayKind.Trainer, openingName = item.opening, userWhite = item.white, explain = false) }
+        pinnedLine = item.line
+        start()
+        lineLabelShown = "Review ${reviewTotal - reviewQueue.size} of $reviewTotal"
+        publish()
+    }
+
+    private fun endReview() {
+        if (!reviewing) return
+        reviewing = false
+        reviewQueue.clear()
+        explain = explainBeforeReview
+        state.update { it.copy(explain = explainBeforeReview) }
+    }
+
     fun leave() {
+        endReview()
         job?.cancel()
         job = null
         clockJob?.cancel()
@@ -1385,7 +1452,24 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 if (overdue == 0) null else OpeningRow(name, scores[name], rates[name], due = overdue)
             }.sortedByDescending { it.due }
             val shown = if (dueRows.isEmpty()) sections else listOf(OpeningSection(DUE_SECTION, dueRows)) + sections
-            state.update { it.copy(openingQuery = query, sections = shown) }
+            // The summary counts every opening and side, not only the one shown.
+            var learnedTotal = 0
+            var dueTotal = 0
+            for ((name, white) in started) {
+                val lines = bookLines(name, white)
+                val keys = lines.map(Drill::key).toSet()
+                learnedTotal += app.lineProgress.learned(name, white).count { it in keys }
+                dueTotal += Drill.overdue(lines, app.lineProgress.reviews(name, white), now)
+            }
+            state.update {
+                it.copy(
+                    openingQuery = query,
+                    sections = shown,
+                    learnedTotal = learnedTotal,
+                    openingsStarted = started.size,
+                    dueTotal = dueTotal,
+                )
+            }
             fetchOpeningStats()
         }
     }
@@ -1486,6 +1570,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 lineLabel = if (kind == PlayKind.Trainer) lineLabelShown else null,
                 lineDone = kind == PlayKind.Trainer && drillGraded,
                 lineNote = if (kind == PlayKind.Trainer) lineNote else null,
+                reviewing = reviewing,
+                reviewLast = reviewing && reviewQueue.isEmpty(),
                 choiceOffer = choiceOffer?.let { (before, move) -> "${moveNumber(before.size)}$move" },
                 retryMove = retryAt?.let { at -> drillLine?.getOrNull(at)?.let { "${moveNumber(at)}$it" } },
                 variation = if (kind == PlayKind.Trainer) OpeningBook.view(sanMoves).name else null,
