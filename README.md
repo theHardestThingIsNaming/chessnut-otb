@@ -18,6 +18,7 @@ Android app for the Chessnut Air smart board. Play over the board with clocks, v
 - A move history you can step back through during the game.
 
 ### Opening trainer
+- **Opening pages**: tap any opening for its own page: lines learned, lines due, best run past the book, best accuracy and Lichess win rate, your chosen moves, every line with its review date, and its history, with Train at the bottom.
 - Everyday openings, a gambits section and a meme openings section (Bongcloud, the Cow, Kilkenny Gambit, Jerome, Alien and more). Filters for gambits, White's, Black's, memes and openings not yet played. The chosen opening shows its start position, moves and progress.
 - **Learn every line**: each opening is split into lines the way a coach writes a repertoire: one move for your side, the opponent's most common replies. A game follows one line. With Explain off it is graded from memory with spaced repetition, and the list shows how many lines you know. Reviews that come due appear at the top. See all lines by variation name, and tap one to drill it.
 - **Past the book**: with Explain off, once the theory runs out every move you play is checked against Stockfish's top two. Each opening keeps your best run of good moves in a row, and when a run ends you see what the engine wanted.

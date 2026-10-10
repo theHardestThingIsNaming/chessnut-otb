@@ -74,6 +74,27 @@ data class OpeningRow(
 
 data class OpeningSection(val title: String, val rows: List<OpeningRow>)
 
+/** Everything about one opening from one side, for its own page. */
+data class OpeningDetail(
+    val name: String,
+    /** The opening's own moves, numbered, such as "1. e4 e5 2. Nf3 Nc6 3. d4". */
+    val moves: String,
+    /** The position the opening reaches. */
+    val fen: String,
+    val learned: Int,
+    val total: Int,
+    val due: Int,
+    val depthBest: Int?,
+    val depthLast: Int?,
+    val accuracy: Int?,
+    val winRate: Int?,
+    val story: String?,
+    /** Book moves you chose over the main line, such as "4. c3". */
+    val choices: List<String>,
+    /** Lines come from an imported study rather than the book. */
+    val study: Boolean,
+)
+
 enum class LineStatus { New, Learned, Due, Missed }
 
 /** One line of the chosen opening, for the line list: its variation name, its moves past the opening, and how you are doing with it. */
@@ -144,6 +165,9 @@ data class PlayUi(
     val lineNote: String? = null,
     /** Every line of the chosen opening, for picking one to drill. */
     val lines: List<LineView> = emptyList(),
+    /** The chosen opening's page is open. */
+    val showDetail: Boolean = false,
+    val detail: OpeningDetail? = null,
     /** A book move you played instead of the line's, offered as your move from now on, such as "4. c3". */
     val choiceOffer: String? = null,
     /** The named variation the game is in now. */
@@ -421,6 +445,26 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         refreshLines()
     }
 
+    /** Opens [name]'s own page: its scores, lines and history. */
+    fun openDetail(name: String) {
+        selectOpening(name)
+        state.update { it.copy(showDetail = true) }
+    }
+
+    fun closeDetail() {
+        state.update { it.copy(showDetail = false) }
+    }
+
+    /** Goes back to the book's main moves for the chosen opening and side. */
+    fun resetChoices() {
+        val ui = state.value
+        val name = ui.openingName ?: return
+        app.moveChoices.clear(name, ui.userWhite)
+        synchronized(treeCache) { treeCache.remove(name to ui.userWhite) }
+        refreshLines()
+        refreshOpenings(ui.openingQuery)
+    }
+
     /** Drills line [index] of the chosen opening now. */
     fun trainLine(index: Int) {
         if (playing) return
@@ -469,8 +513,40 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 }
                 LineView(variation ?: "Main line", numberedFrom(line, shared), status, next)
             }
-            state.update { if (it.openingName == name && it.userWhite == white) it.copy(lines = views) else it }
+            state.update { if (it.openingName == name && it.userWhite == white) it.copy(
+                    lines = views,
+                    detail = detailOf(
+                        name, white, chapter != null, views,
+                        learnedCount = learned?.count { key -> lines.any { Drill.key(it) == key } }
+                            ?: views.count { it.status == LineStatus.Learned },
+                    ),
+                ) else it }
         }
+    }
+
+    private fun detailOf(name: String, white: Boolean, study: Boolean, lines: List<LineView>, learnedCount: Int): OpeningDetail {
+        val start = OpeningBook.line(name)?.san.orEmpty()
+        val fen = runCatching { ChessLines.replay(start).fens.last() }.getOrDefault(Board().fen)
+        val row = state.value.sections.flatMap { it.rows }.firstOrNull { it.name == name }
+        val depth = app.depthRecords.of(name, white)
+        val choices = app.moveChoices.of(name, white).entries
+            .sortedBy { it.key.size }
+            .map { (before, move) -> "${moveNumber(before.size)}$move" }
+        return OpeningDetail(
+            name = name,
+            moves = numberedFrom(start, 0),
+            fen = fen,
+            learned = learnedCount,
+            total = lines.size,
+            due = lines.count { it.status == LineStatus.Due },
+            depthBest = depth?.best,
+            depthLast = depth?.last,
+            accuracy = row?.accuracy,
+            winRate = row?.winRate,
+            story = OpeningLore.of(name),
+            choices = choices,
+            study = study,
+        )
     }
 
     /** "6… exd4 7. O-O dxc3", the moves of [line] from ply [from]. */

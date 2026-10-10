@@ -15,6 +15,12 @@ class MoveChoices(private val file: File) {
     fun of(opening: String, userWhite: Boolean): Map<List<String>, String> =
         rows.filter { it.opening == opening && it.userWhite == userWhite }.associate { it.before to it.move }
 
+    /** Forgets every choice for [opening] from this side, back to the book's main moves. */
+    @Synchronized
+    fun clear(opening: String, userWhite: Boolean) {
+        if (rows.removeAll { it.opening == opening && it.userWhite == userWhite }) save()
+    }
+
     @Synchronized
     fun set(opening: String, userWhite: Boolean, before: List<String>, move: String) {
         rows.removeAll { it.opening == opening && it.userWhite == userWhite && it.before == before }

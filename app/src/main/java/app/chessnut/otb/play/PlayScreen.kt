@@ -71,8 +71,6 @@ import app.chessnut.otb.ui.GameAction
 import app.chessnut.otb.ui.ActionTone
 import app.chessnut.otb.ui.NavKey
 import androidx.compose.foundation.lazy.LazyRow
-import app.chessnut.otb.openings.OpeningBook
-import app.chessnut.otb.analysis.ChessLines
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.OutlinedButton
 import app.chessnut.otb.ui.clubOutlinedButtonColors
@@ -87,9 +85,15 @@ fun PlayScreen(viewModel: PlayViewModel, onBack: () -> Unit, mode: PlayKind = Pl
     KeepScreenOn()
     val ui by viewModel.ui.collectAsStateWithLifecycle()
     LaunchedEffect(mode) { viewModel.setKind(mode) }
+    // Back closes an opening's page first, then leaves.
+    val onPage = ui.kind == PlayKind.Trainer && !ui.playing && ui.showDetail && ui.detail != null
     BackHandler {
-        viewModel.leave()
-        onBack()
+        if (onPage) {
+            viewModel.closeDetail()
+        } else {
+            viewModel.leave()
+            onBack()
+        }
     }
     Scaffold(
         containerColor = androidx.compose.ui.graphics.Color.Transparent,
@@ -102,6 +106,7 @@ fun PlayScreen(viewModel: PlayViewModel, onBack: () -> Unit, mode: PlayKind = Pl
                             ui.playing && ui.kind == PlayKind.Trainer -> ui.openingName ?: "Trainer"
                             ui.kind == PlayKind.Bot && ui.playing -> "Bot ${ui.elo}"
                             ui.kind == PlayKind.Bot -> "Bot"
+                            onPage -> ui.detail?.name ?: "Openings"
                             else -> "Openings"
                         },
                         maxLines = 1,
@@ -111,8 +116,12 @@ fun PlayScreen(viewModel: PlayViewModel, onBack: () -> Unit, mode: PlayKind = Pl
                 colors = clubAppBarColors(),
                 navigationIcon = {
                     BackButton {
-                        viewModel.leave()
-                        onBack()
+                        if (onPage) {
+                            viewModel.closeDetail()
+                        } else {
+                            viewModel.leave()
+                            onBack()
+                        }
                     }
                 },
             )
@@ -120,6 +129,7 @@ fun PlayScreen(viewModel: PlayViewModel, onBack: () -> Unit, mode: PlayKind = Pl
     ) { padding ->
         when {
             ui.kind == PlayKind.Bot -> BotGame(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp), onAnalyse)
+            onPage -> OpeningPage(ui, ui.detail!!, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp))
             !ui.playing -> Setup(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp))
             else -> Playing(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp), onAnalyse)
         }
@@ -220,7 +230,7 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(10.dp))
                                 .background(if (selected) Palette.SurfaceHigh else Color.Transparent)
-                                .clickable { viewModel.selectOpening(row.name) }
+                                .clickable { viewModel.openDetail(row.name) }
                                 .padding(horizontal = 12.dp, vertical = 10.dp),
                             horizontalArrangement = Arrangement.spacedBy(12.dp),
                             verticalAlignment = Alignment.CenterVertically,
@@ -262,15 +272,8 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
                     }
                 }
             }
-            ui.openingName?.let { name -> SelectedOpening(name, ui, viewModel::trainLine) }
 
         }
-        Button(
-            onClick = viewModel::start,
-            enabled = ui.kind == PlayKind.Bot || ui.openingName != null,
-            colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent, contentColor = Palette.OnAccent),
-            modifier = Modifier.fillMaxWidth(),
-        ) { Text(if (ui.kind == PlayKind.Bot) "Play" else "Train") }
     }
 }
 
@@ -345,6 +348,142 @@ private fun DepthStrip(run: Int, best: Int?, over: Boolean) {
     }
 }
 
+/** One opening from one side: what you know of it, its lines and its history, with training a tap away. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun OpeningPage(ui: PlayUi, detail: OpeningDetail, viewModel: PlayViewModel, modifier: Modifier) {
+    Column(modifier.padding(bottom = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            item(key = "head") {
+                Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
+                    ChessBoard(fen = detail.fen, modifier = Modifier.size(104.dp).clip(RoundedCornerShape(6.dp)), flipped = !ui.userWhite, coordinates = false)
+                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        if (detail.moves.isNotBlank()) {
+                            Text(detail.moves, color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium)
+                        }
+                        if (!detail.study) {
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                FilterChip(selected = ui.userWhite, onClick = { viewModel.setUserWhite(true) }, label = { Text("White") }, colors = clubChipColors())
+                                FilterChip(selected = !ui.userWhite, onClick = { viewModel.setUserWhite(false) }, label = { Text("Black") }, colors = clubChipColors())
+                            }
+                        }
+                    }
+                }
+            }
+            item(key = "scores") {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        StatTile("${detail.learned}/${detail.total}", "Lines learned", Modifier.weight(1f), highlight = detail.total > 0 && detail.learned == detail.total)
+                        StatTile(detail.due.toString(), "Due for review", Modifier.weight(1f), highlight = detail.due > 0)
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        StatTile(
+                            detail.depthBest?.toString() ?: "–",
+                            detail.depthLast?.let { "Best run past the book · last $it" } ?: "Best run past the book",
+                            Modifier.weight(1f),
+                        )
+                        StatTile(detail.accuracy?.toString() ?: "–", "Your best accuracy", Modifier.weight(1f))
+                        detail.winRate?.let { StatTile("$it%", "Wins on Lichess", Modifier.weight(1f)) }
+                    }
+                }
+            }
+            item(key = "coach") {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FilterChip(selected = ui.explain, onClick = { viewModel.setExplain(!ui.explain) }, label = { Text("Explain") }, colors = clubChipColors())
+                    FilterChip(selected = ui.ideas, onClick = { viewModel.setIdeas(!ui.ideas) }, label = { Text("Ideas") }, colors = clubChipColors())
+                    FilterChip(selected = ui.history, onClick = { viewModel.setHistory(!ui.history) }, label = { Text("History") }, colors = clubChipColors())
+                }
+            }
+            item(key = "mode") {
+                Text(
+                    if (ui.explain) {
+                        "Learning: arrows show the book moves. Nothing is scored."
+                    } else {
+                        "Testing: play from memory. Each line is scheduled for review: 1 day after a clean run, then 3, 7, 14 and 30 days; " +
+                            "tomorrow after a miss. Past the book, moves from the engine's top two build your run."
+                    },
+                    color = Palette.TextMuted,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+            if (detail.choices.isNotEmpty()) {
+                item(key = "choices") {
+                    Row(
+                        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface).padding(start = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(Modifier.weight(1f).padding(vertical = 10.dp)) {
+                            Text("Your moves", color = Palette.Text, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium)
+                            Text(detail.choices.joinToString(" · "), color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
+                        }
+                        TextButton(onClick = viewModel::resetChoices, colors = clubTextButtonColors()) { Text("Use main line", color = Palette.Accent) }
+                    }
+                }
+            }
+            item(key = "lines-head") {
+                Text("Lines", color = Palette.Text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 4.dp))
+            }
+            itemsIndexed(ui.lines, key = { index, _ -> "line-$index" }) { index, line ->
+                LineRow(index, line) { viewModel.trainLine(index) }
+            }
+            detail.story?.let { story ->
+                item(key = "story") {
+                    Column(
+                        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface).padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        Text("History", color = Palette.Gold, style = MaterialTheme.typography.labelMedium)
+                        Text(story, color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+            }
+        }
+        PrimaryAction(
+            if (detail.due > 0) "Review ${detail.due} due" else "Train",
+            Modifier.fillMaxWidth().height(52.dp),
+            onClick = viewModel::start,
+        )
+    }
+}
+
+@Composable
+private fun StatTile(value: String, label: String, modifier: Modifier, highlight: Boolean = false) {
+    Column(
+        modifier.clip(RoundedCornerShape(12.dp)).background(Palette.Surface).padding(horizontal = 12.dp, vertical = 10.dp),
+    ) {
+        Text(value, color = if (highlight) Palette.Gold else Palette.Text, fontWeight = FontWeight.Bold, fontSize = 22.sp)
+        Text(label, color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall, maxLines = 2)
+    }
+}
+
+/** One line of the opening: its variation, its moves past the opening, how you're doing and when it's next due. */
+@Composable
+private fun LineRow(index: Int, line: LineView, onClick: () -> Unit) {
+    val (label, tint) = when (line.status) {
+        LineStatus.Learned -> "Learned" to Palette.Best
+        LineStatus.Due -> "Due" to Palette.Gold
+        LineStatus.Missed -> "Missed" to Palette.Error
+        LineStatus.New -> "New" to Palette.TextMuted
+    }
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(Palette.Surface)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 10.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text("${index + 1}. ${line.name}", color = Palette.Text, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+            Column(horizontalAlignment = Alignment.End) {
+                Text(label, color = tint, style = MaterialTheme.typography.labelMedium)
+                line.next?.let { Text(it, color = Palette.TextMuted, style = MaterialTheme.typography.labelSmall) }
+            }
+        }
+        Text(line.moves, color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
+    }
+}
+
 /** What the coach says: the idea behind the last move, and the opening's history as it comes up. */
 @Composable
 private fun CoachCard(ui: PlayUi) {
@@ -390,106 +529,6 @@ private fun CoachCard(ui: PlayUi) {
             }
         }
     }
-}
-
-/** The chosen opening: where it starts, its moves, and how much of it you know. */
-@Composable
-private fun SelectedOpening(name: String, ui: PlayUi, onTrainLine: (Int) -> Unit) {
-    var showLines by remember(name) { mutableStateOf(false) }
-    if (showLines) {
-        LinesDialog(name, ui.lines, onDismiss = { showLines = false }) { index ->
-            showLines = false
-            onTrainLine(index)
-        }
-    }
-    val line = remember(name) { OpeningBook.line(name)?.san.orEmpty() }
-    val fen = remember(line) { runCatching { ChessLines.replay(line).fens.last() }.getOrDefault(START_FEN) }
-    val row = ui.sections.flatMap { it.rows }.firstOrNull { it.name == name }
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(Palette.SurfaceHigh)
-            .padding(10.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        ChessBoard(fen = fen, modifier = Modifier.size(84.dp), flipped = !ui.userWhite, coordinates = false)
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(name, color = Palette.Accent, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
-            if (line.isNotEmpty()) {
-                Text(numbered(line), color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
-            }
-            val progress = when {
-                row?.learned != null && row.lines != null -> "${row.learned} of ${row.lines} lines learned"
-                row?.due != null -> if (row.due > 0) "${row.due} ${if (row.due == 1) "line" else "lines"} due" else "All lines reviewed"
-                else -> "Not trained yet"
-            }
-            Text(progress, color = Palette.Text, style = MaterialTheme.typography.bodySmall)
-            row?.depthBest?.let { depth ->
-                Text(
-                    "Past the book: best run $depth ${if (depth == 1) "move" else "moves"}",
-                    color = Palette.Gold,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
-            if (ui.lines.isNotEmpty()) {
-                Text(
-                    "See all ${ui.lines.size} lines",
-                    color = Palette.Accent,
-                    fontWeight = FontWeight.SemiBold,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.clickable { showLines = true }.padding(vertical = 4.dp),
-                )
-            }
-        }
-    }
-}
-
-/** Every line of the opening with how you're doing on it. Tapping one drills it now. */
-@Composable
-private fun LinesDialog(name: String, lines: List<LineView>, onDismiss: () -> Unit, onPick: (Int) -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(name) },
-        text = {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                item {
-                    Text(
-                        "Tap a line to drill it now. Lines you play from memory, with Explain off, come back for review: " +
-                            "1 day after a clean run, then 3, 7, 14 and 30 days. A miss brings the line back the next day.",
-                        color = Palette.TextMuted,
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                }
-                itemsIndexed(lines) { index, line ->
-                    val (label, tint) = when (line.status) {
-                        LineStatus.Learned -> "Learned" to Palette.Best
-                        LineStatus.Due -> "Due" to Palette.Gold
-                        LineStatus.Missed -> "Missed" to Palette.Error
-                        LineStatus.New -> "New" to Palette.TextMuted
-                    }
-                    Column(
-                        Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(8.dp))
-                            .clickable { onPick(index) }
-                            .padding(vertical = 8.dp, horizontal = 4.dp),
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text("${index + 1}. ${line.name}", color = Palette.Text, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
-                            Column(horizontalAlignment = Alignment.End) {
-                                Text(label, color = tint, style = MaterialTheme.typography.labelMedium)
-                                line.next?.let { Text(it, color = Palette.TextMuted, style = MaterialTheme.typography.labelSmall) }
-                            }
-                        }
-                        Text(line.moves, color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
-                    }
-                }
-            }
-        },
-        confirmButton = { TextButton(onClick = onDismiss, colors = clubTextButtonColors()) { Text("Close", color = Palette.Accent) } },
-    )
 }
 
 @Composable
