@@ -168,7 +168,7 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
                 if (ui.explain) {
                     "Learning: arrows show the book moves. Turn off Explain to test yourself, one line at a time."
                 } else {
-                    "Testing: play each line from memory. Clean lines come back later, missed ones tomorrow."
+                    "Testing: play each line from memory. Each one is scheduled for review: further away after a clean run, tomorrow after a miss."
                 },
                 color = Palette.TextMuted,
                 style = MaterialTheme.typography.bodySmall,
@@ -407,7 +407,12 @@ private fun LinesDialog(name: String, lines: List<LineView>, onDismiss: () -> Un
         text = {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 item {
-                    Text("Tap a line to drill it now.", color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
+                    Text(
+                        "Tap a line to drill it now. Lines you play from memory, with Explain off, come back for review: " +
+                            "1 day after a clean run, then 3, 7, 14 and 30 days. A miss brings the line back the next day.",
+                        color = Palette.TextMuted,
+                        style = MaterialTheme.typography.bodySmall,
+                    )
                 }
                 itemsIndexed(lines) { index, line ->
                     val (label, tint) = when (line.status) {
@@ -425,7 +430,10 @@ private fun LinesDialog(name: String, lines: List<LineView>, onDismiss: () -> Un
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Text("${index + 1}. ${line.name}", color = Palette.Text, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
-                            Text(label, color = tint, style = MaterialTheme.typography.labelMedium)
+                            Column(horizontalAlignment = Alignment.End) {
+                                Text(label, color = tint, style = MaterialTheme.typography.labelMedium)
+                                line.next?.let { Text(it, color = Palette.TextMuted, style = MaterialTheme.typography.labelSmall) }
+                            }
                         }
                         Text(line.moves, color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
                     }

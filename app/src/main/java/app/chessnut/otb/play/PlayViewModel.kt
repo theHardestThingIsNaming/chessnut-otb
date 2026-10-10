@@ -74,7 +74,13 @@ data class OpeningSection(val title: String, val rows: List<OpeningRow>)
 enum class LineStatus { New, Learned, Due, Missed }
 
 /** One line of the chosen opening, for the line list: its variation name, its moves past the opening, and how you are doing with it. */
-data class LineView(val name: String, val moves: String, val status: LineStatus)
+data class LineView(
+    val name: String,
+    val moves: String,
+    val status: LineStatus,
+    /** When the line is next due for review, such as "Review in 3 days"; null for a line never played from memory. */
+    val next: String? = null,
+)
 
 data class PlayUi(
     val kind: PlayKind = PlayKind.Bot,
@@ -434,7 +440,15 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                     ?.removePrefix(name)
                     ?.trim(' ', ',', ':')
                     ?.ifBlank { null }
-                LineView(variation ?: "Main line", numberedFrom(line, shared), status)
+                val next = review?.let {
+                    val days = Drill.days(it, now)
+                    when {
+                        it.dueAt <= now -> "Review now"
+                        days <= 1 -> "Review tomorrow"
+                        else -> "Review in $days days"
+                    }
+                }
+                LineView(variation ?: "Main line", numberedFrom(line, shared), status, next)
             }
             state.update { if (it.openingName == name && it.userWhite == white) it.copy(lines = views) else it }
         }
@@ -1093,9 +1107,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 val days = Drill.days(review, now)
                 when {
                     clean -> "Line learned: $learned of ${drillLines.size}. Next review in $days ${if (days == 1) "day" else "days"}."
-                    bookToo -> "That's book too, but you've left the main line, which continues $expected. It comes back tomorrow."
-                    expected != null -> "You've left the main line, which continues $expected. It comes back tomorrow."
-                    else -> "Not quite clean, so this line comes back tomorrow."
+                    bookToo -> "That's book too, but you've left the main line, which continues $expected. You'll review this line again tomorrow."
+                    expected != null -> "You've left the main line, which continues $expected. You'll review this line again tomorrow."
+                    else -> "Not quite clean, so you'll review this line again tomorrow."
                 }
             }
             else -> {
@@ -1103,8 +1117,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 val days = Drill.days(review, now)
                 when {
                     clean -> "Line complete. Next review in $days ${if (days == 1) "day" else "days"}."
-                    expected != null -> "You've left your repertoire, which continues $expected. It comes back tomorrow."
-                    else -> "You strayed from your repertoire, so this line comes back tomorrow."
+                    expected != null -> "You've left your repertoire, which continues $expected. You'll review this line again tomorrow."
+                    else -> "You strayed from your repertoire, so you'll review this line again tomorrow."
                 }
             }
         }
