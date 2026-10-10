@@ -379,7 +379,7 @@ private fun GameRow(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             BoardFrame(Modifier.size(68.dp), inset = 2.dp) {
-                ChessBoard(fen = fen)
+                ChessBoard(fen = fen, coordinates = false)
             }
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(game.title, style = MaterialTheme.typography.titleMedium, color = Palette.Text)

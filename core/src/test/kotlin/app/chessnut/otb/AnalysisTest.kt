@@ -164,6 +164,14 @@ class AnalysisTest {
     }
 
     @Test
+    fun capturedListsTakenPiecesCheapestFirst() {
+        assertEquals("" to "", Material.captured(Board().fen))
+        val (byWhite, byBlack) = Material.captured("r3k3/pp6/8/8/8/8/PPPPPPP1/RNB1KBNR w - - 0 1")
+        assertEquals("ppppppnnbbrq", byWhite)
+        assertEquals("PQ", byBlack)
+    }
+
+    @Test
     fun liveAnalysisStopsTheSearchWhenCancelled() = runTest {
         val process = FakeEngineProcess()
         val engine = UciEngine(process)

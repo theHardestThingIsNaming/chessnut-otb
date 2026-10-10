@@ -19,7 +19,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -58,10 +60,10 @@ import app.chessnut.otb.ui.ChessBoard
 import app.chessnut.otb.ui.FlagMark
 import app.chessnut.otb.ui.HalfMark
 import app.chessnut.otb.ui.Palette
+import app.chessnut.otb.ui.PlayerBar
 import app.chessnut.otb.ui.clubAppBarColors
 import app.chessnut.otb.ui.clubChipColors
 import app.chessnut.otb.ui.clubTextButtonColors
-import app.chessnut.otb.ui.formatClock
 import app.chessnut.otb.ui.squareIndex
 import app.chessnut.otb.ui.KeepScreenOn
 
@@ -215,7 +217,7 @@ private fun Table(ui: OnlineUi, viewModel: OnlineViewModel, modifier: Modifier, 
     val topRunning = if (ui.userWhite) ui.blackRunning else ui.whiteRunning
     val bottomRunning = if (ui.userWhite) ui.whiteRunning else ui.blackRunning
     val opponentLight = !ui.userWhite
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(
                 ui.status,
@@ -229,6 +231,7 @@ private fun Table(ui: OnlineUi, viewModel: OnlineViewModel, modifier: Modifier, 
                 CircularProgressIndicator(Modifier.size(22.dp), color = Palette.Gold, strokeWidth = 2.dp)
             }
         }
+        PlayerBar(ui.opponent, opponentLight, ui.fen, topMillis, topRunning)
         BoardFrame(Modifier.fillMaxWidth().aspectRatio(1f)) {
             ChessBoard(
                 fen = ui.fen,
@@ -243,10 +246,7 @@ private fun Table(ui: OnlineUi, viewModel: OnlineViewModel, modifier: Modifier, 
                 onSquare = viewModel::tap,
             )
         }
-        Row(Modifier.fillMaxWidth().height(64.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OnlineClock(ui.opponent, topMillis, topRunning, opponentLight, Modifier.weight(1f).fillMaxHeight())
-            OnlineClock("You", bottomMillis, bottomRunning, ui.userWhite, Modifier.weight(1f).fillMaxHeight())
-        }
+        PlayerBar(ui.username ?: "You", ui.userWhite, ui.fen, bottomMillis, bottomRunning)
         if (ui.finished == null) {
             val youLight = ui.userWhite
             Row(Modifier.fillMaxWidth().height(48.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -301,28 +301,6 @@ private fun Table(ui: OnlineUi, viewModel: OnlineViewModel, modifier: Modifier, 
                 ) { Text("Open on Lichess") }
             }
         }
-    }
-}
-
-@Composable
-private fun OnlineClock(name: String, millis: Long, running: Boolean, light: Boolean, modifier: Modifier) {
-    val background = if (light) Palette.Paper else Color(0xFF1A1610)
-    val clockColor = when {
-        running -> if (light) Color(0xFF8A5A12) else Palette.Gold
-        light -> Palette.Ink
-        else -> Palette.Text
-    }
-    Column(
-        modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(background)
-            .border(2.dp, if (running) Palette.Gold else Palette.GoldDim, RoundedCornerShape(12.dp))
-            .padding(horizontal = 8.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Text(name, color = if (light) Color(0xFF5C5348) else Palette.TextMuted, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-        Text(formatClock(millis), fontFamily = FontFamily.Monospace, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = clockColor, maxLines = 1)
     }
 }
 

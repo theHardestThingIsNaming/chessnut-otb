@@ -28,6 +28,10 @@ import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 
 internal class PieceStroke(
@@ -108,10 +112,12 @@ fun ChessBoard(
     targets: Set<Int> = emptySet(),
     arrows: List<Arrow> = emptyList(),
     highlights: Set<Int> = emptySet(),
+    coordinates: Boolean = true,
     onSquare: ((Int) -> Unit)? = null,
     onDrag: ((Int, Int) -> Unit)? = null,
 ) {
     val squares = squaresOf(fen)
+    val measurer = rememberTextMeasurer()
     var dragFrom by remember { mutableStateOf<Int?>(null) }
     var dragAt by remember { mutableStateOf<Offset?>(null) }
     val fenNow = rememberUpdatedState(fen)
@@ -156,7 +162,7 @@ fun ChessBoard(
         }
         else -> Modifier
     }
-    Canvas(modifier.fillMaxWidth().aspectRatio(1f).clip(RoundedCornerShape(4.dp)).then(gesture)) {
+    Canvas(modifier.fillMaxWidth().aspectRatio(1f).then(gesture)) {
         val cell = size.width / 8f
         val held = dragFrom
         val finger = dragAt
@@ -173,6 +179,27 @@ fun ChessBoard(
             }
             if (index == selected) drawRect(Palette.Selected, topLeft, Size(cell, cell))
             if (index in highlights) drawRect(Palette.Gambit, topLeft, Size(cell, cell))
+            if (coordinates) {
+                // Labels sit inside the edge squares, in the other square colour, as on Chess.com.
+                val style = TextStyle(
+                    color = if (light) Palette.DarkSquare else Palette.LightSquare,
+                    fontSize = (cell * 0.22f).toSp(),
+                    fontWeight = FontWeight.Bold,
+                )
+                if (column == 0) {
+                    drawText(measurer, "${rank + 1}", topLeft + Offset(cell * 0.05f, cell * 0.02f), style)
+                }
+                if (row == 7) {
+                    val label = measurer.measure("${'a' + file}", style)
+                    drawText(
+                        label,
+                        topLeft = topLeft + Offset(
+                            cell * 0.95f - label.size.width,
+                            cell * 0.98f - label.size.height,
+                        ),
+                    )
+                }
+            }
             val piece = squares[index]
             if (piece != '.' && index != held) drawPiece(piece, topLeft, cell)
             if (index in targets) {
@@ -193,14 +220,35 @@ fun ChessBoard(
     }
 }
 
-/** One piece, on a light square, for material counts and other small marks. */
+/** One piece, on a light square unless [background] is null, for material counts and other small marks. */
 @Composable
-fun PieceIcon(piece: Char, modifier: Modifier = Modifier) {
+fun PieceIcon(piece: Char, modifier: Modifier = Modifier, background: Color? = Palette.LightSquare) {
     Canvas(modifier.clip(RoundedCornerShape(2.dp))) {
-        drawRect(Palette.LightSquare)
+        background?.let { drawRect(it) }
         val inset = size.minDimension * 0.08f
         drawPiece(piece, Offset(inset, inset), size.minDimension - inset * 2)
     }
+}
+
+/** A row of taken pieces, with repeats of one kind tucked behind each other. */
+@Composable
+fun CapturedPieces(pieces: String, modifier: Modifier = Modifier) {
+    Canvas(modifier) {
+        val cell = size.height
+        var x = 0f
+        pieces.forEachIndexed { i, piece ->
+            if (i > 0) x += if (pieces[i - 1] == piece) cell * 0.35f else cell * 0.8f
+            drawPiece(piece, Offset(x, 0f), cell)
+        }
+    }
+}
+
+/** How wide [CapturedPieces] needs to be for [pieces], in piece heights. */
+fun capturedWidth(pieces: String): Float {
+    if (pieces.isEmpty()) return 0f
+    var width = 1f
+    for (i in 1 until pieces.length) width += if (pieces[i - 1] == pieces[i]) 0.35f else 0.8f
+    return width
 }
 
 private fun squareAt(offset: Offset, width: Float, flipped: Boolean): Int {

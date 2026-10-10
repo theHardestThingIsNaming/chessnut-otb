@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -83,19 +82,8 @@ fun Modifier.clubPanel(): Modifier {
 }
 
 @Composable
-fun BoardFrame(modifier: Modifier = Modifier, inset: Dp = 5.dp, content: @Composable () -> Unit) {
-    val outer = RoundedCornerShape(12.dp)
-    Box(
-        modifier
-            .clip(outer)
-            .background(
-                Brush.linearGradient(
-                    listOf(Palette.BezelDark, Palette.BezelMid, Palette.BezelLight, Palette.BezelMid, Palette.BezelDark),
-                ),
-            )
-            .padding(inset)
-            .clip(RoundedCornerShape(4.dp)),
-    ) { content() }
+fun BoardFrame(modifier: Modifier = Modifier, inset: Dp = 0.dp, content: @Composable () -> Unit) {
+    Box(modifier.padding(inset)) { content() }
 }
 
 @Composable

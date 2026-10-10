@@ -29,4 +29,27 @@ object Material {
         }
         return MaterialBalance(points, white.toString(), black.toString())
     }
+
+    private val start = mapOf('P' to 8, 'N' to 2, 'B' to 2, 'R' to 2, 'Q' to 1)
+
+    /**
+     * The pieces each side has taken off the board in [fen], cheapest first:
+     * the first string is what White captured (black letters), the second what
+     * Black captured (white letters). Promotions can leave a count above the
+     * starting one; those simply count as nothing captured.
+     */
+    fun captured(fen: String): Pair<String, String> {
+        val counts = mutableMapOf<Char, Int>()
+        for (symbol in fen.substringBefore(' ')) {
+            if (symbol.isLetter()) counts[symbol] = (counts[symbol] ?: 0) + 1
+        }
+        val byWhite = StringBuilder()
+        val byBlack = StringBuilder()
+        for (type in order.reversed()) {
+            val full = start.getValue(type)
+            repeat((full - (counts[type.lowercaseChar()] ?: 0)).coerceAtLeast(0)) { byWhite.append(type.lowercaseChar()) }
+            repeat((full - (counts[type] ?: 0)).coerceAtLeast(0)) { byBlack.append(type) }
+        }
+        return byWhite.toString() to byBlack.toString()
+    }
 }

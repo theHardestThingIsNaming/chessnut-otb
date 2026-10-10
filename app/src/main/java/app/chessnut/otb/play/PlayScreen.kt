@@ -3,6 +3,8 @@
 package app.chessnut.otb.play
 
 import app.chessnut.otb.openings.OpeningCatalog
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -68,11 +70,11 @@ import app.chessnut.otb.ui.ClockMark
 import app.chessnut.otb.ui.FlagMark
 import app.chessnut.otb.ui.HalfMark
 import app.chessnut.otb.ui.Palette
+import app.chessnut.otb.ui.PlayerBar
 import app.chessnut.otb.ui.clubAppBarColors
 import app.chessnut.otb.ui.clubChipColors
 import app.chessnut.otb.ui.clubOutlinedButtonColors
 import app.chessnut.otb.ui.clubTextButtonColors
-import app.chessnut.otb.ui.formatClock
 import app.chessnut.otb.ui.squareIndex
 import app.chessnut.otb.ui.KeepScreenOn
 
@@ -395,7 +397,7 @@ private fun BotGame(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
     val bottomRunning = if (opponentWhite) ui.blackRunning else ui.whiteRunning
     val topFlagged = if (opponentWhite) ui.flaggedWhite else ui.flaggedBlack
     val bottomFlagged = if (opponentWhite) ui.flaggedBlack else ui.flaggedWhite
-    Column(modifier.padding(bottom = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(modifier.verticalScroll(rememberScrollState()).padding(bottom = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(
                 if (ui.playing) ui.status else if (ui.userWhite) "You have White · ${ui.elo}" else "You have Black · ${ui.elo}",
@@ -430,6 +432,7 @@ private fun BotGame(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                 }
             }
         }
+        PlayerBar("Bot ${ui.elo}", opponentWhite, ui.fen, topMillis, topRunning, flagged = topFlagged)
         BoardFrame(Modifier.fillMaxWidth().aspectRatio(1f)) {
             ChessBoard(
                 fen = ui.fen,
@@ -447,10 +450,7 @@ private fun BotGame(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                 onSquare = viewModel::tap,
             )
         }
-        Row(Modifier.fillMaxWidth().height(64.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            SideClock("Bot ${ui.elo}", topMillis, topRunning, topFlagged, opponentWhite, Modifier.weight(1f).fillMaxHeight())
-            SideClock("You", bottomMillis, bottomRunning, bottomFlagged, ui.userWhite, Modifier.weight(1f).fillMaxHeight())
-        }
+        PlayerBar("You", ui.userWhite, ui.fen, bottomMillis, bottomRunning, flagged = bottomFlagged)
         if (ui.playing && ui.finished == null) {
             val youLight = ui.userWhite
             Row(Modifier.fillMaxWidth().height(48.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -501,47 +501,6 @@ private fun BotGame(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                 ) { Text("Analyse", color = Palette.Gold) }
             }
         }
-    }
-}
-
-@Composable
-private fun SideClock(name: String, millis: Long, running: Boolean, flagged: Boolean, light: Boolean, modifier: Modifier) {
-    val background = if (light) Palette.Paper else Color(0xFF1A1610)
-    val clockColor = when {
-        flagged -> Palette.Error
-        running -> if (light) Color(0xFF8A5A12) else Palette.Gold
-        light -> Palette.Ink
-        else -> Palette.Text
-    }
-    val border = when {
-        flagged -> Palette.Error
-        running -> Palette.Gold
-        else -> Palette.GoldDim
-    }
-    Column(
-        modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(background)
-            .border(2.dp, border, RoundedCornerShape(12.dp))
-            .padding(horizontal = 8.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Text(
-            name,
-            color = if (light) Color(0xFF5C5348) else Palette.TextMuted,
-            fontSize = 11.sp,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-        Text(
-            formatClock(millis),
-            fontFamily = FontFamily.Monospace,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = clockColor,
-            maxLines = 1,
-        )
     }
 }
 
