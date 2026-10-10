@@ -73,6 +73,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.size
 import app.chessnut.otb.ui.BackButton
 import androidx.compose.ui.platform.LocalDensity
+import app.chessnut.otb.ui.PositionDialog
+import app.chessnut.otb.ui.MoreMark
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
 
 private val bluetoothPermissions: Array<String> =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -207,10 +213,26 @@ fun BoardLinkSection(model: BoardViewModel, modifier: Modifier = Modifier, compa
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BoardScreen(model: BoardViewModel, onBack: () -> Unit, onAnalyze: (String) -> Unit = {}) {
+fun BoardScreen(
+    model: BoardViewModel,
+    onBack: () -> Unit,
+    onAnalyze: (String) -> Unit = {},
+    onPositionAnalyse: (fen: String) -> Unit = {},
+    onPositionPlay: (fen: String, userWhite: Boolean) -> Unit = { _, _ -> },
+) {
     KeepScreenOn()
     val ui by model.ui.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    var position by remember { mutableStateOf<String?>(null) }
+    var menu by remember { mutableStateOf(false) }
+    position?.let { placement ->
+        PositionDialog(
+            placement,
+            onDismiss = { position = null },
+            onAnalyse = { position = null; onPositionAnalyse(it) },
+            onPlay = { fen, white -> position = null; onPositionPlay(fen, white) },
+        )
+    }
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -221,10 +243,19 @@ fun BoardScreen(model: BoardViewModel, onBack: () -> Unit, onAnalyze: (String) -
                 colors = clubAppBarColors(),
                 navigationIcon = { BackButton(onBack) },
                 actions = {
-                    TextButton(onClick = {
-                        val share = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, model.logText())
-                        context.startActivity(Intent.createChooser(share, "Share board log"))
-                    }) { Text("Share log", color = Palette.Accent) }
+                    ui.livePlacement?.takeIf { ui.connected != null }?.let { placement ->
+                        TextButton(onClick = { position = placement }, colors = clubTextButtonColors()) { Text("From here", color = Palette.Accent) }
+                    }
+                    Box {
+                        IconButton(onClick = { menu = true }, modifier = Modifier.semantics { contentDescription = "More" }) { MoreMark(Palette.Text) }
+                        DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+                            DropdownMenuItem(text = { Text("Share connection log") }, onClick = {
+                                menu = false
+                                val share = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, model.logText())
+                                context.startActivity(Intent.createChooser(share, "Share board log"))
+                            })
+                        }
+                    }
                 },
             )
         },

@@ -624,9 +624,22 @@ private fun BotGame(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                 }
             }
         }
-        PlayerBar("Bot ${ui.elo}", opponentWhite, ui.fen, topMillis, topRunning, flagged = topFlagged)
+        if (!ui.playing && ui.startFen != null) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    "From the set-up position · ${if (ui.startFen.split(' ').getOrNull(1) == "b") "Black" else "White"} to move",
+                    color = Palette.Gold,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(1f),
+                )
+                TextButton(onClick = viewModel::clearStartPosition, colors = clubTextButtonColors()) { Text("Usual start", color = Palette.TextMuted) }
+            }
+        }
+        // Before the game starts, show where it will begin.
+        val shown = if (!ui.playing) ui.startFen ?: ui.fen else ui.fen
+        PlayerBar("Bot ${ui.elo}", opponentWhite, shown, topMillis, topRunning, flagged = topFlagged)
         ChessBoard(
-            fen = ui.fen,
+            fen = shown,
             flipped = !ui.userWhite,
             lastUci = ui.lastUci,
             selected = ui.selected,
@@ -638,7 +651,7 @@ private fun BotGame(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
             highlights = moveSquares(ui.hintUci) + moveSquares(ui.promptUci),
             onSquare = viewModel::tap,
         )
-        PlayerBar("You", ui.userWhite, ui.fen, bottomMillis, bottomRunning, flagged = bottomFlagged)
+        PlayerBar("You", ui.userWhite, shown, bottomMillis, bottomRunning, flagged = bottomFlagged)
         if (ui.playing && ui.finished == null) {
             Row(Modifier.fillMaxWidth().height(48.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 GameAction("Draw", ui.userWhite, viewModel::offerDraw, Modifier.weight(1f).fillMaxHeight()) {

@@ -53,10 +53,10 @@ class PlayClock(control: TimeControl = TimeControl.Default) {
         control = kept
     }
 
-    fun begin(now: Long) {
+    fun begin(now: Long, whiteFirst: Boolean = true) {
         whiteMillis = control.initialMillis
         blackMillis = control.initialMillis
-        whiteToMove = true
+        whiteToMove = whiteFirst
         started = true
         ended = false
         running = true

@@ -33,6 +33,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import app.chessnut.otb.chess.MoveInput
+import app.chessnut.otb.games.GameSource
 
 /** A move played on the board while exploring away from the game. */
 data class SideMove(val san: String, val uci: String, val fen: String)
@@ -50,8 +51,13 @@ enum class ArrowKind(val key: String, val onByDefault: Boolean) {
 /** The move the opponent would play from [fen] if the side to move passed. */
 data class Threat(val fen: String, val uci: String)
 
+/** A review id for analysing a bare position, set up on the board or reached in a game, rather than a saved game. */
+const val POSITION_PREFIX = "fen:"
+
 data class ReviewState(
     val game: SavedGame? = null,
+    /** Analysing a bare position: no saved game, no stored analysis. */
+    val position: Boolean = false,
     val fens: List<String> = emptyList(),
     val uci: List<String> = emptyList(),
     val analysis: GameAnalysis? = null,
@@ -85,6 +91,7 @@ data class ReviewState(
 
 class ReviewViewModel(application: Application, private val gameId: String) : AndroidViewModel(application) {
     val app = application as OtbApp
+    private val startFen: String? = gameId.takeIf { it.startsWith(POSITION_PREFIX) }?.removePrefix(POSITION_PREFIX)
     private val state = MutableStateFlow(ReviewState())
     val ui: StateFlow<ReviewState> = state.asStateFlow()
 
@@ -118,7 +125,7 @@ class ReviewViewModel(application: Application, private val gameId: String) : An
         val arrows = ArrowKind.entries.filter { app.settings.getBoolean(it.key, it.onByDefault) }.toSet()
         state.update { it.copy(arrows = arrows) }
         load()
-        viewModelScope.launch {
+        if (startFen == null) viewModelScope.launch {
             combine(app.analysisProgress, app.analysisVersion) { progress, _ -> progress[gameId] }.collect { progress ->
                 val analysis = if (progress == null) withContext(Dispatchers.IO) { app.store.loadAnalysis(gameId) } else null
                 state.update { s ->
@@ -131,6 +138,23 @@ class ReviewViewModel(application: Application, private val gameId: String) : An
     }
 
     private fun load() {
+        startFen?.let { fen ->
+            // A stand-in game so the screen has names to show; it is never saved.
+            val position = SavedGame(
+                id = "position",
+                createdAt = 0,
+                source = GameSource.Pgn,
+                sanMoves = emptyList(),
+                isComplete = true,
+                stopReason = null,
+                white = "White",
+                black = "Black",
+                label = "Position",
+            )
+            state.update { it.copy(game = position, position = true, fens = listOf(fen), uci = emptyList(), flipped = fen.split(' ').getOrNull(1) == "b") }
+            refreshEngine()
+            return
+        }
         val game = app.store.load(gameId) ?: return
         val replay = ChessLines.replay(game.sanMoves)
         val analysis = app.store.loadAnalysis(gameId)

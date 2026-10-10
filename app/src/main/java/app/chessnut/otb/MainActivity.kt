@@ -29,6 +29,7 @@ import app.chessnut.otb.review.ReviewScreen
 import app.chessnut.otb.review.ReviewViewModel
 import app.chessnut.otb.ui.ClubAtmosphere
 import app.chessnut.otb.ui.ClubGamesTheme
+import app.chessnut.otb.review.POSITION_PREFIX
 
 class MainActivity : ComponentActivity() {
         private var sharedText by mutableStateOf<String?>(null)
@@ -55,6 +56,16 @@ class MainActivity : ComponentActivity() {
                     if (oauthRedirect != null) screen = "online"
                 }
                 val board = viewModel<BoardViewModel>()
+                val play = viewModel<PlayViewModel>()
+                val analysePosition = { fen: String, from: String ->
+                    afterReview = from
+                    screen = "review:$POSITION_PREFIX$fen"
+                }
+                val playPosition = { fen: String, white: Boolean ->
+                    play.setStartPosition(fen, white)
+                    playMode = "bot"
+                    screen = "play"
+                }
 
                 LaunchedEffect(sharedText) {
                     val text = sharedText ?: return@LaunchedEffect
@@ -81,9 +92,11 @@ class MainActivity : ComponentActivity() {
                             afterReview = "board"
                             screen = "review:$id"
                         },
+                        onPositionAnalyse = { analysePosition(it, "board") },
+                        onPositionPlay = playPosition,
                     )
                     screen == "play" -> PlayScreen(
-                        viewModel<PlayViewModel>(),
+                        play,
                         onBack = { screen = "games" },
                         mode = if (playMode == "trainer") PlayKind.Trainer else PlayKind.Bot,
                         onAnalyse = { id ->
@@ -120,6 +133,7 @@ class MainActivity : ComponentActivity() {
                         ReviewScreen(
                             viewModel<ReviewViewModel>(key = id, factory = ReviewViewModel.Factory(id)),
                             onPractise = { screen = "mistakes:$id" },
+                            onPlayFrom = playPosition,
                             onBack = {
                                 screen = afterReview
                                 afterReview = "games"
@@ -139,6 +153,8 @@ class MainActivity : ComponentActivity() {
                         onTrainer = { playMode = "trainer"; screen = "play" },
                         onAbout = { screen = "about" },
                         onMistakes = { screen = "mistakes" },
+                        onPositionAnalyse = { analysePosition(it, "games") },
+                        onPositionPlay = playPosition,
                         onImport = { text ->
                             when (val result = importPgn(app, text)) {
                                 is Imported.Game -> {

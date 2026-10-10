@@ -94,7 +94,12 @@ import androidx.compose.foundation.layout.Spacer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReviewScreen(model: ReviewViewModel, onBack: () -> Unit, onPractise: () -> Unit = {}) {
+fun ReviewScreen(
+    model: ReviewViewModel,
+    onBack: () -> Unit,
+    onPractise: () -> Unit = {},
+    onPlayFrom: (fen: String, userWhite: Boolean) -> Unit = { _, _ -> },
+) {
     KeepScreenOn()
     val ui by model.ui.collectAsStateWithLifecycle()
     val game = ui.game
@@ -115,7 +120,8 @@ fun ReviewScreen(model: ReviewViewModel, onBack: () -> Unit, onPractise: () -> U
         containerColor = Color.Transparent,
         contentColor = Palette.Text,
         topBar = {
-            val headline = OpeningBook.view(shownSan(ui)).name?.let(::shortOpening)
+            // Moves from a set-up position don't start from move one, so the opening book can't name them.
+            val headline = if (ui.position) "Position" else OpeningBook.view(shownSan(ui)).name?.let(::shortOpening)
                 ?: game?.title?.let(::shortOpening)
                 ?: "Game"
             TopAppBar(
@@ -125,7 +131,7 @@ fun ReviewScreen(model: ReviewViewModel, onBack: () -> Unit, onPractise: () -> U
                     BackButton(onBack)
                 },
                 actions = {
-                    if (game != null) {
+                    if (game != null && !ui.position) {
                         IconButton(
                             onClick = { GameShare.link(context, model.app, game, scope) },
                             modifier = Modifier.semantics { contentDescription = "Share game" },
@@ -148,7 +154,13 @@ fun ReviewScreen(model: ReviewViewModel, onBack: () -> Unit, onPractise: () -> U
                         ArrowMenuItem("Threat", Palette.ArrowThreat, ArrowKind.Threat in ui.arrows) {
                             model.toggleArrow(ArrowKind.Threat)
                         }
-                        if (lichessLink != null) {
+                        DropdownMenuItem(text = { Text("Play the bot from here") }, onClick = {
+                            menu = false
+                            onPlayFrom(ui.fen, ui.fen.split(' ').getOrNull(1) != "b")
+                        })
+                        if (ui.position) {
+                            // A bare position has no saved game behind it.
+                        } else if (lichessLink != null) {
                             DropdownMenuItem(text = { Text("Open on Lichess") }, onClick = {
                                 menu = false
                                 context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(lichessLink)))
@@ -159,13 +171,13 @@ fun ReviewScreen(model: ReviewViewModel, onBack: () -> Unit, onPractise: () -> U
                                 model.uploadToLichess { Toast.makeText(context, it, Toast.LENGTH_SHORT).show() }
                             })
                         }
-                        if (game != null) {
+                        if (game != null && !ui.position) {
                             DropdownMenuItem(text = { Text("Share PGN") }, onClick = { menu = false; GameShare.pgn(context, game) })
+                            DropdownMenuItem(text = { Text("Practise this game's mistakes") }, onClick = { menu = false; onPractise() })
+                            DropdownMenuItem(text = { Text("Edit game info") }, onClick = { menu = false; editing = true })
+                            DropdownMenuItem(text = { Text("Analyse again") }, onClick = { menu = false; model.reanalyse() })
+                            DropdownMenuItem(text = { Text("Delete game") }, onClick = { menu = false; confirmDelete = true })
                         }
-                        DropdownMenuItem(text = { Text("Practise this game's mistakes") }, onClick = { menu = false; onPractise() })
-                        DropdownMenuItem(text = { Text("Edit game info") }, onClick = { menu = false; editing = true })
-                        DropdownMenuItem(text = { Text("Analyse again") }, onClick = { menu = false; model.reanalyse() })
-                        DropdownMenuItem(text = { Text("Delete game") }, onClick = { menu = false; confirmDelete = true })
                         }
                     }
                 },
@@ -180,7 +192,7 @@ fun ReviewScreen(model: ReviewViewModel, onBack: () -> Unit, onPractise: () -> U
             Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(horizontal = 12.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            AccuracyRow(ui, onAnalyse = model::reanalyse)
+            if (!ui.position) AccuracyRow(ui, onAnalyse = model::reanalyse)
             Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 ReviewPlayer(game.black, white = false, ui, Modifier, show = !ui.flipped)
                 ReviewPlayer(game.white, white = true, ui, Modifier, show = ui.flipped)
@@ -201,7 +213,7 @@ fun ReviewScreen(model: ReviewViewModel, onBack: () -> Unit, onPractise: () -> U
             }
             NavigationRow(ui, model)
             EnginePanel(ui, onPlay = model::play)
-            MoveList(ui, onSelect = model::goTo)
+            if (!ui.position) MoveList(ui, onSelect = model::goTo)
         }
     }
 
@@ -241,6 +253,7 @@ private fun shownSan(ui: ReviewState): List<String> {
 }
 
 private fun gambitHighlights(ui: ReviewState): Set<Int> {
+    if (ui.position) return emptySet()
     val line = shownSan(ui)
     return OpeningBook.view(line).gambits.mapNotNull { gambit ->
         val uci = runCatching { ChessLines.replay(line + gambit.san.last()).uci.last() }.getOrNull() ?: return@mapNotNull null
@@ -474,7 +487,9 @@ private fun NavigationRow(ui: ReviewState, model: ReviewViewModel) {
                     modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.bodySmall,
                 )
-                TextButton(onClick = model::backToGame, colors = clubTextButtonColors()) { Text("Back to game", color = Palette.Accent) }
+                TextButton(onClick = model::backToGame, colors = clubTextButtonColors()) {
+                    Text(if (ui.position) "Back to start" else "Back to game", color = Palette.Accent)
+                }
             }
         }
     }

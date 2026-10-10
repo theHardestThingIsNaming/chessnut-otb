@@ -51,6 +51,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import app.chessnut.otb.chess.MoveInput
 import app.chessnut.otb.repertoire.OpeningTree
+import app.chessnut.otb.review.POSITION_PREFIX
 
 enum class PlayKind { Bot, Trainer }
 
@@ -146,6 +147,8 @@ data class PlayUi(
     val learnedTotal: Int = 0,
     val openingsStarted: Int = 0,
     val dueTotal: Int = 0,
+    /** The bot game starts from this position instead of the usual start, such as one set up on the board. */
+    val startFen: String? = null,
     /** A review session is running through due lines from several openings. */
     val reviewing: Boolean = false,
     /** No review lines are left after this one. */
@@ -215,6 +218,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private val treeCache = mutableMapOf<Pair<String, Boolean>, List<List<String>>>()
     private var lineLabelShown: String? = null
     private var lineNote: String? = null
+    /** Where a bot game starts, when not from the usual position. */
+    private var startFen: String? = null
     private var ideaMove: String? = null
     /** The ply where you left the line, to take back to. */
     private var retryAt: Int? = null
@@ -256,6 +261,23 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         if (playing) return
         state.update { it.copy(kind = next) }
     }
+
+    /** Plays the bot from [fen], with you on the side [userWhite]. Cleared when you leave. */
+    fun setStartPosition(fen: String, userWhite: Boolean) {
+        if (playing) leave()
+        startFen = fen
+        state.update { it.copy(kind = PlayKind.Bot, startFen = fen, userWhite = userWhite) }
+    }
+
+    /** Back to games from the usual starting position. */
+    fun clearStartPosition() {
+        if (playing) return
+        startFen = null
+        state.update { it.copy(startFen = null) }
+    }
+
+    /** Where this game began. */
+    private fun origin(): String = if (kind == PlayKind.Bot) startFen ?: Board().fen else Board().fen
 
     fun setUserWhite(white: Boolean) {
         if (playing) return
@@ -493,7 +515,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         sanMoves.clear()
         uciMoves.clear()
         glance = null
-        fen = Board().fen
+        fen = origin()
         playing = true
         physical = app.boardSession != null
         hint = null
@@ -600,6 +622,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     /** Saves the game played so far and queues the same review analysis as a club game. */
     fun analyse(): String? {
         if (sanMoves.isEmpty()) return null
+        // A game from a set-up position can't be saved as a normal game, so analyse where it stands now.
+        if (kind == PlayKind.Bot && startFen != null) return POSITION_PREFIX + fen
         clockJob?.cancel()
         if (kind == PlayKind.Bot) clock.freeze(System.currentTimeMillis())
         job?.cancel()
@@ -690,6 +714,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
 
     fun leave() {
         endReview()
+        startFen = null
+        state.update { it.copy(startFen = null) }
         job?.cancel()
         job = null
         clockJob?.cancel()
@@ -916,7 +942,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private fun kickoff() {
         awaitingBoard = false
         if (kind == PlayKind.Bot) {
-            clock.begin(System.currentTimeMillis())
+            clock.begin(System.currentTimeMillis(), whiteFirst = whiteToMove(fen))
             watchClock()
             status = if (userWhite) "You have White · $elo" else "You have Black · $elo"
         } else if (kind == PlayKind.Trainer) {
@@ -1510,7 +1536,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun shownPosition(): Pair<String, String?> {
         val at = glance ?: return fen to lastUci
-        var position = Board().fen
+        var position = origin()
         var last: String? = null
         for (uci in uciMoves.take(at)) {
             val step = PlayPosition.after(position, uci) ?: break

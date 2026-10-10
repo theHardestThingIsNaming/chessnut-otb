@@ -72,6 +72,8 @@ import androidx.compose.material3.IconButton
 import app.chessnut.otb.ui.MoreMark
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.contentDescription
+import app.chessnut.otb.ui.PositionDialog
+import android.widget.Toast
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,8 +88,21 @@ fun GamesScreen(
     onAbout: () -> Unit,
     onImport: (String) -> String?,
     onMistakes: () -> Unit = {},
+    onPositionAnalyse: (fen: String) -> Unit = {},
+    onPositionPlay: (fen: String, userWhite: Boolean) -> Unit = { _, _ -> },
 ) {
     val games by app.games.collectAsStateWithLifecycle()
+    val boardUi by board.ui.collectAsStateWithLifecycle()
+    var position by remember { mutableStateOf<String?>(null) }
+    val homeContext = LocalContext.current
+    position?.let { placement ->
+        PositionDialog(
+            placement,
+            onDismiss = { position = null },
+            onAnalyse = { position = null; onPositionAnalyse(it) },
+            onPlay = { fen, white -> position = null; onPositionPlay(fen, white) },
+        )
+    }
     val progress by app.analysisProgress.collectAsStateWithLifecycle()
     val version by app.analysisVersion.collectAsStateWithLifecycle()
     var menu by remember { mutableStateOf(false) }
@@ -121,6 +136,15 @@ fun GamesScreen(
                 actions = {
                     IconButton(onClick = { menu = true }, modifier = Modifier.semantics { contentDescription = "More" }) { MoreMark(Palette.Text) }
                     DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+                        DropdownMenuItem(text = { Text("Position from the board") }, onClick = {
+                            menu = false
+                            val placement = boardUi.livePlacement?.takeIf { boardUi.connected != null }
+                            if (placement == null) {
+                                Toast.makeText(homeContext, "Connect the board first, then set up the position on it.", Toast.LENGTH_LONG).show()
+                            } else {
+                                position = placement
+                            }
+                        })
                         DropdownMenuItem(text = { Text("Paste a PGN") }, onClick = { menu = false; pasting = true })
                         DropdownMenuItem(text = { Text("Settings") }, onClick = { menu = false; sounds = true })
                         DropdownMenuItem(text = { Text("My name") }, onClick = { menu = false; naming = true })
