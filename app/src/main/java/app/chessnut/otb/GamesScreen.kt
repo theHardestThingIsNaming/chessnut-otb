@@ -176,7 +176,7 @@ fun GamesScreen(
             }
             if (!browsing && visible.isEmpty()) {
                 Text(
-                    "Nothing from the last month.",
+                    "No games yet. Games you play or import show up here.",
                     color = Palette.TextMuted,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                 )
@@ -203,6 +203,15 @@ fun GamesScreen(
                             onMove = { moving = game },
                             onDelete = { pendingDelete = game },
                         )
+                    }
+                    if (!browsing) {
+                        item {
+                            Text(
+                                "Only your last 5 games stay here. Move a game into a folder to keep it.",
+                                color = Palette.TextMuted,
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
                     }
                     if (!browsing && "Earlier" in folders) {
                         item {

@@ -31,6 +31,7 @@ import app.chessnut.otb.ui.KeepScreenOn
 import app.chessnut.otb.ui.Palette
 import app.chessnut.otb.ui.clubAppBarColors
 import app.chessnut.otb.ui.clubTextButtonColors
+import androidx.compose.runtime.remember
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -99,7 +100,7 @@ fun MistakesScreen(model: MistakesViewModel, onBack: () -> Unit, onOpenGame: (St
                 TextButton(onClick = model::next, colors = clubTextButtonColors()) {
                     Text(if (ui.solved) "Next" else "Skip", color = Palette.Gold)
                 }
-                TextButton(onClick = { onOpenGame(mistake.gameId) }, colors = clubTextButtonColors()) {
+                if (remember(mistake.gameId) { model.hasGame(mistake.gameId) }) TextButton(onClick = { onOpenGame(mistake.gameId) }, colors = clubTextButtonColors()) {
                     Text("Open game", color = Palette.Gold)
                 }
             }

@@ -1102,9 +1102,11 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             val names = catalog.flatMap { it.names }
             val played = app.games.value.mapNotNull { game ->
                 val analysis = app.store.loadAnalysis(game.id) ?: return@mapNotNull null
-                game to analysis
+                ScoredGame.of(game, analysis)
             }
-            val scores = OpeningScores.best(played, names, app.myName)
+            // Scores from trainer games the list has since let go.
+            val kept = app.digests.all().mapNotNull { it.score }
+            val scores = OpeningScores.bestOf(played + kept, names, app.myName)
             val filter = state.value.let {
                 OpeningFilter(it.gambitsOnly, it.whiteOpenings, it.blackOpenings, it.unratedOnly, it.memesOnly)
             }

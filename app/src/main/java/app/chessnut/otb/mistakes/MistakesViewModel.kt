@@ -12,7 +12,6 @@ import app.chessnut.otb.analysis.Score
 import app.chessnut.otb.analysis.Terminal
 import app.chessnut.otb.engine.StockfishProcess
 import app.chessnut.otb.engine.UciEngine
-import app.chessnut.otb.lichess.LichessVault
 import app.chessnut.otb.play.PlayPosition
 import app.chessnut.otb.repertoire.Drill
 import app.chessnut.otb.repertoire.LineReview
@@ -92,10 +91,13 @@ class MistakesViewModel(application: Application, private val gameId: String?) :
         viewModelScope.launch(Dispatchers.Default) {
             val now = System.currentTimeMillis()
             val games = app.store.all().filter { gameId == null || it.id == gameId }
-            val found = games.flatMap { game ->
+            val live = games.flatMap { game ->
                 val analysis = app.store.loadAnalysis(game.id) ?: return@flatMap emptyList()
-                MistakeDeck.collect(game, analysis, listOfNotNull(app.myName, LichessVault(app).username()))
+                MistakeDeck.collect(game, analysis, app.myNames)
             }
+            // Positions from games the list has since let go.
+            val kept = app.digests.all().filter { gameId == null || it.gameId == gameId }.flatMap { it.mistakes }
+            val found = (live + kept).distinctBy { it.key }
             val known = reviews.all()
             val sorted = found.sortedWith(compareBy<Mistake> { known[it.key]?.dueAt ?: 0L }.thenByDescending { it.classification == MoveClass.Blunder })
             val due = sorted.filter { (known[it.key]?.dueAt ?: 0L) <= now }
@@ -106,6 +108,9 @@ class MistakesViewModel(application: Application, private val gameId: String?) :
             }
         }
     }
+
+    /** False once the game a position came from has been cleared from the list. */
+    fun hasGame(id: String): Boolean = app.store.contains(id)
 
     private fun begin(positions: List<Mistake>) {
         deck = positions

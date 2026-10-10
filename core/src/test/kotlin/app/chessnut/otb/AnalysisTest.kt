@@ -310,35 +310,4 @@ class AnalysisTest {
         assertEquals("1-0", game.result)
         assertNotNull(game.id)
     }
-
-    @Test
-    fun unfiledGamesPastFiveOrThirtyDaysMoveToEarlier() {
-        val dir = File.createTempFile("games", "").apply {
-            delete()
-            mkdirs()
-        }
-        val store = GameStore(dir)
-        val now = 40L * 24 * 60 * 60 * 1000
-        val day = 24L * 60 * 60 * 1000
-        val lines = listOf("1. e4", "1. d4", "1. c4", "1. Nf3", "1. e4 e5", "1. d4 d5")
-        lines.forEachIndexed { index, san ->
-            val game = SavedGame.fromBoard(FakeChessnutBoard.placementsFromSan(san), now = now - index * 1000, date = "2026.10.09")
-            store.addIfNew(game)
-        }
-        val filed = SavedGame.fromBoard(FakeChessnutBoard.placementsFromSan("1. e4 c5"), now = now - 31 * day, date = "2026.09.01")
-        store.addIfNew(filed)
-        store.moveToFolder(filed.id, "Tuesday")
-        val old = SavedGame.fromBoard(FakeChessnutBoard.placementsFromSan("1. d4 Nf6"), now = now - 31 * day, date = "2026.09.01")
-        store.addIfNew(old)
-
-        store.shelveUnfiled(now)
-
-        val loose = store.all().filter { it.folder.isBlank() }
-        assertEquals(5, loose.size)
-        assertTrue(loose.all { now - it.createdAt <= 30L * day })
-        assertEquals("Earlier", store.load(old.id)!!.folder)
-        assertEquals("Tuesday", store.load(filed.id)!!.folder)
-        val sixth = store.all().first { it.sanMoves == listOf("d4", "d5") }
-        assertEquals("Earlier", sixth.folder)
-    }
 }

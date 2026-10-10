@@ -7,6 +7,8 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
 import app.chessnut.otb.analysis.AnalysisWorker
+import app.chessnut.otb.games.DigestStore
+import app.chessnut.otb.games.GameKeeper
 import app.chessnut.otb.games.GameStore
 import app.chessnut.otb.games.GameSource
 import app.chessnut.otb.games.SavedGame
@@ -38,6 +40,14 @@ class OtbApp : Application() {
     val settings: SharedPreferences by lazy { getSharedPreferences("club_games", MODE_PRIVATE) }
 
     val store: GameStore by lazy { GameStore(File(filesDir, "games")) }
+
+    /** Practice positions and opening scores kept from games the list has let go. */
+    val digests: DigestStore by lazy { DigestStore(File(filesDir, "digests")) }
+
+    private val keeper by lazy { GameKeeper(store, digests) }
+
+    /** Names that mean "me" in a game's headers: the one set here, and the Lichess login. */
+    val myNames: List<String> get() = listOfNotNull(myName.ifBlank { null }, vault.username())
 
     private val gamesFlow = MutableStateFlow<List<SavedGame>>(emptyList())
     val games: StateFlow<List<SavedGame>> = gamesFlow.asStateFlow()
@@ -178,8 +188,14 @@ class OtbApp : Application() {
         flushUploads()
     }
 
+    /**
+     * Reloads the game list after keeping it to the newest five outside
+     * folders. Games being analysed or waiting to upload are left alone.
+     */
     fun refreshGames() {
-        store.shelveUnfiled(System.currentTimeMillis())
+        val busy = progressFlow.value.keys + pendingUploads()
+        val removed = keeper.tidy(System.currentTimeMillis(), myNames, protect = busy)
+        if (removed.isNotEmpty()) Log.i(TAG, "tidied ${removed.size} older game(s)")
         gamesFlow.value = store.all()
     }
 
@@ -226,7 +242,11 @@ class OtbApp : Application() {
 
     fun reportProgress(id: String, fraction: Float?) {
         progressFlow.update { if (fraction == null) it - id else it + (id to fraction) }
-        if (fraction == null) analysedFlow.update { it + 1 }
+        if (fraction == null) {
+            analysedFlow.update { it + 1 }
+            // An analysed game past the newest five can now be digested and let go.
+            refreshGames()
+        }
     }
 
     private companion object {
