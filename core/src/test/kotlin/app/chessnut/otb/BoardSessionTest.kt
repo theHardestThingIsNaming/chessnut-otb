@@ -63,6 +63,20 @@ class BoardSessionTest {
     }
 
     @Test
+    fun clearingWorksWhenTheBoardMovesOnByItself() = runTest {
+        val board = FakeChessnutBoard(advancesWithoutDelete = true)
+        val (first, second) = board.stored.toList()
+        val session = backgroundScope.open(board)
+        val saved = mutableListOf<List<String>>()
+
+        val result = StoredGameReader(session).readGames(clearAfterSave = true) { saved += it.placements }
+
+        assertEquals(listOf(first, second), saved)
+        assertEquals(2, result.games.size)
+        assertTrue(board.stored.isEmpty())
+    }
+
+    @Test
     fun aFailedSaveKeepsTheGameOnTheBoard() = runTest {
         val board = FakeChessnutBoard(advancesWithoutDelete = false)
         val session = backgroundScope.open(board)

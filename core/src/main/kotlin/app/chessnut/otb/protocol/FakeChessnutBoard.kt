@@ -20,6 +20,8 @@ class FakeChessnutBoard(
     val stored: MutableList<List<String>> = games.toMutableList()
     var livePlacement: String = START_PLACEMENT
     private var cursor = 0
+    /** The game sent last, which `39 01 00` deletes, whether or not the cursor has moved past it. */
+    private var current = 0
 
     init {
         onWrite = { bytes -> answer(bytes) }
@@ -38,12 +40,16 @@ class FakeChessnutBoard(
             }
             0x34 -> {
                 val game = stored.getOrNull(cursor) ?: return
+                current = cursor
                 emit(gameFramesOn, byteArrayOf(0x37, 0x01, 0xBE.toByte()))
                 game.forEach { emit(gameFramesOn, PositionCodec.encodePlacement(it)) }
                 emit(gameFramesOn, byteArrayOf(0x37, 0x01, 0xED.toByte()))
                 if (advancesWithoutDelete) cursor++
             }
-            0x39 -> if (cursor < stored.size) stored.removeAt(cursor)
+            0x39 -> if (current < stored.size) {
+                stored.removeAt(current)
+                cursor = current
+            }
         }
     }
 
