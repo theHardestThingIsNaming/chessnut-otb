@@ -7,6 +7,7 @@ import android.speech.tts.TextToSpeech
 import android.speech.tts.Voice
 import app.chessnut.otb.play.SpokenMove
 import java.util.Locale
+import android.util.Log
 
 /** Says moves aloud. The phone-sounds switch decides whether anything calls this. */
 class MoveSpeaker(context: Context) {
@@ -22,6 +23,7 @@ class MoveSpeaker(context: Context) {
             // English (the moves and notes are English) does the app pick a voice itself.
             val chosen = runCatching { speech.defaultVoice ?: speech.voice }.getOrNull()
             val english = chosen != null && runCatching { chosen.locale.isO3Language == "eng" }.getOrDefault(chosen.locale.language == "en")
+            Log.i(TAG, "engine=${speech.defaultEngine} voice=${chosen?.name}/${chosen?.locale}")
             if (!english) {
                 speech.language = Locale.US
                 bestVoice()?.let { speech.voice = it }
@@ -73,6 +75,10 @@ class MoveSpeaker(context: Context) {
                     .thenBy { it.locale.country == "US" || it.locale.country == "GB" },
             )
     }.getOrNull()
+
+    private companion object {
+        const val TAG = "MoveSpeaker"
+    }
 
     private fun speakNow(phrase: String) {
         speech.speak(phrase, TextToSpeech.QUEUE_ADD, null, "move")

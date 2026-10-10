@@ -26,6 +26,10 @@
         <intent>
             <action android:name="android.support.customtabs.action.CustomTabsService" />
         </intent>
+        <!-- Without this, Android 11+ hides speech engines other than the built-in one, so the voice chosen in settings is ignored. -->
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
     </queries>
 
     <application
