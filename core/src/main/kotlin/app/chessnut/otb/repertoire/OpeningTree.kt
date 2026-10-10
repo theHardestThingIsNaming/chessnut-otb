@@ -4,8 +4,9 @@ import app.chessnut.otb.openings.OpeningBook
 
 /**
  * Turns a book opening into a repertoire to drill, the way a coach would
- * write one out: on your moves, the book's main move; on the opponent's, each
- * of their most common book replies. Every path to the end of the book (or
+ * write one out: on your moves, your chosen move from [choices] (by the moves
+ * before it), else the book's main move; on the opponent's, each of their
+ * most common book replies. Every path to the end of the book (or
  * [maxPlies]) is one line. Lines end on your move, since a line that ends
  * with the opponent's move has nothing left for you to answer.
  */
@@ -13,6 +14,7 @@ object OpeningTree {
     fun lines(
         family: String,
         userWhite: Boolean,
+        choices: Map<List<String>, String> = emptyMap(),
         maxPlies: Int = 16,
         maxReplies: Int = 3,
         maxLines: Int = 40,
@@ -26,7 +28,8 @@ object OpeningTree {
                 return
             }
             val yourMove = (line.size % 2 == 0) == userWhite
-            for (reply in if (yourMove) replies.take(1) else replies.take(maxReplies)) walk(line + reply)
+            val mine = choices[line]?.takeIf { it in replies } ?: replies.first()
+            for (reply in if (yourMove) listOf(mine) else replies.take(maxReplies)) walk(line + reply)
         }
         walk(emptyList())
         // A shorter line that is the start of a longer one adds nothing to drill.

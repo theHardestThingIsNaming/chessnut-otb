@@ -131,6 +131,8 @@ data class PlayUi(
     val lineNote: String? = null,
     /** Every line of the chosen opening, for picking one to drill. */
     val lines: List<LineView> = emptyList(),
+    /** A book move you played instead of the line's, offered as your move from now on, such as "4. c3". */
+    val choiceOffer: String? = null,
 )
 
 class PlayViewModel(application: Application) : AndroidViewModel(application) {
@@ -198,6 +200,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private var lineNote: String? = null
     /** A line picked from the list, drilled next instead of the scheduled one. */
     private var pinnedLine: List<String>? = null
+    /** The moves before, and the book move you chose there, when it differs from the line. */
+    private var choiceOffer: Pair<List<String>, String>? = null
     private var linesJob: Job? = null
     /** Explain past the book: the engine's top moves as (SAN, UCI), for [ideasFen]. */
     private var ideas: List<Pair<String, String>> = emptyList()
@@ -480,6 +484,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         if (awaitingBoard) lightSquares(if (setupWrong.size <= MAX_SETUP_HINTS) setupWrong else emptyList())
         lineLabelShown = lineLabel()
         lineNote = null
+        choiceOffer = null
         status = when {
             awaitingBoard -> setupStatus(setupWrong)
             kind == PlayKind.Trainer -> openingName ?: "Opening trainer"
@@ -929,6 +934,14 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         val expected = split?.let { "${moveNumber(it)}${line[it]}" }
         val bookToo = split != null && !drillMissed
         val name = openingName
+        // A different book move on your turn can become your move here.
+        choiceOffer = if (drillBook && name != null && split != null && (split % 2 == 0) == userWhite &&
+            sanMoves[split] in OpeningBook.replies(sanMoves.take(split), name)
+        ) {
+            sanMoves.take(split) to sanMoves[split]
+        } else {
+            null
+        }
         val words = when {
             drillBook && explain -> if (onLine) {
                 "End of this line. Turn off Explain to test yourself on it."
@@ -968,7 +981,22 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private fun moveNumber(ply: Int): String = "${ply / 2 + 1}${if (ply % 2 == 0) ". " else "… "}"
 
     private fun bookLines(name: String, white: Boolean): List<List<String>> =
-        synchronized(treeCache) { treeCache.getOrPut(name to white) { OpeningTree.lines(name, white) } }
+        synchronized(treeCache) {
+            treeCache.getOrPut(name to white) { OpeningTree.lines(name, white, app.moveChoices.of(name, white)) }
+        }
+
+    /** Makes the offered book move your move in this opening, and rebuilds its lines around it. */
+    fun adoptChoice() {
+        val (before, move) = choiceOffer ?: return
+        val name = openingName ?: return
+        app.moveChoices.set(name, userWhite, before, move)
+        synchronized(treeCache) { treeCache.remove(name to userWhite) }
+        choiceOffer = null
+        lineNote = "Your $name now plays ${moveNumber(before.size)}$move. Its lines are rebuilt around it."
+        publish()
+        refreshOpenings(state.value.openingQuery)
+        refreshLines()
+    }
 
     /** "Line 3 of 12 · new", for the drilled line. */
     private fun lineLabel(): String? {
@@ -1398,6 +1426,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 lineLabel = if (kind == PlayKind.Trainer) lineLabelShown else null,
                 lineDone = kind == PlayKind.Trainer && drillGraded,
                 lineNote = if (kind == PlayKind.Trainer) lineNote else null,
+                choiceOffer = choiceOffer?.let { (before, move) -> "${moveNumber(before.size)}$move" },
             )
         }
     }

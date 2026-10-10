@@ -16,6 +16,7 @@ import app.chessnut.otb.lichess.HttpImporter
 import app.chessnut.otb.lichess.LichessHttp
 import app.chessnut.otb.lichess.LichessVault
 import app.chessnut.otb.repertoire.LineProgress
+import app.chessnut.otb.repertoire.MoveChoices
 import app.chessnut.otb.repertoire.RepertoireStore
 import app.chessnut.otb.upload.FileGameMemory
 import app.chessnut.otb.upload.ImportService
@@ -70,6 +71,9 @@ class OtbApp : Application() {
 
     /** Which lines of each book opening you have drilled, and when each is due again. */
     val lineProgress: LineProgress by lazy { LineProgress(File(filesDir, "repertoire/book-lines.tsv")) }
+
+    /** Moves you picked over the book's main move, which shape each opening's lines. */
+    val moveChoices: MoveChoices by lazy { MoveChoices(File(filesDir, "repertoire/choices.tsv")) }
 
     /** Imported study chapters for the trainer, with their review dates. */
     val repertoire: RepertoireStore by lazy { RepertoireStore(File(filesDir, "repertoire")) }

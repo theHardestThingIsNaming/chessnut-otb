@@ -74,6 +74,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import app.chessnut.otb.openings.OpeningBook
 import app.chessnut.otb.analysis.ChessLines
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.OutlinedButton
+import app.chessnut.otb.ui.clubOutlinedButtonColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -447,6 +449,11 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                     .border(1.dp, Palette.Gold, RoundedCornerShape(12.dp))
                     .padding(12.dp),
             )
+        }
+        ui.choiceOffer?.let { move ->
+            OutlinedButton(onClick = viewModel::adoptChoice, colors = clubOutlinedButtonColors(), modifier = Modifier.fillMaxWidth()) {
+                Text("Play $move here from now on", color = Palette.Gold)
+            }
         }
         Text(numbered(ui.san), color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

@@ -3,6 +3,7 @@ package app.chessnut.otb
 import app.chessnut.otb.openings.OpeningBook
 import app.chessnut.otb.repertoire.Drill
 import app.chessnut.otb.repertoire.LineProgress
+import app.chessnut.otb.repertoire.MoveChoices
 import app.chessnut.otb.repertoire.OpeningTree
 import java.io.File
 import kotlin.test.Test
@@ -39,6 +40,21 @@ class OpeningTreeTest {
         assertTrue("exf4" in OpeningBook.replies(listOf("e4", "e5", "f4"), "King's Gambit"))
         assertTrue(OpeningTree.lines("King's Gambit", userWhite = true).size > 3)
         assertTrue(OpeningTree.lines("Queen's Gambit", userWhite = true).size > 3)
+    }
+
+    @Test
+    fun yourChoiceReplacesTheMainMove() {
+        val before = listOf("e4", "e5", "Nf3", "Nc6", "Bc4", "Bc5")
+        val main = OpeningTree.lines("Italian Game", userWhite = true)
+        assertTrue(main.filter { it.take(6) == before }.all { it[6] == "b4" }, "the book's main move after 3... Bc5")
+        val file = File.createTempFile("choices", ".tsv").apply { delete() }
+        MoveChoices(file).set("Italian Game", true, before, "c3")
+        val choices = MoveChoices(file).of("Italian Game", true)
+        val mine = OpeningTree.lines("Italian Game", userWhite = true, choices = choices)
+        val giuoco = mine.filter { it.take(6) == before }
+        assertTrue(giuoco.isNotEmpty() && giuoco.all { it[6] == "c3" })
+        // A choice that isn't a book move is ignored.
+        assertEquals(main, OpeningTree.lines("Italian Game", userWhite = true, choices = mapOf(before to "a3")))
     }
 
     @Test
