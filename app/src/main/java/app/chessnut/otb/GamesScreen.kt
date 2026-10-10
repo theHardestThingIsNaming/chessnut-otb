@@ -61,6 +61,9 @@ import app.chessnut.otb.ui.clubTextButtonColors
 import java.util.Locale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.produceState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -93,6 +96,9 @@ fun GamesScreen(
 
     val folders = games.map { it.folder }.filter { it.isNotBlank() }.distinct().sorted()
     val visible = if (browsing) games.filter { it.folder == folder } else games.filter { it.folder.isBlank() }
+    val linesDue by produceState(0, games) {
+        value = withContext(Dispatchers.Default) { app.openingLinesDue(System.currentTimeMillis()) }
+    }
 
     Scaffold(
         containerColor = androidx.compose.ui.graphics.Color.Transparent,
@@ -135,7 +141,10 @@ fun GamesScreen(
                 }
                 OutlinedButton(onClick = onTrainer, modifier = Modifier.fillMaxWidth(), colors = clubOutlinedButtonColors()) {
                     BookMark(Palette.Gold)
-                    Text("Opening trainer", modifier = Modifier.padding(start = 8.dp))
+                    Text(
+                        if (linesDue > 0) "Opening trainer · $linesDue due" else "Opening trainer",
+                        modifier = Modifier.padding(start = 8.dp),
+                    )
                 }
             }
             if (browsing) {

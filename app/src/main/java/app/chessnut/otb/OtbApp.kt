@@ -15,7 +15,9 @@ import app.chessnut.otb.games.SavedGame
 import app.chessnut.otb.lichess.HttpImporter
 import app.chessnut.otb.lichess.LichessHttp
 import app.chessnut.otb.lichess.LichessVault
+import app.chessnut.otb.repertoire.Drill
 import app.chessnut.otb.repertoire.LineProgress
+import app.chessnut.otb.repertoire.OpeningTree
 import app.chessnut.otb.repertoire.MoveChoices
 import app.chessnut.otb.repertoire.RepertoireStore
 import app.chessnut.otb.upload.FileGameMemory
@@ -74,6 +76,11 @@ class OtbApp : Application() {
 
     /** Moves you picked over the book's main move, which shape each opening's lines. */
     val moveChoices: MoveChoices by lazy { MoveChoices(File(filesDir, "repertoire/choices.tsv")) }
+
+    /** Book opening lines whose review has come due, across every opening you have drilled. */
+    fun openingLinesDue(now: Long): Int = lineProgress.started().sumOf { (name, white) ->
+        Drill.overdue(OpeningTree.lines(name, white, moveChoices.of(name, white)), lineProgress.reviews(name, white), now)
+    }
 
     /** Imported study chapters for the trainer, with their review dates. */
     val repertoire: RepertoireStore by lazy { RepertoireStore(File(filesDir, "repertoire")) }
