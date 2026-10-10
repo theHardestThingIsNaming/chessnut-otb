@@ -78,6 +78,7 @@ import androidx.compose.material3.OutlinedButton
 import app.chessnut.otb.ui.clubOutlinedButtonColors
 import app.chessnut.otb.ui.BackButton
 import app.chessnut.otb.ui.PrimaryAction
+import androidx.compose.animation.animateContentSize
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -307,11 +308,15 @@ private fun ProgressCard(ui: PlayUi, onReview: () -> Unit) {
 @Composable
 private fun CoachCard(ui: PlayUi) {
     var expanded by remember(ui.story) { mutableStateOf(false) }
+    var cut by remember(ui.story) { mutableStateOf(false) }
     Column(
         Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .background(Palette.Surface)
+            // The whole card opens and closes the story, not just its text.
+            .clickable(enabled = ui.story != null && (cut || expanded)) { expanded = !expanded }
+            .animateContentSize()
             .padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
@@ -322,14 +327,24 @@ private fun CoachCard(ui: PlayUi) {
             }
         }
         ui.story?.let { story ->
-            Column(Modifier.clickable { expanded = !expanded }) {
-                Text("History", color = Palette.Gold, style = MaterialTheme.typography.labelMedium)
+            Column {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("History", color = Palette.Gold, style = MaterialTheme.typography.labelMedium, modifier = Modifier.weight(1f))
+                    if (cut || expanded) {
+                        Text(
+                            if (expanded) "Less ▴" else "More ▾",
+                            color = Palette.Accent,
+                            style = MaterialTheme.typography.labelMedium,
+                        )
+                    }
+                }
                 Text(
                     story,
                     color = Palette.TextMuted,
                     style = MaterialTheme.typography.bodySmall,
                     maxLines = if (expanded) Int.MAX_VALUE else 3,
                     overflow = TextOverflow.Ellipsis,
+                    onTextLayout = { if (!expanded) cut = it.hasVisualOverflow },
                 )
             }
         }
