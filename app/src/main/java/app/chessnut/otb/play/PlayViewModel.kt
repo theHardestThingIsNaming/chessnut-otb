@@ -52,6 +52,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 import app.chessnut.otb.chess.MoveInput
 import app.chessnut.otb.repertoire.OpeningTree
 import app.chessnut.otb.review.POSITION_PREFIX
+import app.chessnut.otb.repertoire.DepthRun
 
 enum class PlayKind { Bot, Trainer }
 
@@ -67,6 +68,8 @@ data class OpeningRow(
     /** Lines learned and lines in all, once you have drilled this opening from the book. */
     val learned: Int? = null,
     val lines: Int? = null,
+    /** Your longest run of engine-approved moves past the book, from this side. */
+    val depthBest: Int? = null,
 )
 
 data class OpeningSection(val title: String, val rows: List<OpeningRow>)
@@ -158,6 +161,12 @@ data class PlayUi(
     val dueTotal: Int = 0,
     /** Bot games are played with clocks; off for untimed play, such as from a set-up position. */
     val timed: Boolean = true,
+    /** Past the book, from memory: good moves in a row so far, null before the book runs out. */
+    val depthRun: Int? = null,
+    /** The run ended on a move outside the engine's top two. */
+    val depthOver: Boolean = false,
+    /** Your best run for this opening and side, before this game. */
+    val depthBest: Int? = null,
     /** The bot game starts from this position instead of the usual start, such as one set up on the board. */
     val startFen: String? = null,
     /** A review session is running through due lines from several openings. */
@@ -229,6 +238,16 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private val treeCache = mutableMapOf<Pair<String, Boolean>, List<List<String>>>()
     private var lineLabelShown: String? = null
     private var lineNote: String? = null
+    /** Depth run past the book: good moves so far, whether it has ended, and the record going in. */
+    private var depthRun: Int? = null
+    private var depthOver = false
+    private var depthBest: Int? = null
+    /** From the last judged move: the engine's top two and the winning chances it gave up. */
+    private var lastTopTwo: List<String> = emptyList()
+    private var lastWinDrop = 0.0
+    private var lastJudgedFen: String? = null
+    /** What the engine would have played when the run ended, such as "8. c4 or 8. Nd2". */
+    private var depthMissed: String? = null
     /** Where a bot game starts, when not from the usual position. */
     private var startFen: String? = null
     private var timed = true
@@ -501,6 +520,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun start() {
+        // Save the last game's run under its own opening before this one replaces it.
+        endDepthRun()
         val previous = job
         job = null
         busy = false
@@ -568,6 +589,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         awaitingBoard = !ready
         setupWrong = if (awaitingBoard) app.latestPlacement?.let { PlayPosition.differences(fen, it) }.orEmpty() else emptyList()
         if (awaitingBoard) lightSquares(if (setupWrong.size <= MAX_SETUP_HINTS) setupWrong else emptyList())
+        depthRun = null
+        depthOver = false
+        depthBest = ui.openingName?.let { app.depthRecords.of(it, ui.userWhite)?.best }
         lineLabelShown = lineLabel()
         lineNote = null
         retryAt = null
@@ -746,6 +770,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun leave() {
+        endDepthRun()
         endReview()
         startFen = null
         restoreTiming()
@@ -805,6 +830,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         }
         if (!userToMove()) return
         launchPlay {
+            val pastBook = kind == PlayKind.Trainer && !explain && openingName != null && !legalBookMove()
             val verdict = if (kind == PlayKind.Trainer) judge(uci) else null
             if (drillLine != null && verdict != null && verdict != TrainerResult.Book) drillMissed = true
             if (verdict != null && explain && !verdict.accepted) {
@@ -812,6 +838,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 return@launchPlay
             }
             if (!apply(uci)) return@launchPlay
+            if (pastBook && verdict != TrainerResult.Book) countDepth(uci)
             retry = false
             rejectUci = null
             if (verdict != null && finished == null) {
@@ -820,12 +847,52 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             }
             light(null)
             if (finished != null) {
+                endDepthRun()
                 celebrate()
                 scoreTrainer()
                 return@launchPlay
             }
             if (!userToMove()) reply()
         }
+    }
+
+    /** One more move past the book: extends the run, or ends it if the engine had two better. */
+    private fun countDepth(uci: String) {
+        if (depthOver) return
+        if (DepthRun.good(uci, lastTopTwo, lastWinDrop)) {
+            depthRun = (depthRun ?: 0) + 1
+        } else {
+            depthRun = depthRun ?: 0
+            val before = lastJudgedFen
+            val ply = sanMoves.size - 1
+            depthMissed = before?.let { position ->
+                lastTopTwo.mapNotNull { ChessLines.sanOf(position, listOf(it)).firstOrNull() }
+                    .joinToString(" or ") { "${moveNumber(ply)}$it" }
+                    .ifEmpty { null }
+            }
+            endDepthRun()
+        }
+        publish()
+    }
+
+    /** Saves the run, once, when it ends or the game does. */
+    private fun endDepthRun() {
+        val run = depthRun ?: return
+        val name = openingName ?: return
+        if (depthOver) return
+        depthOver = true
+        app.depthRecords.finish(name, userWhite, run)
+        val record = depthBest
+        val result = when {
+            run > (record ?: 0) && run > 0 -> "New best: $run good ${if (run == 1) "move" else "moves"} past the book."
+            record != null -> "Run over at $run. Your best is $record."
+            else -> "Run over at $run."
+        }
+        val words = listOfNotNull(result, depthMissed?.let { "The engine wanted $it." }).joinToString(" ")
+        depthMissed = null
+        lineNote = listOfNotNull(lineNote, words).joinToString(" ")
+        if (app.phoneSounds && playing) speech.narrate(words)
+        refreshOpenings(state.value.openingQuery)
     }
 
     private fun onPhysical(placement: String) {
@@ -1235,7 +1302,10 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         if (book) return TrainerResult.Book
         val eng = engine()
         eng.limitStrength(null)
-        val before = eng.analyseMillis(fen, 280, 1).firstOrNull()
+        lastJudgedFen = fen
+        val top = eng.analyseMillis(fen, 400, 2)
+        val before = top.firstOrNull()
+        lastTopTwo = top.mapNotNull { it.uci.firstOrNull() }
         val beforeScore = before?.score ?: Score.Even
         val after = PlayPosition.after(fen, uci) ?: return TrainerGate.judge(false, false, 100.0)
         val whiteMoved = whiteToMove(fen)
@@ -1245,7 +1315,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             null -> eng.analyseMillis(after.second, 280, 1).firstOrNull()?.score ?: Score.Even
         }
         fun moverWin(score: Score) = if (whiteMoved) score.whiteWinPercent else 100.0 - score.whiteWinPercent
-        return TrainerGate.judge(false, before?.uci?.firstOrNull() == uci, moverWin(beforeScore) - moverWin(afterScore))
+        lastWinDrop = moverWin(beforeScore) - moverWin(afterScore)
+        return TrainerGate.judge(false, before?.uci?.firstOrNull() == uci, lastWinDrop)
     }
 
     private suspend fun engineBest(): String? {
@@ -1503,7 +1574,10 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                         } else {
                             null
                         }
-                        OpeningRow(name, scores[name], rates[name], due, progress?.first, progress?.second)
+                        OpeningRow(
+                            name, scores[name], rates[name], due, progress?.first, progress?.second,
+                            depthBest = app.depthRecords.of(name, side)?.best,
+                        )
                     }
                 if (rows.isEmpty()) null else OpeningSection(section.title, rows)
             }
@@ -1634,6 +1708,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 lineDone = kind == PlayKind.Trainer && drillGraded,
                 lineNote = if (kind == PlayKind.Trainer) lineNote else null,
                 reviewing = reviewing,
+                depthRun = if (kind == PlayKind.Trainer) depthRun else null,
+                depthOver = depthOver,
+                depthBest = depthBest,
                 reviewLast = reviewing && reviewQueue.isEmpty(),
                 choiceOffer = choiceOffer?.let { (before, move) -> "${moveNumber(before.size)}$move" },
                 retryMove = retryAt?.let { at -> drillLine?.getOrNull(at)?.let { "${moveNumber(at)}$it" } },

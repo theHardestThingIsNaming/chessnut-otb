@@ -79,6 +79,7 @@ import app.chessnut.otb.ui.clubOutlinedButtonColors
 import app.chessnut.otb.ui.BackButton
 import app.chessnut.otb.ui.PrimaryAction
 import androidx.compose.animation.animateContentSize
+import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -304,6 +305,46 @@ private fun ProgressCard(ui: PlayUi, onReview: () -> Unit) {
     }
 }
 
+/** Past the book: how many engine-approved moves in a row, against your best for this opening. */
+@Composable
+private fun DepthStrip(run: Int, best: Int?, over: Boolean) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(Palette.Surface)
+            .padding(horizontal = 12.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Text(
+            run.toString(),
+            color = if (over) Palette.TextMuted else Palette.Gold,
+            fontWeight = FontWeight.Bold,
+            fontSize = 26.sp,
+        )
+        Column(Modifier.weight(1f)) {
+            Text(
+                if (over) "Run over past the book" else "Past the book",
+                color = Palette.Text,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Text(
+                if (over) "Last move wasn't in the engine's top two." else "Good moves in a row: the engine's best or second best.",
+                color = Palette.TextMuted,
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
+        best?.let {
+            Column(horizontalAlignment = Alignment.End) {
+                Text("Best", color = Palette.TextMuted, style = MaterialTheme.typography.labelSmall)
+                Text(it.toString(), color = Palette.Text, fontWeight = FontWeight.Bold)
+            }
+        }
+    }
+}
+
 /** What the coach says: the idea behind the last move, and the opening's history as it comes up. */
 @Composable
 private fun CoachCard(ui: PlayUi) {
@@ -385,6 +426,13 @@ private fun SelectedOpening(name: String, ui: PlayUi, onTrainLine: (Int) -> Unit
                 else -> "Not trained yet"
             }
             Text(progress, color = Palette.Text, style = MaterialTheme.typography.bodySmall)
+            row?.depthBest?.let { depth ->
+                Text(
+                    "Past the book: best run $depth ${if (depth == 1) "move" else "moves"}",
+                    color = Palette.Gold,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
             if (ui.lines.isNotEmpty()) {
                 Text(
                     "See all ${ui.lines.size} lines",
@@ -527,6 +575,7 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                 onSquare = viewModel::tap,
             )
             if (ui.bookSans.isNotEmpty()) BookKey(ui.bookSans, ui.explainedByEngine)
+            ui.depthRun?.let { DepthStrip(it, ui.depthBest, ui.depthOver) }
             if (ui.idea != null || ui.story != null) CoachCard(ui)
             ui.lineNote?.let { note ->
                 Text(
