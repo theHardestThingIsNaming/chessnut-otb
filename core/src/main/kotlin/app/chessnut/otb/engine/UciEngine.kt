@@ -3,6 +3,7 @@ package app.chessnut.otb.engine
 import app.chessnut.otb.analysis.EngineLine
 import app.chessnut.otb.analysis.Score
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.NonCancellable
@@ -51,6 +52,30 @@ class UciEngine(
         process.send("setoption name Hash value $hashMb")
         exchange("isready", 10.seconds) { it == "readyok" }
         started = true
+    }
+
+    /** Full strength, or a Stockfish Elo cap. Null clears the cap. */
+    suspend fun limitStrength(elo: Int?) = lock.withLock {
+        if (elo == null) {
+            process.send("setoption name UCI_LimitStrength value false")
+        } else {
+            process.send("setoption name UCI_LimitStrength value true")
+            process.send("setoption name UCI_Elo value ${elo.coerceIn(1320, 3190)}")
+        }
+        exchange("isready", 10.seconds) { it == "readyok" }
+    }
+
+    /** A short timed search. Used for bot moves and for judging a trainer move. */
+    suspend fun analyseMillis(fen: String, millis: Long, multiPv: Int): List<EngineLine> = lock.withLock {
+        val sideToMoveIsWhite = fen.split(' ').getOrNull(1) != "b"
+        process.send("setoption name MultiPV value $multiPv")
+        process.send("position fen $fen")
+        val lines = mutableMapOf<Int, EngineLine>()
+        exchange("go movetime $millis", (millis + 15_000).milliseconds) { line ->
+            parseInfo(line, sideToMoveIsWhite)?.let { (index, engineLine) -> lines[index] = engineLine }
+            line.startsWith("bestmove")
+        }
+        lines.toSortedMap().values.toList()
     }
 
     /** Analyses [fen] to a fixed node count and returns the final [multiPv] lines, best first. */

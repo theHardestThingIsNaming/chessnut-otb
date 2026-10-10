@@ -8,10 +8,29 @@ import androidx.work.WorkManager
 import androidx.work.workDataOf
 import app.chessnut.otb.analysis.AnalysisWorker
 import app.chessnut.otb.games.GameStore
+import app.chessnut.otb.games.GameSource
 import app.chessnut.otb.games.SavedGame
+import app.chessnut.otb.lichess.HttpImporter
+import app.chessnut.otb.lichess.LichessHttp
+import app.chessnut.otb.lichess.LichessVault
+import app.chessnut.otb.repertoire.RepertoireStore
+import app.chessnut.otb.upload.FileGameMemory
+import app.chessnut.otb.upload.ImportService
+import app.chessnut.otb.upload.SubmitResult
+import android.util.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import app.chessnut.otb.protocol.ChessnutSession
 import java.io.File
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
@@ -31,16 +50,136 @@ class OtbApp : Application() {
     private val analysedFlow = MutableStateFlow(0)
     val analysisVersion: StateFlow<Int> = analysedFlow.asStateFlow()
 
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val vault by lazy { LichessVault(this) }
+    private val uploads by lazy {
+        ImportService(HttpImporter(LichessHttp { vault.token() }), FileGameMemory(File(filesDir, "uploads")))
+    }
+    private val uploadLock = Mutex()
+
+    /** Imported study chapters for the trainer, with their review dates. */
+    val repertoire: RepertoireStore by lazy { RepertoireStore(File(filesDir, "repertoire")) }
+
+    /** Club games (from the board) go to Lichess as soon as they are saved. Imported games are public there. */
+    var autoUpload: Boolean
+        get() = settings.getBoolean(KEY_AUTO_UPLOAD, true)
+        set(value) = settings.edit().putBoolean(KEY_AUTO_UPLOAD, value).apply()
+
+    /** The Lichess page of an uploaded game, if it has one. */
+    fun lichessUrl(id: String): String? = settings.getString(KEY_LINK_PREFIX + id, null)
+
+    /** Records where a game lives on Lichess, such as an online game played from here. */
+    fun rememberLichessUrl(id: String, url: String) {
+        settings.edit().putString(KEY_LINK_PREFIX + id, url).apply()
+        uploadsFlow.update { it + 1 }
+    }
+
+    /**
+     * Uploads a board game to Lichess when auto-upload is on and the phone is
+     * logged in. Games already sent are skipped; without a connection the game
+     * waits in a queue for [flushUploads].
+     */
+    fun autoUploadToLichess(game: SavedGame) {
+        if (!autoUpload || game.source != GameSource.Board) return
+        uploadToLichess(game)
+    }
+
+    /** Uploads one game now, whatever the setting. Used by the analysis screen for older games. */
+    fun uploadToLichess(game: SavedGame, onDone: (String) -> Unit = {}) {
+        if (vault.token() == null) {
+            onDone("Log in to Lichess first, from Play online.")
+            return
+        }
+        if (game.sanMoves.size < 2 || lichessUrl(game.id) != null) return
+        scope.launch {
+            val message = uploadLock.withLock {
+                when (val result = uploads.submit(game.toPgn(), vault.token())) {
+                    is SubmitResult.Uploaded -> {
+                        settings.edit()
+                            .putString(KEY_LINK_PREFIX + game.id, result.game.url)
+                            .putStringSet(KEY_PENDING, pendingUploads() - game.id)
+                            .apply()
+                        uploadsFlow.update { it + 1 }
+                        "Uploaded to Lichess"
+                    }
+                    is SubmitResult.Queued -> {
+                        settings.edit().putStringSet(KEY_PENDING, pendingUploads() + game.id).apply()
+                        result.message
+                    }
+                    is SubmitResult.Duplicate -> "Already on Lichess"
+                    is SubmitResult.Failed -> result.message
+                }
+            }
+            Log.i(TAG, "upload ${game.id.take(8)}: $message")
+            onDone(message)
+        }
+    }
+
+    private fun pendingUploads(): Set<String> = settings.getStringSet(KEY_PENDING, emptySet()).orEmpty().toSet()
+
+    /** Retries uploads that were queued without a connection. Called at start and after logging in. */
+    fun flushUploads() {
+        if (vault.token() == null) return
+        pendingUploads().mapNotNull(store::load).forEach { uploadToLichess(it) }
+    }
+
+    private val uploadsFlow = MutableStateFlow(0)
+
+    /** Bumps whenever a game reaches Lichess, so screens can show its link. */
+    val uploadVersion: StateFlow<Int> = uploadsFlow.asStateFlow()
+
     var myName: String
         get() = settings.getString(KEY_MY_NAME, "").orEmpty()
         set(value) = settings.edit().putString(KEY_MY_NAME, value).apply()
 
+    var phoneSounds: Boolean
+        get() = settings.getBoolean(KEY_PHONE_SOUNDS, true)
+        set(value) = settings.edit().putBoolean(KEY_PHONE_SOUNDS, value).apply()
+
+    var boardSounds: Boolean
+        get() = settings.getBoolean(KEY_BOARD_SOUNDS, true)
+        set(value) = settings.edit().putBoolean(KEY_BOARD_SOUNDS, value).apply()
+
+    var moveIdeas: Boolean
+        get() = settings.getBoolean(KEY_MOVE_IDEAS, false)
+        set(value) = settings.edit().putBoolean(KEY_MOVE_IDEAS, value).apply()
+
+    var openingHistory: Boolean
+        get() = settings.getBoolean(KEY_OPENING_HISTORY, false)
+        set(value) = settings.edit().putBoolean(KEY_OPENING_HISTORY, value).apply()
+
+    var explainOpening: Boolean
+        get() = settings.getBoolean(KEY_EXPLAIN_OPENING, true)
+        set(value) = settings.edit().putBoolean(KEY_EXPLAIN_OPENING, value).apply()
+
+    /** True while Play is using the Air, so the live game does not score those placements. */
+    @Volatile var playEngaged: Boolean = false
+
+    @Volatile var boardSession: ChessnutSession? = null
+
+    @Volatile var latestPlacement: String? = null
+
+    private val placementFlow = MutableSharedFlow<String>(replay = 1, extraBufferCapacity = 8)
+    val placements: SharedFlow<String> = placementFlow.asSharedFlow()
+
+    fun attachBoard(session: ChessnutSession?) {
+        boardSession = session
+    }
+
+    fun notePlacement(placement: String) {
+        latestPlacement = placement
+        placementFlow.tryEmit(placement)
+    }
+
     override fun onCreate() {
         super.onCreate()
         refreshGames()
+        repertoire.names()
+        flushUploads()
     }
 
     fun refreshGames() {
+        store.shelveUnfiled(System.currentTimeMillis())
         gamesFlow.value = store.all()
     }
 
@@ -92,5 +231,14 @@ class OtbApp : Application() {
 
     private companion object {
         const val KEY_MY_NAME = "my_name"
+        const val KEY_AUTO_UPLOAD = "auto_upload"
+        const val KEY_LINK_PREFIX = "lichess_link_"
+        const val KEY_PENDING = "lichess_pending_uploads"
+        const val TAG = "Upload"
+        const val KEY_PHONE_SOUNDS = "phone_sounds"
+        const val KEY_BOARD_SOUNDS = "board_sounds"
+        const val KEY_EXPLAIN_OPENING = "explain_opening"
+        const val KEY_OPENING_HISTORY = "opening_history"
+        const val KEY_MOVE_IDEAS = "move_ideas"
     }
 }

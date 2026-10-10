@@ -121,6 +121,28 @@ class LiveGameTest {
     }
 
     @Test
+    fun aFlickerWhileTheKingIsUpIsNotCheckmate() {
+        val tracker = LiveGameTracker()
+        tracker.onPlacement(FakeChessnutBoard.START_PLACEMENT, 0)
+        val flicker = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPPPPPP/RNBQ1BNR"
+        val event = tracker.onPlacement(flicker, 1_000)
+        assertIs<LiveEvent.Illegal>(event)
+        assertEquals(null, tracker.snapshot(1_000).end)
+        assertFalse(tracker.snapshot(1_000).ended)
+        assertEquals(emptyList(), tracker.snapshot(1_000).sanMoves)
+    }
+
+    @Test
+    fun kingsTouchingAreNotCheckmate() {
+        val tracker = LiveGameTracker()
+        tracker.onPlacement(FakeChessnutBoard.START_PLACEMENT, 0)
+        val touching = "rnbq1bnr/pppppppp/8/4k3/4K3/8/PPPPPPPP/RNBQ1BNR"
+        val event = tracker.onPlacement(touching, 1_000)
+        assertIs<LiveEvent.Illegal>(event)
+        assertFalse(tracker.snapshot(1_000).ended)
+    }
+
+    @Test
     fun liftingTheKingIsNotCheckmate() {
         val tracker = LiveGameTracker()
         tracker.onPlacement(FakeChessnutBoard.START_PLACEMENT, 0)

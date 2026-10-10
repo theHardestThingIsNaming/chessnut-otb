@@ -8,20 +8,26 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -38,14 +44,21 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.chessnut.otb.analysis.AccuracyCalculator
 import app.chessnut.otb.analysis.ChessLines
+import app.chessnut.otb.board.BoardLinkSection
+import app.chessnut.otb.board.BoardViewModel
 import app.chessnut.otb.games.GameSource
 import app.chessnut.otb.games.SavedGame
 import app.chessnut.otb.ui.BoardFrame
+import app.chessnut.otb.ui.BoardMark
+import app.chessnut.otb.ui.BookMark
 import app.chessnut.otb.ui.ChessBoard
+import app.chessnut.otb.ui.ClockMark
 import app.chessnut.otb.ui.Palette
+import app.chessnut.otb.ui.PawnMark
 import app.chessnut.otb.ui.ResultChip
 import app.chessnut.otb.ui.clubAppBarColors
 import app.chessnut.otb.ui.clubChipColors
+import app.chessnut.otb.ui.clubOutlinedButtonColors
 import app.chessnut.otb.ui.clubPanel
 import app.chessnut.otb.ui.clubTextButtonColors
 import java.util.Locale
@@ -54,18 +67,25 @@ import java.util.Locale
 @Composable
 fun GamesScreen(
     app: OtbApp,
+    board: BoardViewModel,
     onOpen: (String) -> Unit,
     onBoard: () -> Unit,
+    onBot: () -> Unit,
+    onOnline: () -> Unit,
+    onTrainer: () -> Unit,
     onAbout: () -> Unit,
     onImport: (String) -> String?,
+    onMistakes: () -> Unit = {},
 ) {
     val games by app.games.collectAsStateWithLifecycle()
     val progress by app.analysisProgress.collectAsStateWithLifecycle()
     val version by app.analysisVersion.collectAsStateWithLifecycle()
     var menu by remember { mutableStateOf(false) }
+    var sounds by remember { mutableStateOf(false) }
     var pasting by remember { mutableStateOf(false) }
     var naming by remember { mutableStateOf(false) }
     var folder by remember { mutableStateOf("") }
+    var browsing by remember { mutableStateOf(false) }
     var newFolder by remember { mutableStateOf(false) }
     var renameFolder by remember { mutableStateOf<String?>(null) }
     var pendingDelete by remember { mutableStateOf<SavedGame?>(null) }
@@ -73,91 +93,106 @@ fun GamesScreen(
     var moving by remember { mutableStateOf<SavedGame?>(null) }
 
     val folders = games.map { it.folder }.filter { it.isNotBlank() }.distinct().sorted()
-    val visible = games.filter { it.folder == folder }
+    val visible = if (browsing) games.filter { it.folder == folder } else games.filter { it.folder.isBlank() }
 
     Scaffold(
         containerColor = androidx.compose.ui.graphics.Color.Transparent,
         contentColor = Palette.Text,
         topBar = {
             TopAppBar(
-                title = { Text("Club games") },
+                title = {},
                 colors = clubAppBarColors(),
                 actions = {
                     TextButton(onClick = { menu = true }, colors = clubTextButtonColors()) { Text("More", color = Palette.Gold) }
                     DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+                        DropdownMenuItem(text = { Text("Learn from mistakes") }, onClick = { menu = false; onMistakes() })
                         DropdownMenuItem(text = { Text("Paste a PGN") }, onClick = { menu = false; pasting = true })
+                        DropdownMenuItem(text = { Text("Settings") }, onClick = { menu = false; sounds = true })
                         DropdownMenuItem(text = { Text("My name") }, onClick = { menu = false; naming = true })
                         DropdownMenuItem(text = { Text("About") }, onClick = { menu = false; onAbout() })
                     }
                 },
             )
         },
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = onBoard,
-                containerColor = Palette.Gold,
-                contentColor = Palette.OnGold,
-            ) { Text("Read from board") }
-        },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
-            Row(
-                Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                androidx.compose.foundation.lazy.LazyRow(
-                    Modifier.weight(1f),
+            BoardLinkSection(board, Modifier.padding(horizontal = 16.dp, vertical = 4.dp), compact = true)
+            Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(
+                    onClick = onBoard,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = Palette.Gold, contentColor = Palette.OnGold),
+                ) {
+                    BoardMark(Palette.OnGold)
+                    Text("Play over the board", modifier = Modifier.padding(start = 8.dp))
+                }
+                OutlinedButton(onClick = onBot, modifier = Modifier.fillMaxWidth(), colors = clubOutlinedButtonColors()) {
+                    PawnMark(Palette.Gold)
+                    Text("Play a bot", modifier = Modifier.padding(start = 8.dp))
+                }
+                OutlinedButton(onClick = onOnline, modifier = Modifier.fillMaxWidth(), colors = clubOutlinedButtonColors()) {
+                    ClockMark(Palette.Gold)
+                    Text("Play online", modifier = Modifier.padding(start = 8.dp))
+                }
+                OutlinedButton(onClick = onTrainer, modifier = Modifier.fillMaxWidth(), colors = clubOutlinedButtonColors()) {
+                    BookMark(Palette.Gold)
+                    Text("Opening trainer", modifier = Modifier.padding(start = 8.dp))
+                }
+            }
+            if (browsing) {
+                Row(
+                    Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    item {
-                        FilterChip(
-                            selected = folder.isEmpty(),
-                            onClick = { folder = "" },
-                            colors = clubChipColors(),
-                            label = { Text("Games", color = if (folder.isEmpty()) Palette.OnGold else Palette.Text) },
-                        )
+                    TextButton(onClick = { browsing = false; folder = "" }, colors = clubTextButtonColors()) { Text("Recent", color = Palette.Gold) }
+                    LazyRow(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        items(folders) { name ->
+                            FilterChip(
+                                selected = folder == name,
+                                onClick = { folder = name },
+                                colors = clubChipColors(),
+                                label = { Text(name, color = if (folder == name) Palette.OnGold else Palette.Text) },
+                            )
+                        }
                     }
-                    items(folders) { name ->
-                        FilterChip(
-                            selected = folder == name,
-                            onClick = { folder = name },
-                            colors = clubChipColors(),
-                            label = { Text(name, color = if (folder == name) Palette.OnGold else Palette.Text) },
-                        )
+                    TextButton(onClick = { newFolder = true }, colors = clubTextButtonColors()) { Text("Folder", color = Palette.Gold) }
+                }
+                if (folder.isNotBlank()) {
+                    Row(Modifier.padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        TextButton(onClick = { renameFolder = folder }, colors = clubTextButtonColors()) { Text("Rename folder", color = Palette.Gold) }
+                        TextButton(onClick = { app.deleteFolder(folder); folder = ""; browsing = folders.size <= 1 }, colors = clubTextButtonColors()) { Text("Remove folder", color = Palette.Error) }
                     }
                 }
-                TextButton(onClick = { newFolder = true }, colors = clubTextButtonColors()) { Text("Folder", color = Palette.Gold) }
-            }
-            if (folder.isNotBlank()) {
-                Row(Modifier.padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    TextButton(onClick = { renameFolder = folder }, colors = clubTextButtonColors()) { Text("Rename folder", color = Palette.Gold) }
-                    TextButton(onClick = { app.deleteFolder(folder); folder = "" }, colors = clubTextButtonColors()) { Text("Remove folder", color = Palette.Error) }
-                }
-            }
-            if (visible.isEmpty()) {
-                Column(
-                    Modifier.fillMaxSize().padding(28.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp),
+            } else {
+                Row(
+                    Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(
-                        if (folder.isBlank()) "The scoresheet is empty." else "$folder is empty.",
-                        style = MaterialTheme.typography.displaySmall,
-                    )
-                    Text(
-                        if (folder.isBlank()) {
-                            "Sit the phone by the board, then tap Read from board to copy games from the Chessnut Air. You can also share a PGN into this app."
-                        } else {
-                            "Move a game here from the ⋮ menu on a card. Removing the folder puts those games back in Games."
-                        },
-                        color = Palette.Text,
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
+                    Text("Recent", color = Palette.Text, fontWeight = FontWeight.SemiBold)
+                    TextButton(onClick = {
+                        browsing = true
+                        if (folder.isBlank()) folder = folders.firstOrNull().orEmpty()
+                    }, colors = clubTextButtonColors()) { Text("Folders", color = Palette.Gold) }
                 }
+            }
+            if (!browsing && visible.isEmpty()) {
+                Text(
+                    "Nothing from the last month.",
+                    color = Palette.TextMuted,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                )
+            } else if (visible.isEmpty()) {
+                Text(
+                    if (folder.isBlank()) "No folders yet." else "$folder is empty.",
+                    color = Palette.TextMuted,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                )
             } else {
                 LazyColumn(
                     Modifier.fillMaxSize(),
-                    contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp, 4.dp, 16.dp, 96.dp),
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp, 4.dp, 16.dp, 24.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
                     items(visible, key = { it.id }) { game ->
@@ -171,6 +206,14 @@ fun GamesScreen(
                             onMove = { moving = game },
                             onDelete = { pendingDelete = game },
                         )
+                    }
+                    if (!browsing && "Earlier" in folders) {
+                        item {
+                            TextButton(
+                                onClick = { browsing = true; folder = "Earlier" },
+                                colors = clubTextButtonColors(),
+                            ) { Text("Earlier", color = Palette.Gold) }
+                        }
                     }
                 }
             }
@@ -198,6 +241,7 @@ fun GamesScreen(
             dismissButton = { TextButton(onClick = { pasting = false }) { Text("Cancel") } },
         )
     }
+    if (sounds) SoundDialog(app, onDismiss = { sounds = false })
     if (naming) {
         var name by remember { mutableStateOf(app.myName) }
         AlertDialog(
@@ -261,6 +305,52 @@ fun GamesScreen(
 }
 
 @Composable
+private fun SoundDialog(app: OtbApp, onDismiss: () -> Unit) {
+    var phone by remember { mutableStateOf(app.phoneSounds) }
+    var board by remember { mutableStateOf(app.boardSounds) }
+    var upload by remember { mutableStateOf(app.autoUpload) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Settings") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("The phone says each move and beeps. The board only buzzes. Lights stay on.", color = Palette.Text)
+                SoundSwitch("Phone", phone) {
+                    phone = it
+                    app.phoneSounds = it
+                }
+                SoundSwitch("Board", board) {
+                    board = it
+                    app.boardSounds = it
+                }
+                Text(
+                    "Club games from the board go to your Lichess account as soon as they are saved. Imported games are public on Lichess.",
+                    color = Palette.TextMuted,
+                    modifier = Modifier.padding(top = 8.dp),
+                )
+                SoundSwitch("Upload club games to Lichess", upload) {
+                    upload = it
+                    app.autoUpload = it
+                }
+            }
+        },
+        confirmButton = { TextButton(onClick = onDismiss) { Text("Done") } },
+    )
+}
+
+@Composable
+private fun SoundSwitch(label: String, checked: Boolean, onChecked: (Boolean) -> Unit) {
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(label, color = Palette.Text)
+        Switch(checked = checked, onCheckedChange = onChecked)
+    }
+}
+
+@Composable
 private fun GameRow(
     app: OtbApp,
     game: SavedGame,
@@ -296,7 +386,11 @@ private fun GameRow(
                 val details = listOfNotNull(
                     game.date.ifBlank { null },
                     "${(game.sanMoves.size + 1) / 2} moves",
-                    if (game.source == GameSource.Board) "board" else "PGN",
+                    when (game.source) {
+                        GameSource.Board -> "board"
+                        GameSource.Pgn -> "PGN"
+                        GameSource.Play -> "play"
+                    },
                 ).joinToString("  ·  ")
                 Text(details, color = Palette.Text, style = MaterialTheme.typography.bodyMedium)
                 when {

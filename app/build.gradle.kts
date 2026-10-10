@@ -155,6 +155,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.9.4")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.4")
     implementation("androidx.work:work-runtime-ktx:2.10.5")
+    implementation("androidx.browser:browser:1.8.0")
 
     debugImplementation("com.github.engelon:BLEForEmulator:v0.1.1")
     debugImplementation("androidx.compose.ui:ui-tooling")

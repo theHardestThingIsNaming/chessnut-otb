@@ -6,7 +6,7 @@ import app.chessnut.otb.pgn.GameHeaders
 import app.chessnut.otb.pgn.applyHeaders
 import app.chessnut.otb.pgn.movetextOf
 
-enum class GameSource { Board, Pgn }
+enum class GameSource { Board, Pgn, Play }
 
 data class SavedGame(
     val id: String,

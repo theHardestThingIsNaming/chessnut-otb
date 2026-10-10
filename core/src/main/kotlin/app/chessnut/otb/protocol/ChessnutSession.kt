@@ -90,11 +90,11 @@ class ChessnutSession(
 
     suspend fun requestBattery() = write(BATTERY)
 
-    /** Lights every square and beeps once so a connect can be heard and seen. */
-    suspend fun announceConnected() {
+    /** Lights every square, and beeps once when [sound] is on, so a connect is obvious. */
+    suspend fun announceConnected(sound: Boolean = true) {
         setLeds(LedCodec.ALL)
-        beep(1000, 180)
-        delay(400)
+        if (sound) beep(1000, 180)
+        delay(if (sound) 400 else 250)
         setLeds(emptyList())
     }
 

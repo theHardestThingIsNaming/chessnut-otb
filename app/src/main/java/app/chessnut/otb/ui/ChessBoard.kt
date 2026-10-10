@@ -1,10 +1,17 @@
 package app.chessnut.otb.ui
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -102,24 +109,57 @@ fun ChessBoard(
     arrows: List<Arrow> = emptyList(),
     highlights: Set<Int> = emptySet(),
     onSquare: ((Int) -> Unit)? = null,
+    onDrag: ((Int, Int) -> Unit)? = null,
 ) {
     val squares = squaresOf(fen)
-    val tap = if (onSquare != null) {
-        Modifier.pointerInput(flipped, onSquare) {
-            detectTapGestures { offset ->
-                val cell = size.width / 8f
-                val column = (offset.x / cell).toInt().coerceIn(0, 7)
-                val row = (offset.y / cell).toInt().coerceIn(0, 7)
-                val file = if (flipped) 7 - column else column
-                val rank = if (flipped) row else 7 - row
-                onSquare(rank * 8 + file)
+    var dragFrom by remember { mutableStateOf<Int?>(null) }
+    var dragAt by remember { mutableStateOf<Offset?>(null) }
+    val fenNow = rememberUpdatedState(fen)
+    val onSquareNow = rememberUpdatedState(onSquare)
+    val onDragNow = rememberUpdatedState(onDrag)
+    val gesture = when {
+        onDrag != null -> Modifier.pointerInput(flipped) {
+            val boardWidth = size.width.toFloat()
+            val slop = viewConfiguration.touchSlop
+            awaitEachGesture {
+                val down = awaitFirstDown(requireUnconsumed = false)
+                val origin = squareAt(down.position, boardWidth, flipped)
+                if (squaresOf(fenNow.value).getOrElse(origin) { '.' } == '.') return@awaitEachGesture
+                down.consume()
+                var past = false
+                try {
+                    while (true) {
+                        val event = awaitPointerEvent()
+                        val change = event.changes.firstOrNull { it.id == down.id } ?: break
+                        if (!change.pressed) {
+                            val end = squareAt(change.position, boardWidth, flipped)
+                            if (past && end != origin) onDragNow.value?.invoke(origin, end) else onSquareNow.value?.invoke(origin)
+                            break
+                        }
+                        if (!past && (change.position - down.position).getDistance() > slop) past = true
+                        if (past) {
+                            dragFrom = origin
+                            dragAt = change.position
+                            change.consume()
+                        }
+                    }
+                } finally {
+                    dragFrom = null
+                    dragAt = null
+                }
             }
         }
-    } else {
-        Modifier
+        onSquare != null -> Modifier.pointerInput(flipped, onSquare) {
+            detectTapGestures { offset ->
+                onSquare(squareAt(offset, size.width.toFloat(), flipped))
+            }
+        }
+        else -> Modifier
     }
-    Canvas(modifier.fillMaxWidth().aspectRatio(1f).clip(RoundedCornerShape(4.dp)).then(tap)) {
+    Canvas(modifier.fillMaxWidth().aspectRatio(1f).clip(RoundedCornerShape(4.dp)).then(gesture)) {
         val cell = size.width / 8f
+        val held = dragFrom
+        val finger = dragAt
         for (index in 0 until 64) {
             val file = index % 8
             val rank = index / 8
@@ -134,7 +174,7 @@ fun ChessBoard(
             if (index == selected) drawRect(Palette.Selected, topLeft, Size(cell, cell))
             if (index in highlights) drawRect(Palette.Gambit, topLeft, Size(cell, cell))
             val piece = squares[index]
-            if (piece != '.') drawPiece(piece, topLeft, cell)
+            if (piece != '.' && index != held) drawPiece(piece, topLeft, cell)
             if (index in targets) {
                 drawCircle(Color(0x66000000), cell * 0.16f, topLeft + Offset(cell / 2, cell / 2))
             }
@@ -147,7 +187,29 @@ fun ChessBoard(
         for (arrow in arrows) {
             if (arrow.from != arrow.to) drawArrow(centre(arrow.from), centre(arrow.to), arrow.color, cell)
         }
+        if (held != null && finger != null && held in squares.indices && squares[held] != '.') {
+            drawPiece(squares[held], finger - Offset(cell / 2f, cell / 2f), cell)
+        }
     }
+}
+
+/** One piece, on a light square, for material counts and other small marks. */
+@Composable
+fun PieceIcon(piece: Char, modifier: Modifier = Modifier) {
+    Canvas(modifier.clip(RoundedCornerShape(2.dp))) {
+        drawRect(Palette.LightSquare)
+        val inset = size.minDimension * 0.08f
+        drawPiece(piece, Offset(inset, inset), size.minDimension - inset * 2)
+    }
+}
+
+private fun squareAt(offset: Offset, width: Float, flipped: Boolean): Int {
+    val cell = width / 8f
+    val column = (offset.x / cell).toInt().coerceIn(0, 7)
+    val row = (offset.y / cell).toInt().coerceIn(0, 7)
+    val file = if (flipped) 7 - column else column
+    val rank = if (flipped) row else 7 - row
+    return rank * 8 + file
 }
 
 private fun DrawScope.drawArrow(from: Offset, to: Offset, color: Color, cell: Float) {

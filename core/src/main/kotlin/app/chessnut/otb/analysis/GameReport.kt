@@ -1,9 +1,14 @@
 package app.chessnut.otb.analysis
 
+import com.github.bhlangonijr.chesslib.Board
+import com.github.bhlangonijr.chesslib.Piece
+import com.github.bhlangonijr.chesslib.PieceType
+import com.github.bhlangonijr.chesslib.Square
+import com.github.bhlangonijr.chesslib.move.Move
 import kotlin.math.exp
 import kotlin.math.sqrt
 
-enum class MoveClass { Best, Good, Inaccuracy, Mistake, Blunder }
+enum class MoveClass { Brilliant, Best, Excellent, Good, Inaccuracy, Mistake, Blunder }
 
 data class MoveReport(
     val ply: Int,
@@ -27,8 +32,11 @@ data class GameReport(val whiteAccuracy: Double?, val blackAccuracy: Double?, va
  * from the formulas, not from lila's source. Numbers come out close to
  * Lichess, not identical: depth and engine build differ.
  *
- * Classification uses the mover's win-percentage drop: 10 inaccuracy,
- * 20 mistake, 30 blunder.
+ * Classification uses the mover's win-percentage drop. A sound sacrifice
+ * (the opponent can win material they could not win before, and the move is
+ * still best, excellent, or good) is brilliant. Otherwise the engine's move
+ * is best, a drop of 2 or less is excellent, then good, and 10 / 20 / 30
+ * are an inaccuracy, a mistake, and a blunder.
  */
 object AccuracyCalculator {
     fun moveAccuracy(winBefore: Double, winAfter: Double): Double {
@@ -38,12 +46,35 @@ object AccuracyCalculator {
         return (raw + 1).coerceIn(0.0, 100.0)
     }
 
-    fun classify(winDrop: Double, playedBest: Boolean): MoveClass = when {
-        playedBest -> MoveClass.Best
-        winDrop >= 30 -> MoveClass.Blunder
-        winDrop >= 20 -> MoveClass.Mistake
-        winDrop >= 10 -> MoveClass.Inaccuracy
-        else -> MoveClass.Good
+    fun classify(winDrop: Double, playedBest: Boolean, sacrifice: Boolean = false): MoveClass {
+        val sound = playedBest || winDrop < 10
+        if (sacrifice && sound) return MoveClass.Brilliant
+        if (playedBest) return MoveClass.Best
+        return when {
+            winDrop >= 30.0 -> MoveClass.Blunder
+            winDrop >= 20.0 -> MoveClass.Mistake
+            winDrop >= 10.0 -> MoveClass.Inaccuracy
+            winDrop <= 2.0 -> MoveClass.Excellent
+            else -> MoveClass.Good
+        }
+    }
+
+    /**
+     * True when [uci] gives the opponent a material gain they did not already
+     * have: a piece left where it can be taken, or a defender moved away.
+     * An even trade is not a sacrifice.
+     */
+    fun isSacrifice(fen: String, uci: String): Boolean {
+        return try {
+            val board = Board().apply { loadFromFen(fen) }
+            val move = board.legalMoves().firstOrNull { it.toString().lowercase() == uci.lowercase() } ?: return false
+        val taken = capturedValue(board, move)
+        val before = opponentBoard(fen)?.let { bestCapture(it) } ?: 0
+        if (!board.doMove(move)) return false
+        bestCapture(board) - taken > before
+        } catch (_: RuntimeException) {
+            false
+        }
     }
 
     /** [playedUci] has one entry per move; [analysis] has one more position than moves. */
@@ -58,6 +89,7 @@ object AccuracyCalculator {
             val before = if (whiteMoved) whiteWins[ply] else 100 - whiteWins[ply]
             val after = if (whiteMoved) whiteWins[ply + 1] else 100 - whiteWins[ply + 1]
             val best = positions[ply].lines.firstOrNull()?.uci?.firstOrNull()
+            val played = playedUci.getOrNull(ply)
             MoveReport(
                 ply = ply,
                 san = sanMoves[ply],
@@ -65,7 +97,11 @@ object AccuracyCalculator {
                 winBefore = before,
                 winAfter = after,
                 accuracy = moveAccuracy(before, after),
-                classification = classify(before - after, best != null && best == playedUci.getOrNull(ply)),
+                classification = classify(
+                    before - after,
+                    best != null && best == played,
+                    sacrifice = played != null && isSacrifice(positions[ply].fen, played),
+                ),
                 bestUci = best,
             )
         }
@@ -87,6 +123,58 @@ object AccuracyCalculator {
             return (weighted + harmonic) / 2
         }
         return GameReport(sideAccuracy(true), sideAccuracy(false), moves)
+    }
+
+    /** The same position with the other side to move, so their captures can be measured. */
+    private fun opponentBoard(fen: String): Board? {
+        val parts = fen.split(' ').toMutableList()
+        if (parts.size < 4) return null
+        parts[1] = if (parts[1] == "w") "b" else "w"
+        parts[3] = "-"
+        return try {
+            Board().apply { loadFromFen(parts.joinToString(" ")) }
+        } catch (_: RuntimeException) {
+            null
+        }
+    }
+
+    private fun bestCapture(board: Board): Int {
+        val squares = board.legalMoves().filter { capturedValue(board, it) > 0 }.map { it.to }.distinct()
+        var best = 0
+        for (square in squares) {
+            val gain = see(board, square)
+            if (gain > best) best = gain
+        }
+        return best
+    }
+
+    /** Material the side to move wins by capturing on [square], or a loss if they cannot. */
+    private fun see(board: Board, square: Square): Int {
+        val captures = board.legalMoves().filter { it.to == square && capturedValue(board, it) > 0 }
+        if (captures.isEmpty()) return 0
+        val move = captures.minBy { pieceValue(board.getPiece(it.from)) }
+        val gained = capturedValue(board, move)
+        if (!board.doMove(move)) return 0
+        val reply = see(board, square).coerceAtLeast(0)
+        board.undoMove()
+        return gained - reply
+    }
+
+    private fun capturedValue(board: Board, move: Move): Int {
+        val onTarget = board.getPiece(move.to)
+        if (onTarget != Piece.NONE) return pieceValue(onTarget)
+        val mover = board.getPiece(move.from)
+        if (mover.pieceType == PieceType.PAWN && move.from.file != move.to.file) return 1
+        return 0
+    }
+
+    private fun pieceValue(piece: Piece): Int = when (piece.pieceType) {
+        PieceType.PAWN -> 1
+        PieceType.KNIGHT, PieceType.BISHOP -> 3
+        PieceType.ROOK -> 5
+        PieceType.QUEEN -> 9
+        PieceType.KING -> 100
+        else -> 0
     }
 
     private fun standardDeviation(values: List<Double>): Double {

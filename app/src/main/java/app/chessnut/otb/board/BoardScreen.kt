@@ -58,7 +58,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import java.util.Locale
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.chessnut.otb.live.LiveEnd
@@ -67,12 +66,17 @@ import app.chessnut.otb.live.TimeControl
 import app.chessnut.otb.ui.BoardFrame
 import app.chessnut.otb.ui.ChessBoard
 import app.chessnut.otb.ui.Palette
+import app.chessnut.otb.ui.ClockMark
+import app.chessnut.otb.ui.FlagMark
+import app.chessnut.otb.ui.HalfMark
 import app.chessnut.otb.ui.clubAppBarColors
 import app.chessnut.otb.ui.clubChipColors
 import app.chessnut.otb.ui.clubOutlinedButtonColors
 import app.chessnut.otb.ui.clubPanel
 import app.chessnut.otb.ui.clubTextButtonColors
+import app.chessnut.otb.ui.formatClock
 import app.chessnut.otb.ui.squareIndex
+import app.chessnut.otb.ui.KeepScreenOn
 
 private val bluetoothPermissions: Array<String> =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -81,24 +85,100 @@ private val bluetoothPermissions: Array<String> =
         arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
+@Composable
+fun BoardLinkSection(model: BoardViewModel, modifier: Modifier = Modifier, compact: Boolean = false) {
+    val ui by model.ui.collectAsStateWithLifecycle()
+    val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
+        if (granted.values.all { it }) model.autoConnect()
+    }
+    val connected = ui.connected
+    if (compact && connected != null) {
+        Row(
+            modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(
+                connected.name.trim(),
+                color = Palette.Text,
+                modifier = Modifier.weight(1f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            ui.batteryPercent?.let { percent ->
+                Text("$percent%", color = if (percent <= 15) Palette.Error else Palette.Gold, fontWeight = FontWeight.SemiBold)
+            }
+            TextButton(onClick = model::disconnect, colors = clubTextButtonColors()) { Text("Disconnect", color = Palette.Gold) }
+        }
+        return
+    }
+    Column(modifier.fillMaxWidth().clubPanel().padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text("Chessnut Air", color = Palette.Gold, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+        if (connected != null) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    connected.name.trim(),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Palette.Text,
+                    modifier = Modifier.weight(1f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                ui.batteryPercent?.let { percent ->
+                    Text("$percent%", color = if (percent <= 15) Palette.Error else Palette.Gold, fontWeight = FontWeight.SemiBold)
+                }
+                TextButton(onClick = model::disconnect, colors = clubTextButtonColors()) { Text("Disconnect", color = Palette.Gold) }
+            }
+        } else {
+            when {
+                ui.needsPermission -> {
+                    Text("Allow Bluetooth so the app can connect to your board.", color = Palette.Text)
+                    Button(onClick = { permissionLauncher.launch(bluetoothPermissions) }) { Text("Allow Bluetooth") }
+                }
+                ui.scanning || ui.busy != null -> {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        CircularProgressIndicator(Modifier.height(22.dp).width(22.dp), color = Palette.Gold, strokeWidth = 2.dp)
+                        Text(ui.busy?.let { "$it…" } ?: "Looking for your board…", color = Palette.Text)
+                    }
+                }
+                ui.found.isNotEmpty() -> {
+                    ui.message?.let { Text(it, color = Palette.Text) }
+                    Text("Tap your board to connect.", color = Palette.Text)
+                    ui.found.forEach { board ->
+                        Column(Modifier.fillMaxWidth().clickable { model.connect(board) }.padding(vertical = 6.dp)) {
+                            Text(board.name.trim(), color = Palette.Text, style = MaterialTheme.typography.titleMedium)
+                            Text("${board.address}  ${board.rssi?.let { "$it dBm" }.orEmpty()}", color = Palette.TextMuted)
+                        }
+                    }
+                }
+                else -> {
+                    Text(ui.message ?: "Not connected.", color = Palette.Text)
+                    Button(onClick = model::autoConnect, enabled = ui.busy == null) { Text("Try again") }
+                }
+            }
+            if (model.options.size > 1 && ui.busy == null && !ui.scanning) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    model.options.forEachIndexed { index, option ->
+                        FilterChip(
+                            selected = index == ui.optionIndex,
+                            onClick = { model.select(index) },
+                            colors = clubChipColors(),
+                            label = { Text(option.label, color = if (index == ui.optionIndex) Palette.OnGold else Palette.Text) },
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BoardScreen(model: BoardViewModel, onBack: () -> Unit, onAnalyze: (String) -> Unit = {}) {
+    KeepScreenOn()
     val ui by model.ui.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var confirmClear by remember { mutableStateOf(false) }
-    var permissionMessage by remember { mutableStateOf<String?>(null) }
-
-    val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
-        if (granted.values.all { it }) model.scan() else permissionMessage = "Bluetooth permission is needed to find the board."
-    }
-
-    fun startScan() {
-        val missing = bluetoothPermissions.any {
-            ContextCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED
-        }
-        if (model.selected.needsPermissions && missing) permissionLauncher.launch(bluetoothPermissions) else model.scan()
-    }
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -122,31 +202,8 @@ fun BoardScreen(model: BoardViewModel, onBack: () -> Unit, onAnalyze: (String) -
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             if (ui.connected == null) {
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    model.options.forEachIndexed { index, option ->
-                        FilterChip(
-                            selected = index == ui.optionIndex,
-                            onClick = { model.select(index) },
-                            colors = clubChipColors(),
-                            label = { Text(option.label, color = if (index == ui.optionIndex) Palette.OnGold else Palette.Text) },
-                        )
-                    }
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Button(onClick = ::startScan, enabled = !ui.scanning && ui.busy == null) { Text("Find board") }
-                    if (ui.scanning) {
-                        Spacer(Modifier.width(12.dp))
-                        CircularProgressIndicator(Modifier.height(24.dp).width(24.dp))
-                    }
-                }
-                ui.found.forEach { board ->
-                    Column(
-                        Modifier.fillMaxWidth().clubPanel().clickable { model.connect(board) }.padding(14.dp),
-                    ) {
-                        Text(board.name.trim(), style = MaterialTheme.typography.titleMedium, color = Palette.Text)
-                        Text("${board.address}  ${board.rssi?.let { "$it dBm" }.orEmpty()}", color = Palette.TextMuted)
-                    }
-                }
+                BoardLinkSection(model)
+                LogView(ui.log, Modifier.weight(1f))
             } else {
                 LiveGamePanel(
                     ui,
@@ -165,9 +222,10 @@ fun BoardScreen(model: BoardViewModel, onBack: () -> Unit, onAnalyze: (String) -
                     log = ui.log,
                 )
             }
-            ui.busy?.let { Text("$it…", color = Palette.Gold) }
-            (permissionMessage ?: ui.message)?.let { Text(it, color = Palette.Text) }
-            if (ui.connected == null) LogView(ui.log, Modifier.weight(1f))
+            if (ui.connected != null) {
+                ui.busy?.let { Text("$it…", color = Palette.Gold) }
+                ui.message?.let { Text(it, color = Palette.Text) }
+            }
         }
     }
 
@@ -319,17 +377,23 @@ private fun statusLine(live: LiveSnapshot): String = when (live.end) {
 private fun TimeControlChip(current: TimeControl, enabled: Boolean, onSelect: (TimeControl) -> Unit) {
     var open by remember { mutableStateOf(false) }
     ExposedDropdownMenuBox(expanded = open && enabled, onExpandedChange = { if (enabled) open = it }) {
-        Text(
-            "${current.label} ▾",
-            color = if (enabled) Palette.Gold else Palette.TextMuted,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
+        Row(
+            Modifier
                 .menuAnchor()
                 .clip(RoundedCornerShape(8.dp))
                 .background(Palette.SurfaceHigh)
                 .border(1.dp, Palette.GoldDim, RoundedCornerShape(8.dp))
                 .padding(horizontal = 10.dp, vertical = 6.dp),
-        )
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            ClockMark(if (enabled) Palette.Gold else Palette.TextMuted)
+            Text(
+                "${current.label} ▾",
+                color = if (enabled) Palette.Gold else Palette.TextMuted,
+                fontWeight = FontWeight.Bold,
+            )
+        }
         ExposedDropdownMenu(expanded = open && enabled, onDismissRequest = { open = false }) {
             TimeControl.Presets.forEach { preset ->
                 DropdownMenuItem(
@@ -393,6 +457,7 @@ private fun PlayerStrip(
                 Box(Modifier.width(1.dp).fillMaxHeight().background(border.copy(alpha = 0.7f)))
                 StripAction(
                     label = drawLabel,
+                    icon = { HalfMark(if (drawActive) Palette.OnGold else if (light) Palette.Ink else Palette.Gold) },
                     onClick = onDraw,
                     fill = when {
                         drawActive -> Palette.Gold
@@ -409,6 +474,7 @@ private fun PlayerStrip(
                 Box(Modifier.width(1.dp).fillMaxHeight().background(border.copy(alpha = 0.7f)))
                 StripAction(
                     label = "Resign",
+                    icon = { FlagMark(Palette.Error) },
                     onClick = onResign,
                     fill = if (light) Color(0xFFF3D4C8) else Color(0xFF3A221C),
                     text = Palette.Error,
@@ -423,6 +489,7 @@ private fun PlayerStrip(
 @Composable
 private fun StripAction(
     label: String,
+    icon: @Composable () -> Unit,
     onClick: () -> Unit,
     fill: Color,
     text: Color,
@@ -432,18 +499,11 @@ private fun StripAction(
         modifier.background(fill).clickable(onClick = onClick).padding(horizontal = 6.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Text(label, color = text, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, textAlign = TextAlign.Center, maxLines = 1)
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            icon()
+            Text(label, color = text, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, textAlign = TextAlign.Center, maxLines = 1)
+        }
     }
-}
-
-private fun formatClock(millis: Long): String {
-    val ms = millis.coerceAtLeast(0)
-    if (ms < 10_000) return String.format(Locale.ROOT, "0:%04.1f", ms / 1000.0)
-    val total = ms / 1000
-    val hours = total / 3600
-    val minutes = (total % 3600) / 60
-    val seconds = total % 60
-    return if (hours > 0) "%d:%02d:%02d".format(hours, minutes, seconds) else "%d:%02d".format(minutes, seconds)
 }
 
 private fun moveLine(sans: List<String>): String = buildString {

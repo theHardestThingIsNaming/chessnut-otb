@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
@@ -31,25 +30,14 @@ fun ClubAtmosphere(modifier: Modifier = Modifier, content: @Composable BoxScope.
     Box(
         modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    0f to Palette.BackgroundGlow,
-                    0.4f to Palette.Background,
-                    1f to Palette.Background,
-                ),
-            ),
+            .background(Palette.Background),
     ) {
         Canvas(Modifier.fillMaxSize()) {
-            val cell = size.width / 10f
-            val cols = 10
-            val rows = (size.height / cell).toInt() + 1
-            for (r in 0 until rows) {
-                for (c in 0 until cols) {
-                    if ((r + c) % 2 == 1) {
-                        drawRect(Color(0x07D7B56A), Offset(c * cell, r * cell), Size(cell, cell))
-                    }
-                }
-            }
+            drawCircle(
+                Color(0x18D7B56A),
+                radius = size.minDimension * 0.85f,
+                center = Offset(size.width * 0.5f, size.height * 0.08f),
+            )
         }
         content()
     }

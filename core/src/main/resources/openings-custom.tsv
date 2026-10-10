@@ -1,0 +1,48 @@
+eco	name	pgn
+A45	Kilkenny Gambit	1. d4 Nf6 2. g4
+A45	Kilkenny Gambit: Accepted	1. d4 Nf6 2. g4 Nxg4 3. e4 d6 4. Be2 Nf6 5. Nc3
+A45	Kilkenny Gambit: Maltese Falcon	1. d4 Nf6 2. g4 Nxg4 3. f3 Nf6 4. e4
+A45	Kilkenny Gambit: Declined	1. d4 Nf6 2. g4 d5 3. g5
+A00	The Cow	1. e3 d5 2. d3 e5 3. Ne2 Nf6 4. Ng3 Nc6 5. Nd2 Bc5 6. Nb3
+A00	Bongcloud Attack: 2...Nf6	1. e4 e5 2. Ke2 Nf6 3. Nc3 d5 4. exd5 Bc5 5. Ke1 O-O
+A00	Bongcloud Attack: 2...d5	1. e4 e5 2. Ke2 d5 3. exd5 Nf6 4. Nc3 Bc5 5. Ke1 O-O
+A00	Bongcloud Attack: 2...Bc5	1. e4 e5 2. Ke2 Bc5 3. d3 Nf6 4. Nc3 d5 5. Bg5 h6
+A00	The Cow: 6...Bb6	1. e3 d5 2. d3 e5 3. Ne2 Nf6 4. Ng3 Nc6 5. Nd2 Bc5 6. Nb3 Bb6 7. Be2 a5 8. c3 h5 9. h4 Qe7
+A00	The Cow: 6...Be7	1. e3 d5 2. d3 e5 3. Ne2 Nf6 4. Ng3 Nc6 5. Nd2 Bc5 6. Nb3 Be7 7. Be2 a5 8. a4 g6 9. O-O h5
+A00	The Cow: 6...Bd6	1. e3 d5 2. d3 e5 3. Ne2 Nf6 4. Ng3 Nc6 5. Nd2 Bc5 6. Nb3 Bd6 7. e4 d4 8. c3 a5 9. Be2 a4
+A00	Irish Gambit: 3...Nxe5	1. e4 e5 2. Nf3 Nc6 3. Nxe5 Nxe5 4. Nc3 Ng6 5. g3 Nf6 6. d4 d5
+A00	Irish Gambit: 3...Qe7	1. e4 e5 2. Nf3 Nc6 3. Nxe5 Qe7 4. Nf3 d5 5. d3 dxe4 6. dxe4 Qxe4+
+A00	Irish Gambit: 3...Qh4	1. e4 e5 2. Nf3 Nc6 3. Nxe5 Qh4 4. Qg4 Qxg4 5. Nxg4 f5 6. exf5 d5
+A00	Kilkenny Gambit: 2...Nxg4	1. d4 Nf6 2. g4 Nxg4 3. e4 d6 4. Ne2 Nd7 5. f3 Ngf6
+A00	Kilkenny Gambit: 2...d5	1. d4 Nf6 2. g4 d5 3. g5 Ne4 4. c4 h6 5. gxh6 e5
+A00	Kilkenny Gambit: 2...e5	1. d4 Nf6 2. g4 e5 3. Bg2 Nxg4 4. h3 Nxf2 5. Kxf2 Qh4+
+A00	King's Pawn Game: Wayward Queen Attack: 2...Nc6	1. e4 e5 2. Qh5 Nc6 3. Bc4 g6 4. Qf3 Nf6 5. Ne2 Bg7
+A00	King's Pawn Game: Wayward Queen Attack: 2...Nf6	1. e4 e5 2. Qh5 Nf6 3. Qxe5+ Be7 4. Qf4 Nc6 5. e5 Nh5
+A00	King's Pawn Game: Wayward Queen Attack: 2...d6	1. e4 e5 2. Qh5 d6 3. Bc4 g6 4. Qd1 Nf6 5. d3 Bg7
+A00	Italian Game: Jerome Gambit: 4...Kxf7	1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. Bxf7+ Kxf7 5. Nxe5+ Nxe5 6. Qh5+ Kf8 7. Qxe5 d5
+A00	Italian Game: Jerome Gambit: 4...Kf8	1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. Bxf7+ Kf8 5. Bb3 d6 6. d3 Qf6 7. Nc3 Nge7
+A00	Italian Game: Jerome Gambit: 4...Ke7	1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. Bxf7+ Ke7 5. Bxg8 Qxg8 6. Nc3 h6 7. Nxe5 Nxe5
+A00	Caro-Kann Defense: Alien Gambit: 6...Kxf7	1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Kxf7 7. Nf3 c5 8. Bc4+ e6 9. Qe2 cxd4
+A00	Caro-Kann Defense: Alien Gambit: 6...Bg4	1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Bg4 7. Qxg4 Qa5+ 8. Bd2 Nxg4 9. Bxa5 Kxf7
+A00	Caro-Kann Defense: Alien Gambit: 6...Qd5	1. e4 c6 2. d4 d5 3. Nc3 dxe4 4. Nxe4 Nf6 5. Ng5 h6 6. Nxf7 Qd5 7. Nxh8 Bf5 8. Nf3 Qe4+ 9. Be3 Qxc2
+A00	Grob Opening: 1...d5	1. g4 d5 2. c4 Bxg4 3. Qb3 dxc4 4. Qxb7 Nd7
+A00	Grob Opening: 1...e5	1. g4 e5 2. Bg2 h5 3. gxh5 d5 4. d4 exd4
+A00	Grob Opening: 1...Nc6	1. g4 Nc6 2. d4 d5 3. h3 h5 4. g5 e5
+A00	Barnes Opening: Hammerschlag: 2...d5	1. f3 e5 2. Kf2 d5 3. e3 Nc6 4. Ne2 d4 5. d3 Be6
+A00	Barnes Opening: Hammerschlag: 2...Nc6	1. f3 e5 2. Kf2 Nc6 3. e3 d5 4. d4 exd4 5. exd4 Qh4+
+A00	Barnes Opening: Hammerschlag: 2...Bc5+	1. f3 e5 2. Kf2 Bc5+ 3. e3 d5 4. c3 Bd6 5. d4 Nc6
+A00	Sodium Attack: 1...e5	1. Na3 e5 2. Nc4 e4 3. Ne3 d5 4. d3 d4
+A00	Sodium Attack: 1...d5	1. Na3 d5 2. Nf3 Nf6 3. e3 c5 4. d4 Nc6
+A00	Sodium Attack: 1...Nf6	1. Na3 Nf6 2. Nf3 c5 3. e3 d5 4. d4 Nc6
+A00	Modern Defense: Bishop Attack, Monkey's Bum: 5.Nc3	1. e4 g6 2. Bc4 Bg7 3. Qf3 e6 4. d4 Bxd4 5. Nc3 Nc6 6. Qg3 Nf6 7. Bh6 Nh5 8. Qh3
+A00	Modern Defense: Bishop Attack, Monkey's Bum: 5.Ne2	1. e4 g6 2. Bc4 Bg7 3. Qf3 e6 4. d4 Bxd4 5. Ne2 Bf6 6. Nbc3 Nc6 7. Qg3 d6 8. h4
+A00	Modern Defense: Bishop Attack, Monkey's Bum: 5.h4	1. e4 g6 2. Bc4 Bg7 3. Qf3 e6 4. d4 Bxd4 5. h4 Qf6 6. Nc3 Nc6 7. a4 h6 8. Qg3
+A00	Sicilian Defense: McDonnell Attack, Toilet Variation: 3...d4	1. e4 c5 2. f4 d5 3. Nc3 d4 4. Bb5+ Bd7 5. Bxd7+ Qxd7 6. Nce2 d3
+A00	Sicilian Defense: McDonnell Attack, Toilet Variation: 3...dxe4	1. e4 c5 2. f4 d5 3. Nc3 dxe4 4. Nxe4 Qc7 5. Bc4 Nf6 6. d3 g6
+A00	Sicilian Defense: McDonnell Attack, Toilet Variation: 3...e6	1. e4 c5 2. f4 d5 3. Nc3 e6 4. Bb5+ Bd7 5. Bxd7+ Qxd7 6. d3 Nc6
+A00	Formation: Hippopotamus Attack: 7...e4	1. a3 e5 2. b3 d5 3. c3 Nf6 4. d3 Nc6 5. e3 Bd6 6. f3 O-O 7. g3 e4 8. dxe4 dxe4 9. f4 Ne7 10. Ne2 Bg4
+A00	Formation: Hippopotamus Attack: 7...Qe7	1. a3 e5 2. b3 d5 3. c3 Nf6 4. d3 Nc6 5. e3 Bd6 6. f3 O-O 7. g3 Qe7 8. Ra2 Be6 9. Nh3 a5 10. Bg2 e4
+A00	Formation: Hippopotamus Attack: 7...a5	1. a3 e5 2. b3 d5 3. c3 Nf6 4. d3 Nc6 5. e3 Bd6 6. f3 O-O 7. g3 a5 8. Bg2 e4 9. d4 Re8 10. fxe4 Nxe4
+A00	Ware Opening: Crab Variation: 2...d5	1. a4 e5 2. h4 d5 3. c3 Nc6 4. d4 exd4 5. cxd4 Bf5
+A00	Ware Opening: Crab Variation: 2...Nf6	1. a4 e5 2. h4 Nf6 3. c3 d5 4. d4 Nc6 5. dxe5 Nxe5
+A00	Ware Opening: Crab Variation: 2...Nc6	1. a4 e5 2. h4 Nc6 3. c3 d5 4. d4 Nf6 5. dxe5 Nxe5

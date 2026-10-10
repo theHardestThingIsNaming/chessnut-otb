@@ -1,16 +1,23 @@
 package app.chessnut.otb.review
 
+import app.chessnut.otb.games.GameSource
+import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
+import android.net.Uri
+import android.content.Intent
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,6 +33,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -41,38 +49,58 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.chessnut.otb.analysis.ChessLines
+import app.chessnut.otb.analysis.Material
 import app.chessnut.otb.analysis.MoveClass
+import app.chessnut.otb.analysis.MoveReport
 import app.chessnut.otb.analysis.Score
 import app.chessnut.otb.analysis.Terminal
 import app.chessnut.otb.openings.OpeningBook
 import app.chessnut.otb.ui.Arrow
 import app.chessnut.otb.ui.squareIndex
+import app.chessnut.otb.ui.BackMark
 import app.chessnut.otb.ui.BoardFrame
 import app.chessnut.otb.ui.ChessBoard
+import app.chessnut.otb.ui.FlipMark
+import app.chessnut.otb.ui.GambitMark
+import app.chessnut.otb.ui.MoreMark
 import app.chessnut.otb.ui.Palette
+import app.chessnut.otb.ui.PieceIcon
 import app.chessnut.otb.ui.clubAppBarColors
 import app.chessnut.otb.ui.clubChipColors
 import app.chessnut.otb.ui.clubPanel
 import app.chessnut.otb.ui.clubTextButtonColors
 import java.util.Locale
+import app.chessnut.otb.ui.KeepScreenOn
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReviewScreen(model: ReviewViewModel, onBack: () -> Unit) {
+fun ReviewScreen(model: ReviewViewModel, onBack: () -> Unit, onPractise: () -> Unit = {}) {
+    KeepScreenOn()
     val ui by model.ui.collectAsStateWithLifecycle()
     val game = ui.game
     var editing by remember { mutableStateOf(false) }
     var menu by remember { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf(false) }
+    val lichessLink by model.lichessLink.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     BackHandler(enabled = ui.exploring) { model.backToGame() }
     LifecycleResumeEffect(model) {
@@ -84,17 +112,51 @@ fun ReviewScreen(model: ReviewViewModel, onBack: () -> Unit) {
         containerColor = Color.Transparent,
         contentColor = Palette.Text,
         topBar = {
+            val headline = OpeningBook.view(shownSan(ui)).name?.let(::shortOpening)
+                ?: game?.title?.let(::shortOpening)
+                ?: "Game"
             TopAppBar(
-                title = { Text(game?.title ?: "Game", maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                title = { Text(headline, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 colors = clubAppBarColors(),
-                navigationIcon = { TextButton(onClick = onBack) { Text("Back", color = Palette.Gold) } },
+                navigationIcon = {
+                    IconButton(onClick = onBack, modifier = Modifier.semantics { contentDescription = "Back" }) {
+                        BackMark(Palette.Gold)
+                    }
+                },
                 actions = {
-                    TextButton(onClick = model::flip) { Text("Flip", color = Palette.Gold) }
-                    TextButton(onClick = { menu = true }) { Text("More", color = Palette.Gold) }
-                    DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+                    IconButton(onClick = model::flip, modifier = Modifier.semantics { contentDescription = "Flip board" }) {
+                        FlipMark(Palette.Gold)
+                    }
+                    Box {
+                        IconButton(onClick = { menu = true }, modifier = Modifier.semantics { contentDescription = "More" }) {
+                            MoreMark(Palette.Gold)
+                        }
+                        DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+                        ArrowMenuItem("Best move", Palette.ArrowBest, ArrowKind.Best in ui.arrows) {
+                            model.toggleArrow(ArrowKind.Best)
+                        }
+                        ArrowMenuItem("Better than played", Palette.ArrowBetter, ArrowKind.Better in ui.arrows) {
+                            model.toggleArrow(ArrowKind.Better)
+                        }
+                        ArrowMenuItem("Threat", Palette.ArrowThreat, ArrowKind.Threat in ui.arrows) {
+                            model.toggleArrow(ArrowKind.Threat)
+                        }
+                        if (lichessLink != null) {
+                            DropdownMenuItem(text = { Text("Open on Lichess") }, onClick = {
+                                menu = false
+                                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(lichessLink)))
+                            })
+                        } else if (game?.source != GameSource.Play) {
+                            DropdownMenuItem(text = { Text("Upload to Lichess") }, onClick = {
+                                menu = false
+                                model.uploadToLichess { Toast.makeText(context, it, Toast.LENGTH_SHORT).show() }
+                            })
+                        }
+                        DropdownMenuItem(text = { Text("Practise this game's mistakes") }, onClick = { menu = false; onPractise() })
                         DropdownMenuItem(text = { Text("Edit game info") }, onClick = { menu = false; editing = true })
                         DropdownMenuItem(text = { Text("Analyse again") }, onClick = { menu = false; model.reanalyse() })
                         DropdownMenuItem(text = { Text("Delete game") }, onClick = { menu = false; confirmDelete = true })
+                        }
                     }
                 },
             )
@@ -109,36 +171,23 @@ fun ReviewScreen(model: ReviewViewModel, onBack: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             AccuracyRow(ui, onAnalyse = model::reanalyse)
-            if (!game.isComplete) {
-                Text(
-                    "Board recording stopped early: ${game.stopReason.orEmpty()} Moves after that point are missing.",
-                    color = Palette.Error,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
-            BoxWithConstraints(Modifier.fillMaxWidth()) {
-                val bar = 18.dp
-                val boardSize = maxWidth - bar - 10.dp
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                    EvalBar(ui.engine?.score, ui.engine?.terminal, ui.fen, ui.flipped, Modifier.width(bar).height(boardSize))
-                    BoardFrame(Modifier.size(boardSize)) {
-                        ChessBoard(
-                            fen = ui.fen,
-                            flipped = ui.flipped,
-                            lastMove = ui.lastMove,
-                            selected = ui.selected,
-                            targets = remember(ui.selected, ui.fen) { model.targets() },
-                            arrows = boardArrows(ui),
-                            highlights = gambitHighlights(ui),
-                            onSquare = model::tapSquare,
-                        )
-                    }
+            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                BoardFrame(Modifier.fillMaxWidth().aspectRatio(1f)) {
+                    ChessBoard(
+                        fen = ui.fen,
+                        flipped = ui.flipped,
+                        lastMove = ui.lastMove,
+                        selected = ui.selected,
+                        targets = remember(ui.selected, ui.fen) { model.targets() },
+                        arrows = boardArrows(ui),
+                        highlights = gambitHighlights(ui),
+                        onSquare = model::tapSquare,
+                        onDrag = model::drop,
+                    )
                 }
+                EvalStrip(ui.engine?.score, ui.engine?.terminal, ui.fen)
             }
-            ArrowToggles(ui, onToggle = model::toggleArrow)
             NavigationRow(ui, model)
-            OpeningBanner(ui)
-            GambitRow(ui, onPlay = model::play)
             EnginePanel(ui, onPlay = model::play)
             MoveList(ui, onSelect = model::goTo)
         }
@@ -167,40 +216,11 @@ fun ReviewScreen(model: ReviewViewModel, onBack: () -> Unit) {
     }
 }
 
-@Composable
-private fun OpeningBanner(ui: ReviewState) {
-    val line = shownSan(ui)
-    val opening = remember(line) { OpeningBook.view(line) }
-    val name = opening.name ?: return
-    Text(
-        listOfNotNull(opening.eco, name).joinToString("  "),
-        color = Palette.Gold,
-        fontWeight = FontWeight.SemiBold,
-        style = MaterialTheme.typography.titleSmall,
-    )
-}
-
-@Composable
-private fun GambitRow(ui: ReviewState, onPlay: (String) -> Unit) {
-    val line = shownSan(ui)
-    val gambits = remember(line) { OpeningBook.view(line).gambits }
-    if (gambits.isEmpty()) return
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text("Gambit available", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            gambits.take(4).forEach { gambit ->
-                val uci = remember(line, gambit.name) {
-                    runCatching { ChessLines.replay(line + gambit.san.last()).uci.last() }.getOrNull()
-                }
-                FilterChip(
-                    selected = false,
-                    onClick = { uci?.let(onPlay) },
-                    colors = clubChipColors(),
-                    label = { Text(gambit.name.substringAfterLast(": ").ifBlank { gambit.name }, fontSize = 12.sp, color = Palette.Text) },
-                )
-            }
-        }
-    }
+/** The specific variation, so a long book name fits the title. "Miles Gambit" stays; "Falkbeer Countergambit Accepted" drops the trailing Accepted. */
+private fun shortOpening(name: String): String {
+    val specific = name.substringAfterLast(": ").substringAfterLast(", ").trim().ifBlank { name }
+    val base = specific.removeSuffix(" Accepted").removeSuffix(" Declined").trim()
+    return if (base != specific && ("Countergambit" in base || base.length > 22)) base else specific
 }
 
 private fun shownSan(ui: ReviewState): List<String> {
@@ -224,15 +244,9 @@ private fun AccuracyRow(ui: ReviewState, onAnalyse: () -> Unit) {
             Text("Stockfish is analysing… ${(ui.progress * 100).toInt()}%", color = Palette.TextMuted)
             LinearProgressIndicator(progress = { ui.progress }, modifier = Modifier.fillMaxWidth())
         }
-        report != null -> Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            AccuracyBadge("White", report.whiteAccuracy, Color.White, Color.Black)
-            AccuracyBadge("Black", report.blackAccuracy, Color(0xFF2B2B2B), Color.White)
-            val counts = report.moves.groupingBy { it.classification }.eachCount()
-            Text(
-                "?! ${counts[MoveClass.Inaccuracy] ?: 0}   ? ${counts[MoveClass.Mistake] ?: 0}   ?? ${counts[MoveClass.Blunder] ?: 0}",
-                color = Palette.TextMuted,
-                style = MaterialTheme.typography.bodySmall,
-            )
+        report != null -> Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            SideSummary("White", report.whiteAccuracy, light = true, report.moves.filter { it.whiteMoved })
+            SideSummary("Black", report.blackAccuracy, light = false, report.moves.filter { !it.whiteMoved })
         }
         else -> Row(verticalAlignment = Alignment.CenterVertically) {
             Text("Not analysed yet.", color = Palette.TextMuted, modifier = Modifier.weight(1f))
@@ -242,49 +256,187 @@ private fun AccuracyRow(ui: ReviewState, onAnalyse: () -> Unit) {
 }
 
 @Composable
-private fun AccuracyBadge(label: String, value: Double?, background: Color, text: Color) {
-    Column(
-        Modifier.clip(RoundedCornerShape(8.dp)).background(background).padding(horizontal = 12.dp, vertical = 6.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+private fun SideSummary(label: String, value: Double?, light: Boolean, moves: List<MoveReport>) {
+    Row(
+        Modifier.fillMaxWidth().semantics {
+            contentDescription = "$label accuracy ${value?.let { String.format(Locale.ROOT, "%.1f", it) } ?: "unknown"}"
+        },
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(value?.let { String.format(Locale.ROOT, "%.1f", it) } ?: "–", color = text, fontWeight = FontWeight.Bold, fontSize = 20.sp)
-        Text("$label accuracy", color = text.copy(alpha = 0.7f), fontSize = 11.sp)
+        Box(
+            Modifier
+                .size(10.dp)
+                .clip(androidx.compose.foundation.shape.CircleShape)
+                .background(if (light) Color.White else Color(0xFF1A1610))
+                .border(1.dp, if (light) Color.White else Palette.GoldDim, androidx.compose.foundation.shape.CircleShape),
+        )
+        Text(
+            value?.let { String.format(Locale.ROOT, "%.1f", it) } ?: "–",
+            color = Palette.Text,
+            fontWeight = FontWeight.Bold,
+            fontSize = 16.sp,
+            modifier = Modifier.padding(start = 6.dp).width(52.dp),
+        )
+        listOf(
+            MoveClass.Brilliant,
+            MoveClass.Best,
+            MoveClass.Excellent,
+            MoveClass.Good,
+            MoveClass.Inaccuracy,
+            MoveClass.Mistake,
+            MoveClass.Blunder,
+        ).forEach { kind ->
+            Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                ClassCount(kind, moves.count { it.classification == kind })
+            }
+        }
     }
 }
 
 @Composable
-private fun EvalBar(score: Score?, terminal: Terminal?, fen: String, flipped: Boolean, modifier: Modifier) {
+private fun ClassCount(kind: MoveClass, count: Int) {
+    val name = when (kind) {
+        MoveClass.Brilliant -> "brilliant moves"
+        MoveClass.Best -> "best moves"
+        MoveClass.Excellent -> "excellent moves"
+        MoveClass.Good -> "good moves"
+        MoveClass.Inaccuracy -> "inaccuracies"
+        MoveClass.Mistake -> "mistakes"
+        MoveClass.Blunder -> "blunders"
+    }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
+        modifier = Modifier.semantics { contentDescription = "$count $name" },
+    ) {
+        ClassMark(kind, markTint(kind), Modifier.size(11.dp))
+        Text(count.toString(), color = Palette.TextMuted, fontSize = 12.sp)
+    }
+}
+
+@Composable
+private fun ClassMark(kind: MoveClass, tint: Color, modifier: Modifier = Modifier) {
+    Canvas(modifier) {
+        val side = size.minDimension
+        when (kind) {
+            MoveClass.Brilliant -> drawPath(star(side, points = 4, inner = 0.22f), tint)
+            MoveClass.Best -> drawPath(star(side, points = 5, inner = 0.42f), tint)
+            MoveClass.Excellent -> drawPath(
+                Path().apply {
+                    moveTo(side / 2f, side * 0.06f)
+                    lineTo(side * 0.94f, side / 2f)
+                    lineTo(side / 2f, side * 0.94f)
+                    lineTo(side * 0.06f, side / 2f)
+                    close()
+                },
+                tint,
+            )
+            MoveClass.Good -> {
+                val stroke = side * 0.16f
+                drawLine(tint, Offset(side * 0.16f, side * 0.52f), Offset(side * 0.40f, side * 0.78f), stroke, cap = StrokeCap.Round)
+                drawLine(tint, Offset(side * 0.40f, side * 0.78f), Offset(side * 0.86f, side * 0.22f), stroke, cap = StrokeCap.Round)
+            }
+            MoveClass.Inaccuracy -> drawCircle(tint, radius = side * 0.36f, style = Stroke(width = side * 0.18f))
+            MoveClass.Mistake -> drawPath(
+                Path().apply {
+                    moveTo(side / 2f, side * 0.06f)
+                    lineTo(side * 0.94f, side * 0.9f)
+                    lineTo(side * 0.06f, side * 0.9f)
+                    close()
+                },
+                tint,
+            )
+            MoveClass.Blunder -> drawCircle(tint, radius = side * 0.42f)
+        }
+    }
+}
+
+private fun star(side: Float, points: Int, inner: Float): Path {
+    val path = Path()
+    val center = side / 2f
+    val outer = side * 0.48f
+    val start = -PI / 2
+    for (i in 0 until points * 2) {
+        val radius = if (i % 2 == 0) outer else side * inner
+        val angle = start + i * PI / points
+        val x = center + cos(angle).toFloat() * radius
+        val y = center + sin(angle).toFloat() * radius
+        if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
+    }
+    path.close()
+    return path
+}
+
+private fun markTint(kind: MoveClass): Color = when (kind) {
+    MoveClass.Brilliant -> Palette.Brilliant
+    MoveClass.Best -> Palette.Best
+    MoveClass.Excellent -> Palette.Excellent
+    MoveClass.Good -> Palette.Gold
+    MoveClass.Inaccuracy -> Palette.Inaccuracy
+    MoveClass.Mistake -> Palette.Mistake
+    MoveClass.Blunder -> Palette.Blunder
+}
+
+@Composable
+private fun EvalStrip(score: Score?, terminal: Terminal?, fen: String) {
+    val balance = remember(fen) { Material.balance(fen) }
     val whiteShare = when {
         terminal == Terminal.Checkmate -> if (fen.split(' ')[1] == "w") 0f else 1f
         terminal == Terminal.Stalemate -> 0.5f
         score == null -> 0.5f
-        else -> (score.whiteWinPercent / 100).toFloat()
+        else -> (score.whiteWinPercent / 100).toFloat().coerceIn(0f, 1f)
     }
     val animated by animateFloatAsState(whiteShare, label = "eval")
     val dark = Color(0xFF2B2B2B)
-    Box(modifier.clip(RoundedCornerShape(4.dp))) {
-        Column(Modifier.fillMaxSize()) {
-            val top = if (flipped) animated else 1 - animated
-            if (top > 0f) Box(Modifier.fillMaxWidth().weight(top).background(if (flipped) Color.White else dark))
-            if (1 - top > 0f) Box(Modifier.fillMaxWidth().weight(1 - top).background(if (flipped) dark else Color.White))
+    val label = when (terminal) {
+        Terminal.Checkmate -> "#"
+        Terminal.Stalemate -> "½"
+        null -> score?.let { compactLabel(it) }.orEmpty()
+    }
+    Row(
+        Modifier.fillMaxWidth().semantics { contentDescription = "Evaluation $label" },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Box(Modifier.weight(1f).height(8.dp).clip(RoundedCornerShape(4.dp))) {
+            Row(Modifier.fillMaxSize()) {
+                if (animated > 0f) Box(Modifier.fillMaxHeight().weight(animated).background(Color.White))
+                if (1f - animated > 0f) Box(Modifier.fillMaxHeight().weight(1f - animated).background(dark))
+            }
         }
-        val label = when (terminal) {
-            Terminal.Checkmate -> "#"
-            Terminal.Stalemate -> "½"
-            null -> score?.let { compactLabel(it) }.orEmpty()
+        if (label.isNotEmpty()) {
+            Text(label, color = Palette.Text, fontSize = 13.sp, fontWeight = FontWeight.Medium)
         }
-        Text(
-            label,
-            fontSize = 8.sp,
-            color = if (whiteShare >= 0.5f) Color.Black else Color.White,
-            modifier = Modifier.align(if ((whiteShare >= 0.5f) != flipped) Alignment.BottomCenter else Alignment.TopCenter).padding(vertical = 2.dp),
-        )
+        if (!balance.even) {
+            for (piece in balance.whiteExtra) PieceIcon(piece, Modifier.size(16.dp))
+            for (piece in balance.blackExtra) PieceIcon(piece, Modifier.size(16.dp))
+            Text(
+                when {
+                    balance.points > 0 -> "+${balance.points}"
+                    else -> "−${-balance.points}"
+                },
+                color = Palette.Text,
+                fontWeight = FontWeight.Bold,
+                fontSize = 13.sp,
+            )
+        }
     }
 }
 
 private fun compactLabel(score: Score): String {
     val mate = score.mate
     return if (mate != null) "M${kotlin.math.abs(mate)}" else String.format(Locale.ROOT, "%.1f", kotlin.math.abs(score.cappedCp) / 100.0)
+}
+
+@Composable
+private fun ArrowMenuItem(label: String, color: Color, on: Boolean, onClick: () -> Unit) {
+    DropdownMenuItem(
+        text = { Text(if (on) "$label  ·  On" else label) },
+        leadingIcon = {
+            Box(Modifier.size(10.dp).clip(RoundedCornerShape(5.dp)).background(if (on) color else Palette.GoldDim))
+        },
+        onClick = onClick,
+    )
 }
 
 private fun boardArrows(ui: ReviewState): List<Arrow> = buildList {
@@ -296,52 +448,6 @@ private fun boardArrows(ui: ReviewState): List<Arrow> = buildList {
         add(Arrow.ofUci(ui.engine?.lines?.firstOrNull()?.firstUci, Palette.ArrowBest))
     }
 }.filterNotNull()
-
-@Composable
-private fun ArrowToggles(ui: ReviewState, onToggle: (ArrowKind) -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            ArrowChip("Best move", Palette.ArrowBest, ArrowKind.Best in ui.arrows) { onToggle(ArrowKind.Best) }
-            ArrowChip("Better than played", Palette.ArrowBetter, ArrowKind.Better in ui.arrows) { onToggle(ArrowKind.Better) }
-            ArrowChip("Threat", Palette.ArrowThreat, ArrowKind.Threat in ui.arrows) { onToggle(ArrowKind.Threat) }
-        }
-        val better = ui.betterThanPlayed
-        if (ArrowKind.Better in ui.arrows && better != null) {
-            val preferred = ChessLines.sanOf(ui.fens[ui.cursor - 1], listOfNotNull(better.bestUci)).firstOrNull()
-            if (preferred != null) {
-                Text(
-                    "Blue: Stockfish preferred ${moveNumber(ui.cursor - 1)}$preferred to ${better.san}.",
-                    color = Palette.TextMuted,
-                    fontSize = 11.sp,
-                )
-            }
-        }
-        if (ArrowKind.Threat in ui.arrows) {
-            val threat = ui.threat?.takeIf { it.fen == ui.fen }
-            val passed = remember(ui.fen) { ChessLines.passFen(ui.fen) }
-            val text = when {
-                passed == null -> "Red: no threat shown while in check."
-                threat == null -> "Red: looking for the threat…"
-                else -> {
-                    val san = ChessLines.sanOf(passed, listOf(threat.uci)).firstOrNull()
-                    "Red: if it were their move, they would play ${san ?: threat.uci}."
-                }
-            }
-            Text(text, color = Palette.TextMuted, fontSize = 11.sp)
-        }
-    }
-}
-
-@Composable
-private fun ArrowChip(label: String, color: Color, on: Boolean, onClick: () -> Unit) {
-    FilterChip(
-        selected = on,
-        onClick = onClick,
-        colors = clubChipColors(),
-        label = { Text(label, fontSize = 12.sp, color = if (on) Palette.OnGold else Palette.Text) },
-        leadingIcon = { Box(Modifier.size(10.dp).clip(RoundedCornerShape(5.dp)).background(if (on) color else Palette.Gold)) },
-    )
-}
 
 @Composable
 private fun NavigationRow(ui: ReviewState, model: ReviewViewModel) {
@@ -407,16 +513,18 @@ private fun EnginePanel(ui: ReviewState, onPlay: (String) -> Unit) {
                     engine.lines.isEmpty() && engine.live -> "Stockfish is thinking…"
                     engine.lines.isEmpty() -> "No engine lines for this position."
                     engine.live -> "Live Stockfish, depth ${engine.lines.first().depth}"
-                    else -> "Best moves (depth ${engine.lines.first().depth})"
+                    else -> null
                 }
             }
-            Text(heading, color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
+            if (heading != null) Text(heading, color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
             val playedHere = if (!ui.exploring) ui.uci.getOrNull(ui.cursor) else null
+            val gambitMoves = OpeningBook.view(shownSan(ui)).gambits.map { it.san.last() }.toSet()
             engine.lines.forEach { line ->
+                val gambit = line.san.firstOrNull() in gambitMoves
                 Row(
                     Modifier.fillMaxWidth().clip(RoundedCornerShape(6.dp))
                         .clickable(enabled = line.firstUci != null) { line.firstUci?.let(onPlay) }
-                        .padding(vertical = 4.dp, horizontal = 4.dp),
+                        .padding(vertical = 2.dp, horizontal = 4.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
@@ -426,14 +534,29 @@ private fun EnginePanel(ui: ReviewState, onPlay: (String) -> Unit) {
                         modifier = Modifier.width(64.dp),
                         color = if (line.firstUci == playedHere) Palette.Best else Palette.Text,
                     )
-                    Text(line.san.joinToString(" "), maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 13.sp, color = Palette.Text)
+                    Text(
+                        if (gambit) line.san.first() else line.san.take(4).joinToString(" "),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        fontSize = 16.sp,
+                        color = Palette.Text,
+                        modifier = Modifier.weight(1f),
+                    )
+                    if (gambit) {
+                        GambitMark(
+                            Palette.Gold,
+                            Modifier.size(16.dp).semantics { contentDescription = "Gambit" },
+                        )
+                    }
                 }
             }
             if (!ui.exploring && ui.cursor < ui.fens.lastIndex) {
                 val move = ui.report?.moves?.getOrNull(ui.cursor)
                 if (move != null) {
                     val name = when (move.classification) {
+                        MoveClass.Brilliant -> "a brilliant sacrifice"
                         MoveClass.Best -> "best move"
+                        MoveClass.Excellent -> "excellent"
                         MoveClass.Good -> "good"
                         MoveClass.Inaccuracy -> "an inaccuracy"
                         MoveClass.Mistake -> "a mistake"
@@ -441,27 +564,31 @@ private fun EnginePanel(ui: ReviewState, onPlay: (String) -> Unit) {
                     }
                     Text(
                         "Played ${moveNumber(ui.cursor)}${move.san}: $name (accuracy ${move.accuracy.toInt()}).",
-                        color = classColor(move.classification) ?: Palette.TextMuted,
-                        style = MaterialTheme.typography.bodySmall,
+                        color = classColor(move.classification),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
                     )
                 }
             }
-            Text("Tap a line or move a piece to explore.", color = Palette.TextMuted, fontSize = 11.sp)
         }
     }
 }
 
 private fun moveNumber(ply: Int): String = if (ply % 2 == 0) "${ply / 2 + 1}. " else "${ply / 2 + 1}… "
 
-private fun classColor(c: MoveClass): Color? = when (c) {
+private fun classColor(c: MoveClass): Color = when (c) {
+    MoveClass.Brilliant -> Palette.Brilliant
     MoveClass.Best -> Palette.Best
-    MoveClass.Good -> null
+    MoveClass.Excellent -> Palette.Excellent
+    MoveClass.Good -> Palette.Gold
     MoveClass.Inaccuracy -> Palette.Inaccuracy
     MoveClass.Mistake -> Palette.Mistake
     MoveClass.Blunder -> Palette.Blunder
 }
 
 private fun classSuffix(c: MoveClass?): String = when (c) {
+    MoveClass.Brilliant -> "!!"
+    MoveClass.Excellent -> "!"
     MoveClass.Inaccuracy -> "?!"
     MoveClass.Mistake -> "?"
     MoveClass.Blunder -> "??"
@@ -471,32 +598,84 @@ private fun classSuffix(c: MoveClass?): String = when (c) {
 @Composable
 private fun MoveList(ui: ReviewState, onSelect: (Int) -> Unit) {
     val game = ui.game ?: return
-    FlowRow(
-        Modifier.fillMaxWidth().padding(bottom = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(2.dp),
-        verticalArrangement = Arrangement.spacedBy(2.dp),
-    ) {
-        game.sanMoves.forEachIndexed { ply, san ->
-            if (ply % 2 == 0) {
-                Text("${ply / 2 + 1}.", color = Palette.TextMuted, fontSize = 13.sp, modifier = Modifier.padding(start = 6.dp, top = 6.dp))
+    val moves = game.sanMoves
+    if (moves.isEmpty()) return
+    val rowCount = (moves.size + 1) / 2
+    val sheets = if (rowCount > 8) 2 else 1
+    val perSheet = (rowCount + sheets - 1) / sheets
+    Column(Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            repeat(sheets) { sheet ->
+                Column(Modifier.weight(1f)) {
+                    val from = sheet * perSheet
+                    val to = minOf(from + perSheet, rowCount)
+                    for (row in from until to) {
+                        val whitePly = row * 2
+                        val blackPly = whitePly + 1
+                        ScoreLine(
+                            shaded = row % 2 == 1,
+                            number = row + 1,
+                            white = moves.getOrNull(whitePly),
+                            black = moves.getOrNull(blackPly),
+                            whiteClass = ui.report?.moves?.getOrNull(whitePly)?.classification,
+                            blackClass = ui.report?.moves?.getOrNull(blackPly)?.classification,
+                            whiteCurrent = !ui.exploring && ui.cursor == whitePly + 1,
+                            blackCurrent = !ui.exploring && ui.cursor == blackPly + 1,
+                            onWhite = { onSelect(whitePly + 1) },
+                            onBlack = { if (blackPly < moves.size) onSelect(blackPly + 1) },
+                        )
+                    }
+                }
             }
-            val classification = ui.report?.moves?.getOrNull(ply)?.classification
-            val current = !ui.exploring && ui.cursor == ply + 1
-            Text(
-                san + classSuffix(classification),
-                fontSize = 14.sp,
-                fontWeight = if (current) FontWeight.Bold else FontWeight.Normal,
-                color = classification?.let(::classColor) ?: Palette.Text,
-                modifier = Modifier.clip(RoundedCornerShape(4.dp))
-                    .background(if (current) Palette.GoldDim else Color.Transparent)
-                    .clickable { onSelect(ply + 1) }
-                    .padding(horizontal = 5.dp, vertical = 4.dp),
-            )
         }
-        if (game.result != "*") {
-            Text(game.result, color = Palette.TextMuted, fontSize = 14.sp, modifier = Modifier.padding(start = 6.dp, top = 4.dp))
-        }
+        if (game.result != "*") Text(game.result, color = Palette.TextMuted, fontSize = 13.sp)
     }
+}
+
+@Composable
+private fun ScoreLine(
+    shaded: Boolean,
+    number: Int,
+    white: String?,
+    black: String?,
+    whiteClass: MoveClass?,
+    blackClass: MoveClass?,
+    whiteCurrent: Boolean,
+    blackCurrent: Boolean,
+    onWhite: () -> Unit,
+    onBlack: () -> Unit,
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(4.dp))
+            .background(if (shaded) Palette.SurfaceHigh else Color.Transparent)
+            .padding(vertical = 1.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text("$number", color = Palette.TextMuted, fontSize = 12.sp, modifier = Modifier.width(22.dp))
+        ScoreMove(white, whiteClass, whiteCurrent, onWhite, Modifier.weight(1f))
+        ScoreMove(black, blackClass, blackCurrent, onBlack, Modifier.weight(1f))
+    }
+}
+
+@Composable
+private fun ScoreMove(san: String?, classification: MoveClass?, current: Boolean, onClick: () -> Unit, modifier: Modifier) {
+    if (san == null) {
+        Box(modifier)
+        return
+    }
+    Text(
+        san + classSuffix(classification),
+        color = classification?.let(::classColor) ?: Palette.Text,
+        fontSize = 14.sp,
+        fontWeight = if (current) FontWeight.Bold else FontWeight.Medium,
+        modifier = modifier
+            .clip(RoundedCornerShape(4.dp))
+            .background(if (current) Palette.GoldDim else Color.Transparent)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 2.dp, vertical = 1.dp),
+    )
 }
 
 @Composable

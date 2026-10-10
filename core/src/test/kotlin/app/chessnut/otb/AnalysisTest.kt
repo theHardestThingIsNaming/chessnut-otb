@@ -6,6 +6,7 @@ import app.chessnut.otb.analysis.ChessLines
 import app.chessnut.otb.analysis.EngineLine
 import app.chessnut.otb.analysis.GameAnalysis
 import app.chessnut.otb.analysis.GameAnalyzer
+import app.chessnut.otb.analysis.Material
 import app.chessnut.otb.analysis.MoveClass
 import app.chessnut.otb.analysis.PositionEval
 import app.chessnut.otb.analysis.Score
@@ -105,6 +106,61 @@ class AnalysisTest {
         assertTrue(report.whiteAccuracy!! > 95, "white ${report.whiteAccuracy}")
         assertTrue(report.blackAccuracy!! < report.whiteAccuracy!!)
         assertEquals(100.0, AccuracyCalculator.moveAccuracy(50.0, 60.0))
+    }
+
+    @Test
+    fun soundSacrificesAreBrilliantAndCloseMovesAreExcellent() {
+        assertEquals(MoveClass.Best, AccuracyCalculator.classify(0.0, playedBest = true))
+        assertEquals(MoveClass.Brilliant, AccuracyCalculator.classify(0.0, playedBest = true, sacrifice = true))
+        assertEquals(MoveClass.Brilliant, AccuracyCalculator.classify(8.0, playedBest = false, sacrifice = true))
+        assertEquals(MoveClass.Blunder, AccuracyCalculator.classify(40.0, playedBest = false, sacrifice = true))
+        assertEquals(MoveClass.Excellent, AccuracyCalculator.classify(1.0, playedBest = false))
+        assertEquals(MoveClass.Good, AccuracyCalculator.classify(6.0, playedBest = false))
+
+        val gambit = "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"
+        assertTrue(AccuracyCalculator.isSacrifice(gambit, "f2f4"))
+        assertFalse(AccuracyCalculator.isSacrifice(gambit, "g1f3"))
+        assertFalse(AccuracyCalculator.isSacrifice("3qk3/8/8/8/8/8/8/3QK3 w - - 0 1", "d1d8"))
+        val checked = Board()
+        listOf("e2e4", "e7e5", "f2f4", "e5f4", "d1h5", "g8f6", "h5e5").forEach { uci ->
+            checked.doMove(checked.legalMoves().first { it.toString().lowercase() == uci })
+        }
+        assertFalse(AccuracyCalculator.isSacrifice(checked.fen, "f8e7"))
+
+        val after = Board().apply {
+            loadFromFen(gambit)
+            doMove(com.github.bhlangonijr.chesslib.move.Move(com.github.bhlangonijr.chesslib.Square.F2, com.github.bhlangonijr.chesslib.Square.F4))
+        }.fen
+        val analysis = GameAnalysis(
+            "test",
+            1,
+            listOf(
+                PositionEval(gambit, listOf(EngineLine(Score(cp = 30), listOf("f2f4"), 1))),
+                PositionEval(after, listOf(EngineLine(Score(cp = 20), listOf("e5f4"), 1))),
+            ),
+        )
+        val report = AccuracyCalculator.report(listOf("f4"), listOf("f2f4"), analysis)
+        assertEquals(MoveClass.Brilliant, report.moves.single().classification)
+    }
+
+    @Test
+    fun materialNamesTheExtraPiecesAndTheirPoints() {
+        val even = Material.balance(Board().fen)
+        assertEquals(0, even.points)
+        assertTrue(even.even)
+
+        val pawn = Material.balance("rnbqkbnr/ppppppp1/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+        assertEquals(1, pawn.points)
+        assertEquals("P", pawn.whiteExtra)
+        assertEquals("", pawn.blackExtra)
+
+        val set = Material.balance("4k3/8/8/8/8/8/P7/Q3K3 w - - 0 1")
+        assertEquals(10, set.points)
+        assertEquals("QP", set.whiteExtra)
+
+        val blackPawn = Material.balance("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPP1/RNBQKBNR w KQkq - 0 1")
+        assertEquals(-1, blackPawn.points)
+        assertEquals("p", blackPawn.blackExtra)
     }
 
     @Test
@@ -245,5 +301,36 @@ class AnalysisTest {
         assertEquals("", game.black)
         assertEquals("1-0", game.result)
         assertNotNull(game.id)
+    }
+
+    @Test
+    fun unfiledGamesPastFiveOrThirtyDaysMoveToEarlier() {
+        val dir = File.createTempFile("games", "").apply {
+            delete()
+            mkdirs()
+        }
+        val store = GameStore(dir)
+        val now = 40L * 24 * 60 * 60 * 1000
+        val day = 24L * 60 * 60 * 1000
+        val lines = listOf("1. e4", "1. d4", "1. c4", "1. Nf3", "1. e4 e5", "1. d4 d5")
+        lines.forEachIndexed { index, san ->
+            val game = SavedGame.fromBoard(FakeChessnutBoard.placementsFromSan(san), now = now - index * 1000, date = "2026.10.09")
+            store.addIfNew(game)
+        }
+        val filed = SavedGame.fromBoard(FakeChessnutBoard.placementsFromSan("1. e4 c5"), now = now - 31 * day, date = "2026.09.01")
+        store.addIfNew(filed)
+        store.moveToFolder(filed.id, "Tuesday")
+        val old = SavedGame.fromBoard(FakeChessnutBoard.placementsFromSan("1. d4 Nf6"), now = now - 31 * day, date = "2026.09.01")
+        store.addIfNew(old)
+
+        store.shelveUnfiled(now)
+
+        val loose = store.all().filter { it.folder.isBlank() }
+        assertEquals(5, loose.size)
+        assertTrue(loose.all { now - it.createdAt <= 30L * day })
+        assertEquals("Earlier", store.load(old.id)!!.folder)
+        assertEquals("Tuesday", store.load(filed.id)!!.folder)
+        val sixth = store.all().first { it.sanMoves == listOf("d4", "d5") }
+        assertEquals("Earlier", sixth.folder)
     }
 }

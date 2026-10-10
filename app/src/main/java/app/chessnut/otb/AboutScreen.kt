@@ -59,7 +59,7 @@ fun AboutScreen(onBack: () -> Unit) {
                 style = MaterialTheme.typography.labelLarge,
             )
             Text(
-                "Reads games stored on a Chessnut Air and reviews them with Stockfish 18 on this phone. Games and analysis stay on the device. Nothing is uploaded.",
+                "Plays, trains and reviews games on a Chessnut Air, with Stockfish 18 on this phone. Games and analysis are kept on the device. Only Lichess features send anything: online games, club game uploads (which can be turned off in Settings), opening win rates and study imports.",
                 color = Palette.TextMuted,
                 style = MaterialTheme.typography.bodyLarge,
             )

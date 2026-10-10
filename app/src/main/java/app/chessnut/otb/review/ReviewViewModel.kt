@@ -91,6 +91,24 @@ class ReviewViewModel(application: Application, private val gameId: String) : An
     private val state = MutableStateFlow(ReviewState())
     val ui: StateFlow<ReviewState> = state.asStateFlow()
 
+    private val linkFlow = MutableStateFlow(app.lichessUrl(gameId))
+
+    /** The game's page on Lichess, once it has been uploaded. */
+    val lichessLink: StateFlow<String?> = linkFlow.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            app.uploadVersion.collect { linkFlow.value = app.lichessUrl(gameId) }
+        }
+    }
+
+    fun uploadToLichess(onDone: (String) -> Unit) {
+        val game = app.store.load(gameId) ?: return
+        app.uploadToLichess(game) { message ->
+            viewModelScope.launch(Dispatchers.Main) { onDone(message) }
+        }
+    }
+
     private val engineLock = Mutex()
     @Volatile private var liveEngine: UciEngine? = null
     private var liveJob: Job? = null
@@ -175,6 +193,20 @@ class ReviewViewModel(application: Application, private val gameId: String) : An
         val piece = board.getPiece(Square.valueOf(squareNameUpper(square)))
         val own = piece != Piece.NONE && piece.pieceSide == board.sideToMove
         state.update { it.copy(selected = if (own && from != square) square else null) }
+    }
+
+    fun drop(from: Int, to: Int) {
+        if (from == to) return
+        val s = state.value
+        val board = Board().apply { loadFromFen(s.fen) }
+        val move = board.legalMoves().filter {
+            squareIndex(it.from.value().lowercase()) == from && squareIndex(it.to.value().lowercase()) == to
+        }.firstOrNull { it.promotion == Piece.NONE || it.promotion.pieceType == PieceType.QUEEN }
+        if (move == null) {
+            state.update { it.copy(selected = null) }
+            return
+        }
+        play(move.toString().lowercase())
     }
 
     fun targets(): Set<Int> {

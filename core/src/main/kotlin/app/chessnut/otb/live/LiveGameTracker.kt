@@ -205,16 +205,13 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
         // A piece in the air is not a result. King-lifts during a move (castling,
         // stepping out of check) used to be scored as taking the king.
         if (isLift(placementOf(board.fen), placement)) return LiveEvent.Ignored
-        kingTaken(placement)?.let {
+        val current = placementOf(board.fen)
+        kingTaken(current, placement)?.let {
             placements += placement
             val missingWhite = 'K' !in placement
-            return stop(it, LiveEnd.Checkmate, now, lightsOf(kingAlgebraic(placementOf(board.fen), missingWhite)))
+            return stop(it, LiveEnd.Checkmate, now, lightsOf(kingAlgebraic(current, missingWhite)))
         }
-        mateOnBoard(placement)?.let {
-            placements += placement
-            return stop(it, LiveEnd.Checkmate, now, checkLights())
-        }
-        return LiveEvent.Illegal(mismatchedSquares(placementOf(board.fen), placement))
+        return LiveEvent.Illegal(mismatchedSquares(current, placement))
     }
 
     fun finishNow(now: Long): LiveEvent.Finished? = finishIfUnsaved(now)
@@ -320,14 +317,35 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
         return (now - from).coerceAtLeast(0)
     }
 
-    private fun kingTaken(placement: String): String? {
-        val whiteKing = 'K' in placement
-        val blackKing = 'k' in placement
-        return when {
-            whiteKing && !blackKing -> "1-0"
-            blackKing && !whiteKing -> "0-1"
-            else -> null
+    /**
+     * A king missing from the frame is mate only when one enemy piece has
+     * stepped onto that square and nothing else moved. A lift, a flicker, or
+     * a half-finished move used to end the game here, so the real move never
+     * landed.
+     */
+    private fun kingTaken(current: String, placement: String): String? {
+        val hasWhite = 'K' in placement
+        val hasBlack = 'k' in placement
+        val result = when {
+            hasWhite && !hasBlack -> "1-0"
+            hasBlack && !hasWhite -> "0-1"
+            else -> return null
         }
+        return if (cleanKingCapture(current, placement)) result else null
+    }
+
+    private fun cleanKingCapture(current: String, placement: String): Boolean {
+        val before = squares(current)
+        val after = squares(placement)
+        val changed = (0 until 64).filter { before[it] != after[it] }
+        if (changed.size != 2) return false
+        val kingSquare = changed.firstOrNull { before[it] == 'K' || before[it] == 'k' } ?: return false
+        val origin = changed.first { it != kingSquare }
+        val king = before[kingSquare]
+        val capturer = before[origin]
+        if (capturer == '.' || after[origin] != '.') return false
+        val enemy = if (king == 'K') capturer.isLowerCase() else capturer.isUpperCase()
+        return enemy && after[kingSquare] == capturer
     }
 
     /** True when pieces only left squares — a lift, not a completed move or capture. */
@@ -381,17 +399,6 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
             }
         }
         return out
-    }
-
-    /** Mate on the physical board even if the last ply did not match a single legal move. */
-    private fun mateOnBoard(placement: String): String? {
-        for (side in listOf(Side.WHITE, Side.BLACK)) {
-            val fen = "$placement ${if (side == Side.WHITE) "w" else "b"} - - 0 1"
-            val loaded = Board()
-            if (runCatching { loaded.loadFromFen(fen) }.isFailure) continue
-            if (isCheckmate(loaded)) return if (side == Side.WHITE) "0-1" else "1-0"
-        }
-        return null
     }
 
     private fun terminalOf(board: Board): Pair<String, LiveEnd>? = when {

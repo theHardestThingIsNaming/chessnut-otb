@@ -1,5 +1,7 @@
 package app.chessnut.otb
 
+import app.chessnut.otb.mistakes.MistakesViewModel
+import app.chessnut.otb.mistakes.MistakesScreen
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -18,13 +20,19 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import app.chessnut.otb.board.BoardScreen
 import app.chessnut.otb.board.BoardViewModel
 import app.chessnut.otb.games.PgnImport
+import app.chessnut.otb.play.OnlineScreen
+import app.chessnut.otb.play.OnlineViewModel
+import app.chessnut.otb.play.PlayKind
+import app.chessnut.otb.play.PlayScreen
+import app.chessnut.otb.play.PlayViewModel
 import app.chessnut.otb.review.ReviewScreen
 import app.chessnut.otb.review.ReviewViewModel
 import app.chessnut.otb.ui.ClubAtmosphere
 import app.chessnut.otb.ui.ClubGamesTheme
 
 class MainActivity : ComponentActivity() {
-    private var sharedText by mutableStateOf<String?>(null)
+        private var sharedText by mutableStateOf<String?>(null)
+        private var oauthRedirect by mutableStateOf<String?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,11 +42,19 @@ class MainActivity : ComponentActivity() {
         )
         val app = application as OtbApp
         sharedText = readShared(intent)
+        oauthRedirect = readOAuth(intent)
         setContent {
             ClubGamesTheme {
                 ClubAtmosphere {
                 var screen by rememberSaveable { mutableStateOf("games") }
                 var afterReview by rememberSaveable { mutableStateOf("games") }
+                var playMode by rememberSaveable { mutableStateOf("bot") }
+                val online = viewModel<OnlineViewModel>()
+
+                LaunchedEffect(oauthRedirect) {
+                    if (oauthRedirect != null) screen = "online"
+                }
+                val board = viewModel<BoardViewModel>()
 
                 LaunchedEffect(sharedText) {
                     val text = sharedText ?: return@LaunchedEffect
@@ -49,7 +65,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                BackHandler(enabled = screen != "games") {
+                BackHandler(enabled = screen != "games" && screen != "online") {
                     if (screen.startsWith("review:")) {
                         screen = afterReview
                         afterReview = "games"
@@ -59,18 +75,51 @@ class MainActivity : ComponentActivity() {
                 }
                 when {
                     screen == "board" -> BoardScreen(
-                        viewModel<BoardViewModel>(),
+                        board,
                         onBack = { screen = "games" },
                         onAnalyze = { id ->
                             afterReview = "board"
                             screen = "review:$id"
                         },
                     )
+                    screen == "play" -> PlayScreen(
+                        viewModel<PlayViewModel>(),
+                        onBack = { screen = "games" },
+                        mode = if (playMode == "trainer") PlayKind.Trainer else PlayKind.Bot,
+                        onAnalyse = { id ->
+                            afterReview = "play"
+                            screen = "review:$id"
+                        },
+                    )
+                    screen == "online" -> OnlineScreen(
+                        online,
+                        onBack = { screen = "games" },
+                        onAnalyse = { id ->
+                            afterReview = "online"
+                            screen = "review:$id"
+                        },
+                        oauthRedirect = oauthRedirect,
+                        onOAuthHandled = { oauthRedirect = null },
+                    )
                     screen == "about" -> AboutScreen(onBack = { screen = "games" })
+                    screen.startsWith("mistakes") -> {
+                        val id = screen.removePrefix("mistakes").removePrefix(":").ifBlank { null }
+                        MistakesScreen(
+                            viewModel<MistakesViewModel>(key = screen, factory = MistakesViewModel.Factory(id)),
+                            onBack = {
+                                screen = if (id != null) "review:$id" else "games"
+                            },
+                            onOpenGame = { gameId ->
+                                afterReview = screen
+                                screen = "review:$gameId"
+                            },
+                        )
+                    }
                     screen.startsWith("review:") -> {
                         val id = screen.removePrefix("review:")
                         ReviewScreen(
                             viewModel<ReviewViewModel>(key = id, factory = ReviewViewModel.Factory(id)),
+                            onPractise = { screen = "mistakes:$id" },
                             onBack = {
                                 screen = afterReview
                                 afterReview = "games"
@@ -79,12 +128,17 @@ class MainActivity : ComponentActivity() {
                     }
                     else -> GamesScreen(
                         app = app,
+                        board = board,
                         onOpen = {
                             afterReview = "games"
                             screen = "review:$it"
                         },
                         onBoard = { screen = "board" },
+                        onBot = { playMode = "bot"; screen = "play" },
+                        onOnline = { screen = "online" },
+                        onTrainer = { playMode = "trainer"; screen = "play" },
                         onAbout = { screen = "about" },
+                        onMistakes = { screen = "mistakes" },
                         onImport = { text ->
                             when (val result = importPgn(app, text)) {
                                 is Imported.Game -> {
@@ -105,6 +159,13 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         sharedText = readShared(intent)
+        oauthRedirect = readOAuth(intent)
+    }
+
+    private fun readOAuth(intent: Intent): String? {
+        val data = intent.data ?: return null
+        if (data.scheme != "app.chessnut.otb") return null
+        return data.toString()
     }
 
     private sealed interface Imported {

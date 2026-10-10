@@ -95,6 +95,22 @@ class GameStore(private val root: File) {
         return game.copy(folder = folderOf(id))
     }
 
+    /**
+     * Keeps the newest [keep] unfiled games from the last [maxAgeMillis].
+     * Anything older, or past that count, moves into [into]. Games already in a folder stay there.
+     */
+    @Synchronized
+    fun shelveUnfiled(
+        now: Long,
+        keep: Int = 5,
+        maxAgeMillis: Long = 30L * 24 * 60 * 60 * 1000,
+        into: String = "Earlier",
+    ) {
+        val loose = gamesIn(root).sortedByDescending { it.createdAt }
+        val stay = loose.filter { now - it.createdAt <= maxAgeMillis }.take(keep).map { it.id }.toSet()
+        loose.filter { it.id !in stay }.forEach { moveToFolder(it.id, into) }
+    }
+
     /** Newest first. Games in the main list and in named folders. */
     @Synchronized
     fun all(): List<SavedGame> =
