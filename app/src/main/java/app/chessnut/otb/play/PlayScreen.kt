@@ -32,8 +32,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -72,6 +70,9 @@ import app.chessnut.otb.ui.moveSquares
 import app.chessnut.otb.ui.GameAction
 import app.chessnut.otb.ui.ActionTone
 import app.chessnut.otb.ui.NavKey
+import androidx.compose.foundation.lazy.LazyRow
+import app.chessnut.otb.openings.OpeningBook
+import app.chessnut.otb.analysis.ChessLines
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -164,34 +165,33 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
                 ChessBoard(fen = START_FEN, modifier = Modifier.size(side), flipped = !ui.userWhite)
             }
         } else {
-            OpeningCheck("Explain the opening", ui.explain, viewModel::setExplain)
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilterChip(selected = ui.explain, onClick = { viewModel.setExplain(!ui.explain) }, label = { Text("Explain") }, colors = clubChipColors())
+                FilterChip(selected = ui.ideas, onClick = { viewModel.setIdeas(!ui.ideas) }, label = { Text("Ideas") }, colors = clubChipColors())
+                FilterChip(selected = ui.history, onClick = { viewModel.setHistory(!ui.history) }, label = { Text("History") }, colors = clubChipColors())
+            }
             Text(
                 if (ui.explain) {
-                    "Arrows show the book moves, strongest first. A move off the book has to be replayed."
+                    "Learning: arrows show the book moves. Turn off Explain to test yourself, one line at a time."
                 } else {
-                    "Play from memory. Every move is scored, and the opening list keeps your accuracy."
+                    "Testing: play each line from memory. Clean lines come back later, missed ones tomorrow."
                 },
                 color = Palette.TextMuted,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
             )
-            OpeningCheck("Speak the idea behind each move", ui.ideas, viewModel::setIdeas)
-            OpeningCheck("Tell the opening's history", ui.history, viewModel::setHistory)
-            TextButton(onClick = { importing = true }, colors = clubTextButtonColors()) {
-                Text("Import a Lichess study as your repertoire", color = Palette.Gold)
-            }
             OutlinedTextField(
                 value = ui.openingQuery,
                 onValueChange = viewModel::setQuery,
-                label = { Text("Opening") },
+                placeholder = { Text("Search openings") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalArrangement = Arrangement.spacedBy(0.dp)) {
-                OpeningCheck("Gambits", ui.gambitsOnly, viewModel::setGambitsOnly)
-                OpeningCheck("White", ui.whiteOpenings, viewModel::setWhiteOpenings)
-                OpeningCheck("Black", ui.blackOpenings, viewModel::setBlackOpenings)
-                OpeningCheck("Unrated", ui.unratedOnly, viewModel::setUnratedOnly)
-                OpeningCheck("Memes", ui.memesOnly, viewModel::setMemesOnly)
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                item { FilterChip(selected = ui.gambitsOnly, onClick = { viewModel.setGambitsOnly(!ui.gambitsOnly) }, label = { Text("Gambits") }, colors = clubChipColors()) }
+                item { FilterChip(selected = ui.whiteOpenings, onClick = { viewModel.setWhiteOpenings(!ui.whiteOpenings) }, label = { Text("White's") }, colors = clubChipColors()) }
+                item { FilterChip(selected = ui.blackOpenings, onClick = { viewModel.setBlackOpenings(!ui.blackOpenings) }, label = { Text("Black's") }, colors = clubChipColors()) }
+                item { FilterChip(selected = ui.unratedOnly, onClick = { viewModel.setUnratedOnly(!ui.unratedOnly) }, label = { Text("Unplayed") }, colors = clubChipColors()) }
+                item { FilterChip(selected = ui.memesOnly, onClick = { viewModel.setMemesOnly(!ui.memesOnly) }, label = { Text("Memes") }, colors = clubChipColors()) }
             }
             LazyColumn(Modifier.weight(1f)) {
                 if (ui.sections.isEmpty()) {
@@ -236,7 +236,13 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
                                 style = MaterialTheme.typography.bodyLarge,
                                 modifier = Modifier.weight(1f),
                             )
-                            if (row.due != null) {
+                            if (row.learned != null && row.lines != null) {
+                                Text(
+                                    "${row.learned}/${row.lines} lines",
+                                    color = if (row.learned == row.lines) Palette.Gold else Palette.TextMuted,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                            } else if (row.due != null) {
                                 Text(
                                     if (row.due > 0) "${row.due} due" else "done",
                                     color = if (row.due > 0) Palette.Gold else Palette.TextMuted,
@@ -255,7 +261,14 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
                         }
                     }
                 }
+                item(key = "import") {
+                    TextButton(onClick = { importing = true }, colors = clubTextButtonColors()) {
+                        Text("Import a Lichess study as your repertoire", color = Palette.Gold)
+                    }
+                }
             }
+            ui.openingName?.let { name -> SelectedOpening(name, ui) }
+
         }
         Button(
             onClick = viewModel::start,
@@ -266,19 +279,34 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
     }
 }
 
+/** The chosen opening: where it starts, its moves, and how much of it you know. */
 @Composable
-private fun OpeningCheck(label: String, checked: Boolean, onChecked: (Boolean) -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Checkbox(
-            checked = checked,
-            onCheckedChange = onChecked,
-            colors = CheckboxDefaults.colors(
-                checkedColor = Palette.Gold,
-                uncheckedColor = Palette.TextMuted,
-                checkmarkColor = Palette.OnGold,
-            ),
-        )
-        Text(label, color = Palette.Text, style = MaterialTheme.typography.bodyMedium)
+private fun SelectedOpening(name: String, ui: PlayUi) {
+    val line = remember(name) { OpeningBook.line(name)?.san.orEmpty() }
+    val fen = remember(line) { runCatching { ChessLines.replay(line).fens.last() }.getOrDefault(START_FEN) }
+    val row = ui.sections.flatMap { it.rows }.firstOrNull { it.name == name }
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(Palette.SurfaceHigh)
+            .padding(10.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        ChessBoard(fen = fen, modifier = Modifier.size(84.dp), flipped = !ui.userWhite, coordinates = false)
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(name, color = Palette.Gold, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            if (line.isNotEmpty()) {
+                Text(numbered(line), color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            }
+            val progress = when {
+                row?.learned != null && row.lines != null -> "${row.learned} of ${row.lines} lines learned"
+                row?.due != null -> if (row.due > 0) "${row.due} lines due" else "All lines reviewed"
+                else -> "Not trained yet"
+            }
+            Text(progress, color = Palette.Text, style = MaterialTheme.typography.bodySmall)
+        }
     }
 }
 
@@ -325,6 +353,9 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                     label = { Text("History") },
                     colors = clubChipColors(),
                 )
+                ui.lineLabel?.let { label ->
+                    Text(label, color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium)
+                }
                 if (ui.san.isNotEmpty() && !ui.inTheory) {
                     Text(
                         "Out of theory",
@@ -349,14 +380,35 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
             onSquare = viewModel::tap,
         )
         if (ui.bookSans.isNotEmpty()) BookKey(ui.bookSans, ui.explainedByEngine)
+        ui.lineNote?.let { note ->
+            Text(
+                note,
+                color = Palette.Text,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Palette.SurfaceHigh)
+                    .border(1.dp, Palette.Gold, RoundedCornerShape(12.dp))
+                    .padding(12.dp),
+            )
+        }
         Text(numbered(ui.san), color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(
-                onClick = viewModel::hint,
-                enabled = ui.finished == null && !ui.awaitingBoard,
-                colors = ButtonDefaults.buttonColors(containerColor = Palette.Gold, contentColor = Palette.OnGold),
-            ) { Text("Hint") }
-            TextButton(onClick = viewModel::start, colors = clubTextButtonColors()) { Text("New game", color = Palette.Gold) }
+            if (ui.lineDone) {
+                Button(
+                    onClick = viewModel::start,
+                    colors = ButtonDefaults.buttonColors(containerColor = Palette.Gold, contentColor = Palette.OnGold),
+                ) { Text("Next line") }
+            } else {
+                Button(
+                    onClick = viewModel::hint,
+                    enabled = ui.finished == null && !ui.awaitingBoard,
+                    colors = ButtonDefaults.buttonColors(containerColor = Palette.Gold, contentColor = Palette.OnGold),
+                ) { Text("Hint") }
+                TextButton(onClick = viewModel::start, colors = clubTextButtonColors()) { Text("Restart", color = Palette.Gold) }
+            }
+            TextButton(onClick = viewModel::leave, colors = clubTextButtonColors()) { Text("Openings", color = Palette.Gold) }
             TextButton(
                 onClick = { viewModel.analyse()?.let(onAnalyse) },
                 enabled = ui.san.isNotEmpty(),

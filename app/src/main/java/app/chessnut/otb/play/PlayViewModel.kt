@@ -50,11 +50,20 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import app.chessnut.otb.chess.MoveInput
+import app.chessnut.otb.repertoire.OpeningTree
 
 enum class PlayKind { Bot, Trainer }
 
 /** [winRate] is how often the opening's side wins on Lichess, as a percentage, once fetched. */
-data class OpeningRow(val name: String, val accuracy: Int?, val winRate: Int? = null, val due: Int? = null)
+data class OpeningRow(
+    val name: String,
+    val accuracy: Int?,
+    val winRate: Int? = null,
+    val due: Int? = null,
+    /** Lines learned and lines in all, once you have drilled this opening from the book. */
+    val learned: Int? = null,
+    val lines: Int? = null,
+)
 
 data class OpeningSection(val title: String, val rows: List<OpeningRow>)
 
@@ -109,6 +118,12 @@ data class PlayUi(
     val bookSans: List<String> = emptyList(),
     /** Past the book, [bookUcis] are the engine's top moves rather than theory. */
     val explainedByEngine: Boolean = false,
+    /** Which line of the opening this game drills, such as "Line 3 of 12 · new". */
+    val lineLabel: String? = null,
+    /** The drilled line is over, so the next one can start. */
+    val lineDone: Boolean = false,
+    /** How the drilled line went, kept on screen while play goes on. */
+    val lineNote: String? = null,
 )
 
 class PlayViewModel(application: Application) : AndroidViewModel(application) {
@@ -164,6 +179,16 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private var drillLine: List<String>? = null
     private var drillMissed = false
     private var drillGraded = false
+    /** Every line of the opening being drilled. */
+    private var drillLines: List<List<String>> = emptyList()
+    /** True when the lines come from the opening book rather than an imported study. */
+    private var drillBook = false
+    /** Explain mode walks through the lines in turn without grading them. */
+    private var lineCursor = 0
+    /** Book lines per opening and side, since building them walks the whole book. */
+    private val treeCache = mutableMapOf<Pair<String, Boolean>, List<List<String>>>()
+    private var lineLabelShown: String? = null
+    private var lineNote: String? = null
     /** Explain past the book: the engine's top moves as (SAN, UCI), for [ideasFen]. */
     private var ideas: List<Pair<String, String>> = emptyList()
     private var ideasFen: String? = null
@@ -190,6 +215,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     fun setUserWhite(white: Boolean) {
         if (playing) return
         state.update { it.copy(userWhite = white) }
+        refreshOpenings(state.value.openingQuery)
     }
 
     fun setElo(value: Int) {
@@ -336,11 +362,26 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         leftTheory = false
         drillMissed = false
         drillGraded = false
-        drillLine = state.value.openingName
-            ?.takeIf { state.value.kind == PlayKind.Trainer }
-            ?.let { app.repertoire.chapter(it) }
-            ?.let { Drill.next(it.lines, app.repertoire.reviews()) }
         val ui = state.value
+        val trained = ui.openingName?.takeIf { ui.kind == PlayKind.Trainer }
+        val chapter = trained?.let { app.repertoire.chapter(it) }
+        drillBook = trained != null && chapter == null
+        drillLines = when {
+            chapter != null -> chapter.lines
+            trained != null -> bookLines(trained, ui.userWhite)
+            else -> emptyList()
+        }
+        drillLine = when {
+            drillLines.isEmpty() -> null
+            !drillBook -> Drill.next(drillLines, app.repertoire.reviews())
+            ui.explain -> {
+                // Explaining shows each line in turn, those not yet learned first.
+                val learned = app.lineProgress.learned(trained!!, ui.userWhite)
+                val fresh = drillLines.filter { Drill.key(it) !in learned }.ifEmpty { drillLines }
+                fresh[lineCursor++ % fresh.size]
+            }
+            else -> Drill.next(drillLines, app.lineProgress.reviews(trained!!, ui.userWhite))
+        }
         if (ui.kind == PlayKind.Trainer && ui.openingName == null) return
         kind = ui.kind
         userWhite = ui.userWhite
@@ -370,6 +411,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         awaitingBoard = !ready
         setupWrong = if (awaitingBoard) app.latestPlacement?.let { PlayPosition.differences(fen, it) }.orEmpty() else emptyList()
         if (awaitingBoard) lightSquares(if (setupWrong.size <= MAX_SETUP_HINTS) setupWrong else emptyList())
+        lineLabelShown = lineLabel()
+        lineNote = null
         status = when {
             awaitingBoard -> setupStatus(setupWrong)
             kind == PlayKind.Trainer -> openingName ?: "Opening trainer"
@@ -812,17 +855,67 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         val onLine = line.take(sanMoves.size) == sanMoves.take(line.size)
         if (sanMoves.size < line.size && onLine) return
         drillGraded = true
+        val now = System.currentTimeMillis()
         val clean = !drillMissed && onLine
-        val review = app.repertoire.grade(line, clean, System.currentTimeMillis())
-        val days = Drill.days(review, System.currentTimeMillis())
-        val words = if (clean) {
-            "Line complete. Next review in $days ${if (days == 1) "day" else "days"}."
-        } else {
-            "You strayed from your repertoire, so this line comes back tomorrow."
+        // Where you left the line, and what it plays there, to learn from the miss.
+        val split = sanMoves.indices.firstOrNull { it < line.size && sanMoves[it] != line[it] }
+        val expected = split?.let { "${moveNumber(it)}${line[it]}" }
+        val bookToo = split != null && !drillMissed
+        val name = openingName
+        val words = when {
+            drillBook && explain -> if (onLine) {
+                "End of this line. Turn off Explain to test yourself on it."
+            } else {
+                "This line plays $expected. You'll see it again."
+            }
+            drillBook && name != null -> {
+                val review = app.lineProgress.grade(name, userWhite, line, clean, now)
+                val keys = drillLines.map(Drill::key).toSet()
+                val learned = app.lineProgress.learned(name, userWhite).count { it in keys }
+                val days = Drill.days(review, now)
+                when {
+                    clean -> "Line learned: $learned of ${drillLines.size}. Next review in $days ${if (days == 1) "day" else "days"}."
+                    bookToo -> "That's book too, but this line plays $expected. It comes back tomorrow."
+                    expected != null -> "This line plays $expected. It comes back tomorrow."
+                    else -> "Not quite clean, so this line comes back tomorrow."
+                }
+            }
+            else -> {
+                val review = app.repertoire.grade(line, clean, now)
+                val days = Drill.days(review, now)
+                when {
+                    clean -> "Line complete. Next review in $days ${if (days == 1) "day" else "days"}."
+                    expected != null -> "Your repertoire plays $expected, so this line comes back tomorrow."
+                    else -> "You strayed from your repertoire, so this line comes back tomorrow."
+                }
+            }
         }
-        status = words
+        lineNote = words
         publish()
         if (app.phoneSounds) speech.narrate(words)
+        refreshOpenings(state.value.openingQuery)
+    }
+
+    /** "5. " for White's move at [ply], "5… " for Black's. */
+    private fun moveNumber(ply: Int): String = "${ply / 2 + 1}${if (ply % 2 == 0) ". " else "… "}"
+
+    private fun bookLines(name: String, white: Boolean): List<List<String>> =
+        synchronized(treeCache) { treeCache.getOrPut(name to white) { OpeningTree.lines(name, white) } }
+
+    /** "Line 3 of 12 · new", for the drilled line. */
+    private fun lineLabel(): String? {
+        val line = drillLine ?: return null
+        val name = openingName ?: return null
+        val index = drillLines.indexOf(line)
+        if (index < 0) return null
+        val key = Drill.key(line)
+        val reviews = if (drillBook) app.lineProgress.reviews(name, userWhite) else app.repertoire.reviews()
+        val state = when {
+            reviews[key] == null -> "new"
+            drillBook && key in app.lineProgress.learned(name, userWhite) -> "review"
+            else -> "practice"
+        }
+        return "Line ${index + 1} of ${drillLines.size} · $state"
     }
 
     /** Trainer, opponent to move: the book move (or, past the book, the explained idea) the board now shows. */
@@ -1111,12 +1204,21 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 OpeningFilter(it.gambitsOnly, it.whiteOpenings, it.blackOpenings, it.unratedOnly, it.memesOnly)
             }
             val rates = names.associateWith { OpeningStats.winPercent(it, openingStats.record(it)) }
+            val started = app.lineProgress.started()
+            val side = state.value.userWhite
             val sections = catalog.mapNotNull { section ->
                 val rows = OpeningStats.sorted(section.names, rates)
                     .filter { OpeningCatalog.matches(it, scores[it], filter) }
                     .map { name ->
                         val due = if (app.repertoire.isRepertoire(name)) app.repertoire.due(name, System.currentTimeMillis()) else null
-                        OpeningRow(name, scores[name], rates[name], due)
+                        // Book openings you have drilled show how many of their lines you know.
+                        val progress = if (due == null && (name to side) in started) {
+                            val keys = bookLines(name, side).map(Drill::key).toSet()
+                            app.lineProgress.learned(name, side).count { it in keys } to keys.size
+                        } else {
+                            null
+                        }
+                        OpeningRow(name, scores[name], rates[name], due, progress?.first, progress?.second)
                     }
                 if (rows.isEmpty()) null else OpeningSection(section.title, rows)
             }
@@ -1216,6 +1318,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 bookUcis = explained.map { it.second },
                 bookSans = explained.map { it.first },
                 explainedByEngine = explained.isNotEmpty() && legalBookSteps().isEmpty(),
+                lineLabel = if (kind == PlayKind.Trainer) lineLabelShown else null,
+                lineDone = kind == PlayKind.Trainer && drillGraded,
+                lineNote = if (kind == PlayKind.Trainer) lineNote else null,
             )
         }
     }
