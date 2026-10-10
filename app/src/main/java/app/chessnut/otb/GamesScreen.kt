@@ -130,124 +130,135 @@ fun GamesScreen(
             )
         },
     ) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding)) {
-            BoardLinkSection(board, Modifier.padding(horizontal = 16.dp, vertical = 4.dp), compact = true)
-            Column(Modifier.padding(horizontal = 16.dp, vertical = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(
-                    onClick = onBoard,
-                    modifier = Modifier.fillMaxWidth().height(52.dp),
-                    shape = RoundedCornerShape(14.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent, contentColor = Palette.OnAccent),
-                ) {
-                    BoardMark(Palette.OnAccent)
-                    Text("Play over the board", modifier = Modifier.padding(start = 10.dp), fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                }
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    HomeTile("Play a bot", "Stockfish, 1400 to 2000", Modifier.weight(1f), onBot) { PawnMark(it) }
-                    HomeTile("Play online", "Lichess, on your board", Modifier.weight(1f), onOnline) { ClockMark(it, Modifier.size(18.dp)) }
-                }
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    HomeTile(
-                        "Openings",
-                        if (linesDue > 0) "$linesDue ${if (linesDue == 1) "line" else "lines"} due" else "Learn lines by heart",
-                        Modifier.weight(1f),
-                        onTrainer,
-                        highlight = linesDue > 0,
-                    ) { BookMark(it) }
-                    HomeTile(
-                        "Mistakes",
-                        if (mistakesDue > 0) "$mistakesDue to practise" else "Fix what went wrong",
-                        Modifier.weight(1f),
-                        onMistakes,
-                        highlight = mistakesDue > 0,
-                    ) { TargetMark(it) }
+        // One scrolling list, so the shortcuts scroll away when you go through your games.
+        LazyColumn(
+            Modifier.fillMaxSize().padding(padding),
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp, 4.dp, 16.dp, 24.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            item(key = "board") { BoardLinkSection(board, compact = true) }
+            item(key = "actions") {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Button(
+                        onClick = onBoard,
+                        modifier = Modifier.fillMaxWidth().height(52.dp),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent, contentColor = Palette.OnAccent),
+                    ) {
+                        BoardMark(Palette.OnAccent)
+                        Text("Play over the board", modifier = Modifier.padding(start = 10.dp), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        HomeTile("Play a bot", "Stockfish, 1400 to 2000", Modifier.weight(1f), onBot) { PawnMark(it) }
+                        HomeTile("Play online", "Lichess, on your board", Modifier.weight(1f), onOnline) { ClockMark(it, Modifier.size(18.dp)) }
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        HomeTile(
+                            "Openings",
+                            if (linesDue > 0) "$linesDue ${if (linesDue == 1) "line" else "lines"} due" else "Learn lines by heart",
+                            Modifier.weight(1f),
+                            onTrainer,
+                            highlight = linesDue > 0,
+                        ) { BookMark(it) }
+                        HomeTile(
+                            "Mistakes",
+                            if (mistakesDue > 0) "$mistakesDue to practise" else "Fix what went wrong",
+                            Modifier.weight(1f),
+                            onMistakes,
+                            highlight = mistakesDue > 0,
+                        ) { TargetMark(it) }
+                    }
                 }
             }
-            if (browsing) {
+            item(key = "header") {
                 Row(
-                    Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                    Modifier.fillMaxWidth().padding(top = 6.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    TextButton(onClick = { browsing = false; folder = "" }, colors = clubTextButtonColors()) { Text("Recent", color = Palette.Accent) }
-                    LazyRow(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        items(folders) { name ->
-                            FilterChip(
-                                selected = folder == name,
-                                onClick = { folder = name },
-                                colors = clubChipColors(),
-                                label = { Text(name, color = if (folder == name) Palette.OnAccent else Palette.Text) },
-                            )
+                    if (browsing) {
+                        TextButton(onClick = { browsing = false; folder = "" }, colors = clubTextButtonColors()) { Text("Recent", color = Palette.TextMuted) }
+                        LazyRow(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            items(folders) { name ->
+                                FilterChip(
+                                    selected = folder == name,
+                                    onClick = { folder = name },
+                                    colors = clubChipColors(),
+                                    label = { Text(name, color = if (folder == name) Palette.OnAccent else Palette.Text) },
+                                )
+                            }
+                        }
+                    } else {
+                        Text("Recent", color = Palette.Text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                        TextButton(onClick = {
+                            browsing = true
+                            if (folder.isBlank()) folder = folders.firstOrNull().orEmpty()
+                        }, colors = clubTextButtonColors()) { Text("Folders", color = Palette.Accent) }
+                    }
+                    var folderMenu by remember { mutableStateOf(false) }
+                    Box {
+                        IconButton(onClick = { folderMenu = true }, modifier = Modifier.semantics { contentDescription = "Folder options" }) {
+                            MoreMark(Palette.TextMuted)
+                        }
+                        DropdownMenu(expanded = folderMenu, onDismissRequest = { folderMenu = false }) {
+                            DropdownMenuItem(text = { Text("New folder") }, onClick = { folderMenu = false; newFolder = true })
+                            if (browsing && folder.isNotBlank()) {
+                                DropdownMenuItem(text = { Text("Rename $folder") }, onClick = { folderMenu = false; renameFolder = folder })
+                                DropdownMenuItem(
+                                    text = { Text("Remove $folder", color = Palette.Error) },
+                                    onClick = {
+                                        folderMenu = false
+                                        val removed = folder
+                                        app.deleteFolder(removed)
+                                        folder = folders.firstOrNull { it != removed }.orEmpty()
+                                        browsing = folder.isNotBlank()
+                                    },
+                                )
+                            }
                         }
                     }
-                    TextButton(onClick = { newFolder = true }, colors = clubTextButtonColors()) { Text("Folder", color = Palette.Accent) }
-                }
-                if (folder.isNotBlank()) {
-                    Row(Modifier.padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        TextButton(onClick = { renameFolder = folder }, colors = clubTextButtonColors()) { Text("Rename folder", color = Palette.Accent) }
-                        TextButton(onClick = { app.deleteFolder(folder); folder = ""; browsing = folders.size <= 1 }, colors = clubTextButtonColors()) { Text("Remove folder", color = Palette.Error) }
-                    }
-                }
-            } else {
-                Row(
-                    Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text("Recent", color = Palette.Text, fontWeight = FontWeight.SemiBold)
-                    TextButton(onClick = {
-                        browsing = true
-                        if (folder.isBlank()) folder = folders.firstOrNull().orEmpty()
-                    }, colors = clubTextButtonColors()) { Text("Folders", color = Palette.Accent) }
                 }
             }
-            if (!browsing && visible.isEmpty()) {
-                Text(
-                    "No games yet. Games you play or import show up here.",
-                    color = Palette.TextMuted,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            if (visible.isEmpty()) {
+                item(key = "empty") {
+                    Text(
+                        when {
+                            !browsing -> "No games yet. Games you play or import show up here."
+                            folder.isBlank() -> "No folders yet."
+                            else -> "$folder is empty."
+                        },
+                        color = Palette.TextMuted,
+                        modifier = Modifier.padding(vertical = 8.dp),
+                    )
+                }
+            }
+            items(visible, key = { it.id }) { game ->
+                GameRow(
+                    app = app,
+                    game = game,
+                    progress = progress[game.id],
+                    version = version,
+                    onClick = { onOpen(game.id) },
+                    onRename = { renaming = game },
+                    onMove = { moving = game },
+                    onDelete = { pendingDelete = game },
                 )
-            } else if (visible.isEmpty()) {
-                Text(
-                    if (folder.isBlank()) "No folders yet." else "$folder is empty.",
-                    color = Palette.TextMuted,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                )
-            } else {
-                LazyColumn(
-                    Modifier.fillMaxSize(),
-                    contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp, 4.dp, 16.dp, 24.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                ) {
-                    items(visible, key = { it.id }) { game ->
-                        GameRow(
-                            app = app,
-                            game = game,
-                            progress = progress[game.id],
-                            version = version,
-                            onClick = { onOpen(game.id) },
-                            onRename = { renaming = game },
-                            onMove = { moving = game },
-                            onDelete = { pendingDelete = game },
-                        )
-                    }
-                    if (!browsing) {
-                        item {
-                            Text(
-                                "Only your last 5 games stay here. Move a game into a folder to keep it.",
-                                color = Palette.TextMuted,
-                                style = MaterialTheme.typography.bodySmall,
-                            )
-                        }
-                    }
-                    if (!browsing && "Earlier" in folders) {
-                        item {
-                            TextButton(
-                                onClick = { browsing = true; folder = "Earlier" },
-                                colors = clubTextButtonColors(),
-                            ) { Text("Earlier", color = Palette.Accent) }
-                        }
-                    }
+            }
+            if (!browsing && visible.isNotEmpty()) {
+                item(key = "keep") {
+                    Text(
+                        "Only your last 5 games stay here. Move a game into a folder to keep it.",
+                        color = Palette.TextMuted,
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
+            }
+            if (!browsing && "Earlier" in folders) {
+                item(key = "earlier") {
+                    TextButton(
+                        onClick = { browsing = true; folder = "Earlier" },
+                        colors = clubTextButtonColors(),
+                    ) { Text("Earlier", color = Palette.Accent) }
                 }
             }
         }
@@ -447,7 +458,7 @@ private fun GameRow(
                 Text(game.title, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Palette.Text, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 val details = listOfNotNull(
                     game.date.ifBlank { null },
-                    "${(game.sanMoves.size + 1) / 2} moves",
+                    ((game.sanMoves.size + 1) / 2).let { "$it ${if (it == 1) "move" else "moves"}" },
                     when (game.source) {
                         GameSource.Board -> "board"
                         GameSource.Pgn -> "PGN"
