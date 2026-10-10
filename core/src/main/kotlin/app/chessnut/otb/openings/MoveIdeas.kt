@@ -99,33 +99,50 @@ object MoveIdeas {
     /** Move sequences with written notes. */
     val noted: Set<String> get() = NOTES.keys
 
+    /**
+     * A move without a written note: what kind of move it is, then what it
+     * does in this position, such as a threat, a pin or a defence.
+     */
     private fun describe(played: List<String>, fenBefore: String, uci: String): String? {
         if (uci.length < 4) return null
         val board = Board().apply { loadFromFen(fenBefore) }
         val from = Square.fromValue(uci.substring(0, 2).uppercase())
         val to = Square.fromValue(uci.substring(2, 4).uppercase())
         val piece = board.getPiece(from)
-        if (piece.pieceType == null) return null
+        val type = piece.pieceType ?: return null
         val white = board.sideToMove == Side.WHITE
-        val captured = board.getPiece(to).pieceType != null
+        val victim = board.getPiece(to).pieceType
         val san = played.last()
-        val check = san.endsWith("+")
         val target = uci.substring(2, 4)
-        val idea = when {
+        val escaped = "Moves the ${type.name.lowercase()} out of attack."
+        val features = MoveFeatures.of(fenBefore, uci, limit = 3).let { found ->
+            // Getting out of check or out of attack is the move's main point, so it leads instead of following.
+            if (board.isKingAttacked || escaped in found) found else found.take(2)
+        }
+        val canCastle = board.getCastleRight(board.sideToMove) != com.github.bhlangonijr.chesslib.CastleRight.NONE
+        val opening = when {
+            board.isKingAttacked && victim == null -> null
+            escaped in features && victim == null -> "Moves the ${type.name.lowercase()} out of attack, to $target."
             san.startsWith("O-O-O") -> "Castles long, bringing the rook to the centre. The kings may now attack on opposite wings."
             san.startsWith("O-O") -> "Castles, tucking the king away and bringing the rook towards the centre."
-            captured && recaptures(played, target) -> "Recaptures, keeping the material level."
-            captured -> "Takes on $target."
-            piece.pieceType == PieceType.PAWN -> pawnIdea(target, white)
-            piece.pieceType == PieceType.KNIGHT && home(from, white) -> "Develops the knight towards the centre."
-            piece.pieceType == PieceType.BISHOP && target in LONG_DIAGONAL -> "Fianchettoes the bishop onto the long diagonal."
-            piece.pieceType == PieceType.BISHOP && home(from, white) -> "Develops the bishop onto an active diagonal."
-            piece.pieceType == PieceType.QUEEN -> "Brings the queen out. Early queen moves can cost time if she is chased."
-            piece.pieceType == PieceType.ROOK -> "Brings the rook to the ${target[0]} file."
-            piece.pieceType == PieceType.KING -> "Moves the king, giving up the right to castle."
-            else -> "Repositions the ${piece.pieceType.name.lowercase()} to a better square."
+            victim != null && recaptures(played, target) -> "Recaptures on $target."
+            victim != null && board.squareAttackedBy(to, board.sideToMove.flip()) == 0L ->
+                "Wins the ${victim.name.lowercase()} on $target."
+            victim == type && type != PieceType.PAWN -> "Trades ${type.name.lowercase()}s on $target."
+            victim != null -> "Takes the ${victim.name.lowercase()} on $target."
+            type == PieceType.PAWN -> pawnIdea(target, white, single = kotlin.math.abs(to.rank.ordinal - from.rank.ordinal) == 1)
+            type == PieceType.KNIGHT && home(from, white) -> "Develops the knight towards the centre."
+            type == PieceType.BISHOP && target in LONG_DIAGONAL -> "Fianchettoes the bishop onto the long diagonal."
+            type == PieceType.BISHOP && home(from, white) -> "Develops the bishop onto an active diagonal."
+            type == PieceType.ROOK -> "Brings the rook to the ${target[0]} file."
+            type == PieceType.KING && canCastle -> "Moves the king, giving up the right to castle."
+            type == PieceType.KING -> "Moves the king to $target."
+            else -> "Brings the ${type.name.lowercase()} to $target."
         }
-        return if (check) "$idea And it gives check." else idea
+        // A plain check is worth saying; a discovered or double check already says so.
+        val check = if (san.endsWith("+") && features.none { "check" in it.lowercase() }) listOf("Check.") else emptyList()
+        val rest = features.filter { it != escaped || opening == null }.take(2)
+        return (listOfNotNull(opening) + check + rest).joinToString(" ")
     }
 
     /** The move before this one was a capture on the same square. */
@@ -134,11 +151,12 @@ object MoveIdeas {
         return previous.contains("x$target")
     }
 
-    private fun pawnIdea(target: String, white: Boolean): String {
+    private fun pawnIdea(target: String, white: Boolean, single: Boolean = false): String {
         val file = target[0]
         val rank = target[1].digitToInt()
         val advanced = if (white) rank - 2 else 7 - rank
         return when {
+            file in "de" && single && advanced == 1 -> "Supports the centre and opens a line for the bishop."
             file in "de" -> "Claims a share of the centre."
             file in "cf" -> "Fights for the centre from the side."
             target in setOf("g3", "b3", "g6", "b6") -> "Makes room to fianchetto the bishop."
