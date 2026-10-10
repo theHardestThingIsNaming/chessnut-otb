@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import app.chessnut.otb.ui.Palette
 import app.chessnut.otb.ui.clubAppBarColors
 import app.chessnut.otb.ui.clubPanel
+import app.chessnut.otb.ui.BackButton
 
 private val links = listOf(
     "Source code (GPL-3.0)" to BuildInfo.SOURCE_URL,
@@ -44,7 +45,7 @@ fun AboutScreen(onBack: () -> Unit) {
             TopAppBar(
                 title = { Text("About") },
                 colors = clubAppBarColors(),
-                navigationIcon = { TextButton(onClick = onBack) { Text("Back", color = Palette.Accent) } },
+                navigationIcon = { BackButton(onBack) },
             )
         },
     ) { padding ->

@@ -57,6 +57,7 @@ import app.chessnut.otb.ui.KeepScreenOn
 import app.chessnut.otb.ui.moveSquares
 import app.chessnut.otb.ui.GameAction
 import app.chessnut.otb.ui.ActionTone
+import app.chessnut.otb.ui.BackButton
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -110,12 +111,12 @@ fun OnlineScreen(
                 title = { Text(ui.username?.let { "Lichess · $it" } ?: "Lichess", maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 colors = clubAppBarColors(),
                 navigationIcon = {
-                    TextButton(onClick = {
+                    BackButton {
                         if (ui.live) confirmLeave = true else {
                             viewModel.leave()
                             onBack()
                         }
-                    }, colors = clubTextButtonColors()) { Text("Back", color = Palette.Accent) }
+                    }
                 },
                 actions = {
                     if (ui.username != null && !ui.playing && !ui.seeking) {

@@ -76,6 +76,7 @@ import app.chessnut.otb.analysis.ChessLines
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.OutlinedButton
 import app.chessnut.otb.ui.clubOutlinedButtonColors
+import app.chessnut.otb.ui.BackButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -106,10 +107,10 @@ fun PlayScreen(viewModel: PlayViewModel, onBack: () -> Unit, mode: PlayKind = Pl
                 },
                 colors = clubAppBarColors(),
                 navigationIcon = {
-                    TextButton(onClick = {
+                    BackButton {
                         viewModel.leave()
                         onBack()
-                    }, colors = clubTextButtonColors()) { Text("Back", color = Palette.Accent) }
+                    }
                 },
             )
         },
@@ -493,9 +494,9 @@ private fun BotGame(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
     val topFlagged = if (opponentWhite) ui.flaggedWhite else ui.flaggedBlack
     val bottomFlagged = if (opponentWhite) ui.flaggedBlack else ui.flaggedWhite
     Column(modifier.verticalScroll(rememberScrollState()).padding(bottom = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        if (ui.playing) Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(
-                if (ui.playing) ui.status else if (ui.userWhite) "You have White · ${ui.elo}" else "You have Black · ${ui.elo}",
+                ui.status,
                 color = when {
                     ui.browsing -> Palette.Accent
                     ui.retry -> Palette.Error
@@ -512,12 +513,14 @@ private fun BotGame(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
             BotTimeChip(ui.controlLabel, enabled = ui.san.isEmpty(), onSelect = viewModel::setTime)
         }
         if (!ui.playing) {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 FilterChip(selected = ui.userWhite, onClick = { viewModel.setUserWhite(true) }, label = { Text("White") }, colors = clubChipColors())
                 FilterChip(selected = !ui.userWhite, onClick = { viewModel.setUserWhite(false) }, label = { Text("Black") }, colors = clubChipColors())
+                Box(Modifier.weight(1f))
+                BotTimeChip(ui.controlLabel, enabled = true, onSelect = viewModel::setTime)
             }
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                EloBracket.All.forEach { bracket ->
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(EloBracket.All) { bracket ->
                     FilterChip(
                         selected = ui.elo == bracket.elo,
                         onClick = { viewModel.setElo(bracket.elo) },

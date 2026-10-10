@@ -18,6 +18,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material3.IconButton
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
 
 @Composable
 fun ClubAtmosphere(modifier: Modifier = Modifier, content: @Composable BoxScope.() -> Unit) {
@@ -57,8 +60,8 @@ fun clubOutlinedButtonColors() = ButtonDefaults.outlinedButtonColors(
 fun clubAppBarColors() = TopAppBarDefaults.topAppBarColors(
     containerColor = Color.Transparent,
     titleContentColor = Palette.Text,
-    actionIconContentColor = Palette.Accent,
-    navigationIconContentColor = Palette.Accent,
+    actionIconContentColor = Palette.Text,
+    navigationIconContentColor = Palette.Text,
     scrolledContainerColor = Color.Transparent,
 )
 
@@ -87,4 +90,12 @@ fun ResultChip(result: String, modifier: Modifier = Modifier) {
             .background(bg)
             .padding(horizontal = 8.dp, vertical = 4.dp),
     )
+}
+
+/** The top bar's back arrow, the same on every screen. */
+@Composable
+fun BackButton(onClick: () -> Unit) {
+    IconButton(onClick = onClick, modifier = Modifier.semantics { contentDescription = "Back" }) {
+        BackMark(Palette.Text)
+    }
 }

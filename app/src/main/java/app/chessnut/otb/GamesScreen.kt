@@ -68,6 +68,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.draw.clip
+import androidx.compose.material3.IconButton
+import app.chessnut.otb.ui.MoreMark
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -115,7 +119,7 @@ fun GamesScreen(
                 title = { Text("Club games") },
                 colors = clubAppBarColors(),
                 actions = {
-                    TextButton(onClick = { menu = true }, colors = clubTextButtonColors()) { Text("More", color = Palette.Accent) }
+                    IconButton(onClick = { menu = true }, modifier = Modifier.semantics { contentDescription = "More" }) { MoreMark(Palette.Text) }
                     DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                         DropdownMenuItem(text = { Text("Paste a PGN") }, onClick = { menu = false; pasting = true })
                         DropdownMenuItem(text = { Text("Settings") }, onClick = { menu = false; sounds = true })

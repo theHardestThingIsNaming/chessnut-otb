@@ -32,6 +32,16 @@ import app.chessnut.otb.ui.Palette
 import app.chessnut.otb.ui.clubAppBarColors
 import app.chessnut.otb.ui.clubTextButtonColors
 import androidx.compose.runtime.remember
+import app.chessnut.otb.ui.BackButton
+import app.chessnut.otb.ui.GameAction
+import app.chessnut.otb.ui.PrimaryAction
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.RoundedCornerShape
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,7 +57,7 @@ fun MistakesScreen(model: MistakesViewModel, onBack: () -> Unit, onOpenGame: (St
                 title = { Text("Learn from mistakes") },
                 colors = clubAppBarColors(),
                 navigationIcon = {
-                    TextButton(onClick = onBack, colors = clubTextButtonColors()) { Text("Back", color = Palette.Accent) }
+                    BackButton(onBack)
                 },
             )
         },
@@ -66,6 +76,7 @@ fun MistakesScreen(model: MistakesViewModel, onBack: () -> Unit, onOpenGame: (St
             }
             val mistake = ui.mistake
             if (mistake != null) {
+                SessionBar(ui.index, ui.total)
                 Text(
                     "${ui.index + 1} of ${ui.total} · ${mistake.gameTitle}",
                     color = Palette.TextMuted,
@@ -89,19 +100,22 @@ fun MistakesScreen(model: MistakesViewModel, onBack: () -> Unit, onOpenGame: (St
                 ),
                 onSquare = model::tap,
             )
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                if (!ui.solved) {
-                    Button(
-                        onClick = model::hint,
+            Spacer(Modifier.weight(1f))
+            // The actions sit at the bottom, under the thumb.
+            Row(Modifier.fillMaxWidth().height(52.dp).padding(bottom = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (remember(mistake.gameId) { model.hasGame(mistake.gameId) }) {
+                    GameAction("Open game", light = false, onClick = { onOpenGame(mistake.gameId) }, modifier = Modifier.weight(1f).fillMaxHeight())
+                }
+                if (ui.solved) {
+                    PrimaryAction("Next", Modifier.weight(1.4f).fillMaxHeight(), onClick = model::next)
+                } else {
+                    GameAction("Skip", light = false, onClick = model::next, modifier = Modifier.weight(1f).fillMaxHeight())
+                    PrimaryAction(
+                        "Hint",
+                        Modifier.weight(1.4f).fillMaxHeight(),
                         enabled = !ui.checking && ui.bestUci == null,
-                        colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent, contentColor = Palette.OnAccent),
-                    ) { Text("Hint") }
-                }
-                TextButton(onClick = model::next, colors = clubTextButtonColors()) {
-                    Text(if (ui.solved) "Next" else "Skip", color = Palette.Accent)
-                }
-                if (remember(mistake.gameId) { model.hasGame(mistake.gameId) }) TextButton(onClick = { onOpenGame(mistake.gameId) }, colors = clubTextButtonColors()) {
-                    Text("Open game", color = Palette.Accent)
+                        onClick = model::hint,
+                    )
                 }
             }
         }
@@ -147,6 +161,25 @@ private fun Summary(summary: SessionSummary, model: MistakesViewModel, onDone: (
         ) { Text(if (summary.nothingDue) "Practise anyway (${summary.all})" else "Practise all ${summary.all}") }
         TextButton(onClick = onDone, colors = clubTextButtonColors(), modifier = Modifier.align(Alignment.CenterHorizontally)) {
             Text("Done", color = Palette.Accent)
+        }
+    }
+}
+
+/** One segment per position in the session: done, current, still to come. */
+@Composable
+private fun SessionBar(index: Int, total: Int) {
+    if (total <= 1) return
+    Row(Modifier.fillMaxWidth().height(4.dp), horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+        repeat(total) { i ->
+            Box(
+                Modifier.weight(1f).fillMaxHeight().clip(RoundedCornerShape(2.dp)).background(
+                    when {
+                        i < index -> Palette.Accent
+                        i == index -> Palette.Gold
+                        else -> Palette.SurfaceHigh
+                    },
+                ),
+            )
         }
     }
 }

@@ -72,6 +72,7 @@ import app.chessnut.otb.ui.ActionTone
 import app.chessnut.otb.ui.ClockFace
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.size
+import app.chessnut.otb.ui.BackButton
 
 private val bluetoothPermissions: Array<String> =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -218,7 +219,7 @@ fun BoardScreen(model: BoardViewModel, onBack: () -> Unit, onAnalyze: (String) -
             TopAppBar(
                 title = { Text("Board") },
                 colors = clubAppBarColors(),
-                navigationIcon = { TextButton(onClick = onBack) { Text("Back", color = Palette.Accent) } },
+                navigationIcon = { BackButton(onBack) },
                 actions = {
                     TextButton(onClick = {
                         val share = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, model.logText())

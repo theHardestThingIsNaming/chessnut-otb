@@ -101,3 +101,23 @@ fun NavKey(label: String, modifier: Modifier = Modifier, enabled: Boolean = true
         Text(label, color = if (enabled) Palette.Text else Palette.Text.copy(alpha = 0.3f), fontSize = 18.sp, fontWeight = FontWeight.Bold)
     }
 }
+
+/** The screen's main action, in the accent green. */
+@Composable
+fun PrimaryAction(label: String, modifier: Modifier = Modifier, enabled: Boolean = true, onClick: () -> Unit) {
+    Box(
+        modifier
+            .clip(RoundedCornerShape(12.dp))
+            .background(if (enabled) Palette.Accent else Palette.SurfaceHigh)
+            .clickable(enabled = enabled, onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            label,
+            color = if (enabled) Palette.OnAccent else Palette.TextMuted,
+            fontWeight = FontWeight.Bold,
+            fontSize = 16.sp,
+            maxLines = 1,
+        )
+    }
+}

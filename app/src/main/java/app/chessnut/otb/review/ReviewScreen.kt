@@ -73,7 +73,6 @@ import app.chessnut.otb.analysis.Score
 import app.chessnut.otb.analysis.Terminal
 import app.chessnut.otb.openings.OpeningBook
 import app.chessnut.otb.ui.Arrow
-import app.chessnut.otb.ui.BackMark
 import app.chessnut.otb.ui.ChessBoard
 import app.chessnut.otb.ui.FlipMark
 import app.chessnut.otb.ui.GambitMark
@@ -91,6 +90,7 @@ import app.chessnut.otb.ui.NavKey
 import androidx.compose.runtime.rememberCoroutineScope
 import app.chessnut.otb.GameShare
 import app.chessnut.otb.ui.ShareMark
+import app.chessnut.otb.ui.BackButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -122,23 +122,21 @@ fun ReviewScreen(model: ReviewViewModel, onBack: () -> Unit, onPractise: () -> U
                 title = { Text(headline, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 colors = clubAppBarColors(),
                 navigationIcon = {
-                    IconButton(onClick = onBack, modifier = Modifier.semantics { contentDescription = "Back" }) {
-                        BackMark(Palette.Accent)
-                    }
+                    BackButton(onBack)
                 },
                 actions = {
                     if (game != null) {
                         IconButton(
                             onClick = { GameShare.link(context, model.app, game, scope) },
                             modifier = Modifier.semantics { contentDescription = "Share game" },
-                        ) { ShareMark(Palette.Accent) }
+                        ) { ShareMark(Palette.Text) }
                     }
                     IconButton(onClick = model::flip, modifier = Modifier.semantics { contentDescription = "Flip board" }) {
-                        FlipMark(Palette.Accent)
+                        FlipMark(Palette.Text)
                     }
                     Box {
                         IconButton(onClick = { menu = true }, modifier = Modifier.semantics { contentDescription = "More" }) {
-                            MoreMark(Palette.Accent)
+                            MoreMark(Palette.Text)
                         }
                         DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                         ArrowMenuItem("Best move", Palette.ArrowBest, ArrowKind.Best in ui.arrows) {
