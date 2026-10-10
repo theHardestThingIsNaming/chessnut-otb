@@ -47,7 +47,7 @@ fun MistakesScreen(model: MistakesViewModel, onBack: () -> Unit, onOpenGame: (St
                 title = { Text("Learn from mistakes") },
                 colors = clubAppBarColors(),
                 navigationIcon = {
-                    TextButton(onClick = onBack, colors = clubTextButtonColors()) { Text("Back", color = Palette.Gold) }
+                    TextButton(onClick = onBack, colors = clubTextButtonColors()) { Text("Back", color = Palette.Accent) }
                 },
             )
         },
@@ -57,7 +57,7 @@ fun MistakesScreen(model: MistakesViewModel, onBack: () -> Unit, onOpenGame: (St
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             if (ui.loading) {
-                CircularProgressIndicator(Modifier.size(28.dp).align(Alignment.CenterHorizontally), color = Palette.Gold)
+                CircularProgressIndicator(Modifier.size(28.dp).align(Alignment.CenterHorizontally), color = Palette.Accent)
                 return@Column
             }
             ui.summary?.let {
@@ -73,8 +73,8 @@ fun MistakesScreen(model: MistakesViewModel, onBack: () -> Unit, onOpenGame: (St
                 )
             }
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(ui.status, color = if (ui.solved) Palette.Gold else Palette.Text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                if (ui.checking) CircularProgressIndicator(Modifier.size(22.dp), color = Palette.Gold, strokeWidth = 2.dp)
+                Text(ui.status, color = if (ui.solved) Palette.Accent else Palette.Text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                if (ui.checking) CircularProgressIndicator(Modifier.size(22.dp), color = Palette.Accent, strokeWidth = 2.dp)
             }
             if (mistake == null) return@Column
             ChessBoard(
@@ -94,14 +94,14 @@ fun MistakesScreen(model: MistakesViewModel, onBack: () -> Unit, onOpenGame: (St
                     Button(
                         onClick = model::hint,
                         enabled = !ui.checking && ui.bestUci == null,
-                        colors = ButtonDefaults.buttonColors(containerColor = Palette.Gold, contentColor = Palette.OnGold),
+                        colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent, contentColor = Palette.OnAccent),
                     ) { Text("Hint") }
                 }
                 TextButton(onClick = model::next, colors = clubTextButtonColors()) {
-                    Text(if (ui.solved) "Next" else "Skip", color = Palette.Gold)
+                    Text(if (ui.solved) "Next" else "Skip", color = Palette.Accent)
                 }
                 if (remember(mistake.gameId) { model.hasGame(mistake.gameId) }) TextButton(onClick = { onOpenGame(mistake.gameId) }, colors = clubTextButtonColors()) {
-                    Text("Open game", color = Palette.Gold)
+                    Text("Open game", color = Palette.Accent)
                 }
             }
         }
@@ -113,7 +113,7 @@ private fun Summary(summary: SessionSummary, model: MistakesViewModel, onDone: (
     Column(Modifier.fillMaxWidth().padding(top = 24.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Text(
             if (summary.nothingDue) "Nothing due right now" else "Session complete",
-            color = Palette.Gold,
+            color = Palette.Accent,
             style = MaterialTheme.typography.headlineSmall,
         )
         if (!summary.nothingDue) {
@@ -133,20 +133,20 @@ private fun Summary(summary: SessionSummary, model: MistakesViewModel, onDone: (
         if (missed > 0) {
             Button(
                 onClick = model::retryMissed,
-                colors = ButtonDefaults.buttonColors(containerColor = Palette.Gold, contentColor = Palette.OnGold),
+                colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent, contentColor = Palette.OnAccent),
                 modifier = Modifier.fillMaxWidth(),
             ) { Text("Retry the $missed I missed") }
         }
         Button(
             onClick = model::practiseAll,
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (missed > 0) Palette.SurfaceHigh else Palette.Gold,
-                contentColor = if (missed > 0) Palette.Gold else Palette.OnGold,
+                containerColor = if (missed > 0) Palette.SurfaceHigh else Palette.Accent,
+                contentColor = if (missed > 0) Palette.Accent else Palette.OnAccent,
             ),
             modifier = Modifier.fillMaxWidth(),
         ) { Text(if (summary.nothingDue) "Practise anyway (${summary.all})" else "Practise all ${summary.all}") }
         TextButton(onClick = onDone, colors = clubTextButtonColors(), modifier = Modifier.align(Alignment.CenterHorizontally)) {
-            Text("Done", color = Palette.Gold)
+            Text("Done", color = Palette.Accent)
         }
     }
 }

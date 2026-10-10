@@ -44,7 +44,7 @@ fun AboutScreen(onBack: () -> Unit) {
             TopAppBar(
                 title = { Text("About") },
                 colors = clubAppBarColors(),
-                navigationIcon = { TextButton(onClick = onBack) { Text("Back", color = Palette.Gold) } },
+                navigationIcon = { TextButton(onClick = onBack) { Text("Back", color = Palette.Accent) } },
             )
         },
     ) { padding ->
@@ -55,7 +55,7 @@ fun AboutScreen(onBack: () -> Unit) {
             Text("Club games", style = MaterialTheme.typography.displaySmall, color = Palette.Text)
             Text(
                 BuildInfo.versionName(context),
-                color = Palette.Gold,
+                color = Palette.Accent,
                 style = MaterialTheme.typography.labelLarge,
             )
             Text(
@@ -65,7 +65,7 @@ fun AboutScreen(onBack: () -> Unit) {
             )
             Box(Modifier.fillMaxWidth().clubPanel().padding(16.dp)) {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("Licence", style = MaterialTheme.typography.titleSmall, color = Palette.Gold)
+                    Text("Licence", style = MaterialTheme.typography.titleSmall, color = Palette.Accent)
                     Text(
                         "This app is free software under the GNU General Public License version 3. It bundles the unmodified official Stockfish 18 Android build, whose source is linked below.",
                         color = Palette.TextMuted,
@@ -80,7 +80,7 @@ fun AboutScreen(onBack: () -> Unit) {
                 Column {
                     links.filter { it.second.isNotBlank() }.forEach { (label, url) ->
                         TextButton(onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }) {
-                            Text(label, color = Palette.Gold)
+                            Text(label, color = Palette.Accent)
                         }
                     }
                 }

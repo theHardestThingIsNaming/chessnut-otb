@@ -98,7 +98,7 @@ fun OnlineScreen(
                 }) { Text(if (ui.canAbort) "Abort" else "Resign", color = Palette.Error) }
             },
             dismissButton = {
-                TextButton(onClick = { confirmLeave = false }) { Text("Stay", color = Palette.Gold) }
+                TextButton(onClick = { confirmLeave = false }) { Text("Stay", color = Palette.Accent) }
             },
         )
     }
@@ -115,11 +115,11 @@ fun OnlineScreen(
                             viewModel.leave()
                             onBack()
                         }
-                    }, colors = clubTextButtonColors()) { Text("Back", color = Palette.Gold) }
+                    }, colors = clubTextButtonColors()) { Text("Back", color = Palette.Accent) }
                 },
                 actions = {
                     if (ui.username != null && !ui.playing && !ui.seeking) {
-                        TextButton(onClick = viewModel::logout, colors = clubTextButtonColors()) { Text("Log out", color = Palette.Gold) }
+                        TextButton(onClick = viewModel::logout, colors = clubTextButtonColors()) { Text("Log out", color = Palette.Accent) }
                     }
                 },
             )
@@ -151,7 +151,7 @@ private fun Lobby(ui: OnlineUi, viewModel: OnlineViewModel, modifier: Modifier) 
             Button(
                 onClick = { LichessSignIn.open(context, viewModel.loginUrl()) },
                 enabled = !ui.thinking,
-                colors = ButtonDefaults.buttonColors(containerColor = Palette.Gold, contentColor = Palette.OnGold),
+                colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent, contentColor = Palette.OnAccent),
                 modifier = Modifier.fillMaxWidth(),
             ) { Text(if (ui.thinking) "Signing in…" else "Continue with Lichess") }
         } else {
@@ -172,14 +172,14 @@ private fun Lobby(ui: OnlineUi, viewModel: OnlineViewModel, modifier: Modifier) 
                     checked = ui.rated,
                     onCheckedChange = viewModel::setRated,
                     enabled = !ui.seeking,
-                    colors = CheckboxDefaults.colors(checkedColor = Palette.Gold, uncheckedColor = Palette.GoldDim),
+                    colors = CheckboxDefaults.colors(checkedColor = Palette.Accent, uncheckedColor = Palette.AccentDim),
                 )
                 Text("Rated", color = Palette.Text)
             }
             ui.resumable.forEach { game ->
                 Button(
                     onClick = { viewModel.resume(game.gameId) },
-                    colors = ButtonDefaults.buttonColors(containerColor = Palette.SurfaceHigh, contentColor = Palette.Gold),
+                    colors = ButtonDefaults.buttonColors(containerColor = Palette.SurfaceHigh, contentColor = Palette.Accent),
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(
@@ -191,11 +191,11 @@ private fun Lobby(ui: OnlineUi, viewModel: OnlineViewModel, modifier: Modifier) 
             }
             Button(
                 onClick = if (ui.seeking) viewModel::cancelSeek else viewModel::seek,
-                colors = ButtonDefaults.buttonColors(containerColor = Palette.Gold, contentColor = Palette.OnGold),
+                colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent, contentColor = Palette.OnAccent),
                 modifier = Modifier.fillMaxWidth(),
             ) { Text(if (ui.seeking) "Cancel" else "Find a game") }
             if (ui.seeking) {
-                CircularProgressIndicator(Modifier.size(22.dp).align(Alignment.CenterHorizontally), color = Palette.Gold, strokeWidth = 2.dp)
+                CircularProgressIndicator(Modifier.size(22.dp).align(Alignment.CenterHorizontally), color = Palette.Accent, strokeWidth = 2.dp)
             }
         }
     }
@@ -219,7 +219,7 @@ private fun Table(ui: OnlineUi, viewModel: OnlineViewModel, modifier: Modifier, 
                 overflow = TextOverflow.Ellipsis,
             )
             if (ui.thinking) {
-                CircularProgressIndicator(Modifier.size(22.dp), color = Palette.Gold, strokeWidth = 2.dp)
+                CircularProgressIndicator(Modifier.size(22.dp), color = Palette.Accent, strokeWidth = 2.dp)
             }
         }
         PlayerBar(ui.opponent, opponentLight, ui.fen, topMillis, topRunning)
@@ -253,14 +253,14 @@ private fun Table(ui: OnlineUi, viewModel: OnlineViewModel, modifier: Modifier, 
         } else {
             Button(
                 onClick = viewModel::again,
-                colors = ButtonDefaults.buttonColors(containerColor = Palette.Gold, contentColor = Palette.OnGold),
+                colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent, contentColor = Palette.OnAccent),
                 modifier = Modifier.fillMaxWidth(),
             ) { Text("Find a game") }
             Button(
                 onClick = {
                     viewModel.archiveId()?.let(onAnalyse)
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Palette.SurfaceHigh, contentColor = Palette.Gold),
+                colors = ButtonDefaults.buttonColors(containerColor = Palette.SurfaceHigh, contentColor = Palette.Accent),
                 modifier = Modifier.fillMaxWidth(),
             ) { Text("Analyse") }
             ui.gameId?.let { id ->
@@ -269,7 +269,7 @@ private fun Table(ui: OnlineUi, viewModel: OnlineViewModel, modifier: Modifier, 
                     onClick = {
                         context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://lichess.org/$id")))
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Palette.SurfaceHigh, contentColor = Palette.Gold),
+                    colors = ButtonDefaults.buttonColors(containerColor = Palette.SurfaceHigh, contentColor = Palette.Accent),
                     modifier = Modifier.fillMaxWidth(),
                 ) { Text("Open on Lichess") }
             }

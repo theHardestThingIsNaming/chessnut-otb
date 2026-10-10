@@ -109,7 +109,7 @@ fun PlayScreen(viewModel: PlayViewModel, onBack: () -> Unit, mode: PlayKind = Pl
                     TextButton(onClick = {
                         viewModel.leave()
                         onBack()
-                    }, colors = clubTextButtonColors()) { Text("Back", color = Palette.Gold) }
+                    }, colors = clubTextButtonColors()) { Text("Back", color = Palette.Accent) }
                 },
             )
         },
@@ -215,7 +215,7 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
                         item(key = "head-${section.title}") {
                             Text(
                                 section.title,
-                                color = Palette.Gold,
+                                color = Palette.Accent,
                                 style = MaterialTheme.typography.titleSmall,
                                 modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
                             )
@@ -235,7 +235,7 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
                         ) {
                             Text(
                                 row.name,
-                                color = if (selected) Palette.Gold else Palette.Text,
+                                color = if (selected) Palette.Accent else Palette.Text,
                                 style = MaterialTheme.typography.bodyLarge,
                                 modifier = Modifier.weight(1f),
                             )
@@ -266,7 +266,7 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
                 }
                 item(key = "import") {
                     TextButton(onClick = { importing = true }, colors = clubTextButtonColors()) {
-                        Text("Import a Lichess study as your repertoire", color = Palette.Gold)
+                        Text("Import a Lichess study as your repertoire", color = Palette.Accent)
                     }
                 }
             }
@@ -276,7 +276,7 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
         Button(
             onClick = viewModel::start,
             enabled = ui.kind == PlayKind.Bot || ui.openingName != null,
-            colors = ButtonDefaults.buttonColors(containerColor = Palette.Gold, contentColor = Palette.OnGold),
+            colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent, contentColor = Palette.OnAccent),
             modifier = Modifier.fillMaxWidth(),
         ) { Text(if (ui.kind == PlayKind.Bot) "Play" else "Train") }
     }
@@ -306,7 +306,7 @@ private fun SelectedOpening(name: String, ui: PlayUi, onTrainLine: (Int) -> Unit
     ) {
         ChessBoard(fen = fen, modifier = Modifier.size(84.dp), flipped = !ui.userWhite, coordinates = false)
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(name, color = Palette.Gold, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            Text(name, color = Palette.Accent, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
             if (line.isNotEmpty()) {
                 Text(numbered(line), color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
             }
@@ -319,7 +319,7 @@ private fun SelectedOpening(name: String, ui: PlayUi, onTrainLine: (Int) -> Unit
             if (ui.lines.isNotEmpty()) {
                 Text(
                     "See all ${ui.lines.size} lines",
-                    color = Palette.Gold,
+                    color = Palette.Accent,
                     fontWeight = FontWeight.SemiBold,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.clickable { showLines = true }.padding(vertical = 4.dp),
@@ -363,7 +363,7 @@ private fun LinesDialog(name: String, lines: List<LineView>, onDismiss: () -> Un
                 }
             }
         },
-        confirmButton = { TextButton(onClick = onDismiss, colors = clubTextButtonColors()) { Text("Close", color = Palette.Gold) } },
+        confirmButton = { TextButton(onClick = onDismiss, colors = clubTextButtonColors()) { Text("Close", color = Palette.Accent) } },
     )
 }
 
@@ -385,7 +385,7 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
             if (ui.thinking) {
                 CircularProgressIndicator(
                     Modifier.padding(4.dp).size(22.dp),
-                    color = Palette.Gold,
+                    color = Palette.Accent,
                     strokeWidth = 2.dp,
                 )
             }
@@ -416,11 +416,11 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                 if (ui.san.isNotEmpty() && !ui.inTheory) {
                     Text(
                         "Out of theory",
-                        color = Palette.OnGold,
+                        color = Palette.OnAccent,
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier
-                            .background(Palette.Gold, RoundedCornerShape(50))
+                            .background(Palette.Accent, RoundedCornerShape(50))
                             .padding(horizontal = 12.dp, vertical = 4.dp),
                     )
                 }
@@ -446,13 +446,13 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
                     .background(Palette.SurfaceHigh)
-                    .border(1.dp, Palette.Gold, RoundedCornerShape(12.dp))
+                    .border(1.dp, Palette.Accent, RoundedCornerShape(12.dp))
                     .padding(12.dp),
             )
         }
         ui.choiceOffer?.let { move ->
             OutlinedButton(onClick = viewModel::adoptChoice, colors = clubOutlinedButtonColors(), modifier = Modifier.fillMaxWidth()) {
-                Text("Play $move here from now on", color = Palette.Gold)
+                Text("Play $move here from now on", color = Palette.Accent)
             }
         }
         Text(numbered(ui.san), color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium)
@@ -460,22 +460,22 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
             if (ui.lineDone) {
                 Button(
                     onClick = viewModel::start,
-                    colors = ButtonDefaults.buttonColors(containerColor = Palette.Gold, contentColor = Palette.OnGold),
+                    colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent, contentColor = Palette.OnAccent),
                 ) { Text("Next line") }
             } else {
                 Button(
                     onClick = viewModel::hint,
                     enabled = ui.finished == null && !ui.awaitingBoard,
-                    colors = ButtonDefaults.buttonColors(containerColor = Palette.Gold, contentColor = Palette.OnGold),
+                    colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent, contentColor = Palette.OnAccent),
                 ) { Text("Hint") }
-                TextButton(onClick = viewModel::start, colors = clubTextButtonColors()) { Text("Restart", color = Palette.Gold) }
+                TextButton(onClick = viewModel::start, colors = clubTextButtonColors()) { Text("Restart", color = Palette.Accent) }
             }
-            TextButton(onClick = viewModel::leave, colors = clubTextButtonColors()) { Text("Openings", color = Palette.Gold) }
+            TextButton(onClick = viewModel::leave, colors = clubTextButtonColors()) { Text("Openings", color = Palette.Accent) }
             TextButton(
                 onClick = { viewModel.analyse()?.let(onAnalyse) },
                 enabled = ui.san.isNotEmpty(),
                 colors = clubTextButtonColors(),
-            ) { Text("Analyse", color = Palette.Gold) }
+            ) { Text("Analyse", color = Palette.Accent) }
         }
     }
 }
@@ -497,7 +497,7 @@ private fun BotGame(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
             Text(
                 if (ui.playing) ui.status else if (ui.userWhite) "You have White · ${ui.elo}" else "You have Black · ${ui.elo}",
                 color = when {
-                    ui.browsing -> Palette.Gold
+                    ui.browsing -> Palette.Accent
                     ui.retry -> Palette.Error
                     else -> Palette.Text
                 },
@@ -507,7 +507,7 @@ private fun BotGame(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                 overflow = TextOverflow.Ellipsis,
             )
             if (ui.thinking) {
-                CircularProgressIndicator(Modifier.size(22.dp), color = Palette.Gold, strokeWidth = 2.dp)
+                CircularProgressIndicator(Modifier.size(22.dp), color = Palette.Accent, strokeWidth = 2.dp)
             }
             BotTimeChip(ui.controlLabel, enabled = ui.san.isEmpty(), onSelect = viewModel::setTime)
         }
@@ -563,7 +563,7 @@ private fun BotGame(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
         if (!ui.playing) {
             Button(
                 onClick = viewModel::start,
-                colors = ButtonDefaults.buttonColors(containerColor = Palette.Gold, contentColor = Palette.OnGold),
+                colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent, contentColor = Palette.OnAccent),
                 modifier = Modifier.fillMaxWidth(),
             ) { Text("Play") }
         } else {
@@ -571,14 +571,14 @@ private fun BotGame(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                 Button(
                     onClick = viewModel::hint,
                     enabled = ui.finished == null && !ui.awaitingBoard,
-                    colors = ButtonDefaults.buttonColors(containerColor = Palette.Gold, contentColor = Palette.OnGold),
+                    colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent, contentColor = Palette.OnAccent),
                 ) { Text("Hint") }
-                TextButton(onClick = viewModel::start, colors = clubTextButtonColors()) { Text("New game", color = Palette.Gold) }
+                TextButton(onClick = viewModel::start, colors = clubTextButtonColors()) { Text("New game", color = Palette.Accent) }
                 TextButton(
                     onClick = { viewModel.analyse()?.let(onAnalyse) },
                     enabled = ui.san.isNotEmpty(),
                     colors = clubTextButtonColors(),
-                ) { Text("Analyse", color = Palette.Gold) }
+                ) { Text("Analyse", color = Palette.Accent) }
             }
         }
     }
@@ -589,7 +589,7 @@ private fun BotGame(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
 private fun BookKey(sans: List<String>, byEngine: Boolean) {
     val ranks = if (byEngine) ENGINE_RANKS else BOOK_RANKS
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-        if (byEngine) Text("Engine", color = Palette.Gold, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyMedium)
+        if (byEngine) Text("Engine", color = Palette.Accent, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyMedium)
         sans.forEachIndexed { rank, san ->
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 Box(Modifier.size(width = 18.dp, height = 6.dp).background(bookArrowColor(rank), RoundedCornerShape(3.dp)))
@@ -625,13 +625,13 @@ private fun BotTimeChip(label: String, enabled: Boolean, onSelect: (String) -> U
                 .menuAnchor()
                 .clip(RoundedCornerShape(8.dp))
                 .background(Palette.SurfaceHigh)
-                .border(1.dp, Palette.GoldDim, RoundedCornerShape(8.dp))
+                .border(1.dp, Palette.AccentDim, RoundedCornerShape(8.dp))
                 .padding(horizontal = 10.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            ClockMark(if (enabled) Palette.Gold else Palette.TextMuted)
-            Text(label, color = if (enabled) Palette.Gold else Palette.TextMuted, fontWeight = FontWeight.Bold)
+            ClockMark(if (enabled) Palette.Accent else Palette.TextMuted)
+            Text(label, color = if (enabled) Palette.Accent else Palette.TextMuted, fontWeight = FontWeight.Bold)
         }
         ExposedDropdownMenu(expanded = open && enabled, onDismissRequest = { open = false }) {
             TimeControl.Presets.forEach { preset ->
@@ -697,7 +697,7 @@ private fun StudyDialog(ui: PlayUi, viewModel: PlayViewModel, onDismiss: () -> U
                         message = it
                     }
                 },
-            ) { Text("Import", color = Palette.Gold) }
+            ) { Text("Import", color = Palette.Accent) }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Done") } },
     )

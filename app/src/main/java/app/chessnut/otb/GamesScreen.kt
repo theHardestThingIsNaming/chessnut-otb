@@ -108,7 +108,7 @@ fun GamesScreen(
                 title = {},
                 colors = clubAppBarColors(),
                 actions = {
-                    TextButton(onClick = { menu = true }, colors = clubTextButtonColors()) { Text("More", color = Palette.Gold) }
+                    TextButton(onClick = { menu = true }, colors = clubTextButtonColors()) { Text("More", color = Palette.Accent) }
                     DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                         DropdownMenuItem(text = { Text("Learn from mistakes") }, onClick = { menu = false; onMistakes() })
                         DropdownMenuItem(text = { Text("Paste a PGN") }, onClick = { menu = false; pasting = true })
@@ -126,21 +126,21 @@ fun GamesScreen(
                 Button(
                     onClick = onBoard,
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = Palette.Gold, contentColor = Palette.OnGold),
+                    colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent, contentColor = Palette.OnAccent),
                 ) {
-                    BoardMark(Palette.OnGold)
+                    BoardMark(Palette.OnAccent)
                     Text("Play over the board", modifier = Modifier.padding(start = 8.dp))
                 }
                 OutlinedButton(onClick = onBot, modifier = Modifier.fillMaxWidth(), colors = clubOutlinedButtonColors()) {
-                    PawnMark(Palette.Gold)
+                    PawnMark(Palette.Accent)
                     Text("Play a bot", modifier = Modifier.padding(start = 8.dp))
                 }
                 OutlinedButton(onClick = onOnline, modifier = Modifier.fillMaxWidth(), colors = clubOutlinedButtonColors()) {
-                    ClockMark(Palette.Gold)
+                    ClockMark(Palette.Accent)
                     Text("Play online", modifier = Modifier.padding(start = 8.dp))
                 }
                 OutlinedButton(onClick = onTrainer, modifier = Modifier.fillMaxWidth(), colors = clubOutlinedButtonColors()) {
-                    BookMark(Palette.Gold)
+                    BookMark(Palette.Accent)
                     Text(
                         if (linesDue > 0) "Opening trainer · $linesDue due" else "Opening trainer",
                         modifier = Modifier.padding(start = 8.dp),
@@ -153,22 +153,22 @@ fun GamesScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    TextButton(onClick = { browsing = false; folder = "" }, colors = clubTextButtonColors()) { Text("Recent", color = Palette.Gold) }
+                    TextButton(onClick = { browsing = false; folder = "" }, colors = clubTextButtonColors()) { Text("Recent", color = Palette.Accent) }
                     LazyRow(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         items(folders) { name ->
                             FilterChip(
                                 selected = folder == name,
                                 onClick = { folder = name },
                                 colors = clubChipColors(),
-                                label = { Text(name, color = if (folder == name) Palette.OnGold else Palette.Text) },
+                                label = { Text(name, color = if (folder == name) Palette.OnAccent else Palette.Text) },
                             )
                         }
                     }
-                    TextButton(onClick = { newFolder = true }, colors = clubTextButtonColors()) { Text("Folder", color = Palette.Gold) }
+                    TextButton(onClick = { newFolder = true }, colors = clubTextButtonColors()) { Text("Folder", color = Palette.Accent) }
                 }
                 if (folder.isNotBlank()) {
                     Row(Modifier.padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        TextButton(onClick = { renameFolder = folder }, colors = clubTextButtonColors()) { Text("Rename folder", color = Palette.Gold) }
+                        TextButton(onClick = { renameFolder = folder }, colors = clubTextButtonColors()) { Text("Rename folder", color = Palette.Accent) }
                         TextButton(onClick = { app.deleteFolder(folder); folder = ""; browsing = folders.size <= 1 }, colors = clubTextButtonColors()) { Text("Remove folder", color = Palette.Error) }
                     }
                 }
@@ -182,7 +182,7 @@ fun GamesScreen(
                     TextButton(onClick = {
                         browsing = true
                         if (folder.isBlank()) folder = folders.firstOrNull().orEmpty()
-                    }, colors = clubTextButtonColors()) { Text("Folders", color = Palette.Gold) }
+                    }, colors = clubTextButtonColors()) { Text("Folders", color = Palette.Accent) }
                 }
             }
             if (!browsing && visible.isEmpty()) {
@@ -229,7 +229,7 @@ fun GamesScreen(
                             TextButton(
                                 onClick = { browsing = true; folder = "Earlier" },
                                 colors = clubTextButtonColors(),
-                            ) { Text("Earlier", color = Palette.Gold) }
+                            ) { Text("Earlier", color = Palette.Accent) }
                         }
                     }
                 }
@@ -414,7 +414,7 @@ private fun GameRow(
                     progress != null -> LinearProgressIndicator(
                         progress = { progress },
                         modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
-                        color = Palette.Gold,
+                        color = Palette.Accent,
                         trackColor = Palette.Outline,
                     )
                     accuracy != null -> Text(
@@ -429,7 +429,7 @@ private fun GameRow(
             Column(horizontalAlignment = Alignment.End) {
                 ResultChip(game.result)
                 Box {
-                    TextButton(onClick = { menu = true }) { Text("⋮", color = Palette.Gold, fontSize = 22.sp) }
+                    TextButton(onClick = { menu = true }) { Text("⋮", color = Palette.Accent, fontSize = 22.sp) }
                     DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                         DropdownMenuItem(text = { Text("Rename") }, onClick = { menu = false; onRename() })
                         DropdownMenuItem(text = { Text("Move to folder") }, onClick = { menu = false; onMove() })
@@ -450,8 +450,8 @@ private fun NameDialog(title: String, initial: String, confirm: String, onDone: 
         onDismissRequest = { onDone(null) },
         title = { Text(title) },
         text = { OutlinedTextField(name, { name = it }, singleLine = true) },
-        confirmButton = { TextButton(onClick = { onDone(name) }, colors = clubTextButtonColors()) { Text(confirm, color = Palette.Gold) } },
-        dismissButton = { TextButton(onClick = { onDone(null) }, colors = clubTextButtonColors()) { Text("Cancel", color = Palette.Gold) } },
+        confirmButton = { TextButton(onClick = { onDone(name) }, colors = clubTextButtonColors()) { Text(confirm, color = Palette.Accent) } },
+        dismissButton = { TextButton(onClick = { onDone(null) }, colors = clubTextButtonColors()) { Text("Cancel", color = Palette.Accent) } },
     )
 }
 
@@ -477,9 +477,9 @@ private fun MoveDialog(game: SavedGame, folders: List<String>, onDismiss: () -> 
                 onClick = { if (creating.isNotBlank()) onMove(creating) },
                 enabled = creating.isNotBlank(),
                 colors = clubTextButtonColors(),
-            ) { Text("Create and move", color = Palette.Gold) }
+            ) { Text("Create and move", color = Palette.Accent) }
         },
-        dismissButton = { TextButton(onClick = onDismiss, colors = clubTextButtonColors()) { Text("Cancel", color = Palette.Gold) } },
+        dismissButton = { TextButton(onClick = onDismiss, colors = clubTextButtonColors()) { Text("Cancel", color = Palette.Accent) } },
     )
 }
 

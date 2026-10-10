@@ -8,23 +8,26 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 object Palette {
-    val Background = Color(0xFF0C0B09)
-    val BackgroundGlow = Color(0xFF1A1610)
-    val Surface = Color(0xFF16130F)
-    val SurfaceHigh = Color(0xFF1F1B16)
-    val Gold = Color(0xFFD7B56A)
-    val GoldDim = Color(0x66D7B56A)
-    val OnGold = Color(0xFF1C1406)
-    val Text = Color(0xFFF4EDE1)
-    val TextMuted = Color(0xFFE4DBCE)
-    val Outline = Color(0xFF3E372E)
-    val Error = Color(0xFFE07A5F)
+    /** Charcoal surfaces like Chess.com, so the green board sits naturally. */
+    val Background = Color(0xFF1F1D1B)
+    val Surface = Color(0xFF2A2724)
+    val SurfaceHigh = Color(0xFF36322E)
+    /** Primary actions: the board's green. */
+    val Accent = Color(0xFF81B64C)
+    val AccentDim = Color(0x5581B64C)
+    val OnAccent = Color(0xFFFFFFFF)
+    /** Highlights only: scores, due counts, move ratings. */
+    val Gold = Color(0xFFE2B656)
+    val GoldDim = Color(0x66E2B656)
+    val Text = Color(0xFFF2F1F0)
+    val TextMuted = Color(0xFFBAB8B5)
+    val Outline = Color(0xFF4A4643)
+    val Error = Color(0xFFE5603D)
     val LightSquare = Color(0xFFEBECD0)
     val DarkSquare = Color(0xFF739552)
     val LastMove = Color(0x99FFFF33)
@@ -40,39 +43,34 @@ object Palette {
     val ArrowBook = Color(0xCCD7B56A)
     val ArrowThreat = Color(0xCCD03A2F)
     val Gambit = Color(0x66E07A5F)
-    val Paper = Color(0xFFEDE4D4)
-    val Ink = Color(0xFF1C1406)
+    val Paper = Color(0xFFF2F1F0)
+    val Ink = Color(0xFF312E2B)
 }
 
 private val ClubTypography = Typography(
     displaySmall = TextStyle(
-        fontFamily = FontFamily.Serif,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.Bold,
         fontSize = 30.sp,
         lineHeight = 36.sp,
         letterSpacing = 0.4.sp,
     ),
     headlineSmall = TextStyle(
-        fontFamily = FontFamily.Serif,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.Bold,
         fontSize = 24.sp,
         lineHeight = 30.sp,
     ),
     titleLarge = TextStyle(
-        fontFamily = FontFamily.Serif,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.Bold,
         fontSize = 22.sp,
         lineHeight = 28.sp,
     ),
     titleMedium = TextStyle(
-        fontFamily = FontFamily.Serif,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.Bold,
         fontSize = 18.sp,
         lineHeight = 24.sp,
     ),
     titleSmall = TextStyle(
-        fontFamily = FontFamily.Serif,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.Bold,
         fontSize = 14.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.2.sp,
@@ -95,16 +93,16 @@ private val ClubShapes = Shapes(
 fun ClubGamesTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = darkColorScheme(
-            primary = Palette.Gold,
-            onPrimary = Palette.OnGold,
+            primary = Palette.Accent,
+            onPrimary = Palette.OnAccent,
             primaryContainer = Palette.SurfaceHigh,
             onPrimaryContainer = Palette.Text,
-            secondary = Palette.Gold,
-            onSecondary = Palette.OnGold,
+            secondary = Palette.Accent,
+            onSecondary = Palette.OnAccent,
             secondaryContainer = Palette.SurfaceHigh,
             onSecondaryContainer = Palette.Text,
-            tertiary = Palette.Gold,
-            onTertiary = Palette.OnGold,
+            tertiary = Palette.Accent,
+            onTertiary = Palette.OnAccent,
             tertiaryContainer = Palette.SurfaceHigh,
             onTertiaryContainer = Palette.Text,
             background = Palette.Background,
@@ -122,12 +120,12 @@ fun ClubGamesTheme(content: @Composable () -> Unit) {
             surfaceContainerLowest = Palette.Background,
             inverseSurface = Palette.Paper,
             inverseOnSurface = Palette.Ink,
-            inversePrimary = Palette.Gold,
+            inversePrimary = Palette.Accent,
             outline = Palette.Outline,
             outlineVariant = Palette.Outline,
             error = Palette.Error,
             onError = Palette.Text,
-            errorContainer = Color(0xFF3A221C),
+            errorContainer = Color(0xFF4A2A22),
             onErrorContainer = Palette.Error,
         ),
         typography = ClubTypography,

@@ -25,9 +25,9 @@ object LichessSignIn {
 
     fun open(context: Context, url: String) {
         val scheme = CustomTabColorSchemeParams.Builder()
-            .setToolbarColor(0xFF16130F.toInt())
-            .setSecondaryToolbarColor(0xFF16130F.toInt())
-            .setNavigationBarColor(0xFF0C0B09.toInt())
+            .setToolbarColor(0xFF2A2724.toInt())
+            .setSecondaryToolbarColor(0xFF2A2724.toInt())
+            .setNavigationBarColor(0xFF1F1D1B.toInt())
             .build()
         val height = (context.resources.displayMetrics.heightPixels * 0.92f).toInt()
         val tabs = CustomTabsIntent.Builder()

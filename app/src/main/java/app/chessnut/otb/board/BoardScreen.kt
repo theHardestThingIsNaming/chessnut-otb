@@ -100,16 +100,16 @@ fun BoardLinkSection(model: BoardViewModel, modifier: Modifier = Modifier, compa
                     overflow = TextOverflow.Ellipsis,
                 )
                 ui.batteryPercent?.let { percent ->
-                    Text("$percent%", color = if (percent <= 15) Palette.Error else Palette.Gold, fontWeight = FontWeight.SemiBold)
+                    Text("$percent%", color = if (percent <= 15) Palette.Error else Palette.Accent, fontWeight = FontWeight.SemiBold)
                 }
-                TextButton(onClick = model::disconnect, colors = clubTextButtonColors()) { Text("Disconnect", color = Palette.Gold) }
+                TextButton(onClick = model::disconnect, colors = clubTextButtonColors()) { Text("Disconnect", color = Palette.Accent) }
             }
             ui.message?.let { Text(it, color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium) }
         }
         return
     }
     Column(modifier.fillMaxWidth().clubPanel().padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text("Chessnut Air", color = Palette.Gold, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+        Text("Chessnut Air", color = Palette.Accent, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
         if (connected != null) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
@@ -121,9 +121,9 @@ fun BoardLinkSection(model: BoardViewModel, modifier: Modifier = Modifier, compa
                     overflow = TextOverflow.Ellipsis,
                 )
                 ui.batteryPercent?.let { percent ->
-                    Text("$percent%", color = if (percent <= 15) Palette.Error else Palette.Gold, fontWeight = FontWeight.SemiBold)
+                    Text("$percent%", color = if (percent <= 15) Palette.Error else Palette.Accent, fontWeight = FontWeight.SemiBold)
                 }
-                TextButton(onClick = model::disconnect, colors = clubTextButtonColors()) { Text("Disconnect", color = Palette.Gold) }
+                TextButton(onClick = model::disconnect, colors = clubTextButtonColors()) { Text("Disconnect", color = Palette.Accent) }
             }
             ui.message?.let { Text(it, color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium) }
         } else {
@@ -134,7 +134,7 @@ fun BoardLinkSection(model: BoardViewModel, modifier: Modifier = Modifier, compa
                 }
                 ui.scanning || ui.busy != null -> {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        CircularProgressIndicator(Modifier.height(22.dp).width(22.dp), color = Palette.Gold, strokeWidth = 2.dp)
+                        CircularProgressIndicator(Modifier.height(22.dp).width(22.dp), color = Palette.Accent, strokeWidth = 2.dp)
                         Text(ui.busy?.let { "$it…" } ?: "Looking for your board…", color = Palette.Text)
                     }
                 }
@@ -160,7 +160,7 @@ fun BoardLinkSection(model: BoardViewModel, modifier: Modifier = Modifier, compa
                             selected = index == ui.optionIndex,
                             onClick = { model.select(index) },
                             colors = clubChipColors(),
-                            label = { Text(option.label, color = if (index == ui.optionIndex) Palette.OnGold else Palette.Text) },
+                            label = { Text(option.label, color = if (index == ui.optionIndex) Palette.OnAccent else Palette.Text) },
                         )
                     }
                 }
@@ -183,12 +183,12 @@ fun BoardScreen(model: BoardViewModel, onBack: () -> Unit, onAnalyze: (String) -
             TopAppBar(
                 title = { Text("Board") },
                 colors = clubAppBarColors(),
-                navigationIcon = { TextButton(onClick = onBack) { Text("Back", color = Palette.Gold) } },
+                navigationIcon = { TextButton(onClick = onBack) { Text("Back", color = Palette.Accent) } },
                 actions = {
                     TextButton(onClick = {
                         val share = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, model.logText())
                         context.startActivity(Intent.createChooser(share, "Share board log"))
-                    }) { Text("Share log", color = Palette.Gold) }
+                    }) { Text("Share log", color = Palette.Accent) }
                 },
             )
         },
@@ -214,7 +214,7 @@ fun BoardScreen(model: BoardViewModel, onBack: () -> Unit, onAnalyze: (String) -
                 )
             }
             if (ui.connected != null) {
-                ui.busy?.let { Text("$it…", color = Palette.Gold) }
+                ui.busy?.let { Text("$it…", color = Palette.Accent) }
                 ui.message?.let { Text(it, color = Palette.Text) }
             }
         }
@@ -247,14 +247,14 @@ private fun LiveGamePanel(
                 modifier = Modifier.weight(1f),
             )
             ui.batteryPercent?.let { percent ->
-                Text("$percent%", color = if (percent <= 15) Palette.Error else Palette.Gold, fontWeight = FontWeight.SemiBold)
+                Text("$percent%", color = if (percent <= 15) Palette.Error else Palette.Accent, fontWeight = FontWeight.SemiBold)
             }
             TimeControlChip(
                 live.control,
                 enabled = !playing || live.sanMoves.isEmpty(),
                 onSelect = onTimeControl,
             )
-            TextButton(onClick = onDisconnect, colors = clubTextButtonColors()) { Text("Disconnect", color = Palette.Gold) }
+            TextButton(onClick = onDisconnect, colors = clubTextButtonColors()) { Text("Disconnect", color = Palette.Accent) }
         }
         PlayerStrip(
             name = "Black",
@@ -278,7 +278,7 @@ private fun LiveGamePanel(
         }
         Text(
             statusLine(live),
-            color = if (live.ended) Palette.Gold else Palette.TextMuted,
+            color = if (live.ended) Palette.Accent else Palette.TextMuted,
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = if (live.ended) FontWeight.Bold else FontWeight.Normal,
             maxLines = 2,
@@ -333,15 +333,15 @@ private fun TimeControlChip(current: TimeControl, enabled: Boolean, onSelect: (T
                 .menuAnchor()
                 .clip(RoundedCornerShape(8.dp))
                 .background(Palette.SurfaceHigh)
-                .border(1.dp, Palette.GoldDim, RoundedCornerShape(8.dp))
+                .border(1.dp, Palette.AccentDim, RoundedCornerShape(8.dp))
                 .padding(horizontal = 10.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            ClockMark(if (enabled) Palette.Gold else Palette.TextMuted)
+            ClockMark(if (enabled) Palette.Accent else Palette.TextMuted)
             Text(
                 "${current.label} ▾",
-                color = if (enabled) Palette.Gold else Palette.TextMuted,
+                color = if (enabled) Palette.Accent else Palette.TextMuted,
                 fontWeight = FontWeight.Bold,
             )
         }

@@ -1,7 +1,6 @@
 package app.chessnut.otb.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -71,9 +70,9 @@ fun GameAction(
     icon: (@Composable (Color) -> Unit)? = null,
 ) {
     val (fill, text) = when (tone) {
-        ActionTone.Active -> Palette.Gold to Palette.OnGold
-        ActionTone.Danger -> (if (light) Color(0xFFF3D4C8) else Color(0xFF3A221C)) to Palette.Error
-        ActionTone.Plain -> if (light) Color(0xFFF7F0E4) to Palette.Ink else Color(0xFF2A241C) to Palette.Gold
+        ActionTone.Active -> Palette.Accent to Palette.OnAccent
+        ActionTone.Danger -> (if (light) Color(0xFFF6D7CF) else Color(0xFF4A2A22)) to Palette.Error
+        ActionTone.Plain -> if (light) Palette.Paper to Palette.Ink else Palette.SurfaceHigh to Palette.Text
     }
     Box(
         modifier.clip(RoundedCornerShape(12.dp)).background(fill).clickable(onClick = onClick).padding(horizontal = 6.dp),
@@ -95,11 +94,10 @@ fun NavKey(label: String, modifier: Modifier = Modifier, enabled: Boolean = true
             .semantics { if (description != null) contentDescription = description }
             .clip(shape)
             .background(Palette.SurfaceHigh)
-            .border(1.dp, if (enabled) Palette.Gold else Palette.Outline, shape)
             .clickable(enabled = enabled, onClick = onClick)
             .padding(vertical = 10.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Text(label, color = if (enabled) Palette.Gold else Palette.Text.copy(alpha = 0.35f), fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        Text(label, color = if (enabled) Palette.Text else Palette.Text.copy(alpha = 0.3f), fontSize = 18.sp, fontWeight = FontWeight.Bold)
     }
 }

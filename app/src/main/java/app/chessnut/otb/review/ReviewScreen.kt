@@ -123,7 +123,7 @@ fun ReviewScreen(model: ReviewViewModel, onBack: () -> Unit, onPractise: () -> U
                 colors = clubAppBarColors(),
                 navigationIcon = {
                     IconButton(onClick = onBack, modifier = Modifier.semantics { contentDescription = "Back" }) {
-                        BackMark(Palette.Gold)
+                        BackMark(Palette.Accent)
                     }
                 },
                 actions = {
@@ -131,14 +131,14 @@ fun ReviewScreen(model: ReviewViewModel, onBack: () -> Unit, onPractise: () -> U
                         IconButton(
                             onClick = { GameShare.link(context, model.app, game, scope) },
                             modifier = Modifier.semantics { contentDescription = "Share game" },
-                        ) { ShareMark(Palette.Gold) }
+                        ) { ShareMark(Palette.Accent) }
                     }
                     IconButton(onClick = model::flip, modifier = Modifier.semantics { contentDescription = "Flip board" }) {
-                        FlipMark(Palette.Gold)
+                        FlipMark(Palette.Accent)
                     }
                     Box {
                         IconButton(onClick = { menu = true }, modifier = Modifier.semantics { contentDescription = "More" }) {
-                            MoreMark(Palette.Gold)
+                            MoreMark(Palette.Accent)
                         }
                         DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                         ArrowMenuItem("Best move", Palette.ArrowBest, ArrowKind.Best in ui.arrows) {
@@ -221,7 +221,7 @@ fun ReviewScreen(model: ReviewViewModel, onBack: () -> Unit, onPractise: () -> U
                     onBack()
                 }) { Text("Delete", color = Palette.Error) }
             },
-            dismissButton = { TextButton(onClick = { confirmDelete = false }, colors = clubTextButtonColors()) { Text("Cancel", color = Palette.Gold) } },
+            dismissButton = { TextButton(onClick = { confirmDelete = false }, colors = clubTextButtonColors()) { Text("Cancel", color = Palette.Accent) } },
         )
     }
 }
@@ -277,8 +277,8 @@ private fun SideSummary(label: String, value: Double?, light: Boolean, moves: Li
             Modifier
                 .size(10.dp)
                 .clip(androidx.compose.foundation.shape.CircleShape)
-                .background(if (light) Color.White else Color(0xFF1A1610))
-                .border(1.dp, if (light) Color.White else Palette.GoldDim, androidx.compose.foundation.shape.CircleShape),
+                .background(if (light) Color.White else Palette.Surface)
+                .border(1.dp, if (light) Color.White else Palette.AccentDim, androidx.compose.foundation.shape.CircleShape),
         )
         Text(
             value?.let { String.format(Locale.ROOT, "%.1f", it) } ?: "–",
@@ -443,7 +443,7 @@ private fun ArrowMenuItem(label: String, color: Color, on: Boolean, onClick: () 
     DropdownMenuItem(
         text = { Text(if (on) "$label  ·  On" else label) },
         leadingIcon = {
-            Box(Modifier.size(10.dp).clip(RoundedCornerShape(5.dp)).background(if (on) color else Palette.GoldDim))
+            Box(Modifier.size(10.dp).clip(RoundedCornerShape(5.dp)).background(if (on) color else Palette.AccentDim))
         },
         onClick = onClick,
     )
@@ -472,11 +472,11 @@ private fun NavigationRow(ui: ReviewState, model: ReviewViewModel) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     "Exploring: " + sideLineText(ui),
-                    color = Palette.Gold,
+                    color = Palette.Accent,
                     modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.bodySmall,
                 )
-                TextButton(onClick = model::backToGame, colors = clubTextButtonColors()) { Text("Back to game", color = Palette.Gold) }
+                TextButton(onClick = model::backToGame, colors = clubTextButtonColors()) { Text("Back to game", color = Palette.Accent) }
             }
         }
     }
@@ -666,7 +666,7 @@ private fun ScoreMove(san: String?, classification: MoveClass?, current: Boolean
         fontWeight = if (current) FontWeight.Bold else FontWeight.Medium,
         modifier = modifier
             .clip(RoundedCornerShape(4.dp))
-            .background(if (current) Palette.GoldDim else Color.Transparent)
+            .background(if (current) Palette.AccentDim else Color.Transparent)
             .clickable(onClick = onClick)
             .padding(horizontal = 2.dp, vertical = 1.dp),
     )
@@ -702,13 +702,13 @@ private fun EditInfoDialog(
                             selected = r == value,
                             onClick = { r = value },
                             colors = clubChipColors(),
-                            label = { Text(if (value == "*") "Unknown" else value, color = if (r == value) Palette.OnGold else Palette.Text) },
+                            label = { Text(if (value == "*") "Unknown" else value, color = if (r == value) Palette.OnAccent else Palette.Text) },
                         )
                     }
                 }
             }
         },
-        confirmButton = { TextButton(onClick = { onSave(w, b, e, d, r) }, colors = clubTextButtonColors()) { Text("Save", color = Palette.Gold) } },
-        dismissButton = { TextButton(onClick = onDismiss, colors = clubTextButtonColors()) { Text("Cancel", color = Palette.Gold) } },
+        confirmButton = { TextButton(onClick = { onSave(w, b, e, d, r) }, colors = clubTextButtonColors()) { Text("Save", color = Palette.Accent) } },
+        dismissButton = { TextButton(onClick = onDismiss, colors = clubTextButtonColors()) { Text("Cancel", color = Palette.Accent) } },
     )
 }
