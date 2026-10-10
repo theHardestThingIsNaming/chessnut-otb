@@ -161,6 +161,24 @@ fun GamesScreen(
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             item(key = "board") { BoardLinkSection(board, compact = true) }
+            // Pieces set up mid-game or for a study: offer to pick up from there.
+            val placement = boardUi.livePlacement?.takeIf { boardUi.connected != null }
+            if (placement != null && placement.substringBefore(' ') != START_FEN) {
+                item(key = "from-here") {
+                    Row(
+                        Modifier.fillMaxWidth().clubPanel().clickable { position = placement }.padding(horizontal = 14.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        ChessBoard(fen = placement, modifier = Modifier.size(44.dp).clip(RoundedCornerShape(3.dp)), coordinates = false)
+                        Column(Modifier.weight(1f)) {
+                            Text("Position on the board", color = Palette.Text, fontWeight = FontWeight.Bold)
+                            Text("Analyse it or play the bot from here", color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
+                        }
+                        Text("From here", color = Palette.Accent, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
             item(key = "actions") {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Button(
