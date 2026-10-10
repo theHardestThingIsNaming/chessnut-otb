@@ -114,8 +114,9 @@ object OpeningBook {
     private fun shortest(name: String): Opening? =
         lines.filter { it.name == name }.minByOrNull { it.san.size }
 
+    /** "King's Gambit Accepted: …" belongs to the King's Gambit, as "Sicilian Defense: Najdorf" does to the Sicilian. */
     private fun inFamily(name: String, family: String): Boolean =
-        name == family || name.startsWith("$family:") || name.startsWith("$family,")
+        name == family || name.startsWith("$family:") || name.startsWith("$family,") || name.startsWith("$family ")
 
     /**
      * Our own lines (meme openings the Lichess book lacks or names differently)
