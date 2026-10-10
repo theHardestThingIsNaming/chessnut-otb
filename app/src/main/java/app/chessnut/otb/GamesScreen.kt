@@ -22,7 +22,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -55,7 +54,6 @@ import app.chessnut.otb.ui.PawnMark
 import app.chessnut.otb.ui.ResultChip
 import app.chessnut.otb.ui.clubAppBarColors
 import app.chessnut.otb.ui.clubChipColors
-import app.chessnut.otb.ui.clubOutlinedButtonColors
 import app.chessnut.otb.ui.clubPanel
 import app.chessnut.otb.ui.clubTextButtonColors
 import java.util.Locale
@@ -64,6 +62,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.produceState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import app.chessnut.otb.ui.TargetMark
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -99,18 +103,20 @@ fun GamesScreen(
     val linesDue by produceState(0, games) {
         value = withContext(Dispatchers.Default) { app.openingLinesDue(System.currentTimeMillis()) }
     }
+    val mistakesDue by produceState(0, games) {
+        value = withContext(Dispatchers.Default) { runCatching { app.mistakesDue(System.currentTimeMillis()) }.getOrDefault(0) }
+    }
 
     Scaffold(
         containerColor = androidx.compose.ui.graphics.Color.Transparent,
         contentColor = Palette.Text,
         topBar = {
             TopAppBar(
-                title = {},
+                title = { Text("Club games") },
                 colors = clubAppBarColors(),
                 actions = {
                     TextButton(onClick = { menu = true }, colors = clubTextButtonColors()) { Text("More", color = Palette.Accent) }
                     DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
-                        DropdownMenuItem(text = { Text("Learn from mistakes") }, onClick = { menu = false; onMistakes() })
                         DropdownMenuItem(text = { Text("Paste a PGN") }, onClick = { menu = false; pasting = true })
                         DropdownMenuItem(text = { Text("Settings") }, onClick = { menu = false; sounds = true })
                         DropdownMenuItem(text = { Text("My name") }, onClick = { menu = false; naming = true })
@@ -122,29 +128,35 @@ fun GamesScreen(
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
             BoardLinkSection(board, Modifier.padding(horizontal = 16.dp, vertical = 4.dp), compact = true)
-            Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(Modifier.padding(horizontal = 16.dp, vertical = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(
                     onClick = onBoard,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().height(52.dp),
+                    shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent, contentColor = Palette.OnAccent),
                 ) {
                     BoardMark(Palette.OnAccent)
-                    Text("Play over the board", modifier = Modifier.padding(start = 8.dp))
+                    Text("Play over the board", modifier = Modifier.padding(start = 10.dp), fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 }
-                OutlinedButton(onClick = onBot, modifier = Modifier.fillMaxWidth(), colors = clubOutlinedButtonColors()) {
-                    PawnMark(Palette.Accent)
-                    Text("Play a bot", modifier = Modifier.padding(start = 8.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    HomeTile("Play a bot", "Stockfish, 1400 to 2000", Modifier.weight(1f), onBot) { PawnMark(it) }
+                    HomeTile("Play online", "Lichess, on your board", Modifier.weight(1f), onOnline) { ClockMark(it, Modifier.size(18.dp)) }
                 }
-                OutlinedButton(onClick = onOnline, modifier = Modifier.fillMaxWidth(), colors = clubOutlinedButtonColors()) {
-                    ClockMark(Palette.Accent)
-                    Text("Play online", modifier = Modifier.padding(start = 8.dp))
-                }
-                OutlinedButton(onClick = onTrainer, modifier = Modifier.fillMaxWidth(), colors = clubOutlinedButtonColors()) {
-                    BookMark(Palette.Accent)
-                    Text(
-                        if (linesDue > 0) "Opening trainer · $linesDue due" else "Opening trainer",
-                        modifier = Modifier.padding(start = 8.dp),
-                    )
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    HomeTile(
+                        "Openings",
+                        if (linesDue > 0) "$linesDue ${if (linesDue == 1) "line" else "lines"} due" else "Learn lines by heart",
+                        Modifier.weight(1f),
+                        onTrainer,
+                        highlight = linesDue > 0,
+                    ) { BookMark(it) }
+                    HomeTile(
+                        "Mistakes",
+                        if (mistakesDue > 0) "$mistakesDue to practise" else "Fix what went wrong",
+                        Modifier.weight(1f),
+                        onMistakes,
+                        highlight = mistakesDue > 0,
+                    ) { TargetMark(it) }
                 }
             }
             if (browsing) {
@@ -367,6 +379,35 @@ private fun SoundSwitch(label: String, checked: Boolean, onChecked: (Boolean) ->
     }
 }
 
+/** A home shortcut: icon, name and a line saying what's waiting there. */
+@Composable
+private fun HomeTile(
+    title: String,
+    detail: String,
+    modifier: Modifier,
+    onClick: () -> Unit,
+    highlight: Boolean = false,
+    icon: @Composable (Color) -> Unit,
+) {
+    Column(
+        modifier.clubPanel().clickable(onClick = onClick).padding(horizontal = 14.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            icon(Palette.Accent)
+            Text(title, color = Palette.Text, fontWeight = FontWeight.Bold, fontSize = 15.sp, maxLines = 1)
+        }
+        Text(
+            detail,
+            color = if (highlight) Palette.Gold else Palette.TextMuted,
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = if (highlight) FontWeight.SemiBold else FontWeight.Normal,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
 @Composable
 private fun GameRow(
     app: OtbApp,
@@ -393,13 +434,13 @@ private fun GameRow(
     val scope = rememberCoroutineScope()
     Box(Modifier.fillMaxWidth().clubPanel()) {
         Row(
-            Modifier.clickable(onClick = onClick).padding(12.dp),
+            Modifier.clickable(onClick = onClick).padding(start = 10.dp, top = 10.dp, bottom = 10.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            ChessBoard(fen = fen, modifier = Modifier.size(68.dp), coordinates = false)
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(game.title, style = MaterialTheme.typography.titleMedium, color = Palette.Text)
+            ChessBoard(fen = fen, modifier = Modifier.size(60.dp).clip(RoundedCornerShape(4.dp)), coordinates = false)
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(game.title, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Palette.Text, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 val details = listOfNotNull(
                     game.date.ifBlank { null },
                     "${(game.sanMoves.size + 1) / 2} moves",
@@ -409,7 +450,7 @@ private fun GameRow(
                         GameSource.Play -> "play"
                     },
                 ).joinToString("  ·  ")
-                Text(details, color = Palette.Text, style = MaterialTheme.typography.bodyMedium)
+                Text(details, color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
                 when {
                     progress != null -> LinearProgressIndicator(
                         progress = { progress },
@@ -426,10 +467,10 @@ private fun GameRow(
                     !game.isComplete -> Text("Recording incomplete", color = Palette.Error, style = MaterialTheme.typography.bodyMedium)
                 }
             }
-            Column(horizontalAlignment = Alignment.End) {
-                ResultChip(game.result)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (game.result != "*") ResultChip(game.result)
                 Box {
-                    TextButton(onClick = { menu = true }) { Text("⋮", color = Palette.Accent, fontSize = 22.sp) }
+                    TextButton(onClick = { menu = true }) { Text("⋮", color = Palette.TextMuted, fontSize = 22.sp) }
                     DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                         DropdownMenuItem(text = { Text("Rename") }, onClick = { menu = false; onRename() })
                         DropdownMenuItem(text = { Text("Move to folder") }, onClick = { menu = false; onMove() })

@@ -201,3 +201,13 @@ fun ShareMark(tint: Color, modifier: Modifier = Modifier.size(22.dp)) {
         drawCircle(tint, r, c)
     }
 }
+
+@Composable
+fun TargetMark(tint: Color, modifier: Modifier = Modifier.size(18.dp)) {
+    Canvas(modifier) {
+        val stroke = Stroke(width = size.minDimension * 0.09f)
+        drawCircle(tint, radius = size.minDimension * 0.42f, style = stroke)
+        drawCircle(tint, radius = size.minDimension * 0.24f, style = stroke)
+        drawCircle(tint, radius = size.minDimension * 0.08f)
+    }
+}

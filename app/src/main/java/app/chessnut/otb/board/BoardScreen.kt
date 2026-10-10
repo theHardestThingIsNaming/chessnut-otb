@@ -70,6 +70,8 @@ import app.chessnut.otb.ui.KeepScreenOn
 import app.chessnut.otb.ui.GameAction
 import app.chessnut.otb.ui.ActionTone
 import app.chessnut.otb.ui.ClockFace
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.size
 
 private val bluetoothPermissions: Array<String> =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -85,26 +87,56 @@ fun BoardLinkSection(model: BoardViewModel, modifier: Modifier = Modifier, compa
         if (granted.values.all { it }) model.autoConnect()
     }
     val connected = ui.connected
-    if (compact && connected != null) {
-        Column(modifier.fillMaxWidth()) {
-            Row(
-                Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
+    // On the home screen the board is one line; the full panel opens only to change how it connects or to pick a board.
+    var open by remember { mutableStateOf(false) }
+    val needsPanel = connected == null && (ui.needsPermission || (ui.found.size > 1 && !ui.scanning && ui.busy == null))
+    if (compact && !open && !needsPanel) {
+        val busy = ui.scanning || ui.busy != null
+        Row(
+            modifier.fillMaxWidth().clubPanel().padding(start = 14.dp, end = 4.dp, top = 6.dp, bottom = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Box(
+                Modifier.size(10.dp).clip(CircleShape).background(
+                    when {
+                        connected != null -> Palette.Accent
+                        busy -> Palette.Gold
+                        else -> Palette.Outline
+                    },
+                ),
+            )
+            Column(Modifier.weight(1f)) {
                 Text(
-                    connected.name.trim(),
+                    connected?.name?.trim() ?: "Chessnut Air",
                     color = Palette.Text,
-                    modifier = Modifier.weight(1f),
+                    fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                ui.batteryPercent?.let { percent ->
-                    Text("$percent%", color = if (percent <= 15) Palette.Error else Palette.Accent, fontWeight = FontWeight.SemiBold)
+                val detail = when {
+                    connected != null -> listOfNotNull(ui.batteryPercent?.let { "Battery $it%" }, ui.message).joinToString(" · ").ifBlank { "Connected" }
+                    busy -> ui.busy?.let { "$it…" } ?: "Looking for your board…"
+                    else -> ui.message ?: "Not connected"
                 }
-                TextButton(onClick = model::disconnect, colors = clubTextButtonColors()) { Text("Disconnect", color = Palette.Accent) }
+                Text(
+                    detail,
+                    color = if (connected != null && (ui.batteryPercent ?: 100) <= 15) Palette.Error else Palette.TextMuted,
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
             }
-            ui.message?.let { Text(it, color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium) }
+            when {
+                connected != null -> TextButton(onClick = model::disconnect, colors = clubTextButtonColors()) { Text("Disconnect", color = Palette.TextMuted) }
+                busy -> CircularProgressIndicator(Modifier.padding(end = 12.dp).size(20.dp), color = Palette.Accent, strokeWidth = 2.dp)
+                else -> {
+                    TextButton(onClick = model::autoConnect, colors = clubTextButtonColors()) { Text("Connect", color = Palette.Accent) }
+                    if (model.options.size > 1) {
+                        TextButton(onClick = { open = true }, colors = clubTextButtonColors()) { Text("⋯", color = Palette.TextMuted) }
+                    }
+                }
+            }
         }
         return
     }
@@ -152,6 +184,9 @@ fun BoardLinkSection(model: BoardViewModel, modifier: Modifier = Modifier, compa
                     Text(ui.message ?: "Not connected.", color = Palette.Text)
                     Button(onClick = model::autoConnect, enabled = ui.busy == null) { Text("Try again") }
                 }
+            }
+            if (compact && open) {
+                TextButton(onClick = { open = false }, colors = clubTextButtonColors()) { Text("Done", color = Palette.Accent) }
             }
             if (model.options.size > 1 && ui.busy == null && !ui.scanning) {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
