@@ -162,7 +162,11 @@ class MistakesViewModel(application: Application, private val gameId: String?) :
                 val review = reviews.grade(mistake.key, clean = !missed, now = System.currentTimeMillis())
                 val days = Drill.days(review, System.currentTimeMillis())
                 val after = PlayPosition.after(mistake.fen, uci)
-                val again = if (missed) "It comes back tomorrow." else "Next review in $days ${if (days == 1) "day" else "days"}."
+                val again = if (missed) {
+                    "You needed a hint or another try, so this position comes back tomorrow."
+                } else {
+                    "Solved first time. You'll see this position again in $days ${if (days == 1) "day" else "days"}."
+                }
                 val best = mistake.bestUci
                 val engineNote = if (best != null && !uci.equals(best, ignoreCase = true)) {
                     " The engine's choice was ${ChessLines.sanOf(mistake.fen, listOf(best)).firstOrNull() ?: best}."

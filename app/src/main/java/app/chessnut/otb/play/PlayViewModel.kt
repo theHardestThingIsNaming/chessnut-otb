@@ -836,7 +836,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         val words = if (clean) {
             "Line complete. Next review in $days ${if (days == 1) "day" else "days"}."
         } else {
-            "That line needs work. It comes back tomorrow."
+            "You strayed from your repertoire, so this line comes back tomorrow."
         }
         status = words
         publish()
