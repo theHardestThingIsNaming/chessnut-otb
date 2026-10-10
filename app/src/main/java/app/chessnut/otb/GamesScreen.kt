@@ -59,6 +59,8 @@ import app.chessnut.otb.ui.clubOutlinedButtonColors
 import app.chessnut.otb.ui.clubPanel
 import app.chessnut.otb.ui.clubTextButtonColors
 import java.util.Locale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.rememberCoroutineScope
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -378,6 +380,8 @@ private fun GameRow(
             ?: runCatching { ChessLines.replay(game.sanMoves).fens.last() }.getOrDefault(START_FEN)
     }
     var menu by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     Box(Modifier.fillMaxWidth().clubPanel()) {
         Row(
             Modifier.clickable(onClick = onClick).padding(12.dp),
@@ -420,6 +424,8 @@ private fun GameRow(
                     DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                         DropdownMenuItem(text = { Text("Rename") }, onClick = { menu = false; onRename() })
                         DropdownMenuItem(text = { Text("Move to folder") }, onClick = { menu = false; onMove() })
+                        DropdownMenuItem(text = { Text("Share link") }, onClick = { menu = false; GameShare.link(context, app, game, scope) })
+                        DropdownMenuItem(text = { Text("Share PGN") }, onClick = { menu = false; GameShare.pgn(context, game) })
                         DropdownMenuItem(text = { Text("Delete", color = Palette.Error) }, onClick = { menu = false; onDelete() })
                     }
                 }

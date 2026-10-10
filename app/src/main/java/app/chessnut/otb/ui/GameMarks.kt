@@ -185,3 +185,19 @@ fun FlagMark(tint: Color, modifier: Modifier = Modifier.size(14.dp)) {
         drawPath(flag, tint)
     }
 }
+
+@Composable
+fun ShareMark(tint: Color, modifier: Modifier = Modifier.size(22.dp)) {
+    Canvas(modifier) {
+        val r = size.minDimension * 0.11f
+        val a = Offset(size.width * 0.72f, size.height * 0.24f)
+        val b = Offset(size.width * 0.28f, size.height * 0.50f)
+        val c = Offset(size.width * 0.72f, size.height * 0.76f)
+        val stroke = size.minDimension * 0.07f
+        drawLine(tint, a, b, stroke)
+        drawLine(tint, b, c, stroke)
+        drawCircle(tint, r, a)
+        drawCircle(tint, r, b)
+        drawCircle(tint, r, c)
+    }
+}

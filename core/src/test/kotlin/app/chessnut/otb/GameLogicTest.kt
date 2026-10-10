@@ -189,6 +189,13 @@ class GameLogicTest {
         val queued = service.submit("1. d4\n", "token")
         assertIs<SubmitResult.Queued>(queued)
         assertEquals(1, memory.pending().size)
+
+        // A share needs a link now, even for a game sent before, and never queues.
+        assertIs<SubmitResult.Failed>(service.uploadNow(pgn, null))
+        online = true
+        val shared = assertIs<SubmitResult.Uploaded>(service.uploadNow(pgn, null))
+        assertEquals("https://lichess.org/abc", shared.game.url)
+        assertEquals(1, memory.pending().size)
     }
 
     @Test

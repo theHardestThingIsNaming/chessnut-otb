@@ -125,6 +125,30 @@ class OtbApp : Application() {
         }
     }
 
+    /**
+     * A Lichess link for sharing [game]: the one it already has, or a fresh
+     * upload. Works without a Lichess login (the game is then not on your
+     * account). Returns the link, or a reason there is none.
+     */
+    suspend fun shareLink(game: SavedGame): Result<String> {
+        lichessUrl(game.id)?.let { return Result.success(it) }
+        if (game.sanMoves.size < 2) return Result.failure(IllegalStateException("This game is too short to put on Lichess."))
+        return uploadLock.withLock {
+            when (val result = uploads.uploadNow(game.toPgn(), vault.token())) {
+                is SubmitResult.Uploaded -> {
+                    settings.edit()
+                        .putString(KEY_LINK_PREFIX + game.id, result.game.url)
+                        .putStringSet(KEY_PENDING, pendingUploads() - game.id)
+                        .apply()
+                    uploadsFlow.update { it + 1 }
+                    Result.success(result.game.url)
+                }
+                is SubmitResult.Failed -> Result.failure(IllegalStateException(result.message))
+                else -> Result.failure(IllegalStateException("Couldn't get a Lichess link."))
+            }
+        }
+    }
+
     private fun pendingUploads(): Set<String> = settings.getStringSet(KEY_PENDING, emptySet()).orEmpty().toSet()
 
     /** Retries uploads that were queued without a connection. Called at start and after logging in. */

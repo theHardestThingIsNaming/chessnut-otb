@@ -44,6 +44,26 @@ class ImportService(
         }
     }
 
+    /**
+     * Uploads now to get a link to share. Unlike [submit] it goes ahead even
+     * if this PGN was sent before without its link being kept, and nothing is
+     * queued: a share that fails should say so straight away.
+     */
+    suspend fun uploadNow(pgn: String, token: String?): SubmitResult {
+        val prepared = pgn.trim()
+        if (prepared.isEmpty() || prepared.length > MAX_PGN_CHARS) return SubmitResult.Failed("This game can't be put on Lichess.")
+        return when (val outcome = importer.import(prepared, token?.takeIf { it.isNotBlank() })) {
+            is ImportOutcome.Success -> {
+                memory.remember(GameFingerprint.of(prepared))
+                memory.removePending(prepared)
+                SubmitResult.Uploaded(outcome.game)
+            }
+            is ImportOutcome.RateLimited -> SubmitResult.Failed("Lichess is busy. Try again in a minute.")
+            is ImportOutcome.Unavailable -> SubmitResult.Failed("Couldn't reach Lichess.")
+            is ImportOutcome.Rejected -> SubmitResult.Failed("Lichess rejected the game (${outcome.status}).")
+        }
+    }
+
     /** Sends queued games until one cannot be sent. Rejected games are dropped. */
     suspend fun flush(token: String?): List<SubmitResult> {
         val results = mutableListOf<SubmitResult>()

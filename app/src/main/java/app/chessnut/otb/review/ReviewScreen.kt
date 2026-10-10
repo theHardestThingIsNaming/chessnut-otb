@@ -88,6 +88,9 @@ import java.util.Locale
 import app.chessnut.otb.ui.KeepScreenOn
 import app.chessnut.otb.chess.uciSquares
 import app.chessnut.otb.ui.NavKey
+import androidx.compose.runtime.rememberCoroutineScope
+import app.chessnut.otb.GameShare
+import app.chessnut.otb.ui.ShareMark
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -100,6 +103,7 @@ fun ReviewScreen(model: ReviewViewModel, onBack: () -> Unit, onPractise: () -> U
     var confirmDelete by remember { mutableStateOf(false) }
     val lichessLink by model.lichessLink.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     BackHandler(enabled = ui.exploring) { model.backToGame() }
     LifecycleResumeEffect(model) {
@@ -123,6 +127,12 @@ fun ReviewScreen(model: ReviewViewModel, onBack: () -> Unit, onPractise: () -> U
                     }
                 },
                 actions = {
+                    if (game != null) {
+                        IconButton(
+                            onClick = { GameShare.link(context, model.app, game, scope) },
+                            modifier = Modifier.semantics { contentDescription = "Share game" },
+                        ) { ShareMark(Palette.Gold) }
+                    }
                     IconButton(onClick = model::flip, modifier = Modifier.semantics { contentDescription = "Flip board" }) {
                         FlipMark(Palette.Gold)
                     }
@@ -150,6 +160,9 @@ fun ReviewScreen(model: ReviewViewModel, onBack: () -> Unit, onPractise: () -> U
                                 menu = false
                                 model.uploadToLichess { Toast.makeText(context, it, Toast.LENGTH_SHORT).show() }
                             })
+                        }
+                        if (game != null) {
+                            DropdownMenuItem(text = { Text("Share PGN") }, onClick = { menu = false; GameShare.pgn(context, game) })
                         }
                         DropdownMenuItem(text = { Text("Practise this game's mistakes") }, onClick = { menu = false; onPractise() })
                         DropdownMenuItem(text = { Text("Edit game info") }, onClick = { menu = false; editing = true })

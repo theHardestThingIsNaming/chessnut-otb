@@ -84,7 +84,7 @@ data class ReviewState(
 }
 
 class ReviewViewModel(application: Application, private val gameId: String) : AndroidViewModel(application) {
-    private val app = application as OtbApp
+    val app = application as OtbApp
     private val state = MutableStateFlow(ReviewState())
     val ui: StateFlow<ReviewState> = state.asStateFlow()
 
