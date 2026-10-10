@@ -39,6 +39,8 @@ data class MistakesUi(
     val fen: String = Board().fen,
     val selected: Int? = null,
     val targets: Set<Int> = emptySet(),
+    /** The move that led to the position on the board, highlighted. */
+    val lastUci: String? = null,
     /** The engine's move, shown after a hint or once solved. */
     val bestUci: String? = null,
     /** The last wrong answer, shown in red. */
@@ -108,6 +110,7 @@ class MistakesViewModel(application: Application, private val gameId: String?) :
             it.copy(
                 mistake = mistake,
                 fen = mistake.fen,
+                lastUci = mistake.lastUci,
                 selected = null,
                 targets = emptySet(),
                 bestUci = null,
@@ -177,6 +180,7 @@ class MistakesViewModel(application: Application, private val gameId: String?) :
                 state.update {
                     it.copy(
                         fen = after?.second ?: it.fen,
+                        lastUci = uci,
                         solved = true,
                         checking = false,
                         bestUci = mistake.bestUci,

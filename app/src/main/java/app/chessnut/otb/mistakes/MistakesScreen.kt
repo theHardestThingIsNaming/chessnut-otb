@@ -32,6 +32,7 @@ import app.chessnut.otb.ui.KeepScreenOn
 import app.chessnut.otb.ui.Palette
 import app.chessnut.otb.ui.clubAppBarColors
 import app.chessnut.otb.ui.clubTextButtonColors
+import app.chessnut.otb.ui.squareIndex
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,6 +78,7 @@ fun MistakesScreen(model: MistakesViewModel, onBack: () -> Unit, onOpenGame: (St
                 ChessBoard(
                     fen = ui.fen,
                     flipped = !mistake.whiteToMove,
+                    lastMove = ui.lastUci?.takeIf { it.length >= 4 }?.let { squareIndex(it.substring(0, 2)) to squareIndex(it.substring(2, 4)) },
                     selected = ui.selected,
                     targets = ui.targets,
                     arrows = listOfNotNull(

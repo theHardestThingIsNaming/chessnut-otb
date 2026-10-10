@@ -39,6 +39,7 @@ class MistakeDeckTest {
         assertEquals("g7g6", blunder.bestUci)
         assertEquals("3... Nf6", blunder.moveLabel)
         assertFalse(blunder.whiteToMove)
+        assertEquals("f1c4", blunder.lastUci)
     }
 
     @Test

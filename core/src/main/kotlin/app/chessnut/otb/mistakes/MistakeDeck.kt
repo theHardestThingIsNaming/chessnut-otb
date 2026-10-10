@@ -16,6 +16,8 @@ data class Mistake(
     val classification: MoveClass,
     val whiteToMove: Boolean,
     val gameTitle: String,
+    /** The opponent's move that led to this position, in UCI; null at the start of the game. */
+    val lastUci: String? = null,
 ) {
     val key: String get() = "$gameId:$ply"
 
@@ -38,7 +40,10 @@ object MistakeDeck {
             if (move.classification != MoveClass.Mistake && move.classification != MoveClass.Blunder) return@mapNotNull null
             if (side != null && move.whiteMoved != side) return@mapNotNull null
             val fen = replay.fens.getOrNull(move.ply) ?: return@mapNotNull null
-            Mistake(game.id, move.ply, fen, move.san, move.bestUci, move.classification, move.whiteMoved, game.title)
+            Mistake(
+                game.id, move.ply, fen, move.san, move.bestUci, move.classification, move.whiteMoved, game.title,
+                lastUci = replay.uci.getOrNull(move.ply - 1),
+            )
         }
     }
 
