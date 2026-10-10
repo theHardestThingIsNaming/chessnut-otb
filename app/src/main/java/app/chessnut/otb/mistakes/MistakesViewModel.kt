@@ -49,13 +49,33 @@ data class MistakesUi(
     val solved: Boolean = false,
     val checking: Boolean = false,
     val index: Int = 0,
+    /** Positions in this session. */
     val total: Int = 0,
-    val due: Int = 0,
+    /** Shown instead of a position once the session is over, or when nothing is due. */
+    val summary: SessionSummary? = null,
 )
 
+/** How a practice session went, and when the next position is due. */
+data class SessionSummary(
+    val firstTry: Int,
+    val helped: Int,
+    val skipped: Int,
+    /** When the next position is due, or null if there are no positions at all. */
+    val nextDueAt: Long?,
+    /** True when the session never started because nothing was due. */
+    val nothingDue: Boolean,
+    /** Every position, due or not, for "Practise all". */
+    val all: Int,
+    /** Positions due now, such as skipped ones. */
+    val stillDue: Int = 0,
+)
+
+private enum class Outcome { FirstTry, Helped, Skipped }
+
 /**
- * Practise positions where a mistake or blunder was played: due ones first,
- * then the rest. [gameId] limits the deck to one game.
+ * Practise positions where a mistake or blunder was played. A session covers
+ * the positions that are due, most overdue first, and ends with a summary.
+ * [gameId] limits the positions to one game.
  */
 class MistakesViewModel(application: Application, private val gameId: String?) : AndroidViewModel(application) {
     private val app = application as OtbApp
@@ -63,7 +83,11 @@ class MistakesViewModel(application: Application, private val gameId: String?) :
     private val state = MutableStateFlow(MistakesUi())
     val ui: StateFlow<MistakesUi> = state.asStateFlow()
 
+    /** Every position, most overdue first. */
+    private var all: List<Mistake> = emptyList()
+    /** The positions of the current session. */
     private var deck: List<Mistake> = emptyList()
+    private val results = mutableMapOf<String, Outcome>()
     private var missed = false
     private var engine: UciEngine? = null
     private val engineLock = Mutex()
@@ -72,18 +96,51 @@ class MistakesViewModel(application: Application, private val gameId: String?) :
         viewModelScope.launch(Dispatchers.Default) {
             val now = System.currentTimeMillis()
             val games = app.store.all().filter { gameId == null || it.id == gameId }
-            val all = games.flatMap { game ->
+            val found = games.flatMap { game ->
                 val analysis = app.store.loadAnalysis(game.id) ?: return@flatMap emptyList()
                 MistakeDeck.collect(game, analysis, listOfNotNull(app.myName, LichessVault(app).username()))
             }
             val known = reviews.all()
-            // Due first (most overdue first), then the rest by when they come back.
-            deck = all.sortedWith(compareBy<Mistake> { known[it.key]?.dueAt ?: 0L }.thenByDescending { it.classification == MoveClass.Blunder })
-            val due = deck.count { (known[it.key]?.dueAt ?: 0L) <= now }
+            val sorted = found.sortedWith(compareBy<Mistake> { known[it.key]?.dueAt ?: 0L }.thenByDescending { it.classification == MoveClass.Blunder })
+            val due = sorted.filter { (known[it.key]?.dueAt ?: 0L) <= now }
             withContext(Dispatchers.Main) {
-                state.update { it.copy(loading = false, total = deck.size, due = due) }
-                show(0)
+                all = sorted
+                state.update { it.copy(loading = false) }
+                if (due.isEmpty() && sorted.isNotEmpty()) finish(nothingDue = true) else begin(due)
             }
+        }
+    }
+
+    private fun begin(positions: List<Mistake>) {
+        deck = positions
+        results.clear()
+        state.update { it.copy(summary = null, total = positions.size) }
+        show(0)
+    }
+
+    /** Goes over the positions not solved first time in the session just finished. */
+    fun retryMissed() = begin(deck.filter { results[it.key] != Outcome.FirstTry })
+
+    /** Every position, due or not. */
+    fun practiseAll() = begin(all)
+
+    private fun finish(nothingDue: Boolean = false) {
+        val now = System.currentTimeMillis()
+        val known = reviews.all()
+        val nextDue = all.minOfOrNull { known[it.key]?.dueAt ?: 0L }?.coerceAtLeast(now)
+        state.update {
+            it.copy(
+                mistake = null,
+                summary = SessionSummary(
+                    firstTry = results.values.count { r -> r == Outcome.FirstTry },
+                    helped = results.values.count { r -> r == Outcome.Helped },
+                    skipped = results.values.count { r -> r == Outcome.Skipped },
+                    nextDueAt = nextDue,
+                    nothingDue = nothingDue,
+                    all = all.size,
+                    stillDue = all.count { m -> (known[m.key]?.dueAt ?: 0L) <= now },
+                ),
+            )
         }
     }
 
@@ -91,16 +148,12 @@ class MistakesViewModel(application: Application, private val gameId: String?) :
         val mistake = deck.getOrNull(index)
         missed = false
         if (mistake == null) {
-            state.update {
-                it.copy(
-                    mistake = null,
-                    index = index,
-                    status = if (deck.isEmpty()) {
-                        "No mistakes to practise yet. Analysed games with a mistake or blunder show up here."
-                    } else {
-                        "That's every position. Come back later for the ones due again."
-                    },
-                )
+            if (all.isEmpty()) {
+                state.update {
+                    it.copy(mistake = null, index = index, status = "No mistakes to practise yet. Analysed games with a mistake or blunder show up here.")
+                }
+            } else {
+                finish()
             }
             return
         }
@@ -123,7 +176,11 @@ class MistakesViewModel(application: Application, private val gameId: String?) :
         }
     }
 
-    fun next() = show(state.value.index + 1)
+    fun next() {
+        val current = state.value
+        current.mistake?.let { if (!current.solved) results.putIfAbsent(it.key, Outcome.Skipped) }
+        show(current.index + 1)
+    }
 
     fun hint() {
         val mistake = state.value.mistake ?: return
@@ -163,6 +220,7 @@ class MistakesViewModel(application: Application, private val gameId: String?) :
             val (winBest, winAnswer) = if (uci.equals(mistake.bestUci, ignoreCase = true)) null to null else evaluate(mistake.fen, uci)
             val good = MistakeDeck.solved(uci, mistake.bestUci, winBest, winAnswer)
             if (good) {
+                results[mistake.key] = if (missed) Outcome.Helped else Outcome.FirstTry
                 val review = reviews.grade(mistake.key, clean = !missed, now = System.currentTimeMillis())
                 val days = Drill.days(review, System.currentTimeMillis())
                 val after = PlayPosition.after(mistake.fen, uci)

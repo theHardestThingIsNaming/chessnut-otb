@@ -1,5 +1,6 @@
 package app.chessnut.otb.mistakes
 
+import androidx.compose.foundation.layout.width
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -61,10 +62,14 @@ fun MistakesScreen(model: MistakesViewModel, onBack: () -> Unit, onOpenGame: (St
                 CircularProgressIndicator(Modifier.size(28.dp).align(Alignment.CenterHorizontally), color = Palette.Gold)
                 return@Column
             }
+            ui.summary?.let {
+                Summary(it, model, onBack)
+                return@Column
+            }
             val mistake = ui.mistake
             if (mistake != null) {
                 Text(
-                    "${ui.index + 1} of ${ui.total} · ${ui.due} due · ${mistake.gameTitle}",
+                    "${ui.index + 1} of ${ui.total} · ${mistake.gameTitle}",
                     color = Palette.TextMuted,
                     style = MaterialTheme.typography.bodySmall,
                 )
@@ -104,5 +109,65 @@ fun MistakesScreen(model: MistakesViewModel, onBack: () -> Unit, onOpenGame: (St
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun Summary(summary: SessionSummary, model: MistakesViewModel, onDone: () -> Unit) {
+    Column(Modifier.fillMaxWidth().padding(top = 24.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        Text(
+            if (summary.nothingDue) "Nothing due right now" else "Session complete",
+            color = Palette.Gold,
+            style = MaterialTheme.typography.headlineSmall,
+        )
+        if (!summary.nothingDue) {
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Tally(summary.firstTry, "solved first time", Palette.Best)
+                Tally(summary.helped, "solved with a hint or another try", Palette.Inaccuracy)
+                Tally(summary.skipped, "skipped", Palette.TextMuted)
+            }
+        }
+        val next = when {
+            summary.stillDue == 1 -> "1 position is still due."
+            summary.stillDue > 1 -> "${summary.stillDue} positions are still due."
+            else -> summary.nextDueAt?.let { "Next position due ${whenDue(it)}." }
+        }
+        next?.let { Text(it, color = Palette.Text, style = MaterialTheme.typography.bodyLarge) }
+        val missed = summary.helped + summary.skipped
+        if (missed > 0) {
+            Button(
+                onClick = model::retryMissed,
+                colors = ButtonDefaults.buttonColors(containerColor = Palette.Gold, contentColor = Palette.OnGold),
+                modifier = Modifier.fillMaxWidth(),
+            ) { Text("Retry the $missed I missed") }
+        }
+        Button(
+            onClick = model::practiseAll,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (missed > 0) Palette.SurfaceHigh else Palette.Gold,
+                contentColor = if (missed > 0) Palette.Gold else Palette.OnGold,
+            ),
+            modifier = Modifier.fillMaxWidth(),
+        ) { Text(if (summary.nothingDue) "Practise anyway (${summary.all})" else "Practise all ${summary.all}") }
+        TextButton(onClick = onDone, colors = clubTextButtonColors(), modifier = Modifier.align(Alignment.CenterHorizontally)) {
+            Text("Done", color = Palette.Gold)
+        }
+    }
+}
+
+@Composable
+private fun Tally(count: Int, label: String, color: Color) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text("$count", color = color, style = MaterialTheme.typography.headlineSmall, modifier = Modifier.width(40.dp))
+        Text(label, color = Palette.Text, style = MaterialTheme.typography.bodyLarge)
+    }
+}
+
+private fun whenDue(at: Long): String {
+    val days = ((at - System.currentTimeMillis()) / (24L * 60 * 60 * 1000.0)).let { Math.ceil(it).toInt() }
+    return when {
+        days <= 0 -> "now"
+        days == 1 -> "tomorrow"
+        else -> "in $days days"
     }
 }
