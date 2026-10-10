@@ -40,6 +40,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
+import app.chessnut.otb.play.BOARD_SETTLE_MS
 
 data class BoardUiState(
     val optionIndex: Int = 0,
@@ -182,7 +183,7 @@ class BoardViewModel(application: Application) : AndroidViewModel(application) {
                     // A slide reports every square the piece crosses. Wait until it stops.
                     settleJob?.cancel()
                     settleJob = viewModelScope.launch {
-                        delay(200)
+                        delay(BOARD_SETTLE_MS)
                         if (app.playEngaged) return@launch
                         val now = System.currentTimeMillis()
                         val event = tracker.onPlacement(placement, now)

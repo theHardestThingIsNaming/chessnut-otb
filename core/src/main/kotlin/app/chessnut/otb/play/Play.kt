@@ -67,6 +67,13 @@ object TrainerGate {
         if (book) TrainerResult.Book else TrainerResult.Judged(AccuracyCalculator.classify(winDrop, playedBest))
 }
 
+/**
+ * How long the board must stay still before a move counts. A slide reports
+ * every square the piece crosses, and a hand can rest on one on the way, so a
+ * short wait reads e2-e4 as e2-e3.
+ */
+const val BOARD_SETTLE_MS = 500L
+
 object PlayPosition {
     fun placementOf(fen: String): String = fen.substringBefore(' ')
 

@@ -37,6 +37,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import app.chessnut.otb.chess.MoveInput
+import app.chessnut.otb.play.BOARD_SETTLE_MS
 
 data class OnlineUi(
     val username: String? = null,
@@ -683,7 +684,7 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
         if (!playing || !physical()) return
         settleJob?.cancel()
         settleJob = viewModelScope.launch {
-            delay(200)
+            delay(BOARD_SETTLE_MS)
             onSettled(placement)
         }
     }

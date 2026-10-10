@@ -11,7 +11,7 @@ Android app for the Chessnut Air smart board. Play over the board with clocks, v
 - **Board lights**: moves to play are lit on the board, and the winner's half flashes at checkmate.
 - **Board checks**: if the pieces don't match the game, the app names the wrong squares and lights them.
 - **From here**: set up any position on the board, say whose move it is, then analyse it with Stockfish or play the bot from it. Also in the home menu, and "Play the bot from here" in any game review.
-- A short settle delay, so sliding a piece across squares counts as one move. The board's battery level is shown, and the screen stays on during games.
+- A half-second settle delay, so sliding a piece across squares counts as one move. The board's battery level is shown, and the screen stays on during games.
 
 ### Bot
 - Stockfish bots by Elo bracket, which don't always play the top line. Same clocks, draw and resign, and voice as over-the-board play. The bot's move is spoken, shown and lit for you to play on the board.

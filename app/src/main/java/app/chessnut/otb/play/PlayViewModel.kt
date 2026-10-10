@@ -53,6 +53,7 @@ import app.chessnut.otb.chess.MoveInput
 import app.chessnut.otb.repertoire.OpeningTree
 import app.chessnut.otb.review.POSITION_PREFIX
 import app.chessnut.otb.repertoire.DepthRun
+import app.chessnut.otb.play.BOARD_SETTLE_MS
 
 enum class PlayKind { Bot, Trainer }
 
@@ -996,7 +997,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         // A slide reports every square the piece crosses. Wait until it stops.
         settleJob?.cancel()
         settleJob = viewModelScope.launch {
-            delay(200)
+            delay(BOARD_SETTLE_MS)
             onSettled(placement)
         }
     }
