@@ -1267,19 +1267,19 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 val learned = app.lineProgress.learned(name, userWhite).count { it in keys }
                 val days = Drill.days(review, now)
                 when {
-                    clean -> "Line learned: $learned of ${drillLines.size}. Next review in $days ${if (days == 1) "day" else "days"}."
-                    bookToo -> "That's book too, but you've left the main line, which continues $expected. You'll review this line again tomorrow."
-                    expected != null -> "You've left the main line, which continues $expected. You'll review this line again tomorrow."
-                    else -> "Not quite clean, so you'll review this line again tomorrow."
+                    clean -> "Nice one! Line learned: $learned of ${drillLines.size}. ${seeYou(days)}"
+                    bookToo -> "That's a book move too, but this line continues $expected. We'll come back to it tomorrow."
+                    expected != null -> "Good effort! This line continues $expected, and we'll come back to it tomorrow."
+                    else -> "Nearly there! It wasn't quite clean, so we'll come back to it tomorrow."
                 }
             }
             else -> {
                 val review = app.repertoire.grade(line, clean, now)
                 val days = Drill.days(review, now)
                 when {
-                    clean -> "Line complete. Next review in $days ${if (days == 1) "day" else "days"}."
-                    expected != null -> "You've left your repertoire, which continues $expected. You'll review this line again tomorrow."
-                    else -> "You strayed from your repertoire, so you'll review this line again tomorrow."
+                    clean -> "Nice one! Line complete. ${seeYou(days)}"
+                    expected != null -> "Good effort! Your repertoire continues $expected, and we'll come back to it tomorrow."
+                    else -> "Good effort! This one strayed from your repertoire, so we'll come back to it tomorrow."
                 }
             }
         }
@@ -1289,6 +1289,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         refreshOpenings(state.value.openingQuery)
         refreshLines()
     }
+
+    /** When a cleanly played line comes round again, said warmly. */
+    private fun seeYou(days: Int): String = if (days <= 1) "We'll see it again tomorrow." else "We'll see it again in $days days."
 
     /** "5. " for White's move at [ply], "5… " for Black's. */
     private fun moveNumber(ply: Int): String = "${ply / 2 + 1}${if (ply % 2 == 0) ". " else "… "}"

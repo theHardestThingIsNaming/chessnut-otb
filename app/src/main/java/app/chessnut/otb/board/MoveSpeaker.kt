@@ -18,8 +18,14 @@ class MoveSpeaker(context: Context) {
     init {
         speech = TextToSpeech(context.applicationContext) { status ->
             if (status != TextToSpeech.SUCCESS) return@TextToSpeech
-            speech.language = Locale.US
-            bestVoice()?.let { speech.voice = it }
+            // Keep the voice chosen in the phone's speech settings. Only when it doesn't speak
+            // English (the moves and notes are English) does the app pick a voice itself.
+            val chosen = runCatching { speech.defaultVoice ?: speech.voice }.getOrNull()
+            val english = chosen != null && runCatching { chosen.locale.isO3Language == "eng" }.getOrDefault(chosen.locale.language == "en")
+            if (!english) {
+                speech.language = Locale.US
+                bestVoice()?.let { speech.voice = it }
+            }
             ready = true
             while (waiting.isNotEmpty()) speakNow(waiting.removeFirst())
         }
