@@ -6,7 +6,7 @@ Android app for the Chessnut Air smart board. Play over the board with clocks, v
 
 ### Over the board
 - **Live play** with countdown clocks (presets such as 5+5), draw and resign for each side, and checkmate ending the game. Games are saved when they end.
-- **Read stored games** from the board's memory, with an optional "Read and clear board" after a confirmation.
+- **Import stored games** automatically: games played on the board while the app was away are copied in each time it connects, then cleared from the board.
 - **Voice and sound**: moves are spoken, with beeps for check and illegal moves and a double beep for mate. Phone and board sounds can each be turned off.
 - **Board lights**: moves to play are lit on the board, and the winner's half flashes at checkmate.
 - **Board checks**: if the pieces don't match the game, the app names the wrong squares and lights them.
@@ -40,7 +40,7 @@ Android app for the Chessnut Air smart board. Play over the board with clocks, v
 - **Auto-upload**: club games from the board go to your Lichess account once saved, with an offline queue. Older games can be uploaded from the analysis menu. Turn it off in Settings.
 - Paste or share a PGN into the app. Games can be sorted into folders.
 
-The board protocol lives in `:core` (`app.chessnut.otb.protocol`) and is tested against a fake board. The command that deletes a stored game is only sent from "Read and clear board", after a confirmation and after each game is saved.
+The board protocol lives in `:core` (`app.chessnut.otb.protocol`) and is tested against a fake board. The command that deletes a stored game is only sent during the import on connect, and only after that game is saved on the phone.
 
 ## Build
 

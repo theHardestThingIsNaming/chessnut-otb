@@ -167,6 +167,9 @@ class BoardViewModel(application: Application) : AndroidViewModel(application) {
             opened.open(board.address)
             session = opened
             app.attachBoard(opened)
+            state.update { it.copy(busy = "Importing games from the board") }
+            val imported = importStoredGames(opened)
+            state.update { it.copy(busy = "Connecting") }
             tracker.reset()
             spokenPlies = 0
             state.update { it.copy(lastSavedGameId = null) }
@@ -210,7 +213,7 @@ class BoardViewModel(application: Application) : AndroidViewModel(application) {
             }
             runCatching { opened.requestBattery() }
             remember(board)
-            state.update { it.copy(connected = board, message = null, needsPermission = false) }
+            state.update { it.copy(connected = board, message = imported, needsPermission = false) }
         }
     }
 
@@ -234,31 +237,27 @@ class BoardViewModel(application: Application) : AndroidViewModel(application) {
         return names.all { ContextCompat.checkSelfPermission(getApplication(), it) == PackageManager.PERMISSION_GRANTED }
     }
 
-    fun countGames() = withSession("Asking for the game count") { s ->
-        val count = StoredGameReader(s).count()
-        s.startLive()
-        "The board reports $count stored game${if (count == 1) "" else "s"}."
-    }
-
-    fun readOne() = read(limit = 1, clear = false)
-
-    fun readAll() = read(limit = Int.MAX_VALUE, clear = false)
-
-    /** Sends `39 01 00` after each game is saved here. Only offered behind a confirmation. */
-    fun readAllAndClear() = read(limit = Int.MAX_VALUE, clear = true)
-
-    private fun read(limit: Int, clear: Boolean) = withSession(if (clear) "Reading and clearing" else "Reading games") { s ->
+    /**
+     * Copies every game stored on the board into the app as it connects. Each
+     * one is deleted from the board (`39 01 00`) only after it is saved here,
+     * because the board does not move on to the next game without that. A
+     * failed import leaves the rest on the board and does not stop the
+     * connection. Returns a note for the screen, or null when there was nothing.
+     */
+    private suspend fun importStoredGames(s: ChessnutSession): String? {
         var added = 0
-        var seen = 0
-        val result = StoredGameReader(s).readGames(limit = limit, clearAfterSave = clear) { game ->
-            seen++
-            if (save(game)) added++
-        }
-        buildString {
-            append("Board has ${result.boardCount}. Read $seen, $added new.")
-            if (result.repeatedGame) {
-                append(" The board sent the same game twice, so it does not move on without the delete command.")
+        return try {
+            StoredGameReader(s).readGames(clearAfterSave = true) { game ->
+                if (save(game)) added++
             }
+            log.line("imported $added stored game(s)")
+            if (added == 0) null else "Imported $added game${if (added == 1) "" else "s"} from the board."
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            log.line("import failed: ${e.message}")
+            val done = if (added == 0) "" else "Imported $added game${if (added == 1) "" else "s"}. "
+            "${done}Couldn't read the rest of the board's games, so they stay on it until next time."
         }
     }
 
@@ -322,14 +321,6 @@ class BoardViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun logText(): String = state.value.log.joinToString("\n")
-
-    private fun withSession(label: String, block: suspend (ChessnutSession) -> String) {
-        val s = session ?: return
-        run(label) {
-            val message = block(s)
-            state.update { it.copy(message = message) }
-        }
-    }
 
     private fun run(label: String, block: suspend () -> Unit) {
         if (state.value.busy != null) return

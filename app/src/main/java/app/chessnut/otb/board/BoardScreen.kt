@@ -27,7 +27,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
@@ -35,7 +34,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -66,7 +64,6 @@ import app.chessnut.otb.ui.FlagMark
 import app.chessnut.otb.ui.HalfMark
 import app.chessnut.otb.ui.clubAppBarColors
 import app.chessnut.otb.ui.clubChipColors
-import app.chessnut.otb.ui.clubOutlinedButtonColors
 import app.chessnut.otb.ui.clubPanel
 import app.chessnut.otb.ui.clubTextButtonColors
 import app.chessnut.otb.ui.KeepScreenOn
@@ -89,22 +86,25 @@ fun BoardLinkSection(model: BoardViewModel, modifier: Modifier = Modifier, compa
     }
     val connected = ui.connected
     if (compact && connected != null) {
-        Row(
-            modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Text(
-                connected.name.trim(),
-                color = Palette.Text,
-                modifier = Modifier.weight(1f),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            ui.batteryPercent?.let { percent ->
-                Text("$percent%", color = if (percent <= 15) Palette.Error else Palette.Gold, fontWeight = FontWeight.SemiBold)
+        Column(modifier.fillMaxWidth()) {
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(
+                    connected.name.trim(),
+                    color = Palette.Text,
+                    modifier = Modifier.weight(1f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                ui.batteryPercent?.let { percent ->
+                    Text("$percent%", color = if (percent <= 15) Palette.Error else Palette.Gold, fontWeight = FontWeight.SemiBold)
+                }
+                TextButton(onClick = model::disconnect, colors = clubTextButtonColors()) { Text("Disconnect", color = Palette.Gold) }
             }
-            TextButton(onClick = model::disconnect, colors = clubTextButtonColors()) { Text("Disconnect", color = Palette.Gold) }
+            ui.message?.let { Text(it, color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium) }
         }
         return
     }
@@ -125,6 +125,7 @@ fun BoardLinkSection(model: BoardViewModel, modifier: Modifier = Modifier, compa
                 }
                 TextButton(onClick = model::disconnect, colors = clubTextButtonColors()) { Text("Disconnect", color = Palette.Gold) }
             }
+            ui.message?.let { Text(it, color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium) }
         } else {
             when {
                 ui.needsPermission -> {
@@ -174,7 +175,6 @@ fun BoardScreen(model: BoardViewModel, onBack: () -> Unit, onAnalyze: (String) -
     KeepScreenOn()
     val ui by model.ui.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    var confirmClear by remember { mutableStateOf(false) }
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -211,11 +211,6 @@ fun BoardScreen(model: BoardViewModel, onBack: () -> Unit, onAnalyze: (String) -
                     onDrawWhite = model::offerDrawWhite,
                     onDrawBlack = model::offerDrawBlack,
                     onAnalyze = { ui.lastSavedGameId?.let(onAnalyze) },
-                    onConfirmClear = { confirmClear = true },
-                    onCount = model::countGames,
-                    onReadOne = model::readOne,
-                    onReadAll = model::readAll,
-                    log = ui.log,
                 )
             }
             if (ui.connected != null) {
@@ -223,23 +218,6 @@ fun BoardScreen(model: BoardViewModel, onBack: () -> Unit, onAnalyze: (String) -
                 ui.message?.let { Text(it, color = Palette.Text) }
             }
         }
-    }
-
-    if (confirmClear) {
-        AlertDialog(
-            onDismissRequest = { confirmClear = false },
-            title = { Text("Clear games from the board?") },
-            text = {
-                Text("Each game is saved on this phone first, then deleted from the board with the 39 01 00 command. Games that fail to save stay on the board.")
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    confirmClear = false
-                    model.readAllAndClear()
-                }) { Text("Read and clear", color = Palette.Error) }
-            },
-            dismissButton = { TextButton(onClick = { confirmClear = false }) { Text("Cancel") } },
-        )
     }
 }
 
@@ -254,16 +232,10 @@ private fun LiveGamePanel(
     onDrawWhite: () -> Unit,
     onDrawBlack: () -> Unit,
     onAnalyze: () -> Unit,
-    onConfirmClear: () -> Unit,
-    onCount: () -> Unit,
-    onReadOne: () -> Unit,
-    onReadAll: () -> Unit,
-    log: List<String>,
 ) {
     val live = ui.live
     val playing = live.started && !live.ended
     val showActions = !live.ended
-    var tools by remember { mutableStateOf(false) }
     Column(modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(
@@ -326,19 +298,6 @@ private fun LiveGamePanel(
         )
         if (live.ended && ui.lastSavedGameId != null) {
             Button(onClick = onAnalyze, modifier = Modifier.fillMaxWidth()) { Text("Analyze this game") }
-        }
-        TextButton(onClick = { tools = !tools }, modifier = Modifier.align(Alignment.CenterHorizontally), colors = clubTextButtonColors()) {
-            Text(if (tools) "Hide board tools" else "Board tools", color = Palette.Gold)
-        }
-        if (tools) {
-            val idle = ui.busy == null
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedButton(onClick = onCount, enabled = idle, colors = clubOutlinedButtonColors()) { Text("Count games") }
-                OutlinedButton(onClick = onReadOne, enabled = idle, colors = clubOutlinedButtonColors()) { Text("Read one game") }
-                Button(onClick = onReadAll, enabled = idle) { Text("Read all games") }
-                TextButton(onClick = onConfirmClear, enabled = idle) { Text("Read and clear board", color = Palette.Error) }
-            }
-            LogView(log, Modifier.height(140.dp))
         }
     }
 }
