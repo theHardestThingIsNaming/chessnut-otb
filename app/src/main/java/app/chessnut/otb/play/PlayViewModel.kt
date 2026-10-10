@@ -1071,8 +1071,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 val days = Drill.days(review, now)
                 when {
                     clean -> "Line learned: $learned of ${drillLines.size}. Next review in $days ${if (days == 1) "day" else "days"}."
-                    bookToo -> "That's book too, but this line plays $expected. It comes back tomorrow."
-                    expected != null -> "This line plays $expected. It comes back tomorrow."
+                    bookToo -> "That's book too, but you've left the main line, which continues $expected. It comes back tomorrow."
+                    expected != null -> "You've left the main line, which continues $expected. It comes back tomorrow."
                     else -> "Not quite clean, so this line comes back tomorrow."
                 }
             }
@@ -1081,7 +1081,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 val days = Drill.days(review, now)
                 when {
                     clean -> "Line complete. Next review in $days ${if (days == 1) "day" else "days"}."
-                    expected != null -> "Your repertoire plays $expected, so this line comes back tomorrow."
+                    expected != null -> "You've left your repertoire, which continues $expected. It comes back tomorrow."
                     else -> "You strayed from your repertoire, so this line comes back tomorrow."
                 }
             }
