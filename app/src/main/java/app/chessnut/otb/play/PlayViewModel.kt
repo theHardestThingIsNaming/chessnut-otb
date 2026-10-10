@@ -67,6 +67,11 @@ data class OpeningRow(
 
 data class OpeningSection(val title: String, val rows: List<OpeningRow>)
 
+enum class LineStatus { New, Learned, Due, Missed }
+
+/** One line of the chosen opening, for the line list: its variation name, its moves past the opening, and how you are doing with it. */
+data class LineView(val name: String, val moves: String, val status: LineStatus)
+
 data class PlayUi(
     val kind: PlayKind = PlayKind.Bot,
     val userWhite: Boolean = true,
@@ -124,6 +129,8 @@ data class PlayUi(
     val lineDone: Boolean = false,
     /** How the drilled line went, kept on screen while play goes on. */
     val lineNote: String? = null,
+    /** Every line of the chosen opening, for picking one to drill. */
+    val lines: List<LineView> = emptyList(),
 )
 
 class PlayViewModel(application: Application) : AndroidViewModel(application) {
@@ -189,6 +196,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private val treeCache = mutableMapOf<Pair<String, Boolean>, List<List<String>>>()
     private var lineLabelShown: String? = null
     private var lineNote: String? = null
+    /** A line picked from the list, drilled next instead of the scheduled one. */
+    private var pinnedLine: List<String>? = null
+    private var linesJob: Job? = null
     /** Explain past the book: the engine's top moves as (SAN, UCI), for [ideasFen]. */
     private var ideas: List<Pair<String, String>> = emptyList()
     private var ideasFen: String? = null
@@ -216,6 +226,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         if (playing) return
         state.update { it.copy(userWhite = white) }
         refreshOpenings(state.value.openingQuery)
+        refreshLines()
     }
 
     fun setElo(value: Int) {
@@ -306,7 +317,60 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         if (playing) return
         val chapter = app.repertoire.chapter(name)
         state.update { it.copy(openingName = name, userWhite = chapter?.userWhite ?: it.userWhite) }
+        refreshLines()
     }
+
+    /** Drills line [index] of the chosen opening now. */
+    fun trainLine(index: Int) {
+        if (playing) return
+        val ui = state.value
+        val name = ui.openingName ?: return
+        val lines = app.repertoire.chapter(name)?.lines ?: bookLines(name, ui.userWhite)
+        pinnedLine = lines.getOrNull(index) ?: return
+        start()
+    }
+
+    /** Fills [PlayUi.lines] for the chosen opening and side. */
+    private fun refreshLines() {
+        linesJob?.cancel()
+        val ui = state.value
+        val name = ui.openingName ?: return
+        val white = ui.userWhite
+        linesJob = viewModelScope.launch(Dispatchers.Default) {
+            val chapter = app.repertoire.chapter(name)
+            val lines = chapter?.lines ?: bookLines(name, white)
+            val reviews = if (chapter != null) app.repertoire.reviews() else app.lineProgress.reviews(name, white)
+            val learned = if (chapter != null) null else app.lineProgress.learned(name, white)
+            val now = System.currentTimeMillis()
+            // The moves every line shares are the opening itself; show what comes after.
+            val shared = lines.firstOrNull()?.indices?.takeWhile { i -> lines.all { it.getOrNull(i) == lines[0][i] } }?.size ?: 0
+            val views = lines.map { line ->
+                val key = Drill.key(line)
+                val review = reviews[key]
+                val status = when {
+                    review == null -> LineStatus.New
+                    review.dueAt <= now -> LineStatus.Due
+                    learned != null && key !in learned -> LineStatus.Missed
+                    else -> LineStatus.Learned
+                }
+                val variation = OpeningBook.view(line).name
+                    ?.removePrefix("$name: ")
+                    ?.removePrefix(name)
+                    ?.trim(' ', ',', ':')
+                    ?.ifBlank { null }
+                LineView(variation ?: "Main line", numberedFrom(line, shared), status)
+            }
+            state.update { if (it.openingName == name && it.userWhite == white) it.copy(lines = views) else it }
+        }
+    }
+
+    /** "6… exd4 7. O-O dxc3", the moves of [line] from ply [from]. */
+    private fun numberedFrom(line: List<String>, from: Int): String = buildString {
+        for (ply in from until line.size) {
+            if (ply % 2 == 0) append("${ply / 2 + 1}. ") else if (ply == from) append("${ply / 2 + 1}… ")
+            append(line[ply]).append(' ')
+        }
+    }.trim()
 
     /** Imports a Lichess study's chapters into the repertoire. [onDone] gets a message to show. */
     fun importStudy(link: String, onDone: (String) -> Unit) {
@@ -371,8 +435,11 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             trained != null -> bookLines(trained, ui.userWhite)
             else -> emptyList()
         }
+        val pinned = pinnedLine?.takeIf { it in drillLines }
+        pinnedLine = null
         drillLine = when {
             drillLines.isEmpty() -> null
+            pinned != null -> pinned
             !drillBook -> Drill.next(drillLines, app.repertoire.reviews(), System.currentTimeMillis())
             ui.explain -> {
                 // Explaining shows each line in turn, those not yet learned first.
@@ -894,6 +961,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         publish()
         if (app.phoneSounds) speech.narrate(words)
         refreshOpenings(state.value.openingQuery)
+        refreshLines()
     }
 
     /** "5. " for White's move at [ply], "5… " for Black's. */

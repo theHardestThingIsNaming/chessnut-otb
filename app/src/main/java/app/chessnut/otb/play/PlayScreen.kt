@@ -73,6 +73,7 @@ import app.chessnut.otb.ui.NavKey
 import androidx.compose.foundation.lazy.LazyRow
 import app.chessnut.otb.openings.OpeningBook
 import app.chessnut.otb.analysis.ChessLines
+import androidx.compose.foundation.lazy.itemsIndexed
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -267,7 +268,7 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
                     }
                 }
             }
-            ui.openingName?.let { name -> SelectedOpening(name, ui) }
+            ui.openingName?.let { name -> SelectedOpening(name, ui, viewModel::trainLine) }
 
         }
         Button(
@@ -281,7 +282,14 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
 
 /** The chosen opening: where it starts, its moves, and how much of it you know. */
 @Composable
-private fun SelectedOpening(name: String, ui: PlayUi) {
+private fun SelectedOpening(name: String, ui: PlayUi, onTrainLine: (Int) -> Unit) {
+    var showLines by remember(name) { mutableStateOf(false) }
+    if (showLines) {
+        LinesDialog(name, ui.lines, onDismiss = { showLines = false }) { index ->
+            showLines = false
+            onTrainLine(index)
+        }
+    }
     val line = remember(name) { OpeningBook.line(name)?.san.orEmpty() }
     val fen = remember(line) { runCatching { ChessLines.replay(line).fens.last() }.getOrDefault(START_FEN) }
     val row = ui.sections.flatMap { it.rows }.firstOrNull { it.name == name }
@@ -306,8 +314,55 @@ private fun SelectedOpening(name: String, ui: PlayUi) {
                 else -> "Not trained yet"
             }
             Text(progress, color = Palette.Text, style = MaterialTheme.typography.bodySmall)
+            if (ui.lines.isNotEmpty()) {
+                Text(
+                    "See all ${ui.lines.size} lines",
+                    color = Palette.Gold,
+                    fontWeight = FontWeight.SemiBold,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.clickable { showLines = true }.padding(vertical = 4.dp),
+                )
+            }
         }
     }
+}
+
+/** Every line of the opening with how you're doing on it. Tapping one drills it now. */
+@Composable
+private fun LinesDialog(name: String, lines: List<LineView>, onDismiss: () -> Unit, onPick: (Int) -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(name) },
+        text = {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                item {
+                    Text("Tap a line to drill it now.", color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
+                }
+                itemsIndexed(lines) { index, line ->
+                    val (label, tint) = when (line.status) {
+                        LineStatus.Learned -> "Learned" to Palette.Best
+                        LineStatus.Due -> "Due" to Palette.Gold
+                        LineStatus.Missed -> "Missed" to Palette.Error
+                        LineStatus.New -> "New" to Palette.TextMuted
+                    }
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable { onPick(index) }
+                            .padding(vertical = 8.dp, horizontal = 4.dp),
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text("${index + 1}. ${line.name}", color = Palette.Text, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                            Text(label, color = tint, style = MaterialTheme.typography.labelMedium)
+                        }
+                        Text(line.moves, color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+            }
+        },
+        confirmButton = { TextButton(onClick = onDismiss, colors = clubTextButtonColors()) { Text("Close", color = Palette.Gold) } },
+    )
 }
 
 @Composable
