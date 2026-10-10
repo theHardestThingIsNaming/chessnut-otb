@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.ClubGames" parent="android:Theme.Material.NoActionBar">
-        <item name="android:statusBarColor">#0C0B09</item>
-        <item name="android:navigationBarColor">#0C0B09</item>
-        <item name="android:windowBackground">#0C0B09</item>
+        <item name="android:statusBarColor">#1F1D1B</item>
+        <item name="android:navigationBarColor">#1F1D1B</item>
+        <item name="android:windowBackground">#1F1D1B</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
 </resources>
