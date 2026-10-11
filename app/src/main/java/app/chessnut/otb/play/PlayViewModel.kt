@@ -194,6 +194,9 @@ data class PlayUi(
     val depthOver: Boolean = false,
     /** Your best run for this opening and side, before this game. */
     val depthBest: Int? = null,
+    /** The trainer's evaluation of the position on the board, for the eval bar. */
+    val evalScore: Score? = null,
+    val evalTerminal: Terminal? = null,
     /** The bot game starts from this position instead of the usual start, such as one set up on the board. */
     val startFen: String? = null,
     /** A review session is running through due lines from several openings. */
@@ -266,6 +269,10 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private var lineLabelShown: String? = null
     private var lineNote: String? = null
     private var lineClean = false
+    /** The last evaluated position and its score, and whether an evaluation is running. */
+    private var evalFen: String? = null
+    private var evalScore: Score? = null
+    private var evaluating = false
     /** Depth run past the book: good moves so far, whether it has ended, and the record going in. */
     private var depthRun: Int? = null
     private var depthOver = false
@@ -674,6 +681,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         depthBest = ui.openingName?.let { app.depthRecords.of(it, ui.userWhite)?.best }
         lineLabelShown = lineLabel()
         lineNote = null
+        evalFen = null
+        evalScore = null
         retryAt = null
         ideaMove = null
         idea = null
@@ -1765,7 +1774,35 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         return if (ply % 2 == 1) "$number. $san" else "$number… $san"
     }
 
+    /**
+     * Evaluates the position for the eval bar while it is your move, when the
+     * engine is otherwise idle. A search is never cut short, as that would
+     * leave the engine mid-reply; a result for an old position is dropped.
+     */
+    private fun refreshEval() {
+        if (kind != PlayKind.Trainer || !playing || evaluating || evalFen == fen || !userToMove()) return
+        val target = fen
+        if (ChessLines.terminalOf(target) != null) {
+            evalFen = target
+            evalScore = null
+            return
+        }
+        evaluating = true
+        viewModelScope.launch {
+            val score = runCatching { engine().analyseMillis(target, 250, 1).firstOrNull()?.score }.getOrNull()
+            evaluating = false
+            if (fen == target) {
+                evalFen = target
+                evalScore = score
+                publish()
+            } else {
+                refreshEval()
+            }
+        }
+    }
+
     private fun publish() {
+        refreshEval()
         val at = glance
         val (shownFen, shownLast) = shownPosition()
         val explained = if (at == null && kind == PlayKind.Trainer && explain && finished == null && !retry) {
@@ -1809,6 +1846,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 lineLabel = if (kind == PlayKind.Trainer) lineLabelShown else null,
                 lineDone = kind == PlayKind.Trainer && drillGraded,
                 lineClean = lineClean,
+                // The bar shows the live game; when stepping back through it there is no evaluation to show.
+                evalScore = if (kind == PlayKind.Trainer && at == null) evalScore else null,
+                evalTerminal = if (kind == PlayKind.Trainer && at == null) ChessLines.terminalOf(fen) else null,
                 lineNote = if (kind == PlayKind.Trainer) lineNote else null,
                 reviewing = reviewing,
                 depthRun = if (kind == PlayKind.Trainer) depthRun else null,

@@ -78,6 +78,7 @@ import app.chessnut.otb.ui.BackButton
 import app.chessnut.otb.ui.PrimaryAction
 import androidx.compose.animation.animateContentSize
 import androidx.compose.ui.unit.sp
+import app.chessnut.otb.ui.EvalBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -613,6 +614,7 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                 highlights = highlights,
                 onSquare = viewModel::tap,
             )
+            EvalBar(ui.evalScore, ui.evalTerminal, ui.fen)
             if (ui.bookSans.isNotEmpty()) BookKey(ui.bookSans, ui.explainedByEngine)
             ui.depthRun?.let { DepthStrip(it, ui.depthBest, ui.depthOver) }
             if (ui.idea != null || ui.story != null) CoachCard(ui)

@@ -8,7 +8,6 @@ import android.widget.Toast
 import android.net.Uri
 import android.content.Intent
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,10 +17,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -68,7 +65,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.chessnut.otb.analysis.ChessLines
 import app.chessnut.otb.analysis.MoveClass
 import app.chessnut.otb.analysis.MoveReport
-import app.chessnut.otb.analysis.Score
 import app.chessnut.otb.analysis.Terminal
 import app.chessnut.otb.openings.OpeningBook
 import app.chessnut.otb.ui.Arrow
@@ -91,6 +87,7 @@ import app.chessnut.otb.ui.ShareMark
 import app.chessnut.otb.ui.BackButton
 import app.chessnut.otb.ui.PlayerBar
 import androidx.compose.foundation.layout.Spacer
+import app.chessnut.otb.ui.EvalBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -209,7 +206,7 @@ fun ReviewScreen(
                 )
                 ReviewPlayer(game.white, white = true, ui, Modifier, show = !ui.flipped)
                 ReviewPlayer(game.black, white = false, ui, Modifier, show = ui.flipped)
-                EvalStrip(ui.engine?.score, ui.engine?.terminal, ui.fen)
+                EvalBar(ui.engine?.score, ui.engine?.terminal, ui.fen)
             }
             NavigationRow(ui, model)
             EnginePanel(ui, onPlay = model::play)
@@ -410,43 +407,6 @@ private fun markTint(kind: MoveClass): Color = when (kind) {
     MoveClass.Inaccuracy -> Palette.Inaccuracy
     MoveClass.Mistake -> Palette.Mistake
     MoveClass.Blunder -> Palette.Blunder
-}
-
-@Composable
-private fun EvalStrip(score: Score?, terminal: Terminal?, fen: String) {
-    val whiteShare = when {
-        terminal == Terminal.Checkmate -> if (fen.split(' ')[1] == "w") 0f else 1f
-        terminal == Terminal.Stalemate -> 0.5f
-        score == null -> 0.5f
-        else -> (score.whiteWinPercent / 100).toFloat().coerceIn(0f, 1f)
-    }
-    val animated by animateFloatAsState(whiteShare, label = "eval")
-    val dark = Color(0xFF2B2B2B)
-    val label = when (terminal) {
-        Terminal.Checkmate -> "#"
-        Terminal.Stalemate -> "½"
-        null -> score?.let { compactLabel(it) }.orEmpty()
-    }
-    Row(
-        Modifier.fillMaxWidth().semantics { contentDescription = "Evaluation $label" },
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Box(Modifier.weight(1f).height(8.dp).clip(RoundedCornerShape(4.dp))) {
-            Row(Modifier.fillMaxSize()) {
-                if (animated > 0f) Box(Modifier.fillMaxHeight().weight(animated).background(Color.White))
-                if (1f - animated > 0f) Box(Modifier.fillMaxHeight().weight(1f - animated).background(dark))
-            }
-        }
-        if (label.isNotEmpty()) {
-            Text(label, color = Palette.Text, fontSize = 13.sp, fontWeight = FontWeight.Medium)
-        }
-    }
-}
-
-private fun compactLabel(score: Score): String {
-    val mate = score.mate
-    return if (mate != null) "M${kotlin.math.abs(mate)}" else String.format(Locale.ROOT, "%.1f", kotlin.math.abs(score.cappedCp) / 100.0)
 }
 
 @Composable
