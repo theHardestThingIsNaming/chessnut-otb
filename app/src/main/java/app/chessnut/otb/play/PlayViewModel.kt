@@ -58,6 +58,8 @@ import app.chessnut.otb.openings.OpeningSide
 import app.chessnut.otb.repertoire.OpeningMedal
 import app.chessnut.otb.openings.OpeningTraps
 import app.chessnut.otb.openings.Trap
+import app.chessnut.otb.openings.TrapFrequency
+import app.chessnut.otb.openings.TrapStats
 
 enum class PlayKind { Bot, Trainer }
 
@@ -81,6 +83,16 @@ data class OpeningRow(
 
 data class OpeningSection(val title: String, val rows: List<OpeningRow>)
 
+/** A trap and how often club players fall for it, once known. */
+data class TrapInfo(val name: String, val percent: Int? = null, val games: Long? = null, val frequency: TrapFrequency? = null) {
+    /** "Common · 12% of 2,340 games at 1400–2000", or null before the numbers arrive. */
+    val label: String? get() {
+        val shown = frequency ?: return null
+        val count = games ?: return null
+        return "${shown.name} · $percent% of ${String.format(java.util.Locale.UK, "%,d", count)} games at ${TrapStats.BAND}"
+    }
+}
+
 /** Everything about one opening from one side, for its own page. */
 data class OpeningDetail(
     val name: String,
@@ -101,6 +113,8 @@ data class OpeningDetail(
     /** Lines come from an imported study rather than the book. */
     val study: Boolean,
     val medal: OpeningMedal? = null,
+    /** Traps you can meet in this opening's lines, most often played first. */
+    val traps: List<TrapInfo> = emptyList(),
 )
 
 enum class LineStatus { New, Learned, Due, Missed }
@@ -209,8 +223,10 @@ data class PlayUi(
     /** The trainer's evaluation of the position on the board, for the eval bar. */
     val evalScore: Score? = null,
     val evalTerminal: Terminal? = null,
-    /** Common traps the opponent can fall into right now, by name. */
-    val traps: List<String> = emptyList(),
+    /** Common traps the opponent can fall into right now, most often played first. */
+    val traps: List<TrapInfo> = emptyList(),
+    /** How often club players fall for the trap being shown. */
+    val trapInfo: TrapInfo? = null,
     /** A trap being shown: its name, how far through, and whether it has finished. */
     val trapName: String? = null,
     val trapStep: Int = 0,
@@ -238,6 +254,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private val random = Random.Default
     private var engine: UciEngine? = null
     private val vault = LichessVault(application)
+    private val trapStats = TrapStatsCache(File(application.filesDir, "trap-stats.tsv"), LichessHttp { vault.token() })
+    private var trapStatsJob: Job? = null
     private val openingStats = OpeningStatsCache(File(application.filesDir, "opening-stats.tsv"), LichessHttp { vault.token() })
     private var statsJob: Job? = null
     private var job: Job? = null
@@ -530,6 +548,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             // The moves every line shares are the opening itself; show what comes after.
             val shared = lines.firstOrNull()?.indices?.takeWhile { i -> lines.all { it.getOrNull(i) == lines[0][i] } }?.size ?: 0
             fetchLineStats(lines)
+            val traps = OpeningTraps.all.filter { trap -> lines.any { it.take(trap.before.size) == trap.before } }
+            fetchTrapStats(traps)
             val views = lines.map { line ->
                 val key = Drill.key(line)
                 val review = reviews[key]
@@ -567,12 +587,20 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                         name, white, chapter != null, views,
                         learnedCount = learned?.count { key -> lines.any { Drill.key(it) == key } }
                             ?: views.count { it.status == LineStatus.Learned },
+                        traps = rankTraps(traps),
                     ),
                 ) else it }
         }
     }
 
-    private fun detailOf(name: String, white: Boolean, study: Boolean, lines: List<LineView>, learnedCount: Int): OpeningDetail {
+    private fun detailOf(
+        name: String,
+        white: Boolean,
+        study: Boolean,
+        lines: List<LineView>,
+        learnedCount: Int,
+        traps: List<TrapInfo> = emptyList(),
+    ): OpeningDetail {
         val start = OpeningBook.line(name)?.san.orEmpty()
         val fen = runCatching { ChessLines.replay(start).fens.last() }.getOrDefault(Board().fen)
         val row = state.value.sections.flatMap { it.rows }.firstOrNull { it.name == name }
@@ -595,6 +623,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             choices = choices,
             study = study,
             medal = OpeningMedal.of(learnedCount, lines.size, depth?.best),
+            traps = traps,
         )
     }
 
@@ -988,6 +1017,26 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
      */
     private fun availableTraps(): List<Trap> = OpeningTraps.all.filter {
         sanMoves.size in it.before.size..it.before.size + 1 && sanMoves.take(it.before.size) == it.before
+    }
+
+    private fun trapInfo(trap: Trap): TrapInfo {
+        val record = trapStats.record(trap)?.takeUnless { it.thin }
+        return TrapInfo(trap.name, record?.percent, record?.totalGames, record?.frequency)
+    }
+
+    /** Most often played first; traps not yet counted come last. */
+    private fun rankTraps(traps: List<Trap>): List<TrapInfo> =
+        traps.map(::trapInfo).sortedByDescending { it.percent ?: -1 }
+
+    /** Fetches how often club players fall for [traps], when logged in to Lichess, then refreshes what's shown. */
+    private fun fetchTrapStats(traps: List<Trap>) {
+        if (vault.token() == null || trapStatsJob?.isActive == true || traps.isEmpty()) return
+        trapStatsJob = viewModelScope.launch(Dispatchers.IO) {
+            trapStats.fill(traps) {
+                refreshLines()
+                publish()
+            }
+        }
     }
 
     /** The position partway through the trap, played from where the trap starts, and the move that led there. */
@@ -2096,10 +2145,11 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                     else -> null
                 },
                 traps = if (kind == PlayKind.Trainer && trap == null && at == null && !survival && finished == null) {
-                    availableTraps().map { it.name }
+                    rankTraps(availableTraps())
                 } else {
                     emptyList()
                 },
+                trapInfo = trap?.let(::trapInfo),
                 trapName = trap?.name,
                 trapStep = trapStep,
                 trapLength = trap?.moves?.size ?: 0,

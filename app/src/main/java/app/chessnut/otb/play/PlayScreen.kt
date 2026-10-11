@@ -88,6 +88,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.draw.alpha
 import androidx.compose.foundation.BorderStroke
+import app.chessnut.otb.openings.TrapFrequency
+import app.chessnut.otb.openings.TrapStats
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -382,7 +384,7 @@ private fun ProgressCard(ui: PlayUi, onReview: () -> Unit) {
 
 /** A trap being shown: its name, progress through it, and what it wins once played out. */
 @Composable
-private fun TrapBanner(name: String, step: Int, length: Int, summary: String?) {
+private fun TrapBanner(name: String, step: Int, length: Int, summary: String?, info: TrapInfo?) {
     Column(
         Modifier
             .fillMaxWidth()
@@ -396,7 +398,46 @@ private fun TrapBanner(name: String, step: Int, length: Int, summary: String?) {
             Text("⚠  Trap: $name", color = Palette.Mistake, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
             Text("$step / $length", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
         }
+        info?.label?.let { Text(it, color = frequencyColor(info.frequency), style = MaterialTheme.typography.labelMedium) }
         summary?.let { Text(it, color = Palette.Text, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyMedium) }
+    }
+}
+
+/** Common traps stand out; rare ones are muted, so you know which to expect. */
+private fun frequencyColor(frequency: TrapFrequency?): Color = when (frequency) {
+    TrapFrequency.Common -> Palette.Mistake
+    TrapFrequency.Occasional -> Palette.Gold
+    TrapFrequency.Rare, null -> Palette.TextMuted
+}
+
+/** The opening's traps, most often played first, with how often club players fall for each. */
+@Composable
+private fun TrapList(traps: List<TrapInfo>) {
+    Column(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface).padding(12.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Text("⚠  Common traps", color = Palette.Mistake, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleSmall)
+        for (trap in traps) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text(trap.name, color = Palette.Text, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                Text(
+                    trap.frequency?.let { "${it.name} · ${trap.percent}%" } ?: "–",
+                    color = frequencyColor(trap.frequency),
+                    fontWeight = FontWeight.SemiBold,
+                    style = MaterialTheme.typography.labelMedium,
+                )
+            }
+        }
+        Text(
+            if (traps.any { it.frequency != null }) {
+                "How often players rated ${TrapStats.BAND} on Lichess fall for each. Train a line to see a trap played out."
+            } else {
+                "Log in to Lichess to see how often club players fall for each. Train a line to see a trap played out."
+            },
+            color = Palette.TextMuted,
+            style = MaterialTheme.typography.bodySmall,
+        )
     }
 }
 
@@ -539,6 +580,7 @@ private fun OpeningPage(ui: PlayUi, detail: OpeningDetail, viewModel: PlayViewMo
                     }
                 }
             }
+            if (detail.traps.isNotEmpty()) item(key = "traps") { TrapList(detail.traps) }
             item(key = "lines-head") {
                 Row(Modifier.padding(top = 4.dp), verticalAlignment = Alignment.Bottom) {
                     Text("Lines", color = Palette.Text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
@@ -767,15 +809,18 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                 onSquare = viewModel::tap,
             )
             if (!showingTrap) EvalBar(ui.evalScore, ui.evalTerminal, ui.fen)
-            ui.trapName?.let { TrapBanner(it, ui.trapStep, ui.trapLength, ui.trapSummary) }
+            ui.trapName?.let { TrapBanner(it, ui.trapStep, ui.trapLength, ui.trapSummary, ui.trapInfo) }
             if (!showingTrap) {
-                for (name in ui.traps) {
+                for (info in ui.traps) {
                     OutlinedButton(
-                        onClick = { viewModel.showTrap(name) },
+                        onClick = { viewModel.showTrap(info.name) },
                         border = BorderStroke(1.dp, Palette.Mistake),
                         modifier = Modifier.fillMaxWidth(),
                     ) {
-                        Text("⚠  Show common trap: $name", color = Palette.Mistake, fontWeight = FontWeight.SemiBold)
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text("⚠  Show common trap: ${info.name}", color = Palette.Mistake, fontWeight = FontWeight.SemiBold)
+                            info.label?.let { Text(it, color = frequencyColor(info.frequency), style = MaterialTheme.typography.labelSmall) }
+                        }
                     }
                 }
             }
