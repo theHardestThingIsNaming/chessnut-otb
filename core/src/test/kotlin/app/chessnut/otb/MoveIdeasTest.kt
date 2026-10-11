@@ -73,6 +73,13 @@ class MoveIdeasTest {
         assertTrue(bishops.startsWith("Trades bishops on e7."), bishops)
         assertFalse("Forks" in bishops, bishops)
 
+        val castle = idea("r3k3/8/8/8/8/8/8/R2QK3 w Q - 0 1", "d1d2", "Qd2")
+        assertTrue("Clears the way to castle queenside." in castle, castle)
+        val rooks = idea("4k3/8/8/8/8/8/8/R2QK2R w - - 0 1".replace("K2R", "1R1K"), "d1d3", "Qd3")
+        assertTrue("Connects the rooks." in rooks, rooks)
+        val support = idea("4k3/8/2b5/8/4N3/8/8/3QK3 w - - 0 1", "d1d3", "Qd3")
+        assertTrue("Adds a defender to the knight on e4." in support, support)
+
         val discovered = idea("4k3/8/8/8/4N3/8/8/4RK2 w - - 0 1", "e4c5", "Nc5+")
         assertTrue("Discovered check from the rook on e1." in discovered, discovered)
     }

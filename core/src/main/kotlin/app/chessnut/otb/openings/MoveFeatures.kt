@@ -42,6 +42,9 @@ internal object MoveFeatures {
         if (!loose) pileUp(before, after, move, mover, opponent)?.let { found += 50 to it }
         defends(before, after, move, mover, opponent)?.let { found += 40 to it }
         escapes(before, move, type, mover, opponent)?.let { found += 30 to it }
+        supports(before, after, move, mover, opponent)?.let { found += 25 to it }
+        castlingPath(before, after, mover)?.let { found += 20 to it }
+        rooksConnected(before, after, mover)?.let { found += 15 to it }
         return found.sortedByDescending { it.first }.map { it.second }.distinct().take(limit)
     }
 
@@ -180,6 +183,48 @@ internal object MoveFeatures {
             if (attackers > 0 && attackers > defenders) return "Defends the ${piece.label} on ${square.label}."
         }
         return null
+    }
+
+    /** Adds a defender to a piece of yours that is under attack, even if it was already holding. */
+    private fun supports(before: Board, after: Board, move: Move, mover: Side, opponent: Side): String? {
+        val type = after.getPiece(move.to).pieceType ?: return null
+        if (type == PieceType.KING) return null
+        val mine = attacks(after, move.to, type, mover)
+        for (square in Bitboard.bbToSquareList(mine and after.getBitboard(mover))) {
+            val piece = after.getPiece(square).pieceType ?: continue
+            if (piece == PieceType.KING || piece == PieceType.PAWN) continue
+            if (after.squareAttackedBy(square, opponent) == 0L) continue
+            val was = java.lang.Long.bitCount(before.squareAttackedBy(square, mover))
+            val now = java.lang.Long.bitCount(after.squareAttackedBy(square, mover))
+            if (now > was) return "Adds a defender to the ${piece.label} on ${square.label}."
+        }
+        return null
+    }
+
+    /** The squares between king and rook are now clear, so castling on that side is possible. */
+    private fun castlingPath(before: Board, after: Board, mover: Side): String? {
+        val right = after.getCastleRight(mover)
+        val rank = if (mover == Side.WHITE) "1" else "8"
+        fun clear(board: Board, files: String) = files.all { board.getPiece(Square.valueOf("${it.uppercaseChar()}$rank")) == Piece.NONE }
+        val king = com.github.bhlangonijr.chesslib.CastleRight.KING_SIDE
+        val queen = com.github.bhlangonijr.chesslib.CastleRight.QUEEN_SIDE
+        val both = com.github.bhlangonijr.chesslib.CastleRight.KING_AND_QUEEN_SIDE
+        if ((right == queen || right == both) && clear(after, "bcd") && !clear(before, "bcd")) return "Clears the way to castle queenside."
+        if ((right == king || right == both) && clear(after, "fg") && !clear(before, "fg")) return "Clears the way to castle kingside."
+        return null
+    }
+
+    /** Nothing stands between the two rooks on the back rank any more. */
+    private fun rooksConnected(before: Board, after: Board, mover: Side): String? {
+        fun connected(board: Board): Boolean {
+            val rook = if (mover == Side.WHITE) Piece.WHITE_ROOK else Piece.BLACK_ROOK
+            val rank = if (mover == Side.WHITE) 0 else 7
+            val rooks = board.getPieceLocation(rook).filter { it.rank.ordinal == rank }
+            if (rooks.size != 2) return false
+            val (a, b) = rooks.map { it.file.ordinal }.sorted()
+            return (a + 1 until b).all { board.getPiece(Square.squareAt(rank * 8 + it)) == Piece.NONE }
+        }
+        return if (connected(after) && !connected(before)) "Connects the rooks." else null
     }
 
     /** The moved piece was attacked and could have been lost. */
