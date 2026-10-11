@@ -13,6 +13,8 @@ Goal: replace hand-picked traps that club players rarely fall for with mistakes 
       `files/explorer-scan.tsv`). Remove the hook once done; don't commit it.
 - [ ] On the Mac, score each popular move (≥3% of games, ≥30 games) with Stockfish at depth 20.
       Keep the moves that lose ≥150cp against the best move and have a clear refutation.
+      Tool ready and dry-run checked: `MistakeMineTest` (run with `MISTAKE_IN=<pulled scan>
+      MISTAKE_OUT=<out> STOCKFISH=/opt/homebrew/bin/stockfish ./gradlew :core:test --tests '*MistakeMineTest*' --rerun-tasks`).
 - [ ] Add them to `OpeningTraps` as "common mistakes" next to the traps (one note per move, a
       summary), and drop traps that are Rare and nearly never played (The b5 pawn, The trapped
       bishop, The loose e4 pawn, The c7 fork).
