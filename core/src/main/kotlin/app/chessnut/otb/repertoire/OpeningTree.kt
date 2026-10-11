@@ -21,7 +21,7 @@ object OpeningTree {
         userWhite: Boolean,
         choices: Map<List<String>, String> = emptyMap(),
         maxPlies: Int = 16,
-        maxReplies: Int = 3,
+        maxReplies: Int = OpeningCatalog.breadth(family),
         maxLines: Int = 40,
         variations: List<List<String>> = OpeningCatalog.variationsOf(family).mapNotNull { OpeningBook.line(it)?.san },
     ): List<List<String>> {

@@ -46,3 +46,15 @@ A00	Formation: Hippopotamus Attack: 7...a5	1. a3 e5 2. b3 d5 3. c3 Nf6 4. d3 Nc6
 A00	Ware Opening: Crab Variation: 2...d5	1. a4 e5 2. h4 d5 3. c3 Nc6 4. d4 exd4 5. cxd4 Bf5
 A00	Ware Opening: Crab Variation: 2...Nf6	1. a4 e5 2. h4 Nf6 3. c3 d5 4. d4 Nc6 5. dxe5 Nxe5
 A00	Ware Opening: Crab Variation: 2...Nc6	1. a4 e5 2. h4 Nc6 3. c3 d5 4. d4 Nf6 5. dxe5 Nxe5
+B07	Pirc Defense: Byrne Variation	1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Bg5 Bg7 5. Qd2 h6 6. Bh4 g5 7. Bg3 Nh5
+B07	Pirc Defense: 150 Attack	1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Be3 c6 5. Qd2 b5 6. f3 Nbd7
+B07	Pirc Defense: 150 Attack, Sveshnikov-Jansa Attack	1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Be3 c6 5. h3 Bg7 6. f4 O-O
+B07	Pirc Defense: Bayonet Attack	1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Be2 Bg7 5. h4 h5
+B07	Pirc Defense: Chinese Variation	1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Be2 Bg7 5. g4 h6
+B07	Pirc Defense: Kholmov System	1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Bc4 Bg7 5. Qe2 Nc6
+B07	Pirc Defense: Sveshnikov System	1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. g3 Bg7 5. Bg2 O-O 6. Nge2 e5
+B08	Pirc Defense: Classical Variation, Schlechter Variation	1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. Nf3 Bg7 5. h3 O-O 6. Be3 a6
+B09	Pirc Defense: Austrian Attack, Kurajica Variation	1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. f4 Bg7 5. Nf3 O-O 6. Be3 b6
+B09	Pirc Defense: Austrian Attack, Weiss Variation	1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. f4 Bg7 5. Nf3 O-O 6. Bd3 Na6
+B09	Pirc Defense: Austrian Attack, Ljubojevic Variation	1. e4 d6 2. d4 Nf6 3. Nc3 g6 4. f4 Bg7 5. Bc4 O-O 6. Nf3 c5
+B00	Pirc Defense: Roscher Gambit	1. e4 d6 2. d4 Nf6 3. Nf3 Nxe4 4. Bd3 Nf6

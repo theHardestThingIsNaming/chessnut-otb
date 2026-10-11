@@ -32,6 +32,15 @@ object OpeningCatalog {
     /** The listed opening [name] belongs to, such as "Scotch Game" for "Scotch Game: Göring Gambit". */
     fun family(name: String): String? = name.substringBefore(':', "").trim().takeIf { it.isNotEmpty() && it in OPENINGS }
 
+    /**
+     * How many of the opponent's book moves a repertoire covers at each turn.
+     * Most openings take the three most common; a few branch so widely that
+     * their main variations need more.
+     */
+    fun breadth(family: String): Int = WIDE[family] ?: 3
+
+    private val WIDE = mapOf("Pirc Defense" to 8)
+
     /** The listed variations grouped under [family], whose lines its page and Survival include. */
     fun variationsOf(family: String): List<String> = present(GAMBITS).filter { family(it) == family }
 
@@ -64,6 +73,7 @@ object OpeningCatalog {
         "Slav Defense",
         "Nimzo-Indian Defense",
         "King's Indian Defense",
+        "Pirc Defense",
         "English Opening",
         "London System",
     )

@@ -42,6 +42,17 @@ class OpeningTreeTest {
     }
 
     @Test
+    fun thePircCoversWhitesMainSystemsWithANoteForEveryMove() {
+        assertTrue("Pirc Defense" in OpeningCatalog.browse("").flatMap { it.names })
+        val lines = OpeningTree.lines("Pirc Defense", userWhite = false)
+        val fourth = lines.mapNotNull { it.getOrNull(6) }.toSet()
+        assertTrue(setOf("f4", "Nf3", "Be3", "Bg5", "Be2", "Bc4", "g3").all { it in fourth }, "White's 4th moves: $fourth")
+        assertTrue(lines.all { it.size % 2 == 0 }, "every line ends on Black's move")
+        val plies = lines.flatMap { line -> line.indices.map { line.take(it + 1).joinToString(" ") } }.toSet()
+        assertEquals(emptyList(), plies.filter { it !in app.chessnut.otb.openings.MoveIdeas.noted })
+    }
+
+    @Test
     fun blackLinesEndOnBlackMoves() {
         val lines = OpeningTree.lines("Caro-Kann Defense", userWhite = false)
         assertTrue(lines.isNotEmpty())

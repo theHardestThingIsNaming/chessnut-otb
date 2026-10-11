@@ -26,6 +26,8 @@ object OpeningLore {
             "The Sicilian was already described by Giulio Polerio in 1594. Today it is the most popular reply to e4 among strong players. Bobby Fischer and Garry Kasparov both built their careers on it.",
         "French Defense" to
             "The French Defense is named after a correspondence match between London and Paris in the 1830s, in which the Paris players used it. Black builds a solid pawn chain and waits to strike at White's centre.",
+        "Pirc Defense" to
+            "The Pirc is named after the Slovenian master Vasja Pirc, who played it in the 1930s and 40s; in Russia it is often called the Pirc-Ufimtsev. It became a respected choice in the 1970s, when players such as Viktor Korchnoi showed that a hypermodern defence could fight a big pawn centre.",
         "Caro-Kann Defense" to
             "The Caro-Kann is named after Horatio Caro and Marcus Kann, who analysed it in the 1880s. It has a reputation for rock solid structure, and Anatoly Karpov trusted it at the very top.",
         "Slav Defense" to
