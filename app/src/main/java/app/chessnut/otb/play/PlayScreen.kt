@@ -410,37 +410,6 @@ private fun frequencyColor(frequency: TrapFrequency?): Color = when (frequency) 
     TrapFrequency.Rare, null -> Palette.TextMuted
 }
 
-/** The opening's traps, most often played first, with how often club players fall for each. */
-@Composable
-private fun TrapList(traps: List<TrapInfo>) {
-    Column(
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface).padding(12.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Text("⚠  Common traps", color = Palette.Mistake, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleSmall)
-        for (trap in traps) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text(trap.name, color = Palette.Text, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
-                Text(
-                    trap.frequency?.let { "${it.name} · ${trap.percent}%" } ?: "–",
-                    color = frequencyColor(trap.frequency),
-                    fontWeight = FontWeight.SemiBold,
-                    style = MaterialTheme.typography.labelMedium,
-                )
-            }
-        }
-        Text(
-            if (traps.any { it.frequency != null }) {
-                "How often players rated ${TrapStats.BAND} on Lichess fall for each. Train a line to see a trap played out."
-            } else {
-                "Log in to Lichess to see how often club players fall for each. Train a line to see a trap played out."
-            },
-            color = Palette.TextMuted,
-            style = MaterialTheme.typography.bodySmall,
-        )
-    }
-}
-
 /** Survival's counter: good moves in a row past the line, against your best on this line. */
 @Composable
 private fun DepthStrip(run: Int, best: Int?, over: Boolean) {
@@ -580,7 +549,6 @@ private fun OpeningPage(ui: PlayUi, detail: OpeningDetail, viewModel: PlayViewMo
                     }
                 }
             }
-            if (detail.traps.isNotEmpty()) item(key = "traps") { TrapList(detail.traps) }
             item(key = "lines-head") {
                 Row(Modifier.padding(top = 4.dp), verticalAlignment = Alignment.Bottom) {
                     Text("Lines", color = Palette.Text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))

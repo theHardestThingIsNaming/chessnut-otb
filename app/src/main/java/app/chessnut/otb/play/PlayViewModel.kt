@@ -113,8 +113,6 @@ data class OpeningDetail(
     /** Lines come from an imported study rather than the book. */
     val study: Boolean,
     val medal: OpeningMedal? = null,
-    /** Traps you can meet in this opening's lines, most often played first. */
-    val traps: List<TrapInfo> = emptyList(),
 )
 
 enum class LineStatus { New, Learned, Due, Missed }
@@ -223,7 +221,7 @@ data class PlayUi(
     /** The trainer's evaluation of the position on the board, for the eval bar. */
     val evalScore: Score? = null,
     val evalTerminal: Terminal? = null,
-    /** Common traps the opponent can fall into right now, most often played first. */
+    /** Common traps the opponent can fall into right now, most often played first. Explain mode only. */
     val traps: List<TrapInfo> = emptyList(),
     /** How often club players fall for the trap being shown. */
     val trapInfo: TrapInfo? = null,
@@ -587,7 +585,6 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                         name, white, chapter != null, views,
                         learnedCount = learned?.count { key -> lines.any { Drill.key(it) == key } }
                             ?: views.count { it.status == LineStatus.Learned },
-                        traps = rankTraps(traps),
                     ),
                 ) else it }
         }
@@ -599,7 +596,6 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         study: Boolean,
         lines: List<LineView>,
         learnedCount: Int,
-        traps: List<TrapInfo> = emptyList(),
     ): OpeningDetail {
         val start = OpeningBook.line(name)?.san.orEmpty()
         val fen = runCatching { ChessLines.replay(start).fens.last() }.getOrDefault(Board().fen)
@@ -623,7 +619,6 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             choices = choices,
             study = study,
             medal = OpeningMedal.of(learnedCount, lines.size, depth?.best),
-            traps = traps,
         )
     }
 
@@ -2144,7 +2139,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                     kind == PlayKind.Trainer && at == null -> idea
                     else -> null
                 },
-                traps = if (kind == PlayKind.Trainer && trap == null && at == null && !survival && finished == null) {
+                traps = if (kind == PlayKind.Trainer && explain && trap == null && at == null && !survival && finished == null) {
                     rankTraps(availableTraps())
                 } else {
                     emptyList()
