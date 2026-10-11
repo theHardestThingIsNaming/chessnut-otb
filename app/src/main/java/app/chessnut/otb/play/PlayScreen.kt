@@ -591,7 +591,7 @@ private fun OpeningPage(ui: PlayUi, detail: OpeningDetail, viewModel: PlayViewMo
             PrimaryAction(
                 if (detail.due > 0) "Review ${detail.due} due" else "Train",
                 Modifier.weight(1.3f).fillMaxHeight(),
-                onClick = viewModel::start,
+                onClick = viewModel::train,
             )
             if (detail.punishable > 0) {
                 PrimaryAction("Punish", Modifier.weight(1f).fillMaxHeight(), color = Palette.Mistake, onClick = viewModel::startPunish)

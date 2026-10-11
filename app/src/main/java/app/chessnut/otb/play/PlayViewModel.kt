@@ -715,6 +715,15 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         refreshOpenings(state.value.openingQuery)
     }
 
+    /** Train from the opening's page: opens with a due review, else the line practised longest ago, else line 1. */
+    fun train() {
+        fromPage = true
+        start()
+    }
+
+    /** The next start() comes from the opening's page, so it picks the line [Drill.opening] would. */
+    private var fromPage = false
+
     fun start() {
         // Save the last game's run under its own opening before this one replaces it.
         endDepthRun()
@@ -747,10 +756,16 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         }
         val pinned = pinnedLine?.takeIf { it in drillLines }
         pinnedLine = null
+        val opening = fromPage
+        fromPage = false
         drillLine = when {
             punishTrap != null -> punishTrap!!.let { it.before + it.moves }
             drillLines.isEmpty() -> null
             pinned != null -> pinned
+            opening -> {
+                val reviews = if (drillBook) app.lineProgress.reviews(trained!!, ui.userWhite) else app.repertoire.reviews()
+                Drill.opening(drillLines, reviews, System.currentTimeMillis())
+            }
             !drillBook -> Drill.next(drillLines, app.repertoire.reviews(), System.currentTimeMillis())
             ui.explain -> {
                 // Explaining shows each line in turn, those not yet learned first.

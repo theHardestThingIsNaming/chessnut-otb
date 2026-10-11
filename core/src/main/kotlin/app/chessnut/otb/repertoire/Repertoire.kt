@@ -16,6 +16,22 @@ object Drill {
     fun key(line: List<String>): String = line.joinToString(" ")
 
     /**
+     * The line Train opens with from the opening's page: the most overdue
+     * review first; then the line you practised longest ago; then, before
+     * anything has been tried, the first line.
+     */
+    fun opening(lines: List<List<String>>, reviews: Map<String, LineReview>, now: Long): List<String>? {
+        val overdue = lines.filter { reviews[key(it)]?.let { r -> r.dueAt <= now } == true }
+        overdue.minByOrNull { reviews.getValue(key(it)).dueAt }?.let { return it }
+        lines.filter { key(it) in reviews }.minByOrNull { practisedAt(reviews.getValue(key(it))) }?.let { return it }
+        return lines.firstOrNull()
+    }
+
+    /** When the line was last drilled: its due date less the wait its box gave it (a miss waits a day). */
+    fun practisedAt(review: LineReview): Long =
+        review.dueAt - INTERVAL_DAYS[review.box.coerceIn(0, INTERVAL_DAYS.lastIndex)] * DAY_MS
+
+    /**
      * The line to drill next: the most overdue review first, so nothing you
      * learned slips; then the first line never drilled; then whichever comes
      * due soonest.
