@@ -337,6 +337,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     /** The mistake Punish mode is setting, or null outside it. */
     private var punishTrap: Trap? = null
     private var explainBeforePunish: Boolean? = null
+    /** Mistakes skipped without an answer, kept out until the rest have come round. */
+    private val punishSkipped = mutableSetOf<String>()
     private var survivalOver = false
     /** Explain's setting before survival turned it off, to restore after. */
     private var explainBeforeSurvival: Boolean? = null
@@ -569,7 +571,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             // The moves every line shares are the opening itself; show what comes after.
             val shared = lines.firstOrNull()?.indices?.takeWhile { i -> lines.all { it.getOrNull(i) == lines[0][i] } }?.size ?: 0
             fetchLineStats(lines)
-            val traps = OpeningTraps.all.filter { trap -> lines.any { it.take(trap.before.size) == trap.before } }
+            val traps = OpeningTraps.all.filter { trap -> lines.any { OpeningTraps.follows(trap, it) } }
             fetchTrapStats(traps)
             val views = lines.map { line ->
                 val key = Drill.key(line)
@@ -1018,7 +1020,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private fun punishTraps(name: String, white: Boolean): List<Trap> {
         val lines = bookLines(name, white)
         return OpeningTraps.all
-            .filter { trap -> (trap.before.size % 2 == 1) == white && lines.any { it.take(trap.before.size) == trap.before } }
+            .filter { trap -> (trap.before.size % 2 == 1) == white && lines.any { OpeningTraps.follows(trap, it) } }
             .sortedByDescending { trapStats.record(it)?.percent ?: -1 }
     }
 
@@ -1034,7 +1036,13 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         val name = ui.openingName ?: return
         val pool = punishTraps(name, ui.userWhite)
         if (pool.isEmpty()) return
-        val lines = pool.map { it.before + it.moves }
+        val all = pool.map { it.before + it.moves }
+        // Skip leaves the mistake unanswered: set it aside until the others have come round.
+        punishTrap?.takeIf { !drillGraded }?.let { punishSkipped += Drill.key(it.before + it.moves) }
+        val lines = all.filter { Drill.key(it) !in punishSkipped }.ifEmpty {
+            punishSkipped.clear()
+            all
+        }
         val reviews = app.lineProgress.reviews(punishKey(name), ui.userWhite)
         val now = System.currentTimeMillis()
         var line = Drill.next(lines, reviews, now) ?: lines.first()
@@ -1043,7 +1051,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         if (line == last && lines.size > 1 && reviews[Drill.key(line)]?.let { it.dueAt > now } != false) {
             line = lines.filter { it != last }.let { rest -> rest[random.nextInt(rest.size)] }
         }
-        val pick = pool[lines.indexOf(line)]
+        val pick = pool[all.indexOf(line)]
         endSurvival()
         if (explainBeforePunish == null) explainBeforePunish = explain
         // Punishing is from your own eyes: no arrows.

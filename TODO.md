@@ -33,6 +33,18 @@ Still to do:
 - [ ] A "punished" count or medal on the opening's page.
 - [ ] Tidy the branch note wrapping mid-move ("4." / "Nxd4").
 
+## 3. Mistakes from the Lichess puzzle database, started (2026-10-11)
+
+The puzzle database (database.lichess.org, CC0) has ~290k opening-phase puzzles, each tagged
+with its opening. `PuzzleGamesTest` keeps those whose game followed one of your lines to within
+6 moves of the mistake (games fetched in bulk from `/api/games/export/_ids`, no login needed).
+For the Scotch and Pirc it found 19; 6 were added after a Stockfish check.
+
+- [ ] Run it for the other openings in the catalog (filter `opening.csv` by their tags, fetch
+      games, run `PuzzleGamesTest` with `PUZZLE_OPENINGS`).
+- [ ] Loosen the match for more hits: only your own moves need to follow your lines, the
+      opponent's can be anything.
+
 ## Order of work
 
 1. Extend the scan and mistakes to the other openings in the catalog.

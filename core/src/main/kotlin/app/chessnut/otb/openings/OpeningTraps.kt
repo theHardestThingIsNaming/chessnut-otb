@@ -6,7 +6,8 @@ package app.chessnut.otb.openings
  * note in [notes]; [summary] says what it wins. A [mistake] is a smaller
  * error than a trap (a pawn or a broken position, not a piece). Every one was
  * checked with Stockfish at depth 20, and kept because Lichess players rated
- * 1400–2000 actually play it.
+ * 1400–2000 actually play it, or it's a popular Lichess puzzle from a game
+ * that followed your line. [before] can run a few moves past the line's end.
  */
 data class Trap(
     val name: String,
@@ -29,6 +30,15 @@ object OpeningTraps {
     fun at(played: List<String>): List<Trap> = ALL.filter { it.before == played }
 
     val all: List<Trap> get() = ALL
+
+    /** Most moves a trap may start after one of your lines ends. */
+    const val PAST_LINE = 6
+
+    /** The trap comes up from [line]: it starts inside it, or follows all of it by up to [PAST_LINE] moves. */
+    fun follows(trap: Trap, line: List<String>): Boolean {
+        val n = minOf(line.size, trap.before.size)
+        return line.take(n) == trap.before.take(n) && trap.before.size - line.size <= PAST_LINE
+    }
 
     private fun san(line: String) = line.split(' ').filter { it.isNotBlank() }
 
@@ -180,6 +190,77 @@ object OpeningTraps {
             ),
             "Black wins a pawn, with an easy game.",
             mistake = true,
+        ),
+        // From the Lichess puzzle database (CC0): popular puzzles whose games followed your lines.
+        Trap(
+            "The queen check on d5",
+            san("e4 e5 Nf3 Nc6 d4 exd4 Bc4 Nf6 e5 Ng4 Bxf7+ Kxf7 Ng5+ Kg8 Qf3"),
+            san("Ncxe5 Qd5+ Nf7 Qxf7#"),
+            listOf(
+                "Black's knight hits the queen, but leaves the d5 square open for it.",
+                "Check from d5, along the diagonal to the king.",
+                "The only block.",
+                "The queen takes on f7, guarded by the g5 knight: mate.",
+            ),
+            "Checkmate.",
+        ),
+        Trap(
+            "Mate on f7",
+            san("e4 e5 Nf3 Nc6 d4 Nxd4 Nxd4 exd4 Qxd4 Ne7 Bc4 Ng6 Qd5"),
+            san("Be7 Qxf7#"),
+            listOf(
+                "Black develops, but forgets the queen and bishop are both aiming at f7.",
+                "The queen takes f7, guarded by the bishop: mate.",
+            ),
+            "Checkmate.",
+        ),
+        Trap(
+            "The queen swap that isn't",
+            san("e4 e5 Nf3 Nc6 d4 Nxd4 Nxd4 exd4 Qxd4 b6 Bc4 Qf6 e5"),
+            san("Bc5 Qxc5 bxc5 exf6"),
+            listOf(
+                "Black hits the queen, forgetting that e5 has attacked Black's own queen.",
+                "White's queen takes the bishop.",
+                "Black takes White's queen.",
+                "And the pawn takes Black's queen.",
+            ),
+            "White wins a whole bishop.",
+        ),
+        Trap(
+            "The pin on b5",
+            san("e4 e5 Nf3 Nc6 d4 exd4 c3 d5 exd5 Qxd5 Nxd4 Nf6 Nxc6 Qxc6 Qb3"),
+            san("Bc5 Bb5 Bd7 Bxc6"),
+            listOf(
+                "Black develops the bishop, leaving the queen on the same diagonal as the king.",
+                "The bishop pins the queen to the king.",
+                "Black can only add a defender.",
+                "White takes the queen.",
+            ),
+            "White wins the queen for a bishop.",
+        ),
+        Trap(
+            "The Greek gift",
+            san("e4 e5 Nf3 Nc6 d4 exd4 Bc4 Bb4+ c3 dxc3 bxc3 Ba5 e5 Nge7 Bd3"),
+            san("O-O Bxh7+ Kxh7 Ng5+ Kg6 h4"),
+            listOf(
+                "Black castles, with no knight on f6 to guard h7.",
+                "The classic bishop sacrifice on h7.",
+                "The king takes.",
+                "The knight checks and the king can't go back safely.",
+                "On g6 the king is out in the open.",
+                "The h-pawn joins in with h5+ next, and Black's king is caught.",
+            ),
+            "White's attack wins: Black's king can't escape.",
+        ),
+        Trap(
+            "The pinned queen",
+            PIRC + san("Bg5 Bg7 Qd2 h6 Bh4 g5 Bg3 Nh5 O-O-O Nxg3 hxg3 h5"),
+            san("Qxg5 Bh6"),
+            listOf(
+                "White grabs the g5 pawn, putting the queen on the bishop's diagonal to c1, where the king is.",
+                "The bishop pins the queen to the king. It's lost for the bishop.",
+            ),
+            "Black wins the queen for a bishop.",
         ),
     )
 }
