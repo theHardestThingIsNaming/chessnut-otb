@@ -47,9 +47,9 @@ For the Scotch and Pirc it found 19; 6 were added after a Stockfish check.
 - [x] Raised the cap to 6,000 puzzles per opening (31k candidates): 295 new matches; 9 added
       for the thin openings. Classic named traps: only the Siberian trap and the London's
       poisoned b2 pawn both fit your lines and lose with best play; the rest are sound.
-- [ ] Your Ruy Lopez line `…b5 Bb3 d6 d4 Nxd4 Nxd4 exd4 Qxd4??` is the Noah's Ark trap
-      (…c5 and …c4 trap the bishop): the book names that line after it, so the trainer
-      drills White's losing move. Decide whether to drop or fix the line.
+- [x] Audited every move of yours in the 13 main openings with Stockfish (`BookAuditTest`):
+      three gave away 1.5+ pawns (Noah's Ark Qxd4?? in the Ruy, Qf3 and d4 in the Evans
+      declined). `BookBlunders` keeps them out of your lines; the book fill gave c3 and Be2.
 
 ## Order of work
 

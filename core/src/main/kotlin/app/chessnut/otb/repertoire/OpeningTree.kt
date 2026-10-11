@@ -1,5 +1,6 @@
 package app.chessnut.otb.repertoire
 
+import app.chessnut.otb.openings.BookBlunders
 import app.chessnut.otb.openings.OpeningBook
 import app.chessnut.otb.openings.OpeningCatalog
 
@@ -28,12 +29,12 @@ object OpeningTree {
         val found = linkedSetOf<List<String>>()
         fun walk(line: List<String>) {
             if (found.size >= maxLines) return
-            val replies = if (line.size >= maxPlies) emptyList() else OpeningBook.rankedReplies(line, family)
+            val yourMove = (line.size % 2 == 0) == userWhite
+            val replies = if (line.size >= maxPlies) emptyList() else usable(line, family, yourMove)
             if (replies.isEmpty()) {
                 trimmed(line, userWhite)?.let(found::add)
                 return
             }
-            val yourMove = (line.size % 2 == 0) == userWhite
             val mine = choices[line]?.takeIf { it in replies } ?: replies.first()
             val branches = if (yourMove) {
                 // Your move, plus the move of any grouped variation that branches off here.
@@ -59,8 +60,8 @@ object OpeningTree {
         val maxReplies = OpeningCatalog.breadth(family)
         val variations = OpeningCatalog.variationsOf(family).mapNotNull { OpeningBook.line(it)?.san }
         fun walk(line: List<String>) {
-            val replies = if (line.size >= maxPlies) emptyList() else OpeningBook.rankedReplies(line, family)
             val yourMove = (line.size % 2 == 0) == userWhite
+            val replies = if (line.size >= maxPlies) emptyList() else usable(line, family, yourMove)
             if (replies.isEmpty()) {
                 if (yourMove && line.size < maxPlies && line.isNotEmpty()) ends += line
                 return
@@ -76,6 +77,12 @@ object OpeningTree {
         }
         walk(emptyList())
         return ends
+    }
+
+    /** The book's replies after [line], leaving out moves of yours that are known blunders. */
+    private fun usable(line: List<String>, family: String, yourMove: Boolean): List<String> {
+        val replies = OpeningBook.rankedReplies(line, family)
+        return if (yourMove) replies.filterNot { BookBlunders.avoid(line, it) } else replies
     }
 
     private fun trimmed(line: List<String>, userWhite: Boolean): List<String>? {
