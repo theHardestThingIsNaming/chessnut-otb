@@ -34,6 +34,17 @@ class DepthRecords(private val file: File) {
         return next
     }
 
+    /** The best run past [line] itself, as kept by [finishLine]. */
+    @Synchronized
+    fun ofLine(opening: String, userWhite: Boolean, line: List<String>): Record? = records[key(lineName(opening, line), userWhite)]
+
+    /** Saves a run that followed [line], for that line's own record. */
+    @Synchronized
+    fun finishLine(opening: String, userWhite: Boolean, line: List<String>, run: Int): Record = finish(lineName(opening, line), userWhite, run)
+
+    /** Each line's record sits beside the opening's, under the opening's name and the line's moves. */
+    private fun lineName(opening: String, line: List<String>) = "$opening » ${Drill.key(line)}"
+
     private fun key(opening: String, userWhite: Boolean) = "${opening.replace('\t', ' ')}\t${if (userWhite) "w" else "b"}"
 
     private fun save() {

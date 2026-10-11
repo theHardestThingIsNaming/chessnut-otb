@@ -105,6 +105,8 @@ data class LineView(
     val status: LineStatus,
     /** When the line is next due for review, such as "Review in 3 days"; null for a line never played from memory. */
     val next: String? = null,
+    /** Your best run of good moves after this line, from Survival or training. */
+    val best: Int? = null,
 )
 
 data class PlayUi(
@@ -285,6 +287,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private var depthRun: Int? = null
     private var depthOver = false
     private var depthBest: Int? = null
+    /** The drilled line's own best run, before this game. */
+    private var lineBest: Int? = null
     /** From the last judged move: the engine's top two and the winning chances it gave up. */
     private var lastTopTwo: List<String> = emptyList()
     private var lastWinDrop = 0.0
@@ -530,7 +534,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                         else -> "Review in $days days"
                     }
                 }
-                LineView(variation ?: "Main line", numberedFrom(line, shared), status, next)
+                LineView(variation ?: "Main line", numberedFrom(line, shared), status, next, app.depthRecords.ofLine(name, white, line)?.best)
             }
             state.update { if (it.openingName == name && it.userWhite == white) it.copy(
                     lines = views,
@@ -687,6 +691,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         depthRun = null
         depthOver = false
         depthBest = ui.openingName?.let { app.depthRecords.of(it, ui.userWhite)?.best }
+        lineBest = ui.openingName?.let { name -> drillLine?.let { app.depthRecords.ofLine(name, ui.userWhite, it)?.best } }
         lineLabelShown = lineLabel()
         lineNote = null
         survivalOver = false
@@ -1045,12 +1050,16 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         if (depthOver) return
         depthOver = true
         app.depthRecords.finish(name, userWhite, run)
-        val record = depthBest
+        // A run that followed a line you played cleanly also counts for that line.
+        val line = drillLine?.takeIf { lineClean }
+        if (line != null) app.depthRecords.finishLine(name, userWhite, line, run)
+        // Survival compares against the line you were dealt; training against the whole opening.
+        val record = if (survival) lineBest else depthBest
         if (survival) survivalOver = true
         val moves = "$run ${if (run == 1) "move" else "moves"}"
         val result = when {
             survival && run > (record ?: 0) && run > 0 -> "You survived $moves past the line. A new best!"
-            survival -> "You survived $moves past the line." + (record?.let { " Your best is $it." } ?: "")
+            survival -> "You survived $moves past the line." + (record?.let { " Your best on this line is $it." } ?: "")
             run > (record ?: 0) && run > 0 -> "New best: $run good ${if (run == 1) "move" else "moves"} past the line."
             record != null -> "Run over at $run. Your best is $record."
             else -> "Run over at $run."
@@ -1061,6 +1070,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         lineNote = if (survival) words else listOfNotNull(lineNote, words).joinToString(" ")
         if (app.phoneSounds && playing) speech.narrate(words)
         refreshOpenings(state.value.openingQuery)
+        refreshLines()
     }
 
     private fun onPhysical(placement: String) {

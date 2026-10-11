@@ -488,6 +488,14 @@ private fun LineRow(index: Int, line: LineView, onClick: () -> Unit) {
             }
         }
         Text(line.moves, color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
+        line.best?.let { best ->
+            Text(
+                "Best run past this line: $best ${if (best == 1) "move" else "moves"}",
+                color = Palette.Gold,
+                style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier.padding(top = 2.dp),
+            )
+        }
     }
 }
 
