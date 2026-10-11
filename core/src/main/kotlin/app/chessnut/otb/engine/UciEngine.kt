@@ -75,7 +75,7 @@ class UciEngine(
             parseInfo(line, sideToMoveIsWhite)?.let { (index, engineLine) -> lines[index] = engineLine }
             line.startsWith("bestmove")
         }
-        lines.toSortedMap().values.toList()
+        distinctLines(lines)
     }
 
     /** Analyses [fen] to a fixed node count and returns the final [multiPv] lines, best first. */
@@ -88,8 +88,16 @@ class UciEngine(
             parseInfo(line, sideToMoveIsWhite)?.let { (index, engineLine) -> lines[index] = engineLine }
             line.startsWith("bestmove")
         }
-        lines.toSortedMap().values.toList()
+        distinctLines(lines)
     }
+
+    /**
+     * Lines best first, each first move once. A search stopped mid-depth can
+     * leave a lower line holding an older result whose move has since moved
+     * up, so the same move would otherwise show twice.
+     */
+    private fun distinctLines(lines: Map<Int, EngineLine>): List<EngineLine> =
+        lines.toSortedMap().values.distinctBy { it.uci.firstOrNull() ?: it }
 
     /**
      * Infinite search on [fen]; emits the current best lines as they improve.

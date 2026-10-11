@@ -328,7 +328,7 @@ private fun DepthStrip(run: Int, best: Int?, over: Boolean) {
         )
         Column(Modifier.weight(1f)) {
             Text(
-                if (over) "Run over past the book" else "Past the book",
+                if (over) "Run over past the line" else "Past the line",
                 color = Palette.Text,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.bodyMedium,
@@ -379,7 +379,7 @@ private fun OpeningPage(ui: PlayUi, detail: OpeningDetail, viewModel: PlayViewMo
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         StatTile(
                             detail.depthBest?.toString() ?: "–",
-                            detail.depthLast?.let { "Best run past the book · last $it" } ?: "Best run past the book",
+                            detail.depthLast?.let { "Best run past the line · last $it" } ?: "Best run past the line",
                             Modifier.weight(1f),
                         )
                         StatTile(detail.accuracy?.toString() ?: "–", "Your best accuracy", Modifier.weight(1f))
@@ -400,7 +400,7 @@ private fun OpeningPage(ui: PlayUi, detail: OpeningDetail, viewModel: PlayViewMo
                         "Learning: arrows show the book moves. Nothing is scored."
                     } else {
                         "Testing: play from memory. Each line is scheduled for review: 1 day after a clean run, then 3, 7, 14 and 30 days; " +
-                            "tomorrow after a miss. Past the book, moves from the engine's top two build your run."
+                            "tomorrow after a miss. Past the line, moves from the engine's top two build your run."
                     },
                     color = Palette.TextMuted,
                     style = MaterialTheme.typography.bodySmall,

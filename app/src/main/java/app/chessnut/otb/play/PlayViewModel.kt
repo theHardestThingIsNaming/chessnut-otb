@@ -923,7 +923,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         }
         if (!userToMove()) return
         launchPlay {
-            val pastBook = kind == PlayKind.Trainer && !explain && openingName != null && !legalBookMove()
+            // The run starts once the drilled line is played cleanly, or wherever the book runs out.
+            val lineFinished = drillGraded && lineClean
+            val pastBook = kind == PlayKind.Trainer && !explain && openingName != null && (lineFinished || !legalBookMove())
             val verdict = if (kind == PlayKind.Trainer) judge(uci) else null
             if (drillLine != null && verdict != null && verdict != TrainerResult.Book) drillMissed = true
             if (verdict != null && explain && !verdict.accepted) {
@@ -931,7 +933,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 return@launchPlay
             }
             if (!apply(uci)) return@launchPlay
-            if (pastBook && verdict != TrainerResult.Book) countDepth(uci)
+            if (pastBook) countDepth(uci, book = verdict == TrainerResult.Book)
             retry = false
             rejectUci = null
             if (verdict != null && finished == null) {
@@ -950,9 +952,10 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /** One more move past the book: extends the run, or ends it if the engine had two better. */
-    private fun countDepth(uci: String) {
+    private fun countDepth(uci: String, book: Boolean) {
         if (depthOver) return
-        if (DepthRun.good(uci, lastTopTwo, lastWinDrop)) {
+        // A book move is theory, so it always counts.
+        if (book || DepthRun.good(uci, lastTopTwo, lastWinDrop)) {
             depthRun = (depthRun ?: 0) + 1
         } else {
             depthRun = depthRun ?: 0
@@ -960,6 +963,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             val ply = sanMoves.size - 1
             depthMissed = before?.let { position ->
                 lastTopTwo.mapNotNull { ChessLines.sanOf(position, listOf(it)).firstOrNull() }
+                    .distinct()
                     .joinToString(" or ") { "${moveNumber(ply)}$it" }
                     .ifEmpty { null }
             }
@@ -977,7 +981,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         app.depthRecords.finish(name, userWhite, run)
         val record = depthBest
         val result = when {
-            run > (record ?: 0) && run > 0 -> "New best: $run good ${if (run == 1) "move" else "moves"} past the book."
+            run > (record ?: 0) && run > 0 -> "New best: $run good ${if (run == 1) "move" else "moves"} past the line."
             record != null -> "Run over at $run. Your best is $record."
             else -> "Run over at $run."
         }
@@ -1402,7 +1406,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         lastJudgedFen = fen
         val top = eng.analyseMillis(fen, 400, 2)
         val before = top.firstOrNull()
-        lastTopTwo = top.mapNotNull { it.uci.firstOrNull() }
+        // The engine can report the same first move on both lines, so keep each move once.
+        lastTopTwo = top.mapNotNull { it.uci.firstOrNull()?.lowercase() }.distinct()
         val beforeScore = before?.score ?: Score.Even
         val after = PlayPosition.after(fen, uci) ?: return TrainerGate.judge(false, false, 100.0)
         val whiteMoved = whiteToMove(fen)

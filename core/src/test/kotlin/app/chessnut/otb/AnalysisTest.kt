@@ -62,7 +62,39 @@ private class FakeEngineProcess(private val cpFor: (String) -> Int = { 20 }) : E
     override fun close() = Unit
 }
 
+/** Stops mid-depth: line 2 still holds the old depth's move, which line 1 has since taken. */
+private class StaleEngineProcess : EngineProcess {
+    private val flow = MutableSharedFlow<String>(extraBufferCapacity = 64)
+    override val output = flow
+
+    override suspend fun send(line: String) {
+        when {
+            line == "uci" -> {
+                flow.emit("id name Stale 1")
+                flow.emit("uciok")
+            }
+            line == "isready" -> flow.emit("readyok")
+            line.startsWith("go") -> {
+                flow.emit("info depth 10 multipv 1 score cp 30 nodes 10 pv e2e4")
+                flow.emit("info depth 10 multipv 2 score cp 20 nodes 10 pv d2d4")
+                flow.emit("info depth 11 multipv 1 score cp 25 nodes 20 pv d2d4")
+                flow.emit("bestmove d2d4")
+            }
+        }
+    }
+
+    override fun close() = Unit
+}
+
 class AnalysisTest {
+    @Test
+    fun engineLinesNeverRepeatAMove() = runTest {
+        val engine = UciEngine(StaleEngineProcess())
+        engine.start()
+        val lines = engine.analyseMillis(Board().fen, 10, 2)
+        assertEquals(listOf("d2d4"), lines.map { it.uci.first() })
+    }
+
     @Test
     fun infoScoresAreTurnedToWhitesPointOfView() {
         val line = "info depth 20 seldepth 28 multipv 2 score cp 35 nodes 12 nps 1 pv e7e5 g1f3"
