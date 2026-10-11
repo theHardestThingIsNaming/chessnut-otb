@@ -768,7 +768,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         glance = null
         fen = origin()
         playing = true
-        physical = app.boardSession != null
+        // Punish mode starts mid-game, so it's played on the screen rather than set up on the board.
+        physical = app.boardSession != null && punishTrap == null
         hint = null
         prompt = null
         rejectUci = null
