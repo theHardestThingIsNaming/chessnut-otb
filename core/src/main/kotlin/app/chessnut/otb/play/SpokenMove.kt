@@ -25,6 +25,19 @@ object SpokenMove {
         }
     }
 
+    /** A move in plain words for reading and saying, such as "pawn to e6" or "bishop takes f7". */
+    fun plain(san: String): String {
+        val text = san.trim().replace(marks, "").removeSuffix("#").removeSuffix("+")
+        if (text == "O-O" || text == "0-0") return "castling kingside"
+        if (text == "O-O-O" || text == "0-0-0") return "castling queenside"
+        val match = move.matchEntire(text) ?: return san
+        val piece = match.groupValues[1].ifEmpty { "P" }
+        val capture = match.groupValues[4].isNotEmpty()
+        val promo = match.groupValues[6]
+        val base = "${pieceName(piece)} ${if (capture) "takes" else "to"} ${match.groupValues[5]}"
+        return if (promo.isEmpty()) base else "$base, promoting to ${pieceName(promo)}"
+    }
+
     private fun words(san: String): String? {
         val match = move.matchEntire(san) ?: return null
         val piece = match.groupValues[1]
@@ -50,6 +63,7 @@ object SpokenMove {
         "R" -> "rook"
         "Q" -> "queen"
         "K" -> "king"
+        "P" -> "pawn"
         else -> piece
     }
 }

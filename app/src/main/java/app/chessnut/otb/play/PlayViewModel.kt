@@ -1369,11 +1369,10 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         } else {
             depthRun = depthRun ?: 0
             val before = lastJudgedFen
-            val ply = sanMoves.size - 1
             depthMissed = before?.let { position ->
                 lastTopTwo.mapNotNull { ChessLines.sanOf(position, listOf(it)).firstOrNull() }
                     .distinct()
-                    .joinToString(" or ") { "${moveNumber(ply)}$it" }
+                    .joinToString(", or ") { SpokenMove.plain(it) }
                     .ifEmpty { null }
             }
             endDepthRun()
