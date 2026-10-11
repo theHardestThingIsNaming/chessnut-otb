@@ -49,6 +49,8 @@ Android app for the Chessnut Air smart board. Play over the board with clocks, v
 - **A short list**: only the newest five games outside folders are kept. Move a game into a folder to keep it. Before an older game is deleted, its mistakes to practise and its opening score are saved.
 - Paste or share a PGN into the app. Games can be sorted into folders.
 
+Where an opening's book line stops on the opponent's move, the trainer has no answer for you, so `openings-custom.tsv` carries engine answers for those spots. To refresh them with a local Stockfish: `BOOK_FILL_OUT=/tmp/fill.tsv STOCKFISH=$(which stockfish) ./gradlew :core:test --tests '*BookFillTest*' --rerun-tasks`, review the output, and append it.
+
 The board protocol lives in `:core` (`app.chessnut.otb.protocol`) and is tested against a fake board. The command that deletes a stored game is only sent during the import on connect, and only after that game is saved on the phone.
 
 ## Build

@@ -50,6 +50,34 @@ object OpeningTree {
         return found.filter { short -> found.none { long -> long.size > short.size && long.take(short.size) == short } }
     }
 
+    /**
+     * Book lines of [family] that stop with the opponent's move, so the book
+     * gives you no answer. Filling these in turns them into lines to drill.
+     */
+    fun openEnds(family: String, userWhite: Boolean, maxPlies: Int = 16): List<List<String>> {
+        val ends = mutableListOf<List<String>>()
+        val maxReplies = OpeningCatalog.breadth(family)
+        val variations = OpeningCatalog.variationsOf(family).mapNotNull { OpeningBook.line(it)?.san }
+        fun walk(line: List<String>) {
+            val replies = if (line.size >= maxPlies) emptyList() else OpeningBook.rankedReplies(line, family)
+            val yourMove = (line.size % 2 == 0) == userWhite
+            if (replies.isEmpty()) {
+                if (yourMove && line.size < maxPlies && line.isNotEmpty()) ends += line
+                return
+            }
+            val branches = if (yourMove) {
+                (listOf(replies.first()) + variations.filter { it.size > line.size && it.take(line.size) == line }.map { it[line.size] })
+                    .filter { it in replies }
+                    .distinct()
+            } else {
+                replies.take(maxReplies)
+            }
+            for (reply in branches) walk(line + reply)
+        }
+        walk(emptyList())
+        return ends
+    }
+
     private fun trimmed(line: List<String>, userWhite: Boolean): List<String>? {
         var end = line.size
         while (end > 0 && ((end - 1) % 2 == 0) != userWhite) end--

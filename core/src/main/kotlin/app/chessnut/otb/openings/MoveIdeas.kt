@@ -222,7 +222,25 @@ object MoveIdeas {
         "e4 e5 Nf3 Nc6 d4 exd4 Bc4" to "The Scotch Gambit. White leaves the pawn and develops with an eye on f7.",
         "e4 e5 Nf3 Nc6 d4 exd4 c3" to "The Göring Gambit. White offers a pawn for fast development.",
 
+        // Danish
+        "e4 e5 d4" to "The Centre Game idea. White opens the centre at once, inviting Black to take.",
+        "e4 e5 d4 exd4" to "Black takes the pawn. Now White can recapture or gambit with c3.",
+        "e4 e5 d4 exd4 c3 dxc3" to "Black accepts. White now offers a second pawn for a huge lead in development.",
+        "e4 e5 d4 exd4 c3 dxc3 Bc4 cxb2" to "Black grabs a second pawn. White's two bishops now rake the board towards Black's king.",
+        "e4 e5 d4 exd4 c3 dxc3 Bc4 cxb2 Bxb2 Qe7" to "The Chigorin Defense. The queen covers e5 and the e-file, slowing White's attack.",
+        "e4 e5 d4 exd4 c3 dxc3 Bc4 cxb2 Bxb2 Qe7 Nc3" to "Develops and adds weight to e4 and d5, ready for Nge2 and castling.",
+        "e4 e5 d4 exd4 c3 dxc3 Bc4 cxb2 Bxb2 Nf6" to "The Classical Defense. Black develops and attacks e4, aiming to return a pawn for safety.",
+        "e4 e5 d4 exd4 c3 dxc3 Bc4 cxb2 Bxb2 Nf6 e5" to "Drives the knight away and gains space before Black can castle.",
+        "e4 e5 d4 exd4 c3 dxc3 Bc4 cxb2 Bxb2 Bb4+" to "The Copenhagen Defense. Black checks to swap pieces and blunt White's attack.",
+        "e4 e5 d4 exd4 c3 dxc3 Bc4 cxb2 Bxb2 Bb4+ Nc3" to "Blocks with a developing move and keeps both bishops aiming at Black's king.",
+        "e4 e5 d4 exd4 c3 Ne7" to "The Svenonius. Black declines to take, preparing ...d5 with the knight ready to recapture.",
+        "e4 e5 d4 exd4 c3 Ne7 Nf3" to "Develops and leaves the d4 pawn to be taken back later.",
+        "e4 e5 d4 exd4 c3 d5" to "The Sörensen. Black hits back in the centre instead of taking a pawn.",
+        "e4 e5 d4 exd4 c3 d5 exd5" to "Takes, opening the position; White recaptures on d4 next with an easy game.",
+
         // Pirc
+        "e4 d6 d4 Nf6 Nc3 g6 f4 Bg7 Nf3 O-O e5 Nfd7 h4" to "The Bronstein. White throws the h-pawn at Black's castled king.",
+        "e4 d6 d4 Nf6 Nc3 g6 f4 Bg7 Nf3 O-O e5 Nfd7 h4 c5" to "Counterattacks in the centre: the best answer to a wing attack is a strike in the middle.",
         "e4 d6" to "The Pirc. Black lets White build a big centre, planning to undermine it later with pieces and pawn breaks.",
         "e4 d6 d4" to "White takes the full centre with two pawns, accepting the invitation.",
         "e4 d6 d4 Nf6" to "Develops with a threat to e4, so White has to spend a move defending it.",
