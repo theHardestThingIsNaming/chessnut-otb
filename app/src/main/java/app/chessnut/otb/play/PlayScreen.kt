@@ -575,6 +575,9 @@ private fun OpeningPage(ui: PlayUi, detail: OpeningDetail, viewModel: PlayViewMo
             if (detail.learned > 0) {
                 PrimaryAction("Survival", Modifier.weight(1f).fillMaxHeight(), color = Palette.Survival, onClick = viewModel::startSurvival)
             }
+            if (detail.punishable > 0) {
+                PrimaryAction("Punish", Modifier.weight(1f).fillMaxHeight(), color = Palette.Mistake, onClick = viewModel::startPunish)
+            }
             PrimaryAction(
                 if (detail.due > 0) "Review ${detail.due} due" else "Train",
                 Modifier.weight(1.3f).fillMaxHeight(),
@@ -747,7 +750,7 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                         colors = clubChipColors(),
                     )
                     // Out of theory takes the line label's place, so the row never wraps and moves the board.
-                    if (ui.san.isNotEmpty() && !ui.inTheory && !ui.survival) {
+                    if (ui.san.isNotEmpty() && !ui.inTheory && !ui.survival && !ui.punish) {
                         Text(
                             "Out of theory",
                             color = Palette.Gold,
@@ -758,8 +761,8 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                         ui.lineLabel?.let { label ->
                             Text(
                                 label,
-                                color = if (ui.survival) Palette.Survival else Palette.TextMuted,
-                                fontWeight = if (ui.survival) FontWeight.Bold else FontWeight.Normal,
+                                color = if (ui.survival) Palette.Survival else if (ui.punish) Palette.Mistake else Palette.TextMuted,
+                                fontWeight = if (ui.survival || ui.punish) FontWeight.Bold else FontWeight.Normal,
                                 style = MaterialTheme.typography.bodyMedium,
                                 maxLines = 1,
                             )
@@ -777,7 +780,8 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                 highlights = highlights,
                 onSquare = viewModel::tap,
             )
-            if (!showingTrap) EvalBar(ui.evalScore, ui.evalTerminal, ui.fen)
+            // In Punish mode the eval would give the mistake away, so it waits until you've answered.
+            if (!showingTrap && !(ui.punish && !ui.lineDone)) EvalBar(ui.evalScore, ui.evalTerminal, ui.fen)
             ui.trapName?.let { TrapBanner(it, ui.trapStep, ui.trapLength, ui.trapSummary, ui.trapInfo) }
             if (!showingTrap) {
                 for (info in ui.traps) {
@@ -843,6 +847,25 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
             if (showingTrap) {
                 GameAction("Replay", light = false, onClick = viewModel::replayTrap, modifier = Modifier.weight(1f).fillMaxHeight())
                 PrimaryAction("Back to the line", Modifier.weight(1.3f).fillMaxHeight(), onClick = viewModel::backToLine)
+            } else if (ui.punish) {
+                if (ui.lineDone) {
+                    GameAction(
+                        "Explain it",
+                        light = false,
+                        onClick = { ui.punishName?.let(viewModel::showTrap) },
+                        modifier = Modifier.weight(1f).fillMaxHeight(),
+                    )
+                    PrimaryAction("Next mistake", Modifier.weight(1.3f).fillMaxHeight(), color = Palette.Mistake, onClick = viewModel::startPunish)
+                } else {
+                    GameAction("Skip", light = false, onClick = viewModel::startPunish, modifier = Modifier.weight(1f).fillMaxHeight())
+                    PrimaryAction(
+                        "Hint",
+                        Modifier.weight(1.3f).fillMaxHeight(),
+                        color = Palette.Mistake,
+                        enabled = ui.finished == null && !ui.awaitingBoard,
+                        onClick = viewModel::hint,
+                    )
+                }
             } else if (ui.survival) {
                 if (ui.survivalOver) {
                     GameAction(

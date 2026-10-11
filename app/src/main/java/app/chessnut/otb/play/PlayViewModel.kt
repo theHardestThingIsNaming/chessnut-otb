@@ -120,6 +120,8 @@ data class OpeningDetail(
     /** Lines come from an imported study rather than the book. */
     val study: Boolean,
     val medal: OpeningMedal? = null,
+    /** Common mistakes in this opening's lines that Punish mode can set. */
+    val punishable: Int = 0,
 )
 
 enum class LineStatus { New, Learned, Due, Missed }
@@ -227,6 +229,10 @@ data class PlayUi(
     val depthBest: Int? = null,
     /** Survival: one of your learned lines, then as long as you can keep finding the engine's top two moves. */
     val survival: Boolean = false,
+    /** Punish mode: the opponent has just made a common mistake and you find the refutation. */
+    val punish: Boolean = false,
+    /** The mistake being punished, to show it explained afterwards. */
+    val punishName: String? = null,
     /** The survival game has ended: you left the line or played a move outside the top two. */
     val survivalOver: Boolean = false,
     /** The trainer's evaluation of the position on the board, for the eval bar. */
@@ -325,6 +331,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private var trapStep = 0
     private var trapJob: Job? = null
     private var survival = false
+    /** The mistake Punish mode is setting, or null outside it. */
+    private var punishTrap: Trap? = null
+    private var explainBeforePunish: Boolean? = null
     private var survivalOver = false
     /** Explain's setting before survival turned it off, to restore after. */
     private var explainBeforeSurvival: Boolean? = null
@@ -596,7 +605,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                         name, white, chapter != null, views,
                         learnedCount = learned?.count { key -> lines.any { Drill.key(it) == key } }
                             ?: views.count { it.status == LineStatus.Learned },
-                    ),
+                    ).copy(punishable = traps.count { (it.before.size % 2 == 1) == white }),
                 ) else it }
         }
     }
@@ -736,6 +745,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         val pinned = pinnedLine?.takeIf { it in drillLines }
         pinnedLine = null
         drillLine = when {
+            punishTrap != null -> punishTrap!!.let { it.before + it.moves }
             drillLines.isEmpty() -> null
             pinned != null -> pinned
             !drillBook -> Drill.next(drillLines, app.repertoire.reviews(), System.currentTimeMillis())
@@ -770,6 +780,16 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         pendingPlacement = null
         lastPlacement = null
         heldPlacement = null
+        // Punish mode starts just after the opponent's mistake.
+        punishTrap?.let { set ->
+            for (san in set.before + set.moves.first()) {
+                val uci = PlayPosition.uciOfSan(fen, san) ?: break
+                fen = PlayPosition.after(fen, uci)?.second ?: break
+                sanMoves += san
+                uciMoves += uci
+                lastUci = uci
+            }
+        }
         app.playEngaged = true
         note("start ${kind.name} physical=$physical session=${app.boardSession != null}")
         val ready = !physical || app.latestPlacement?.let { PlayPosition.matches(fen, it) } == true
@@ -815,7 +835,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             return
         }
         launchPlay {
-            val uci = bookMove() ?: engineBest()
+            // A hint in Punish mode shows the refutation, and counts as help.
+            if (punishTrap != null) drillMissed = true
+            val uci = (if (punishTrap != null) drillMove() else null) ?: bookMove() ?: engineBest()
             hint = uci
             status = if (physical) "Hint lit. Play it on the board." else "Hint lit"
             note("hint $uci")
@@ -949,6 +971,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         }
         val pool = lines.filter { Drill.key(it) in known }.ifEmpty { lines }
         val line = pool[random.nextInt(pool.size)]
+        endPunish()
         if (explainBeforeSurvival == null) explainBeforeSurvival = explain
         survival = true
         // Survival is played from memory.
@@ -972,12 +995,89 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         explainBeforeSurvival = null
     }
 
+    /** Common mistakes the opponent can make in your lines of [name], most often played first. */
+    private fun punishTraps(name: String, white: Boolean): List<Trap> {
+        val lines = bookLines(name, white)
+        return OpeningTraps.all
+            .filter { trap -> (trap.before.size % 2 == 1) == white && lines.any { it.take(trap.before.size) == trap.before } }
+            .sortedByDescending { trapStats.record(it)?.percent ?: -1 }
+    }
+
+    private fun punishKey(name: String) = "Punish: $name"
+
+    /**
+     * Punish mode: sets up one of the opening's common mistakes, just after
+     * the opponent has made it, for you to find the refutation. Mistakes not
+     * yet punished come first, most common first, then the due ones.
+     */
+    fun startPunish() {
+        val ui = state.value
+        val name = ui.openingName ?: return
+        val pool = punishTraps(name, ui.userWhite)
+        if (pool.isEmpty()) return
+        val lines = pool.map { it.before + it.moves }
+        val reviews = app.lineProgress.reviews(punishKey(name), ui.userWhite)
+        val now = System.currentTimeMillis()
+        var line = Drill.next(lines, reviews, now) ?: lines.first()
+        // Nothing due: don't set the same one twice running.
+        val last = punishTrap?.let { it.before + it.moves }
+        if (line == last && lines.size > 1 && reviews[Drill.key(line)]?.let { it.dueAt > now } != false) {
+            line = lines.filter { it != last }.let { rest -> rest[random.nextInt(rest.size)] }
+        }
+        val pick = pool[lines.indexOf(line)]
+        endSurvival()
+        if (explainBeforePunish == null) explainBeforePunish = explain
+        // Punishing is from your own eyes: no arrows.
+        explain = false
+        state.update { it.copy(explain = false) }
+        punishTrap = pick
+        start()
+        lineLabelShown = "Punish"
+        val ply = pick.before.size
+        val often = trapStats.record(pick)?.takeUnless { it.thin }?.let { " ${it.percent}% of club players play it here." }.orEmpty()
+        lineNote = "Your opponent played ${moveNumber(ply)}${pick.moves.first()}, a mistake.$often How do you punish it?"
+        publish()
+        if (app.phoneSounds) speech.narrate(lineNote.orEmpty())
+    }
+
+    private fun endPunish() {
+        if (punishTrap == null && explainBeforePunish == null) return
+        punishTrap = null
+        explainBeforePunish?.let { before ->
+            explain = before
+            state.update { it.copy(explain = before) }
+        }
+        explainBeforePunish = null
+    }
+
+    /** Punish mode's verdict once the refutation is played, or a good move of your own ends it early. */
+    private fun gradePunish(set: Trap) {
+        val line = drillLine ?: return
+        if (drillGraded) return
+        val onLine = line.take(sanMoves.size) == sanMoves.take(line.size)
+        if (onLine && sanMoves.size < line.size) return
+        drillGraded = true
+        lineClean = !drillMissed
+        val name = openingName ?: return
+        app.lineProgress.grade(punishKey(name), userWhite, line, lineClean, System.currentTimeMillis())
+        val answer = "${moveNumber(set.before.size + 1)}${set.moves[1]}"
+        val words = when {
+            lineClean && onLine -> "Punished! ${set.summary}"
+            lineClean -> "That works too! ${set.summary} The usual punishment is $answer."
+            else -> "Got there with help. ${set.summary} This one comes back tomorrow."
+        }
+        lineNote = words
+        publish()
+        if (app.phoneSounds) speech.narrate(words)
+        refreshLines()
+    }
+
     /**
      * Plays the named trap out on the screen from the current position, a move
      * at a time, without touching the game. [backToLine] returns to it.
      */
     fun showTrap(name: String) {
-        val found = availableTraps().firstOrNull { it.name == name } ?: return
+        val found = availableTraps().firstOrNull { it.name == name } ?: punishTrap?.takeIf { it.name == name } ?: return
         trap = found
         trapStep = 0
         playTrap()
@@ -1103,6 +1203,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         backToLine()
         endDepthRun()
         endSurvival()
+        endPunish()
         endReview()
         startFen = null
         restoreTiming()
@@ -1161,6 +1262,10 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             return
         }
         if (!userToMove()) return
+        punishTrap?.let { set ->
+            launchPlay { punishMove(set, uci) }
+            return
+        }
         launchPlay {
             // The run starts once the drilled line is played cleanly, or wherever the book runs out.
             val lineFinished = drillGraded && lineClean
@@ -1195,6 +1300,34 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             }
             if (!userToMove()) reply()
         }
+    }
+
+    /**
+     * Your move in Punish mode: the refutation's move carries on, another move
+     * that keeps nearly all of the advantage ends it early as a win, and
+     * anything else is turned back with the answer lit.
+     */
+    private suspend fun punishMove(set: Trap, uci: String) {
+        if (drillGraded) return
+        val expected = drillMove()
+        if (uci != expected) {
+            // A book move skips the engine; only a scored move may stand in for the refutation.
+            lastWinDrop = Double.MAX_VALUE
+            val verdict = judge(uci)
+            if (lastWinDrop > PUNISH_SLACK) {
+                drillMissed = true
+                reject(uci, verdict)
+                hint = expected
+                status = "Not that one. Try the lit move."
+                publish()
+                return
+            }
+        }
+        retry = false
+        rejectUci = null
+        if (!apply(uci)) return
+        light(null)
+        if (!drillGraded && !userToMove()) reply()
     }
 
     /** One more move past the book: extends the run, or ends it if the engine had two better. */
@@ -1488,7 +1621,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
      * or null. The position alone can't tell you which line you're in, so it's shown.
      */
     private fun branch(): Pair<String, List<String>>? {
-        if (kind != PlayKind.Trainer || explain || !userToMove() || trap != null) return null
+        if (kind != PlayKind.Trainer || explain || !userToMove() || trap != null || punishTrap != null) return null
         val line = drillLine ?: return null
         val ply = sanMoves.size
         if (ply >= line.size || line.take(ply) != sanMoves) return null
@@ -1506,6 +1639,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
 
     /** Grades the drilled line once it is finished or left: clean only if every move was yours from the line. */
     private fun gradeDrill() {
+        punishTrap?.let { gradePunish(it); return }
         val line = drillLine ?: return
         if (drillGraded) return
         val onLine = line.take(sanMoves.size) == sanMoves.take(line.size)
@@ -1761,7 +1895,14 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             val mate = ChessLines.terminalOf(fen) == Terminal.Checkmate
             speech.say(step.first, mate = mate)
         }
-        if (kind == PlayKind.Trainer && state.value.ideas) {
+        val punishing = punishTrap
+        if (punishing != null) {
+            // The refutation's own notes, once you have found each move.
+            val index = sanMoves.lastIndex - punishing.before.size
+            idea = punishing.notes.getOrNull(index)?.takeIf { sanMoves.take(punishing.before.size + index + 1) == punishing.before + punishing.moves.take(index + 1) }
+            ideaMove = idea?.let { "${moveNumber(sanMoves.lastIndex)}${step.first}" }
+            publish()
+        } else if (kind == PlayKind.Trainer && state.value.ideas) {
             val explained = MoveIdeas.explain(sanMoves, before, uci)
             ideaMove = "${moveNumber(sanMoves.lastIndex)}${step.first}"
             idea = explained
@@ -2044,6 +2185,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         /** How long each trap move stays on screen before the next. */
         const val TRAP_STEP_MS = 2600L
 
+        /** How much winning chance (in %) another punishing move may give up against the book refutation. */
+        const val PUNISH_SLACK = 6.0
+
         /** More wrong squares than this means the board is still being set up, so no hint. */
         const val MAX_SETUP_HINTS = 6
     }
@@ -2148,6 +2292,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 lineDone = kind == PlayKind.Trainer && drillGraded,
                 lineClean = lineClean,
                 survival = survival,
+                punish = punishTrap != null,
+                punishName = punishTrap?.name,
                 survivalOver = survivalOver,
                 // The bar shows the live game; when stepping back through it there is no evaluation to show.
                 evalScore = if (kind == PlayKind.Trainer && at == null) evalScore else null,

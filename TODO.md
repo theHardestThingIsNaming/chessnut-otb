@@ -22,35 +22,17 @@ Goal: replace hand-picked traps that club players rarely fall for with mistakes 
       for smaller punishable errors (losing a pawn, a bad structure). Both show the
       Common/Occasional/Rare label.
 
-## 2. Punish mode (new mode)
+## 2. Punish mode, done (2026-10-11)
 
-Idea: play a normal line; at some point the computer plays a common mistake instead of the
-book move, and you have to find the best way to punish it.
+Built as planned: a Punish button on the opening page, the game set just after the mistake,
+the refutation or an engine-approved alternative (within 6% winning chance) accepted, wrong
+moves turned back with the answer lit, a hint counts as help, spaced repetition per mistake
+under "Punish: <opening>", eval hidden until answered, Explain it and Next mistake at the end.
 
-- Source: the traps and common mistakes from part 1. Each one starts from a position in your
-  lines (`Trap.before`) and has the mistake (`moves[0]`) and the refutation (`moves[1..]`).
-- Flow:
-  1. Choose an opening and Punish (a third button beside Train and Survival, with its own
-     colour, e.g. Mistake orange).
-  2. The app plays the line up to the trap position. You play your book moves as usual.
-  3. The opponent plays the mistake. A prompt says "Your opponent erred. Punish it!".
-     No arrows and no notes.
-  4. You play your move. It's correct if it's the refutation's first move, or if Stockfish
-     scores it within ~50cp of the best move (several moves can punish).
-  5. For longer refutations, keep going: the opponent plays the engine's best defence and
-     you find each follow-up, up to the end of the refutation.
-  6. Then reveal: the notes from the trap, the eval swing, and Common/Occasional/Rare.
-- Scoring: spaced repetition per mistake, like lines (`LineProgress`, keyed by trap name).
-  Missed ones come back tomorrow. A "punished" count on the opening's page.
-- Order: start with mistakes you haven't punished, then due reviews; weight by how often
-  club players make them (Common first).
-- UI: reuse `PlayKind.Trainer` with a `punish` flag, like Survival's flag. The TrapBanner shows
-  only after the answer. A hint button reveals the piece to move.
-- Tests: core test that every mistake's refutation is legal and that the first refutation
-  move is Stockfish's best (TrapCheckTest already checks this).
+Still to do:
+- [ ] A "punished" count or medal on the opening's page.
+- [ ] Tidy the branch note wrapping mid-move ("4." / "Nxd4").
 
 ## Order of work
 
-1. Finish part 1: the scan, scoring, new mistakes, and pruning rare traps.
-2. Build Punish mode on the Scotch and Pirc.
-3. Extend the scan and mistakes to the other openings in the catalog.
+1. Extend the scan and mistakes to the other openings in the catalog.
