@@ -193,6 +193,10 @@ data class PlayUi(
     val lineClean: Boolean = false,
     /** How the drilled line went, kept on screen while play goes on. */
     val lineNote: String? = null,
+    /** Where your lines split: this line's move, drawn in gold so you don't have to guess. */
+    val branchUci: String? = null,
+    /** "Your lines split here. This one plays 6. Bc4 (others: 6. Be3)." */
+    val branchNote: String? = null,
     /** Every line of the chosen opening, for picking one to drill. */
     val lines: List<LineView> = emptyList(),
     /** The chosen opening's page is open. */
@@ -1479,6 +1483,20 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         if (app.phoneSounds) speech.narrate(story)
     }
 
+    /**
+     * Your move where your lines split: this line's move and the other lines' moves,
+     * or null. The position alone can't tell you which line you're in, so it's shown.
+     */
+    private fun branch(): Pair<String, List<String>>? {
+        if (kind != PlayKind.Trainer || explain || !userToMove() || trap != null) return null
+        val line = drillLine ?: return null
+        val ply = sanMoves.size
+        if (ply >= line.size || line.take(ply) != sanMoves) return null
+        val moves = drillLines.filter { it.size > ply && it.take(ply) == sanMoves }.map { it[ply] }.distinct()
+        if (moves.size < 2) return null
+        return line[ply] to moves.filter { it != line[ply] }
+    }
+
     /** The next move of the line being drilled, while the game still follows it. */
     private fun drillMove(): String? {
         val line = drillLine ?: return null
@@ -2093,6 +2111,13 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 san = sanMoves.toList(),
                 status = if (at == null) status else glanceStatus(at),
                 hintUci = if (at == null) hint else null,
+                branchUci = if (at == null && hint == null) branch()?.let { PlayPosition.uciOfSan(fen, it.first) } else null,
+                branchNote = if (at == null) branch()?.let { (move, others) ->
+                    val number = moveNumber(sanMoves.size)
+                    "Your lines split here. This one plays $number$move (others: ${others.joinToString(", ") { number + it }})."
+                } else {
+                    null
+                },
                 // The book arrows already show the lit move when explaining.
                 promptUci = if (at == null && explained.isEmpty()) prompt else null,
                 rejectUci = if (at == null) rejectUci else null,

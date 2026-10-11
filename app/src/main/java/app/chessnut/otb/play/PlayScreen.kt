@@ -695,6 +695,7 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
     } else {
         bookArrows + listOfNotNull(
             Arrow.ofUci(ui.hintUci, Palette.ArrowBest),
+            Arrow.ofUci(ui.branchUci, Palette.Gold),
             Arrow.ofUci(ui.promptUci, Palette.ArrowBetter),
             Arrow.ofUci(ui.rejectUci, Palette.Blunder),
         )
@@ -795,6 +796,20 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
             if (ui.bookSans.isNotEmpty()) BookKey(ui.bookSans, ui.explainedByEngine)
             if (!showingTrap) ui.depthRun?.let { DepthStrip(it, ui.depthBest, ui.depthOver) }
             if (ui.idea != null || ui.story != null) CoachCard(ui)
+            ui.branchNote?.let { note ->
+                Text(
+                    "⑂  $note",
+                    color = Palette.Gold,
+                    fontWeight = FontWeight.SemiBold,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Palette.SurfaceHigh)
+                        .border(1.dp, Palette.Gold, RoundedCornerShape(12.dp))
+                        .padding(12.dp),
+                )
+            }
             ui.lineNote?.let { note ->
                 Text(
                     note,
