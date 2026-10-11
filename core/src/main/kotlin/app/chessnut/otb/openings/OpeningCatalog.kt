@@ -21,12 +21,19 @@ object OpeningCatalog {
         return listOfNotNull(
             repertoire.takeIf { it.isNotEmpty() }?.let { CatalogSection(REPERTOIRE_SECTION, it) },
             CatalogSection("Openings", present(OPENINGS)),
-            CatalogSection("Gambits", present(GAMBITS)),
+            // Variations of a listed opening, such as the Göring Gambit, live inside it rather than on their own.
+            CatalogSection("Gambits", present(GAMBITS).filter { family(it) == null }),
             CatalogSection("Meme openings", present(MEMES)),
         )
     }
 
     const val REPERTOIRE_SECTION = "My repertoire"
+
+    /** The listed opening [name] belongs to, such as "Scotch Game" for "Scotch Game: Göring Gambit". */
+    fun family(name: String): String? = name.substringBefore(':', "").trim().takeIf { it.isNotEmpty() && it in OPENINGS }
+
+    /** The listed variations grouped under [family], whose lines its page and Survival include. */
+    fun variationsOf(family: String): List<String> = present(GAMBITS).filter { family(it) == family }
 
     /** Chapter names of the imported repertoire, shown first. Set by the app. */
     @Volatile var repertoire: List<String> = emptyList()

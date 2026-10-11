@@ -39,11 +39,18 @@ class OpeningStatsCache(private val file: File, private val http: LichessHttp) {
      * Fetches openings that are missing or stale, one at a time, and calls
      * [onProgress] every few so the list can re-sort. Stops on a rate limit.
      */
-    suspend fun fill(names: List<String>, onProgress: () -> Unit) {
+    suspend fun fill(names: List<String>, onProgress: () -> Unit) =
+        fillPlays(names.mapNotNull { name -> OpeningStats.play(name)?.let { name to it } }, onProgress)
+
+    /** Whether [key] needs fetching. */
+    @Synchronized
+    fun missing(key: String): Boolean = stale(key, System.currentTimeMillis())
+
+    /** Like [fill], for explorer positions given directly as (cache key, UCI moves), such as one line of an opening. */
+    suspend fun fillPlays(entries: List<Pair<String, String>>, onProgress: () -> Unit) {
         val now = System.currentTimeMillis()
         var fetched = 0
-        for (name in names.filter { stale(it, now) }) {
-            val play = OpeningStats.play(name) ?: continue
+        for ((name, play) in entries.filter { stale(it.first, now) }) {
             val record = try {
                 OpeningStats.parse(http.explorer(play, OpeningStats.QUERY))
             } catch (e: LichessHttpException) {

@@ -521,6 +521,9 @@ private fun LineRow(index: Int, line: LineView, onClick: () -> Unit) {
             }
         }
         Text(line.moves, color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
+        line.winRate?.let { rate ->
+            Text("You win $rate% from here on Lichess", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(top = 2.dp))
+        }
         line.best?.let { best ->
             Text(
                 "Survival best: $best ${if (best == 1) "move" else "moves"}",

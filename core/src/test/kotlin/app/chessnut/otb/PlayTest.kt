@@ -44,10 +44,12 @@ class PlayTest {
         val sections = OpeningCatalog.browse("")
         assertEquals(listOf("Openings", "Gambits", "Meme openings"), sections.map { it.title })
         val gambits = sections.first { it.title == "Gambits" }.names
-        assertTrue(gambits.size >= 30, "gambits ${gambits.size}")
-        assertTrue("Italian Game: Evans Gambit" in gambits)
+        assertTrue(gambits.size >= 20, "gambits ${gambits.size}")
+        // A gambit of a listed opening lives inside that opening instead.
+        assertFalse("Italian Game: Evans Gambit" in gambits)
+        assertTrue("Italian Game: Evans Gambit" in OpeningCatalog.variationsOf("Italian Game"))
         assertTrue("King's Gambit" in gambits)
-        assertTrue("Sicilian Defense: Smith-Morra Gambit" in gambits)
+        assertTrue("Sicilian Defense: Smith-Morra Gambit" in OpeningCatalog.variationsOf("Sicilian Defense"))
         assertTrue(gambits.all { OpeningBook.line(it) != null })
         assertEquals(OpeningSide.White, OpeningBook.side("Italian Game"))
         assertEquals(OpeningSide.Black, OpeningBook.side("Sicilian Defense"))

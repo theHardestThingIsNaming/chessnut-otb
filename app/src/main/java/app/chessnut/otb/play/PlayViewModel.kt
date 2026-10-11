@@ -54,6 +54,7 @@ import app.chessnut.otb.repertoire.OpeningTree
 import app.chessnut.otb.review.POSITION_PREFIX
 import app.chessnut.otb.repertoire.DepthRun
 import app.chessnut.otb.play.BOARD_SETTLE_MS
+import app.chessnut.otb.openings.OpeningSide
 
 enum class PlayKind { Bot, Trainer }
 
@@ -107,6 +108,8 @@ data class LineView(
     val next: String? = null,
     /** Your best run of good moves after this line, from Survival or training. */
     val best: Int? = null,
+    /** How often your colour wins from the line's end position on Lichess, once fetched. */
+    val winRate: Int? = null,
 )
 
 data class PlayUi(
@@ -319,6 +322,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     /** The moves before, and the book move you chose there, when it differs from the line. */
     private var choiceOffer: Pair<List<String>, String>? = null
     private var linesJob: Job? = null
+    private var lineStatsJob: Job? = null
     /** Explain past the book: the engine's top moves as (SAN, UCI), for [ideasFen]. */
     private var ideas: List<Pair<String, String>> = emptyList()
     private var ideasFen: String? = null
@@ -512,6 +516,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             val now = System.currentTimeMillis()
             // The moves every line shares are the opening itself; show what comes after.
             val shared = lines.firstOrNull()?.indices?.takeWhile { i -> lines.all { it.getOrNull(i) == lines[0][i] } }?.size ?: 0
+            fetchLineStats(lines)
             val views = lines.map { line ->
                 val key = Drill.key(line)
                 val review = reviews[key]
@@ -534,7 +539,14 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                         else -> "Review in $days days"
                     }
                 }
-                LineView(variation ?: "Main line", numberedFrom(line, shared), status, next, app.depthRecords.ofLine(name, white, line)?.best)
+                LineView(
+                    variation ?: "Main line",
+                    numberedFrom(line, shared),
+                    status,
+                    next,
+                    app.depthRecords.ofLine(name, white, line)?.best,
+                    lineStatKey(line)?.let { openingStats.record(it) }?.winPercent(if (white) OpeningSide.White else OpeningSide.Black),
+                )
             }
             state.update { if (it.openingName == name && it.userWhite == white) it.copy(
                     lines = views,
@@ -570,6 +582,30 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             choices = choices,
             study = study,
         )
+    }
+
+    /** The explorer cache key and UCI moves for [line]'s end position. */
+    private fun linePlay(line: List<String>): String? {
+        var position = Board().fen
+        val ucis = mutableListOf<String>()
+        for (san in line) {
+            val uci = PlayPosition.uciOfSan(position, san) ?: return null
+            ucis += uci
+            position = PlayPosition.after(position, uci)?.second ?: return null
+        }
+        return ucis.joinToString(",")
+    }
+
+    private fun lineStatKey(line: List<String>): String? = linePlay(line)?.let { "line:$it" }
+
+    /** Fetches Lichess results for the lines on the open page that lack them, then shows them. Needs a Lichess login. */
+    private fun fetchLineStats(lines: List<List<String>>) {
+        if (vault.token() == null || lineStatsJob?.isActive == true) return
+        val entries = lines.mapNotNull { line -> linePlay(line)?.let { "line:$it" to it } }.filter { openingStats.missing(it.first) }
+        if (entries.isEmpty()) return
+        lineStatsJob = viewModelScope.launch(Dispatchers.IO) {
+            openingStats.fillPlays(entries) { refreshLines() }
+        }
     }
 
     /** "6… exd4 7. O-O dxc3", the moves of [line] from ply [from]. */

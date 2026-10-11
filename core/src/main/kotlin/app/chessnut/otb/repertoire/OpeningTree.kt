@@ -1,6 +1,7 @@
 package app.chessnut.otb.repertoire
 
 import app.chessnut.otb.openings.OpeningBook
+import app.chessnut.otb.openings.OpeningCatalog
 
 /**
  * Turns a book opening into a repertoire to drill, the way a coach would
@@ -9,6 +10,10 @@ import app.chessnut.otb.openings.OpeningBook
  * most common book replies. Every path to the end of the book (or
  * [maxPlies]) is one line. Lines end on your move, since a line that ends
  * with the opponent's move has nothing left for you to answer.
+ *
+ * Named variations grouped under the opening, such as the Scotch's Göring
+ * Gambit, add their own move for your side where they branch off, so the
+ * whole family is covered.
  */
 object OpeningTree {
     fun lines(
@@ -18,6 +23,7 @@ object OpeningTree {
         maxPlies: Int = 16,
         maxReplies: Int = 3,
         maxLines: Int = 40,
+        variations: List<List<String>> = OpeningCatalog.variationsOf(family).mapNotNull { OpeningBook.line(it)?.san },
     ): List<List<String>> {
         val found = linkedSetOf<List<String>>()
         fun walk(line: List<String>) {
@@ -29,7 +35,15 @@ object OpeningTree {
             }
             val yourMove = (line.size % 2 == 0) == userWhite
             val mine = choices[line]?.takeIf { it in replies } ?: replies.first()
-            for (reply in if (yourMove) listOf(mine) else replies.take(maxReplies)) walk(line + reply)
+            val branches = if (yourMove) {
+                // Your move, plus the move of any grouped variation that branches off here.
+                (listOf(mine) + variations.filter { it.size > line.size && it.take(line.size) == line }.map { it[line.size] })
+                    .filter { it in replies }
+                    .distinct()
+            } else {
+                replies.take(maxReplies)
+            }
+            for (reply in branches) walk(line + reply)
         }
         walk(emptyList())
         // A shorter line that is the start of a longer one adds nothing to drill.
