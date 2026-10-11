@@ -108,11 +108,17 @@ fun NavKey(label: String, modifier: Modifier = Modifier, enabled: Boolean = true
 
 /** The screen's main action, in the accent green. */
 @Composable
-fun PrimaryAction(label: String, modifier: Modifier = Modifier, enabled: Boolean = true, onClick: () -> Unit) {
+fun PrimaryAction(
+    label: String,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    color: Color = Palette.Accent,
+    onClick: () -> Unit,
+) {
     Box(
         modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(if (enabled) Palette.Accent else Palette.SurfaceHigh)
+            .background(if (enabled) color else Palette.SurfaceHigh)
             .clickable(enabled = enabled, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {

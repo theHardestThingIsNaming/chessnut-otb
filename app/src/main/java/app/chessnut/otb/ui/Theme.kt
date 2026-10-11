@@ -21,6 +21,8 @@ object Palette {
     val Accent = Color(0xFF81B64C)
     val AccentDim = Color(0x5581B64C)
     val OnAccent = Color(0xFFFFFFFF)
+    /** Survival mode: its button, scores and counter share this red, so they read as one thing. */
+    val Survival = Color(0xFFE5484D)
     /** Highlights only: scores, due counts, move ratings. */
     val Gold = Color(0xFFE2B656)
     val GoldDim = Color(0x66E2B656)

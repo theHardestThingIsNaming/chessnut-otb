@@ -316,26 +316,27 @@ private fun DepthStrip(run: Int, best: Int?, over: Boolean) {
         Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(Palette.Surface)
+            .background(Palette.Survival.copy(alpha = 0.12f))
+            .border(1.dp, Palette.Survival.copy(alpha = if (over) 0.3f else 0.6f), RoundedCornerShape(12.dp))
             .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
             run.toString(),
-            color = if (over) Palette.TextMuted else Palette.Gold,
+            color = if (over) Palette.TextMuted else Palette.Survival,
             fontWeight = FontWeight.Bold,
             fontSize = 26.sp,
         )
         Column(Modifier.weight(1f)) {
             Text(
-                if (over) "Run over past the line" else "Past the line",
-                color = Palette.Text,
+                if (over) "Survival over" else "Survival",
+                color = Palette.Survival,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(
-                if (over) "Last move wasn't in the engine's top two." else "Good moves in a row: the engine's best or second best.",
+                if (over) "Last move wasn't in the engine's top two." else "Good moves past the line: book or the engine's top two.",
                 color = Palette.TextMuted,
                 style = MaterialTheme.typography.bodySmall,
             )
@@ -343,8 +344,41 @@ private fun DepthStrip(run: Int, best: Int?, over: Boolean) {
         best?.let {
             Column(horizontalAlignment = Alignment.End) {
                 Text("Best", color = Palette.TextMuted, style = MaterialTheme.typography.labelSmall)
-                Text(it.toString(), color = Palette.Text, fontWeight = FontWeight.Bold)
+                Text(it.toString(), color = Palette.Survival, fontWeight = FontWeight.Bold)
             }
+        }
+    }
+}
+
+/** Survival's own card, in its red: what it is and your best and last run. */
+@Composable
+private fun SurvivalCard(detail: OpeningDetail) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(Palette.Survival.copy(alpha = 0.12f))
+            .border(1.dp, Palette.Survival.copy(alpha = 0.6f), RoundedCornerShape(12.dp))
+            .padding(horizontal = 14.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(detail.depthBest?.toString() ?: "–", color = Palette.Survival, fontWeight = FontWeight.Bold, fontSize = 30.sp)
+            Text("best", color = Palette.Survival, style = MaterialTheme.typography.labelSmall)
+        }
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text("Survival", color = Palette.Survival, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+            Text(
+                if (detail.learned > 0) {
+                    "One of your learned lines, then the engine's best moves. How many good moves can you find past the line?"
+                } else {
+                    "Learn a line in Train to unlock Survival: play it, then keep finding the engine's best moves."
+                },
+                color = Palette.TextMuted,
+                style = MaterialTheme.typography.bodySmall,
+            )
+            detail.depthLast?.let { Text("Last run: $it", color = Palette.Text, style = MaterialTheme.typography.labelMedium) }
         }
     }
 }
@@ -378,15 +412,14 @@ private fun OpeningPage(ui: PlayUi, detail: OpeningDetail, viewModel: PlayViewMo
                         StatTile(detail.due.toString(), "Due for review", Modifier.weight(1f), highlight = detail.due > 0)
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        StatTile(
-                            detail.depthBest?.toString() ?: "–",
-                            detail.depthLast?.let { "Best run past the line · last $it" } ?: "Best run past the line",
-                            Modifier.weight(1f),
-                        )
                         StatTile(detail.accuracy?.toString() ?: "–", "Your best accuracy", Modifier.weight(1f))
                         detail.winRate?.let { StatTile("$it%", "Wins on Lichess", Modifier.weight(1f)) }
                     }
                 }
+            }
+            item(key = "survival") { SurvivalCard(detail) }
+            item(key = "train-head") {
+                Text("Train", color = Palette.Accent, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 4.dp))
             }
             item(key = "coach") {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -401,7 +434,7 @@ private fun OpeningPage(ui: PlayUi, detail: OpeningDetail, viewModel: PlayViewMo
                         "Learning: arrows show the book moves. Nothing is scored."
                     } else {
                         "Testing: play from memory. Each line is scheduled for review: 1 day after a clean run, then 3, 7, 14 and 30 days; " +
-                            "tomorrow after a miss. Past the line, moves from the engine's top two build your run."
+                            "tomorrow after a miss. After the line, play carries on with book moves."
                     },
                     color = Palette.TextMuted,
                     style = MaterialTheme.typography.bodySmall,
@@ -442,7 +475,7 @@ private fun OpeningPage(ui: PlayUi, detail: OpeningDetail, viewModel: PlayViewMo
         Row(Modifier.fillMaxWidth().height(52.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             // Survival needs a line you know; until then training comes first.
             if (detail.learned > 0) {
-                GameAction("Survival", light = false, onClick = viewModel::startSurvival, modifier = Modifier.weight(1f).fillMaxHeight())
+                PrimaryAction("Survival", Modifier.weight(1f).fillMaxHeight(), color = Palette.Survival, onClick = viewModel::startSurvival)
             }
             PrimaryAction(
                 if (detail.due > 0) "Review ${detail.due} due" else "Train",
@@ -490,8 +523,8 @@ private fun LineRow(index: Int, line: LineView, onClick: () -> Unit) {
         Text(line.moves, color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
         line.best?.let { best ->
             Text(
-                "Best run past this line: $best ${if (best == 1) "move" else "moves"}",
-                color = Palette.Gold,
+                "Survival best: $best ${if (best == 1) "move" else "moves"}",
+                color = Palette.Survival,
                 style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier.padding(top = 2.dp),
             )
@@ -604,7 +637,7 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                         colors = clubChipColors(),
                     )
                     // Out of theory takes the line label's place, so the row never wraps and moves the board.
-                    if (ui.san.isNotEmpty() && !ui.inTheory) {
+                    if (ui.san.isNotEmpty() && !ui.inTheory && !ui.survival) {
                         Text(
                             "Out of theory",
                             color = Palette.Gold,
@@ -613,7 +646,13 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                         )
                     } else {
                         ui.lineLabel?.let { label ->
-                            Text(label, color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium, maxLines = 1)
+                            Text(
+                                label,
+                                color = if (ui.survival) Palette.Survival else Palette.TextMuted,
+                                fontWeight = if (ui.survival) FontWeight.Bold else FontWeight.Normal,
+                                style = MaterialTheme.typography.bodyMedium,
+                                maxLines = 1,
+                            )
                         }
                     }
                 }
@@ -670,9 +709,9 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                         onClick = { viewModel.analyse()?.let(onAnalyse) },
                         modifier = Modifier.weight(1f).fillMaxHeight(),
                     )
-                    PrimaryAction("Play again", Modifier.weight(1.3f).fillMaxHeight(), onClick = viewModel::startSurvival)
+                    PrimaryAction("Play again", Modifier.weight(1.3f).fillMaxHeight(), color = Palette.Survival, onClick = viewModel::startSurvival)
                 } else {
-                    GameAction("New line", light = false, onClick = viewModel::startSurvival, modifier = Modifier.weight(1.3f).fillMaxHeight())
+                    PrimaryAction("New line", Modifier.weight(1.3f).fillMaxHeight(), color = Palette.Survival, onClick = viewModel::startSurvival)
                 }
             } else if (ui.lineDone) {
                 val next = if (ui.reviewLast) "Finish review" else "Next line"

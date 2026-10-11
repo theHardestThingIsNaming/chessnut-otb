@@ -990,7 +990,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         launchPlay {
             // The run starts once the drilled line is played cleanly, or wherever the book runs out.
             val lineFinished = drillGraded && lineClean
-            val pastBook = kind == PlayKind.Trainer && !explain && openingName != null && (lineFinished || !legalBookMove())
+            // Only Survival scores moves past the line; training just carries on with the book.
+            val pastBook = survival && openingName != null && (lineFinished || !legalBookMove())
             val verdict = if (kind == PlayKind.Trainer) judge(uci) else null
             if (drillLine != null && verdict != null && verdict != TrainerResult.Book) drillMissed = true
             if (verdict != null && explain && !verdict.accepted) {
@@ -1939,7 +1940,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 reviewing = reviewing,
                 depthRun = if (kind == PlayKind.Trainer) depthRun else null,
                 depthOver = depthOver,
-                depthBest = depthBest,
+                depthBest = if (survival) lineBest else depthBest,
                 reviewLast = reviewing && reviewQueue.isEmpty(),
                 choiceOffer = choiceOffer?.let { (before, move) -> "${moveNumber(before.size)}$move" },
                 retryMove = retryAt?.let { at -> drillLine?.getOrNull(at)?.let { "${moveNumber(at)}$it" } },
