@@ -669,5 +669,141 @@ object OpeningTraps {
             ),
             "Black wins a rook.",
         ),
+
+        // Classic named traps that come up from your lines, checked with Stockfish.
+        Trap(
+            "The Siberian trap",
+            san("e4 c5 d4 cxd4 c3 dxc3 Nxc3 Nc6 Nf3 e6 Bc4 Qc7 O-O Nf6 Qe2 Ng4"),
+            san("h3 Nd4 hxg4 Nxe2+"),
+            listOf(
+                "White kicks the knight, not seeing the threat to h2.",
+                "The knight hits the queen. If Nxd4, Qh2 is mate.",
+                "White takes the knight instead.",
+                "And Black takes the queen with check.",
+            ),
+            "Black wins the queen.",
+        ),
+        Trap(
+            "The poisoned b2 pawn",
+            san("d4 Nf6 Nf3 d5 Bf4 c5 e3 Qb6 Nc3"),
+            san("Qxb2 Nb5 c4 Rb1 Qxa2 Nc7+ Kd8 Nxa8"),
+            listOf(
+                "Black grabs the b2 pawn, a famous London mistake.",
+                "The knight heads for c7, forking king and rook.",
+                "Black makes room for the queen.",
+                "The rook chases the queen.",
+                "The queen grabs another pawn.",
+                "Check, and the rook on a8 is forked.",
+                "The king moves.",
+                "The knight takes the rook.",
+            ),
+            "White wins a rook for two pawns.",
+        ),
+
+        // More from the Lichess puzzle database.
+        Trap(
+            "Mate on f7 in the English",
+            san("c4 e5 Nc3 Nf6 Nf3 e4 Ng5 d5 cxd5 Nxd5 Qb3"),
+            san("Nxc3 Qxf7#"),
+            listOf(
+                "Black takes the knight, missing that the queen and the g5 knight both hit f7.",
+                "Mate on f7.",
+            ),
+            "Checkmate.",
+        ),
+        Trap(
+            "The e7 grab",
+            san("d4 Nf6 c4 g6 Nc3 Bg7 e4 d6 Bg5 Nfd7 Nd5 c6"),
+            san("Bxe7 Qa5+ Nc3 Kxe7"),
+            listOf(
+                "White grabs the e7 pawn, leaving the bishop loose.",
+                "Check, and the queen eyes the d5 knight.",
+                "The knight drops back to block.",
+                "The king takes the bishop.",
+            ),
+            "Black wins a piece for a pawn.",
+        ),
+        Trap(
+            "The raid on h5",
+            san("d4 Nf6 Nf3 d5 Bf4 e6 h3 Bd6 Ne5 Ne4 e3"),
+            san("f6 Qh5+ g6 Nxg6 hxg6 Qxh8+"),
+            listOf(
+                "Black kicks the knight, opening the e8–h5 diagonal.",
+                "Check.",
+                "Black blocks.",
+                "The knight sacrifices itself on g6.",
+                "Black takes.",
+                "The queen takes the rook with check, and the d6 bishop is loose too.",
+            ),
+            "White wins the exchange and more.",
+        ),
+        Trap(
+            "Mate on f2",
+            san("d4 Nf6 c4 e6 Nc3 Bb4 Bd2 Bxc3 Bxc3 Ne4 Bd2 Qf6"),
+            san("e3 Qxf2#"),
+            listOf(
+                "White opens the bishop's path but leaves f2 guarded only by the king.",
+                "The queen takes f2, backed by the e4 knight: mate.",
+            ),
+            "Checkmate.",
+        ),
+        Trap(
+            "The bishop mate on f2",
+            san("d4 Nf6 c4 e6 Nc3 Bb4 Bd2 c5 dxc5 Bxc5 f3 Qb6"),
+            san("Na4 Bf2#"),
+            listOf(
+                "White hits the queen, forgetting f2 after f3 took away the king's square.",
+                "The bishop mates on f2.",
+            ),
+            "Checkmate.",
+        ),
+        Trap(
+            "The fork on a5",
+            san("d4 d5 c4 c6 Nf3 Nf6 Bg5 Ne4 e3 Nxg5 Nxg5 dxc4"),
+            san("Bxc4 Qa5+ Nc3 Qxg5"),
+            listOf(
+                "White takes back the pawn, leaving the g5 knight unguarded.",
+                "Check, and the queen eyes g5.",
+                "White blocks.",
+                "The queen takes the knight.",
+            ),
+            "Black wins a knight.",
+        ),
+        Trap(
+            "Mate on c1",
+            san("d4 d5 c4 c6 e3 Bg4 Qb3 Qc7 cxd5 cxd5"),
+            san("Qxd5 Qxc1#"),
+            listOf(
+                "The queen grabs d5, leaving the back rank and the c1 bishop.",
+                "The queen takes c1: mate.",
+            ),
+            "Checkmate.",
+        ),
+        Trap(
+            "The king walk",
+            san("e4 e5 Nc3 Nc6 f4 exf4 Nf3 h6 Bc4 a6 d4"),
+            san("Na5 Bxf7+ Kxf7 Ne5+ Ke6 Qg4+"),
+            listOf(
+                "The knight hits the bishop, but f7 is weak.",
+                "The bishop sacrifices itself on f7.",
+                "The king takes.",
+                "Check from e5.",
+                "The king has to come forward.",
+                "And the queen joins in with check, the king stuck in the middle.",
+            ),
+            "White's attack wins.",
+        ),
+        Trap(
+            "The e5 grab",
+            san("e4 e5 Nc3 Nf6 f4 Nc6 Nf3 Bd6 d4 exd4 e5"),
+            san("Bxe5 fxe5 dxc3 exf6"),
+            listOf(
+                "Black's bishop takes the e5 pawn, but the f4 pawn guards it.",
+                "The pawn takes the bishop and hits the knight.",
+                "Black grabs the c3 knight.",
+                "White takes the knight on f6.",
+            ),
+            "White wins a piece.",
+        ),
     )
 }

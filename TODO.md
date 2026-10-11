@@ -44,7 +44,12 @@ For the Scotch and Pirc it found 19; 6 were added after a Stockfish check.
       check, 2–3 per opening.
 - [x] Loosen the match: only your own moves need to follow your lines (`OpeningTraps.fits`).
 - [ ] Rerun the loosened match for the Scotch and Pirc, which only had the strict one.
-- [ ] More per opening: `found.tsv` has ~180 unused, unchecked candidates.
+- [x] Raised the cap to 6,000 puzzles per opening (31k candidates): 295 new matches; 9 added
+      for the thin openings. Classic named traps: only the Siberian trap and the London's
+      poisoned b2 pawn both fit your lines and lose with best play; the rest are sound.
+- [ ] Your Ruy Lopez line `…b5 Bb3 d6 d4 Nxd4 Nxd4 exd4 Qxd4??` is the Noah's Ark trap
+      (…c5 and …c4 trap the bishop): the book names that line after it, so the trainer
+      drills White's losing move. Decide whether to drop or fix the line.
 
 ## Order of work
 
