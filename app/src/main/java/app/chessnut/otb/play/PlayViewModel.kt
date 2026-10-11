@@ -233,6 +233,9 @@ data class PlayUi(
     val punish: Boolean = false,
     /** The mistake being punished, to show it explained afterwards. */
     val punishName: String? = null,
+    /** Punish mode's result mark, seen without sound: true a pass, false a miss or a wrong try. */
+    val punishPass: Boolean? = null,
+    val punishMark: String? = null,
     /** The survival game has ended: you left the line or played a move outside the top two. */
     val survivalOver: Boolean = false,
     /** The trainer's evaluation of the position on the board, for the eval bar. */
@@ -1039,6 +1042,17 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         lineNote = "Your opponent played ${moveNumber(ply)}${pick.moves.first()}, a mistake.$often How do you punish it?"
         publish()
         if (app.phoneSounds) speech.narrate(lineNote.orEmpty())
+    }
+
+    /** Pass or fail in Punish mode, and its words, once there's something to mark. */
+    private fun punishMark(): Pair<Boolean, String>? {
+        if (punishTrap == null) return null
+        return when {
+            drillGraded && lineClean -> true to "Punished!"
+            drillGraded -> false to "Missed. It comes back tomorrow."
+            rejectUci != null -> false to "Not that one. Play the lit move."
+            else -> null
+        }
     }
 
     private fun endPunish() {
@@ -2296,6 +2310,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 survival = survival,
                 punish = punishTrap != null,
                 punishName = punishTrap?.name,
+                punishPass = punishMark()?.first,
+                punishMark = punishMark()?.second,
                 survivalOver = survivalOver,
                 // The bar shows the live game; when stepping back through it there is no evaluation to show.
                 evalScore = if (kind == PlayKind.Trainer && at == null) evalScore else null,

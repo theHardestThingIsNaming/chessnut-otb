@@ -89,7 +89,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.draw.alpha
 import androidx.compose.foundation.BorderStroke
 import app.chessnut.otb.openings.TrapFrequency
-import app.chessnut.otb.openings.TrapStats
+import androidx.compose.foundation.shape.CircleShape
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -400,6 +400,22 @@ private fun TrapBanner(name: String, step: Int, length: Int, summary: String?, i
         }
         info?.label?.let { Text(it, color = frequencyColor(info.frequency), style = MaterialTheme.typography.labelMedium) }
         summary?.let { Text(it, color = Palette.Text, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyMedium) }
+    }
+}
+
+/** Punish mode's pass or fail, big enough to see at a glance with the sound off. */
+@Composable
+private fun PunishMark(pass: Boolean, words: String) {
+    val color = if (pass) Palette.Accent else Palette.Blunder
+    Row(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.SurfaceHigh).border(1.dp, color, RoundedCornerShape(12.dp)).padding(10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Box(Modifier.size(44.dp).clip(CircleShape).background(color), contentAlignment = Alignment.Center) {
+            Text(if (pass) "✓" else "✗", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 26.sp)
+        }
+        Text(words, color = color, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
     }
 }
 
@@ -783,6 +799,7 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
             )
             // In Punish mode the eval would give the mistake away, so it waits until you've answered.
             if (!showingTrap && !(ui.punish && !ui.lineDone)) EvalBar(ui.evalScore, ui.evalTerminal, ui.fen)
+            if (!showingTrap) ui.punishPass?.let { PunishMark(it, ui.punishMark.orEmpty()) }
             ui.trapName?.let { TrapBanner(it, ui.trapStep, ui.trapLength, ui.trapSummary, ui.trapInfo) }
             if (!showingTrap) {
                 for (info in ui.traps) {
