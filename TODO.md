@@ -40,10 +40,11 @@ with its opening. `PuzzleGamesTest` keeps those whose game followed one of your 
 6 moves of the mistake (games fetched in bulk from `/api/games/export/_ids`, no login needed).
 For the Scotch and Pirc it found 19; 6 were added after a Stockfish check.
 
-- [ ] Run it for the other openings in the catalog (filter `opening.csv` by their tags, fetch
-      games, run `PuzzleGamesTest` with `PUZZLE_OPENINGS`).
-- [ ] Loosen the match for more hits: only your own moves need to follow your lines, the
-      opponent's can be anything.
+- [x] Run it for the other openings: 210 matches across 11 openings; 30 added after a Stockfish
+      check, 2–3 per opening.
+- [x] Loosen the match: only your own moves need to follow your lines (`OpeningTraps.fits`).
+- [ ] Rerun the loosened match for the Scotch and Pirc, which only had the strict one.
+- [ ] More per opening: `found.tsv` has ~180 unused, unchecked candidates.
 
 ## Order of work
 

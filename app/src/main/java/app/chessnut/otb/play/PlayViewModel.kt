@@ -571,7 +571,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             // The moves every line shares are the opening itself; show what comes after.
             val shared = lines.firstOrNull()?.indices?.takeWhile { i -> lines.all { it.getOrNull(i) == lines[0][i] } }?.size ?: 0
             fetchLineStats(lines)
-            val traps = OpeningTraps.all.filter { trap -> lines.any { OpeningTraps.follows(trap, it) } }
+            val traps = OpeningTraps.all.filter { trap -> (trap.before.size % 2 == 1) == white && OpeningTraps.fits(trap, lines) }
             fetchTrapStats(traps)
             val views = lines.map { line ->
                 val key = Drill.key(line)
@@ -1020,7 +1020,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private fun punishTraps(name: String, white: Boolean): List<Trap> {
         val lines = bookLines(name, white)
         return OpeningTraps.all
-            .filter { trap -> (trap.before.size % 2 == 1) == white && lines.any { OpeningTraps.follows(trap, it) } }
+            .filter { trap -> (trap.before.size % 2 == 1) == white && OpeningTraps.fits(trap, lines) }
             .sortedByDescending { trapStats.record(it)?.percent ?: -1 }
     }
 
