@@ -87,6 +87,7 @@ import app.chessnut.otb.ui.PieceIcon
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.draw.alpha
+import androidx.compose.foundation.BorderStroke
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -379,7 +380,27 @@ private fun ProgressCard(ui: PlayUi, onReview: () -> Unit) {
     }
 }
 
-/** Past the book: how many engine-approved moves in a row, against your best for this opening. */
+/** A trap being shown: its name, progress through it, and what it wins once played out. */
+@Composable
+private fun TrapBanner(name: String, step: Int, length: Int, summary: String?) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(Palette.Mistake.copy(alpha = 0.12f))
+            .border(1.dp, Palette.Mistake.copy(alpha = 0.6f), RoundedCornerShape(12.dp))
+            .padding(horizontal = 14.dp, vertical = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("⚠  Trap: $name", color = Palette.Mistake, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+            Text("$step / $length", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
+        }
+        summary?.let { Text(it, color = Palette.Text, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyMedium) }
+    }
+}
+
+/** Survival's counter: good moves in a row past the line, against your best on this line. */
 @Composable
 private fun DepthStrip(run: Int, best: Int?, over: Boolean) {
     Row(
@@ -657,11 +678,17 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
     val bookArrows = ui.bookUcis.mapIndexedNotNull { index, uci ->
         Arrow.ofUci(uci, bookArrowColor(index))
     }.asReversed()
-    val arrows = bookArrows + listOfNotNull(
-        Arrow.ofUci(ui.hintUci, Palette.ArrowBest),
-        Arrow.ofUci(ui.promptUci, Palette.ArrowBetter),
-        Arrow.ofUci(ui.rejectUci, Palette.Blunder),
-    )
+    val showingTrap = ui.trapName != null
+    // During a trap only its own move is drawn: the opponent's mistake in red, your punishment in green.
+    val arrows = if (showingTrap) {
+        listOfNotNull(Arrow.ofUci(ui.trapUci, if (ui.trapMistake) Palette.Blunder else Palette.ArrowBest))
+    } else {
+        bookArrows + listOfNotNull(
+            Arrow.ofUci(ui.hintUci, Palette.ArrowBest),
+            Arrow.ofUci(ui.promptUci, Palette.ArrowBetter),
+            Arrow.ofUci(ui.rejectUci, Palette.Blunder),
+        )
+    }
     val highlights = moveSquares(ui.hintUci) + moveSquares(ui.promptUci)
     Column(modifier.padding(bottom = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -739,9 +766,21 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                 highlights = highlights,
                 onSquare = viewModel::tap,
             )
-            EvalBar(ui.evalScore, ui.evalTerminal, ui.fen)
+            if (!showingTrap) EvalBar(ui.evalScore, ui.evalTerminal, ui.fen)
+            ui.trapName?.let { TrapBanner(it, ui.trapStep, ui.trapLength, ui.trapSummary) }
+            if (!showingTrap) {
+                for (name in ui.traps) {
+                    OutlinedButton(
+                        onClick = { viewModel.showTrap(name) },
+                        border = BorderStroke(1.dp, Palette.Mistake),
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Text("⚠  Show common trap: $name", color = Palette.Mistake, fontWeight = FontWeight.SemiBold)
+                    }
+                }
+            }
             if (ui.bookSans.isNotEmpty()) BookKey(ui.bookSans, ui.explainedByEngine)
-            ui.depthRun?.let { DepthStrip(it, ui.depthBest, ui.depthOver) }
+            if (!showingTrap) ui.depthRun?.let { DepthStrip(it, ui.depthBest, ui.depthOver) }
             if (ui.idea != null || ui.story != null) CoachCard(ui)
             ui.lineNote?.let { note ->
                 Text(
@@ -768,12 +807,15 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                     Text("Play $move here from now on", color = Palette.Accent)
                 }
             }
-            Text(numbered(ui.san), color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium)
+            if (!showingTrap) Text(numbered(ui.san), color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium)
         }
         // The actions stay along the bottom, under the thumb.
         Row(Modifier.fillMaxWidth().height(52.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             GameAction("Openings", light = false, onClick = viewModel::leave, modifier = Modifier.weight(1f).fillMaxHeight())
-            if (ui.survival) {
+            if (showingTrap) {
+                GameAction("Replay", light = false, onClick = viewModel::replayTrap, modifier = Modifier.weight(1f).fillMaxHeight())
+                PrimaryAction("Back to the line", Modifier.weight(1.3f).fillMaxHeight(), onClick = viewModel::backToLine)
+            } else if (ui.survival) {
                 if (ui.survivalOver) {
                     GameAction(
                         "Analyse",

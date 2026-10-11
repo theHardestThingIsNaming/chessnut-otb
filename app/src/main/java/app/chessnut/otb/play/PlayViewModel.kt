@@ -56,6 +56,8 @@ import app.chessnut.otb.repertoire.DepthRun
 import app.chessnut.otb.play.BOARD_SETTLE_MS
 import app.chessnut.otb.openings.OpeningSide
 import app.chessnut.otb.repertoire.OpeningMedal
+import app.chessnut.otb.openings.OpeningTraps
+import app.chessnut.otb.openings.Trap
 
 enum class PlayKind { Bot, Trainer }
 
@@ -207,6 +209,16 @@ data class PlayUi(
     /** The trainer's evaluation of the position on the board, for the eval bar. */
     val evalScore: Score? = null,
     val evalTerminal: Terminal? = null,
+    /** Common traps the opponent can fall into right now, by name. */
+    val traps: List<String> = emptyList(),
+    /** A trap being shown: its name, how far through, and whether it has finished. */
+    val trapName: String? = null,
+    val trapStep: Int = 0,
+    val trapLength: Int = 0,
+    val trapSummary: String? = null,
+    /** The trap's last move: the opponent's mistake shows in red, your punishment in green. */
+    val trapUci: String? = null,
+    val trapMistake: Boolean = false,
     /** The bot game starts from this position instead of the usual start, such as one set up on the board. */
     val startFen: String? = null,
     /** Medals across every opening and side you have started. */
@@ -281,6 +293,10 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private var lineLabelShown: String? = null
     private var lineNote: String? = null
     private var lineClean = false
+    /** The trap being shown and how many of its moves are on the board. */
+    private var trap: Trap? = null
+    private var trapStep = 0
+    private var trapJob: Job? = null
     private var survival = false
     private var survivalOver = false
     /** Explain's setting before survival turned it off, to restore after. */
@@ -655,6 +671,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     fun start() {
         // Save the last game's run under its own opening before this one replaces it.
         endDepthRun()
+        trapJob?.cancel()
+        trap = null
+        trapStep = 0
         val previous = job
         job = null
         busy = false
@@ -918,6 +937,71 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         explainBeforeSurvival = null
     }
 
+    /**
+     * Plays the named trap out on the screen from the current position, a move
+     * at a time, without touching the game. [backToLine] returns to it.
+     */
+    fun showTrap(name: String) {
+        val found = availableTraps().firstOrNull { it.name == name } ?: return
+        trap = found
+        trapStep = 0
+        playTrap()
+    }
+
+    /** Plays the trap again from its start. */
+    fun replayTrap() {
+        trapStep = 0
+        playTrap()
+    }
+
+    private fun playTrap() {
+        val shown = trap ?: return
+        trapJob?.cancel()
+        speech.stop()
+        publish()
+        trapJob = viewModelScope.launch {
+            delay(700)
+            while (trapStep < shown.moves.size) {
+                trapStep++
+                publish()
+                if (app.phoneSounds) speech.narrate(shown.notes[trapStep - 1])
+                delay(TRAP_STEP_MS)
+            }
+            if (app.phoneSounds) speech.narrate(shown.summary)
+        }
+    }
+
+    /** Leaves the trap and goes back to the game where it was. */
+    fun backToLine() {
+        trapJob?.cancel()
+        trapJob = null
+        trap = null
+        trapStep = 0
+        speech.stop()
+        publish()
+    }
+
+    /**
+     * Traps whose position came up in this game a moment ago: on the
+     * opponent's turn there, or just after their reply, since a quick reply
+     * shouldn't hide the button.
+     */
+    private fun availableTraps(): List<Trap> = OpeningTraps.all.filter {
+        sanMoves.size in it.before.size..it.before.size + 1 && sanMoves.take(it.before.size) == it.before
+    }
+
+    /** The position partway through the trap, played from where the trap starts, and the move that led there. */
+    private fun trapPosition(shown: Trap): Pair<String, String?> {
+        var position = runCatching { ChessLines.replay(shown.before).fens.last() }.getOrDefault(fen)
+        var last: String? = null
+        for (san in shown.moves.take(trapStep)) {
+            val uci = PlayPosition.uciOfSan(position, san) ?: break
+            position = PlayPosition.after(position, uci)?.second ?: break
+            last = uci
+        }
+        return position to last
+    }
+
     /** Plays the same line again from the first move, as when you missed it and want another go. */
     fun againLine() {
         val line = drillLine
@@ -961,6 +1045,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun leave() {
+        backToLine()
         endDepthRun()
         endSurvival()
         endReview()
@@ -1016,7 +1101,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun playUci(uci: String) {
-        if (!playing || awaitingBoard || busy || finished != null || prompt != null || (survival && survivalOver)) {
+        if (!playing || awaitingBoard || busy || finished != null || prompt != null || (survival && survivalOver) || trap != null) {
             note("move $uci ignored playing=$playing awaiting=$awaitingBoard busy=$busy prompt=$prompt")
             return
         }
@@ -1123,7 +1208,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun onSettled(placement: String) {
-        if (!playing || !physical) return
+        if (!playing || !physical || trap != null) return
         if (awaitingBoard) {
             if (PlayPosition.matches(fen, placement)) {
                 note("board matches the start")
@@ -1887,11 +1972,15 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
 
         const val DUE_SECTION = "Due for review"
 
+        /** How long each trap move stays on screen before the next. */
+        const val TRAP_STEP_MS = 2600L
+
         /** More wrong squares than this means the board is still being set up, so no hint. */
         const val MAX_SETUP_HINTS = 6
     }
 
     private fun shownPosition(): Pair<String, String?> {
+        trap?.let { return trapPosition(it) }
         val at = glance ?: return fen to lastUci
         var position = origin()
         var last: String? = null
@@ -1987,7 +2076,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 // The bar shows the live game; when stepping back through it there is no evaluation to show.
                 evalScore = if (kind == PlayKind.Trainer && at == null) evalScore else null,
                 evalTerminal = if (kind == PlayKind.Trainer && at == null) ChessLines.terminalOf(fen) else null,
-                lineNote = if (kind == PlayKind.Trainer) lineNote else null,
+                lineNote = if (kind == PlayKind.Trainer && trap == null) lineNote else null,
                 reviewing = reviewing,
                 depthRun = if (kind == PlayKind.Trainer) depthRun else null,
                 depthOver = depthOver,
@@ -1996,9 +2085,28 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 choiceOffer = choiceOffer?.let { (before, move) -> "${moveNumber(before.size)}$move" },
                 retryMove = retryAt?.let { at -> drillLine?.getOrNull(at)?.let { "${moveNumber(at)}$it" } },
                 variation = if (kind == PlayKind.Trainer) OpeningBook.view(sanMoves).name else null,
-                ideaMove = if (kind == PlayKind.Trainer && at == null) ideaMove else null,
-                idea = if (kind == PlayKind.Trainer && at == null) idea else null,
-                story = if (kind == PlayKind.Trainer) story else null,
+                ideaMove = when {
+                    trap != null -> trap?.let { t -> trapStep.takeIf { it > 0 }?.let { "${moveNumber(t.before.size + it - 1)}${t.moves[it - 1]}" } }
+                    kind == PlayKind.Trainer && at == null -> ideaMove
+                    else -> null
+                },
+                idea = when {
+                    trap != null -> trap?.let { t -> if (trapStep > 0) t.notes[trapStep - 1] else "Watch: ${if (userWhite) "Black" else "White"} to move here, and the natural-looking move loses." }
+                    kind == PlayKind.Trainer && at == null -> idea
+                    else -> null
+                },
+                traps = if (kind == PlayKind.Trainer && trap == null && at == null && !survival && finished == null) {
+                    availableTraps().map { it.name }
+                } else {
+                    emptyList()
+                },
+                trapName = trap?.name,
+                trapStep = trapStep,
+                trapLength = trap?.moves?.size ?: 0,
+                trapSummary = trap?.takeIf { trapStep >= it.moves.size }?.summary,
+                trapUci = trap?.let { trapPosition(it).second },
+                trapMistake = trapStep == 1,
+                story = if (kind == PlayKind.Trainer && trap == null) story else null,
             )
         }
     }
