@@ -1595,7 +1595,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
 
     /** Says once when the game leaves the book. Coming back into the book (a slide undone) allows it again. */
     private fun announceTheory() {
-        if (openingName == null || finished != null) return
+        // Punish mode is past the book from the start, so there's nothing to announce.
+        if (openingName == null || finished != null || punishTrap != null) return
         if (legalBookMove()) {
             leftTheory = false
             return
