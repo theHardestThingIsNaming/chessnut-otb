@@ -571,18 +571,19 @@ private fun OpeningPage(ui: PlayUi, detail: OpeningDetail, viewModel: PlayViewMo
             }
         }
         Row(Modifier.fillMaxWidth().height(52.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            // Survival needs a line you know; until then training comes first.
-            if (detail.learned > 0) {
-                PrimaryAction("Survival", Modifier.weight(1f).fillMaxHeight(), color = Palette.Survival, onClick = viewModel::startSurvival)
-            }
-            if (detail.punishable > 0) {
-                PrimaryAction("Punish", Modifier.weight(1f).fillMaxHeight(), color = Palette.Mistake, onClick = viewModel::startPunish)
-            }
+            // Train, then Punish, then Survival: from learning the lines to testing them.
             PrimaryAction(
                 if (detail.due > 0) "Review ${detail.due} due" else "Train",
                 Modifier.weight(1.3f).fillMaxHeight(),
                 onClick = viewModel::start,
             )
+            if (detail.punishable > 0) {
+                PrimaryAction("Punish", Modifier.weight(1f).fillMaxHeight(), color = Palette.Mistake, onClick = viewModel::startPunish)
+            }
+            // Survival needs a line you know; until then training comes first.
+            if (detail.learned > 0) {
+                PrimaryAction("Survival", Modifier.weight(1f).fillMaxHeight(), color = Palette.Survival, onClick = viewModel::startSurvival)
+            }
         }
     }
 }
