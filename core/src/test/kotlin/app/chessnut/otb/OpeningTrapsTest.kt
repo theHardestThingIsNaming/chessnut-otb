@@ -9,15 +9,18 @@ import kotlin.test.assertTrue
 
 class OpeningTrapsTest {
     @Test
-    fun everyTrapIsLegalAndAppearsInAScotchLine() {
-        val lines = OpeningTree.lines("Scotch Game", userWhite = true)
+    fun everyTrapIsLegalAndAppearsInALineYouDrill() {
+        val scotch = OpeningTree.lines("Scotch Game", userWhite = true)
+        val pirc = OpeningTree.lines("Pirc Defense", userWhite = false)
         for (trap in OpeningTraps.all) {
             val replay = runCatching { ChessLines.replay(trap.before + trap.moves) }.getOrNull()
             assertTrue(replay != null && replay.uci.size == trap.before.size + trap.moves.size, "${trap.name} is legal")
-            assertTrue(lines.any { it.take(trap.before.size) == trap.before }, "${trap.name} is reached in a Scotch line")
-            // The opponent makes the mistake: it's their move when the trap starts.
-            assertEquals(1, trap.before.size % 2, trap.name)
+            // The opponent makes the mistake: White's turn in the Pirc, Black's in the Scotch.
+            val youWhite = trap.before.size % 2 == 1
+            val lines = if (youWhite) scotch else pirc
+            assertTrue(lines.any { it.take(trap.before.size) == trap.before }, "${trap.name} is reached in a line you drill")
         }
+        assertEquals(6, OpeningTraps.all.count { it.before.size % 2 == 0 }, "Pirc traps")
         assertEquals(2, OpeningTraps.at("e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Bc5 Be3 Qf6 c3 Nge7 Qd2 d5 Nb5".split(" ")).size)
     }
 }
