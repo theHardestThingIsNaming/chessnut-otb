@@ -53,7 +53,11 @@ class MistakeMineTest {
                 val played = games(m)
                 val share = played * 100.0 / total
                 if (share < 3 || played < 30) continue
-                val uci = m.str("uci") ?: continue
+                // Lichess writes castling as the king taking its rook; Stockfish wants e1g1.
+                val uci = when (val raw = m.str("uci") ?: continue) {
+                    "e1h1" -> "e1g1"; "e1a1" -> "e1c1"; "e8h8" -> "e8g8"; "e8a8" -> "e8c8"
+                    else -> raw
+                }
                 val (reply, pv) = score(fen, listOf(uci)) // opponent's view after the move
                 val loss = best + reply
                 if (loss < 150) continue

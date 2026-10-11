@@ -84,7 +84,14 @@ data class OpeningRow(
 data class OpeningSection(val title: String, val rows: List<OpeningRow>)
 
 /** A trap and how often club players fall for it, once known. */
-data class TrapInfo(val name: String, val percent: Int? = null, val games: Long? = null, val frequency: TrapFrequency? = null) {
+data class TrapInfo(
+    val name: String,
+    val percent: Int? = null,
+    val games: Long? = null,
+    val frequency: TrapFrequency? = null,
+    /** "Trap" or "Common mistake". */
+    val kind: String = "Trap",
+) {
     /** "Common · 12% of 2,340 games at 1400–2000", or null before the numbers arrive. */
     val label: String? get() {
         val shown = frequency ?: return null
@@ -1016,7 +1023,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun trapInfo(trap: Trap): TrapInfo {
         val record = trapStats.record(trap)?.takeUnless { it.thin }
-        return TrapInfo(trap.name, record?.percent, record?.totalGames, record?.frequency)
+        return TrapInfo(trap.name, record?.percent, record?.totalGames, record?.frequency, trap.kind)
     }
 
     /** Most often played first; traps not yet counted come last. */

@@ -395,7 +395,7 @@ private fun TrapBanner(name: String, step: Int, length: Int, summary: String?, i
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("⚠  Trap: $name", color = Palette.Mistake, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+            Text("⚠  ${info?.kind ?: "Trap"}: $name", color = Palette.Mistake, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
             Text("$step / $length", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
         }
         info?.label?.let { Text(it, color = frequencyColor(info.frequency), style = MaterialTheme.typography.labelMedium) }
@@ -786,7 +786,7 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("⚠  Show common trap: ${info.name}", color = Palette.Mistake, fontWeight = FontWeight.SemiBold)
+                            Text("⚠  Show ${if (info.kind == "Trap") "common trap" else "common mistake"}: ${info.name}", color = Palette.Mistake, fontWeight = FontWeight.SemiBold)
                             info.label?.let { Text(it, color = frequencyColor(info.frequency), style = MaterialTheme.typography.labelSmall) }
                         }
                     }

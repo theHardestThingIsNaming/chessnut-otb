@@ -3,8 +3,10 @@ package app.chessnut.otb.openings
 /**
  * A common trap: after [before], the opponent's natural-looking first move in
  * [moves] loses, and the rest of [moves] is how you punish it. Each move has a
- * note in [notes]; [summary] says what it wins. Every trap here was checked
- * with Stockfish at depth 20.
+ * note in [notes]; [summary] says what it wins. A [mistake] is a smaller
+ * error than a trap (a pawn or a broken position, not a piece). Every one was
+ * checked with Stockfish at depth 20, and kept because Lichess players rated
+ * 1400–2000 actually play it.
  */
 data class Trap(
     val name: String,
@@ -12,7 +14,11 @@ data class Trap(
     val moves: List<String>,
     val notes: List<String>,
     val summary: String,
+    val mistake: Boolean = false,
 ) {
+    /** "Trap" or "Common mistake", for buttons and banners. */
+    val kind: String get() = if (mistake) "Common mistake" else "Trap"
+
     init {
         require(moves.size == notes.size) { "$name: one note per move" }
     }
@@ -31,18 +37,6 @@ object OpeningTraps {
     private val PIRC = san("e4 d6 d4 Nf6 Nc3 g6")
 
     private val ALL = listOf(
-        Trap(
-            "The c7 fork",
-            CLASSICAL,
-            san("dxe4 Nxc7+ Kf8 Bxc5"),
-            listOf(
-                "Black grabs the e4 pawn, forgetting the knight on b5.",
-                "Check, and the knight forks the king and the rook on a8.",
-                "The king has to move.",
-                "White also takes the bishop on c5. The rook on a8 falls next.",
-            ),
-            "White wins a bishop now and the rook on a8 next.",
-        ),
         Trap(
             "The loose bishop",
             CLASSICAL,
@@ -79,20 +73,6 @@ object OpeningTraps {
             ),
             "White wins a whole knight.",
         ),
-        Trap(
-            "The f7 fork",
-            san("e4 e5 Nf3 Nc6 d4 exd4 Bc4 Bc5 Ng5"),
-            san("d6 Nxf7 Qe7 O-O Na5 Nxh8"),
-            listOf(
-                "A natural developing move, but it leaves f7 defended only by the king.",
-                "The knight takes on f7, forking the queen and the rook on h8.",
-                "The queen steps out of the attack.",
-                "White castles first, so ...Qxe4 doesn't come with check.",
-                "Black chases the bishop on c4.",
-                "White takes the rook on h8.",
-            ),
-            "White wins the rook on h8 for the knight.",
-        ),
 
         // Pirc: traps White falls into against you.
         Trap(
@@ -102,16 +82,6 @@ object OpeningTraps {
             listOf(
                 "White castles long, forgetting that ...h6 attacked the bishop on g5.",
                 "The pawn just takes it.",
-            ),
-            "Black wins a whole bishop.",
-        ),
-        Trap(
-            "The trapped bishop",
-            PIRC + san("Bg5 Bg7 Qd2 h6 Bh4 g5"),
-            san("O-O-O gxh4"),
-            listOf(
-                "White castles long, but ...g5 attacked the bishop and its only safe square was g3.",
-                "The pawn takes the bishop.",
             ),
             "Black wins a whole bishop.",
         ),
@@ -126,16 +96,6 @@ object OpeningTraps {
             "Black is a bishop for a pawn up, with no real attack against the king.",
         ),
         Trap(
-            "The b5 pawn",
-            PIRC + san("Be3 c6 Qd2 b5"),
-            san("Bc4 bxc4"),
-            listOf(
-                "White develops the bishop to c4, the square Black's b5 pawn covers.",
-                "The pawn takes the bishop.",
-            ),
-            "Black wins a whole bishop.",
-        ),
-        Trap(
             "The early f5",
             PIRC + san("f4 Bg7 Nf3 O-O e5 Nfd7"),
             san("f5 dxe5 fxg6 hxg6"),
@@ -147,17 +107,79 @@ object OpeningTraps {
             ),
             "Black wins a pawn, and the g7 bishop's diagonal opens.",
         ),
+        // Found in club games: moves Lichess players rated 1400–2000 often play here, and lose.
         Trap(
-            "The loose e4 pawn",
-            PIRC + san("f4 Bg7 Nf3 O-O"),
-            san("Nb5 Nxe4 Bd3 Nf6"),
+            "The undefended f7 pawn",
+            san("e4 e5 Nf3 Nc6 d4 exd4 Bc4 Bc5 Ng5"),
+            san("Ne5 Nxf7 Nxf7 Bxf7+ Kf8"),
             listOf(
-                "The knight leaves c3, where it was defending e4.",
-                "Black takes the pawn.",
-                "White hits the knight, hoping to win it back.",
-                "The knight drops back. Black keeps the extra pawn.",
+                "Black guards f7 and hits the bishop, a popular move (about one game in five).",
+                "White takes on f7 anyway.",
+                "The knight takes back.",
+                "And the bishop takes again, with check.",
+                "Kxf7 loses to Qh5+ and Qxc5, so the king must step aside and can no longer castle.",
             ),
-            "Black wins the e4 pawn and keeps it.",
+            "White wins a pawn and Black's king is stuck in the middle.",
+            mistake = true,
+        ),
+        Trap(
+            "The f7 queen check",
+            san("e4 e5 Nf3 Nc6 d4 exd4 Bc4 Bb4+ c3 dxc3 bxc3"),
+            san("Be7 Qd5 Nh6 Bxh6"),
+            listOf(
+                "The bishop drops back to e7, where it does nothing for f7.",
+                "Queen and bishop both aim at f7: Qxf7 is mate.",
+                "Only ...Nh6 guards f7.",
+                "White takes the knight. If ...gxh6, Qxf7 is mate.",
+            ),
+            "White wins a whole knight.",
+        ),
+        Trap(
+            "Removing the defender",
+            san("e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Bc5 Be3"),
+            san("Nf6 Nxc6 dxc6 Qxd8+ Kxd8 Bxc5"),
+            listOf(
+                "Black develops, but nothing guards the c5 bishop. Only White's own knight on d4 stands between it and the e3 bishop.",
+                "White's knight takes on c6 and gets out of the bishop's way.",
+                "Black takes back.",
+                "White trades queens with check.",
+                "The king takes.",
+                "Now the bishop on c5 falls.",
+            ),
+            "White wins a piece for a pawn.",
+        ),
+        Trap(
+            "Broken pawns",
+            san("e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Bc5 Be3"),
+            san("d6 Nxc6 bxc6 Bxc5 dxc5 Qxd8+ Kxd8"),
+            listOf(
+                "Black guards the bishop with a pawn, but now the d-file opens.",
+                "White trades knights first.",
+                "Black takes back towards the centre.",
+                "White trades bishops.",
+                "Black's pawns end up doubled on c5 and c6.",
+                "The queens come off with check.",
+                "Black's king can no longer castle.",
+            ),
+            "Black's pawns are broken and the king is stuck: a clear edge for White.",
+            mistake = true,
+        ),
+        Trap(
+            "The early e5 push",
+            san("e4 d6 d4 Nf6"),
+            san("e5 dxe5 dxe5 Qxd1+ Kxd1 Ng4 Ke1 Nxe5"),
+            listOf(
+                "White pushes before defending e5 with Nc3 or f4.",
+                "Black takes.",
+                "White takes back.",
+                "Trade queens. White's king loses castling.",
+                "The king takes.",
+                "The knight hits e5 and f2.",
+                "White guards f2.",
+                "Black collects the e5 pawn.",
+            ),
+            "Black wins a pawn, with an easy game.",
+            mistake = true,
         ),
     )
 }

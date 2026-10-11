@@ -20,7 +20,7 @@ class OpeningTrapsTest {
             val lines = if (youWhite) scotch else pirc
             assertTrue(lines.any { it.take(trap.before.size) == trap.before }, "${trap.name} is reached in a line you drill")
         }
-        assertEquals(6, OpeningTraps.all.count { it.before.size % 2 == 0 }, "Pirc traps")
-        assertEquals(2, OpeningTraps.at("e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Bc5 Be3 Qf6 c3 Nge7 Qd2 d5 Nb5".split(" ")).size)
+        assertEquals(4, OpeningTraps.all.count { it.before.size % 2 == 0 }, "Pirc traps")
+        assertEquals(2, OpeningTraps.at("e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Bc5 Be3".split(" ")).size)
     }
 }
