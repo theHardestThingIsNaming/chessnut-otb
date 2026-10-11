@@ -11,7 +11,7 @@ Android app for the Chessnut Air smart board. Play over the board with clocks, v
 - **Board lights**: moves to play are lit on the board, and the winner's half flashes at checkmate.
 - **Board checks**: if the pieces don't match the game, the app names the wrong squares and lights them.
 - **From here**: set up any position on the board, say whose move it is, then analyse it with Stockfish or play the bot from it. Also in the home menu, and "Play the bot from here" in any game review.
-- A half-second settle delay, so sliding a piece across squares counts as one move. The board's battery level is shown, and the screen stays on during games.
+- A short settle delay (350 ms), so sliding a piece across squares counts as one move. The board's battery level is shown, and the screen stays on during games.
 
 ### Bot
 - Stockfish bots by Elo bracket, which don't always play the top line. Same clocks, draw and resign, and voice as over-the-board play. The bot's move is spoken, shown and lit for you to play on the board.
@@ -22,6 +22,7 @@ Android app for the Chessnut Air smart board. Play over the board with clocks, v
 - Everyday openings, a gambits section and a meme openings section (Bongcloud, the Cow, Kilkenny Gambit, Jerome, Alien and more). Filters for gambits, White's, Black's, memes and openings not yet played. The chosen opening shows its start position, moves and progress.
 - **Learn every line**: each opening is split into lines the way a coach writes a repertoire: one move for your side, the opponent's most common replies. A game follows one line. With Explain off it is graded from memory with spaced repetition, and the list shows how many lines you know. Reviews that come due appear at the top. See all lines by variation name, and tap one to drill it.
 - **Past the line**: with Explain off, once you finish a line cleanly (or the book runs out) every move you play is checked: book moves and Stockfish's top two count. Each opening keeps your best run of good moves in a row, and when a run ends you see what the engine wanted.
+- **Survival**: from an opening's page, play one of your learned lines picked at random against a varied opponent, then keep going with book moves or the engine's top two for as long as you can. Reviews aren't affected.
 - **Your own moves**: play a different book move than the line's on your turn, and the trainer offers to make it your move. The opening's lines are rebuilt around your choices.
 - **Sorted by win rate**: how often the opening's side wins on Lichess, using club-level rapid and classical games. Fetched with your Lichess login and cached for a month. Your best accuracy in each opening shows alongside.
 - **Explain**: arrows for the top three book moves, with a key from main line to third. Out of book, the arrows switch to the engine's top three. With Explain off, moves are scored instead.

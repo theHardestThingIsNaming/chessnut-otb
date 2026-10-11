@@ -439,11 +439,17 @@ private fun OpeningPage(ui: PlayUi, detail: OpeningDetail, viewModel: PlayViewMo
                 }
             }
         }
-        PrimaryAction(
-            if (detail.due > 0) "Review ${detail.due} due" else "Train",
-            Modifier.fillMaxWidth().height(52.dp),
-            onClick = viewModel::start,
-        )
+        Row(Modifier.fillMaxWidth().height(52.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            // Survival needs a line you know; until then training comes first.
+            if (detail.learned > 0) {
+                GameAction("Survival", light = false, onClick = viewModel::startSurvival, modifier = Modifier.weight(1f).fillMaxHeight())
+            }
+            PrimaryAction(
+                if (detail.due > 0) "Review ${detail.due} due" else "Train",
+                Modifier.weight(1.3f).fillMaxHeight(),
+                onClick = viewModel::start,
+            )
+        }
     }
 }
 
@@ -648,7 +654,19 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
         // The actions stay along the bottom, under the thumb.
         Row(Modifier.fillMaxWidth().height(52.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             GameAction("Openings", light = false, onClick = viewModel::leave, modifier = Modifier.weight(1f).fillMaxHeight())
-            if (ui.lineDone) {
+            if (ui.survival) {
+                if (ui.survivalOver) {
+                    GameAction(
+                        "Analyse",
+                        light = false,
+                        onClick = { viewModel.analyse()?.let(onAnalyse) },
+                        modifier = Modifier.weight(1f).fillMaxHeight(),
+                    )
+                    PrimaryAction("Play again", Modifier.weight(1.3f).fillMaxHeight(), onClick = viewModel::startSurvival)
+                } else {
+                    GameAction("New line", light = false, onClick = viewModel::startSurvival, modifier = Modifier.weight(1.3f).fillMaxHeight())
+                }
+            } else if (ui.lineDone) {
                 val next = if (ui.reviewLast) "Finish review" else "Next line"
                 GameAction(
                     "Analyse",

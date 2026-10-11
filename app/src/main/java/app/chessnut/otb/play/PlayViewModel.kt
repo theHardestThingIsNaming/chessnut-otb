@@ -194,6 +194,10 @@ data class PlayUi(
     val depthOver: Boolean = false,
     /** Your best run for this opening and side, before this game. */
     val depthBest: Int? = null,
+    /** Survival: one of your learned lines, then as long as you can keep finding the engine's top two moves. */
+    val survival: Boolean = false,
+    /** The survival game has ended: you left the line or played a move outside the top two. */
+    val survivalOver: Boolean = false,
     /** The trainer's evaluation of the position on the board, for the eval bar. */
     val evalScore: Score? = null,
     val evalTerminal: Terminal? = null,
@@ -269,6 +273,10 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private var lineLabelShown: String? = null
     private var lineNote: String? = null
     private var lineClean = false
+    private var survival = false
+    private var survivalOver = false
+    /** Explain's setting before survival turned it off, to restore after. */
+    private var explainBeforeSurvival: Boolean? = null
     /** The last evaluated position and its score, and whether an evaluation is running. */
     private var evalFen: String? = null
     private var evalScore: Score? = null
@@ -681,6 +689,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         depthBest = ui.openingName?.let { app.depthRecords.of(it, ui.userWhite)?.best }
         lineLabelShown = lineLabel()
         lineNote = null
+        survivalOver = false
         evalFen = null
         evalScore = null
         retryAt = null
@@ -829,6 +838,47 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         nextReview()
     }
 
+    /**
+     * Survival: plays one of your learned lines of the chosen opening, picked
+     * at random, from memory, then keeps going with a varied opponent until a
+     * move falls outside the engine's top two. Reviews are not affected.
+     */
+    fun startSurvival() {
+        val ui = state.value
+        val name = ui.openingName ?: return
+        val chapter = app.repertoire.chapter(name)
+        val lines = chapter?.lines ?: bookLines(name, ui.userWhite)
+        if (lines.isEmpty()) return
+        val known = if (chapter != null) {
+            app.repertoire.reviews().filterValues { it.box > 0 }.keys
+        } else {
+            app.lineProgress.learned(name, ui.userWhite)
+        }
+        val pool = lines.filter { Drill.key(it) in known }.ifEmpty { lines }
+        val line = pool[random.nextInt(pool.size)]
+        if (explainBeforeSurvival == null) explainBeforeSurvival = explain
+        survival = true
+        // Survival is played from memory.
+        explain = false
+        state.update { it.copy(explain = false) }
+        pinnedLine = line
+        start()
+        // The variation shows above the board, so the label stays short and the board doesn't move.
+        lineLabelShown = "Survival"
+        publish()
+    }
+
+    private fun endSurvival() {
+        if (!survival) return
+        survival = false
+        survivalOver = false
+        explainBeforeSurvival?.let { before ->
+            explain = before
+            state.update { it.copy(explain = before) }
+        }
+        explainBeforeSurvival = null
+    }
+
     /** Plays the same line again from the first move, as when you missed it and want another go. */
     fun againLine() {
         val line = drillLine
@@ -873,6 +923,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
 
     fun leave() {
         endDepthRun()
+        endSurvival()
         endReview()
         startFen = null
         restoreTiming()
@@ -926,7 +977,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun playUci(uci: String) {
-        if (!playing || awaitingBoard || busy || finished != null || prompt != null) {
+        if (!playing || awaitingBoard || busy || finished != null || prompt != null || (survival && survivalOver)) {
             note("move $uci ignored playing=$playing awaiting=$awaitingBoard busy=$busy prompt=$prompt")
             return
         }
@@ -943,6 +994,12 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             }
             if (!apply(uci)) return@launchPlay
             if (pastBook) countDepth(uci, book = verdict == TrainerResult.Book)
+            if (survival && survivalOver) {
+                // The game is over, so the opponent doesn't reply.
+                light(null)
+                publish()
+                return@launchPlay
+            }
             retry = false
             rejectUci = null
             if (verdict != null && finished == null) {
@@ -989,14 +1046,19 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         depthOver = true
         app.depthRecords.finish(name, userWhite, run)
         val record = depthBest
+        if (survival) survivalOver = true
+        val moves = "$run ${if (run == 1) "move" else "moves"}"
         val result = when {
+            survival && run > (record ?: 0) && run > 0 -> "You survived $moves past the line. A new best!"
+            survival -> "You survived $moves past the line." + (record?.let { " Your best is $it." } ?: "")
             run > (record ?: 0) && run > 0 -> "New best: $run good ${if (run == 1) "move" else "moves"} past the line."
             record != null -> "Run over at $run. Your best is $record."
             else -> "Run over at $run."
         }
         val words = listOfNotNull(result, depthMissed?.let { "The engine wanted $it." }).joinToString(" ")
         depthMissed = null
-        lineNote = listOfNotNull(lineNote, words).joinToString(" ")
+        // In survival the result is the whole story; elsewhere it follows the line's own note.
+        lineNote = if (survival) words else listOfNotNull(lineNote, words).joinToString(" ")
         if (app.phoneSounds && playing) speech.narrate(words)
         refreshOpenings(state.value.openingQuery)
     }
@@ -1258,6 +1320,18 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         val expected = split?.let { "${moveNumber(it)}${line[it]}" }
         val bookToo = split != null && !drillMissed
         val name = openingName
+        if (survival) {
+            // Survival doesn't touch the review schedule: the line just has to be known.
+            if (clean) {
+                lineNote = "Line played from memory. Now keep it going: book moves or the engine's top two."
+            } else {
+                survivalOver = true
+                lineNote = "Off the line: it continues $expected. That ends this game."
+            }
+            publish()
+            if (app.phoneSounds) speech.narrate(lineNote.orEmpty())
+            return
+        }
         // On the phone you can take the move back and play the line's; a physical board would need the pieces moved back.
         retryAt = split?.takeIf { !physical && (it % 2 == 0) == userWhite }
         // A different book move on your turn can become your move here.
@@ -1846,6 +1920,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 lineLabel = if (kind == PlayKind.Trainer) lineLabelShown else null,
                 lineDone = kind == PlayKind.Trainer && drillGraded,
                 lineClean = lineClean,
+                survival = survival,
+                survivalOver = survivalOver,
                 // The bar shows the live game; when stepping back through it there is no evaluation to show.
                 evalScore = if (kind == PlayKind.Trainer && at == null) evalScore else null,
                 evalTerminal = if (kind == PlayKind.Trainer && at == null) ChessLines.terminalOf(fen) else null,

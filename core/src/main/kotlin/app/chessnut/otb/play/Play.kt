@@ -72,7 +72,7 @@ object TrainerGate {
  * every square the piece crosses, and a hand can rest on one on the way, so a
  * short wait reads e2-e4 as e2-e3.
  */
-const val BOARD_SETTLE_MS = 500L
+const val BOARD_SETTLE_MS = 350L
 
 object PlayPosition {
     fun placementOf(fen: String): String = fen.substringBefore(' ')
