@@ -123,9 +123,6 @@ data class PlayUi(
     val openingQuery: String = "",
     val openingName: String? = null,
     val gambitsOnly: Boolean = false,
-    val whiteOpenings: Boolean = false,
-    val blackOpenings: Boolean = false,
-    val unratedOnly: Boolean = false,
     val memesOnly: Boolean = false,
     val sections: List<OpeningSection> = emptyList(),
     val playing: Boolean = false,
@@ -429,12 +426,6 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun setGambitsOnly(on: Boolean) = setListFilter { it.copy(gambitsOnly = on) }
-
-    fun setWhiteOpenings(on: Boolean) = setListFilter { it.copy(whiteOpenings = on) }
-
-    fun setBlackOpenings(on: Boolean) = setListFilter { it.copy(blackOpenings = on) }
-
-    fun setUnratedOnly(on: Boolean) = setListFilter { it.copy(unratedOnly = on) }
 
     fun setMemesOnly(on: Boolean) = setListFilter { it.copy(memesOnly = on) }
 
@@ -1796,7 +1787,10 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             val kept = app.digests.all().mapNotNull { it.score }
             val scores = OpeningScores.bestOf(played + kept, names, app.myName)
             val filter = state.value.let {
-                OpeningFilter(it.gambitsOnly, it.whiteOpenings, it.blackOpenings, it.unratedOnly, it.memesOnly)
+                // The side you play also picks the openings: White's when you're White, Black's when you're Black.
+                // A search looks through every opening, whatever its side.
+                val browsing = query.isBlank()
+                OpeningFilter(it.gambitsOnly, browsing && it.userWhite, browsing && !it.userWhite, memes = it.memesOnly)
             }
             val rates = names.associateWith { OpeningStats.winPercent(it, openingStats.record(it)) }
             val started = app.lineProgress.started()

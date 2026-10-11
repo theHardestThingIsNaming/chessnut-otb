@@ -40,6 +40,13 @@ class PlayTest {
     }
 
     @Test
+    fun defensesBelongToBlack() {
+        assertEquals(OpeningSide.Black, OpeningBook.side("King's Indian Defense"))
+        assertEquals(OpeningSide.Black, OpeningBook.side("Sicilian Defense"))
+        assertEquals(OpeningSide.White, OpeningBook.side("Scotch Game"))
+    }
+
+    @Test
     fun gambitsHaveTheirOwnSection() {
         val sections = OpeningCatalog.browse("")
         assertEquals(listOf("Openings", "Gambits", "Meme openings"), sections.map { it.title })

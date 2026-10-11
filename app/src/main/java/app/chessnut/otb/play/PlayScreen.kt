@@ -191,9 +191,6 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
             }
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 item { FilterChip(selected = ui.gambitsOnly, onClick = { viewModel.setGambitsOnly(!ui.gambitsOnly) }, label = { Text("Gambits") }, colors = clubChipColors()) }
-                item { FilterChip(selected = ui.whiteOpenings, onClick = { viewModel.setWhiteOpenings(!ui.whiteOpenings) }, label = { Text("White's") }, colors = clubChipColors()) }
-                item { FilterChip(selected = ui.blackOpenings, onClick = { viewModel.setBlackOpenings(!ui.blackOpenings) }, label = { Text("Black's") }, colors = clubChipColors()) }
-                item { FilterChip(selected = ui.unratedOnly, onClick = { viewModel.setUnratedOnly(!ui.unratedOnly) }, label = { Text("Unplayed") }, colors = clubChipColors()) }
                 item { FilterChip(selected = ui.memesOnly, onClick = { viewModel.setMemesOnly(!ui.memesOnly) }, label = { Text("Memes") }, colors = clubChipColors()) }
             }
             LazyColumn(Modifier.weight(1f)) {

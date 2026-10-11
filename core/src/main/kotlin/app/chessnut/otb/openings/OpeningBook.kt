@@ -100,6 +100,9 @@ object OpeningBook {
      */
     fun side(name: String): OpeningSide? {
         sides[name]?.let { return it }
+        // A Defense is Black's, however many moves its named line runs to.
+        val family = name.substringBefore(':')
+        if (family.contains("Defense", ignoreCase = true) || family.contains("Defence", ignoreCase = true)) return OpeningSide.Black
         val san = line(basis(name))?.san?.takeIf { it.isNotEmpty() } ?: return null
         return if (san.lastIndex % 2 == 0) OpeningSide.White else OpeningSide.Black
     }
