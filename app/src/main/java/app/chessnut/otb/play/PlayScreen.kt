@@ -79,6 +79,14 @@ import app.chessnut.otb.ui.PrimaryAction
 import androidx.compose.animation.animateContentSize
 import androidx.compose.ui.unit.sp
 import app.chessnut.otb.ui.EvalBar
+import app.chessnut.otb.repertoire.OpeningMedal
+import app.chessnut.otb.ui.MedalMark
+import app.chessnut.otb.ui.BoltMark
+import app.chessnut.otb.ui.BookMark
+import app.chessnut.otb.ui.PieceIcon
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.draw.alpha
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -143,17 +151,11 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
     var importing by remember { mutableStateOf(false) }
     if (importing) StudyDialog(ui, viewModel, onDismiss = { importing = false })
     Column(modifier.padding(bottom = 8.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(selected = ui.userWhite, onClick = { viewModel.setUserWhite(true) }, label = { Text("White") }, colors = clubChipColors())
-            FilterChip(selected = !ui.userWhite, onClick = { viewModel.setUserWhite(false) }, label = { Text("Black") }, colors = clubChipColors())
-            if (ui.kind == PlayKind.Trainer) {
-                Box(Modifier.width(8.dp))
-                FilterChip(selected = ui.explain, onClick = { viewModel.setExplain(!ui.explain) }, label = { Text("Explain") }, colors = clubChipColors())
-                FilterChip(selected = ui.ideas, onClick = { viewModel.setIdeas(!ui.ideas) }, label = { Text("Ideas") }, colors = clubChipColors())
-                FilterChip(selected = ui.history, onClick = { viewModel.setHistory(!ui.history) }, label = { Text("History") }, colors = clubChipColors())
-            }
-        }
         if (ui.kind == PlayKind.Bot) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilterChip(selected = ui.userWhite, onClick = { viewModel.setUserWhite(true) }, label = { Text("White") }, colors = clubChipColors())
+                FilterChip(selected = !ui.userWhite, onClick = { viewModel.setUserWhite(false) }, label = { Text("Black") }, colors = clubChipColors())
+            }
             Text("Strength", color = Palette.TextMuted, style = MaterialTheme.typography.titleSmall)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 EloBracket.All.forEach { bracket ->
@@ -176,22 +178,17 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
             }
         } else {
             if (ui.openingsStarted > 0) ProgressCard(ui, viewModel::startReview)
-            Text(
-                if (ui.explain) {
-                    "Learning: arrows show the book moves. Turn off Explain to test yourself, one line at a time."
-                } else {
-                    "Testing: play each line from memory. Each one is scheduled for review: further away after a clean run, tomorrow after a miss."
-                },
-                color = Palette.TextMuted,
-                style = MaterialTheme.typography.bodySmall,
-            )
-            OutlinedTextField(
-                value = ui.openingQuery,
-                onValueChange = viewModel::setQuery,
-                placeholder = { Text("Search openings") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-            )
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(
+                    value = ui.openingQuery,
+                    onValueChange = viewModel::setQuery,
+                    placeholder = { Text("Search openings") },
+                    singleLine = true,
+                    modifier = Modifier.weight(1f),
+                )
+                // The side you play: the stats and medals below are for it.
+                SideToggle(ui.userWhite, viewModel::setUserWhite)
+            }
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 item { FilterChip(selected = ui.gambitsOnly, onClick = { viewModel.setGambitsOnly(!ui.gambitsOnly) }, label = { Text("Gambits") }, colors = clubChipColors()) }
                 item { FilterChip(selected = ui.whiteOpenings, onClick = { viewModel.setWhiteOpenings(!ui.whiteOpenings) }, label = { Text("White's") }, colors = clubChipColors()) }
@@ -203,16 +200,7 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
                 if (ui.sections.isEmpty()) {
                     item { Text("No openings match.", color = Palette.TextMuted, modifier = Modifier.padding(vertical = 8.dp)) }
                 }
-                if (ui.sections.any { section -> section.rows.any { it.winRate != null } }) {
-                    item(key = "legend") {
-                        Text(
-                            "Best first: how often the opening's side wins on Lichess, club rapid and classical. Gold is your best accuracy.",
-                            color = Palette.TextMuted,
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(vertical = 4.dp),
-                        )
-                    }
-                }
+                item(key = "legend") { Legend() }
                 ui.sections.forEach { section ->
                     if (section.title.isNotEmpty()) {
                         item(key = "head-${section.title}") {
@@ -225,46 +213,7 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
                         }
                     }
                     items(section.rows, key = { "${section.title}-${it.name}" }) { row ->
-                        val selected = row.name == ui.openingName
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(10.dp))
-                                .background(if (selected) Palette.SurfaceHigh else Color.Transparent)
-                                .clickable { viewModel.openDetail(row.name) }
-                                .padding(horizontal = 12.dp, vertical = 10.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Text(
-                                row.name,
-                                color = if (selected) Palette.Accent else Palette.Text,
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.weight(1f),
-                            )
-                            if (row.learned != null && row.lines != null) {
-                                Text(
-                                    "${row.learned}/${row.lines} lines",
-                                    color = if (row.learned == row.lines) Palette.Gold else Palette.TextMuted,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                )
-                            } else if (row.due != null) {
-                                Text(
-                                    if (row.due > 0) "${row.due} due" else "done",
-                                    color = if (row.due > 0) Palette.Gold else Palette.TextMuted,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                )
-                            } else {
-                                row.winRate?.let {
-                                    Text("$it%", color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium)
-                                }
-                            }
-                            Text(
-                                row.accuracy?.toString() ?: "–",
-                                color = if (row.accuracy != null) Palette.Gold else Palette.TextMuted,
-                                style = MaterialTheme.typography.titleSmall,
-                            )
-                        }
+                        OpeningListRow(row, selected = row.name == ui.openingName) { viewModel.openDetail(row.name) }
                     }
                 }
                 item(key = "import") {
@@ -274,6 +223,122 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
                 }
             }
 
+        }
+    }
+}
+
+/** White or Black, as two small squares in the piece colours. */
+@Composable
+private fun SideToggle(white: Boolean, onChange: (Boolean) -> Unit) {
+    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        for (side in listOf(true, false)) {
+            val on = side == white
+            // Each side on its own board square, so the black king shows against the dark page.
+            Box(
+                Modifier
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(if (side) Palette.LightSquare else Palette.DarkSquare)
+                    .border(if (on) 3.dp else 0.dp, if (on) Palette.Accent else Color.Transparent, RoundedCornerShape(10.dp))
+                    .alpha(if (on) 1f else 0.45f)
+                    .clickable { onChange(side) }
+                    .semantics { contentDescription = if (side) "Play White" else "Play Black" },
+                contentAlignment = Alignment.Center,
+            ) {
+                PieceIcon(if (side) 'K' else 'k', Modifier.size(34.dp), background = null)
+            }
+        }
+    }
+}
+
+/** What the icons on each opening mean, with how medals are earned behind a tap. */
+@Composable
+private fun Legend() {
+    var open by remember { mutableStateOf(false) }
+    if (open) {
+        AlertDialog(
+            onDismissRequest = { open = false },
+            title = { Text("Medals") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    MedalLine(OpeningMedal.Gold, "Every line learned, and a Survival run of ${OpeningMedal.GOLD_RUN} or more.")
+                    MedalLine(OpeningMedal.Silver, "Half the lines learned, and a Survival run of ${OpeningMedal.SILVER_RUN} or more.")
+                    MedalLine(OpeningMedal.Bronze, "A line learned.")
+                    Text("Medals are per side: White and Black each earn their own.", color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
+                }
+            },
+            confirmButton = { TextButton(onClick = { open = false }, colors = clubTextButtonColors()) { Text("OK", color = Palette.Accent) } },
+        )
+    }
+    Row(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).clickable { open = true }.padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        BookMark(Palette.TextMuted, Modifier.size(14.dp))
+        Text("learned", color = Palette.TextMuted, style = MaterialTheme.typography.labelSmall)
+        BoltMark(Palette.Survival)
+        Text("survival", color = Palette.TextMuted, style = MaterialTheme.typography.labelSmall)
+        Text("%", color = Palette.TextMuted, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelSmall)
+        Text("Lichess wins", color = Palette.TextMuted, style = MaterialTheme.typography.labelSmall, modifier = Modifier.weight(1f))
+        MedalMark(medalColor(OpeningMedal.Gold), Modifier.size(16.dp))
+        Text("medals ⓘ", color = Palette.Accent, style = MaterialTheme.typography.labelSmall)
+    }
+}
+
+@Composable
+private fun MedalLine(medal: OpeningMedal, text: String) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        MedalMark(medalColor(medal))
+        Text(text, color = Palette.Text, style = MaterialTheme.typography.bodyMedium)
+    }
+}
+
+private fun medalColor(medal: OpeningMedal): Color = when (medal) {
+    OpeningMedal.Gold -> Color(0xFFE2B656)
+    OpeningMedal.Silver -> Color(0xFFC8CCD2)
+    OpeningMedal.Bronze -> Color(0xFFC07A45)
+}
+
+/** One opening in the list: name, then icons for what you know of it, and its medal. */
+@Composable
+private fun OpeningListRow(row: OpeningRow, selected: Boolean, onClick: () -> Unit) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(if (selected) Palette.SurfaceHigh else Color.Transparent)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 10.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(row.name, color = if (selected) Palette.Accent else Palette.Text, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                if (row.learned != null && row.lines != null) {
+                    BookMark(if (row.learned == row.lines) Palette.Gold else Palette.TextMuted, Modifier.size(13.dp))
+                    Text("${row.learned}/${row.lines}", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
+                    Box(Modifier.width(6.dp))
+                }
+                if (row.due != null && row.due > 0) {
+                    ClockMark(Palette.Gold, Modifier.size(13.dp))
+                    Text("${row.due}", color = Palette.Gold, style = MaterialTheme.typography.labelMedium)
+                    Box(Modifier.width(6.dp))
+                }
+                row.depthBest?.let {
+                    BoltMark(Palette.Survival, Modifier.size(13.dp))
+                    Text("$it", color = Palette.Survival, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
+                    Box(Modifier.width(6.dp))
+                }
+                row.winRate?.let { Text("$it%", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium) }
+            }
+        }
+        val medal = row.medal
+        if (medal != null) {
+            MedalMark(medalColor(medal), Modifier.size(28.dp).semantics { contentDescription = "${medal.name} medal" })
+        } else {
+            Box(Modifier.size(28.dp))
         }
     }
 }
@@ -303,8 +368,16 @@ private fun ProgressCard(ui: PlayUi, onReview: () -> Unit) {
                 style = MaterialTheme.typography.bodySmall,
             )
         }
+        // Your medals, best first.
+        for (medal in listOf(OpeningMedal.Gold, OpeningMedal.Silver, OpeningMedal.Bronze)) {
+            val count = ui.medals[medal] ?: continue
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                MedalMark(medalColor(medal), Modifier.size(20.dp))
+                Text("$count", color = Palette.Text, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelLarge)
+            }
+        }
         if (ui.dueTotal > 0) {
-            PrimaryAction("Review ${ui.dueTotal}", Modifier.height(40.dp).width(116.dp), onClick = onReview)
+            PrimaryAction("Review ${ui.dueTotal}", Modifier.height(40.dp).width(108.dp), onClick = onReview)
         }
     }
 }
@@ -350,7 +423,7 @@ private fun DepthStrip(run: Int, best: Int?, over: Boolean) {
     }
 }
 
-/** Survival's own card, in its red: what it is and your best and last run. */
+/** Survival's own card, in its red: your best and last run, in one row. */
 @Composable
 private fun SurvivalCard(detail: OpeningDetail) {
     Row(
@@ -359,27 +432,22 @@ private fun SurvivalCard(detail: OpeningDetail) {
             .clip(RoundedCornerShape(12.dp))
             .background(Palette.Survival.copy(alpha = 0.12f))
             .border(1.dp, Palette.Survival.copy(alpha = 0.6f), RoundedCornerShape(12.dp))
-            .padding(horizontal = 14.dp, vertical = 12.dp),
+            .padding(horizontal = 14.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(14.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(detail.depthBest?.toString() ?: "–", color = Palette.Survival, fontWeight = FontWeight.Bold, fontSize = 30.sp)
-            Text("best", color = Palette.Survival, style = MaterialTheme.typography.labelSmall)
-        }
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Column(Modifier.weight(1f)) {
             Text("Survival", color = Palette.Survival, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
             Text(
-                if (detail.learned > 0) {
-                    "One of your learned lines, then the engine's best moves. How many good moves can you find past the line?"
-                } else {
-                    "Learn a line in Train to unlock Survival: play it, then keep finding the engine's best moves."
-                },
+                if (detail.learned > 0) "A learned line, then the engine's best moves" else "Learn a line in Train to unlock it",
                 color = Palette.TextMuted,
                 style = MaterialTheme.typography.bodySmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
-            detail.depthLast?.let { Text("Last run: $it", color = Palette.Text, style = MaterialTheme.typography.labelMedium) }
         }
+        detail.depthLast?.let { Stat(it.toString(), "last", Modifier, Palette.Text) }
+        Stat(detail.depthBest?.toString() ?: "–", "best", Modifier, Palette.Survival)
     }
 }
 
@@ -406,23 +474,23 @@ private fun OpeningPage(ui: PlayUi, detail: OpeningDetail, viewModel: PlayViewMo
                 }
             }
             item(key = "scores") {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        StatTile("${detail.learned}/${detail.total}", "Lines learned", Modifier.weight(1f), highlight = detail.total > 0 && detail.learned == detail.total)
-                        StatTile(detail.due.toString(), "Due for review", Modifier.weight(1f), highlight = detail.due > 0)
-                    }
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        StatTile(detail.accuracy?.toString() ?: "–", "Your best accuracy", Modifier.weight(1f))
-                        detail.winRate?.let { StatTile("$it%", "Wins on Lichess", Modifier.weight(1f)) }
-                    }
+                // One strip of four, so the lines start higher up the page.
+                Row(
+                    Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface).padding(vertical = 10.dp),
+                ) {
+                    Stat("${detail.learned}/${detail.total}", "learned", Modifier.weight(1f), if (detail.total > 0 && detail.learned == detail.total) Palette.Gold else Palette.Text)
+                    Stat(detail.due.toString(), "due", Modifier.weight(1f), if (detail.due > 0) Palette.Gold else Palette.Text)
+                    MedalStat(detail.medal, Modifier.weight(1f))
+                    Stat(detail.winRate?.let { "$it%" } ?: "–", "Lichess wins", Modifier.weight(1f))
                 }
             }
             item(key = "survival") { SurvivalCard(detail) }
-            item(key = "train-head") {
-                Text("Train", color = Palette.Accent, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 4.dp))
-            }
             item(key = "coach") {
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    itemVerticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text("Train", color = Palette.Accent, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(end = 4.dp))
                     FilterChip(selected = ui.explain, onClick = { viewModel.setExplain(!ui.explain) }, label = { Text("Explain") }, colors = clubChipColors())
                     FilterChip(selected = ui.ideas, onClick = { viewModel.setIdeas(!ui.ideas) }, label = { Text("Ideas") }, colors = clubChipColors())
                     FilterChip(selected = ui.history, onClick = { viewModel.setHistory(!ui.history) }, label = { Text("History") }, colors = clubChipColors())
@@ -433,8 +501,7 @@ private fun OpeningPage(ui: PlayUi, detail: OpeningDetail, viewModel: PlayViewMo
                     if (ui.explain) {
                         "Learning: arrows show the book moves. Nothing is scored."
                     } else {
-                        "Testing: play from memory. Each line is scheduled for review: 1 day after a clean run, then 3, 7, 14 and 30 days; " +
-                            "tomorrow after a miss. After the line, play carries on with book moves."
+                        "Testing from memory. Clean lines come back in 1, 3, 7, 14, then 30 days; a miss comes back tomorrow."
                     },
                     color = Palette.TextMuted,
                     style = MaterialTheme.typography.bodySmall,
@@ -455,7 +522,10 @@ private fun OpeningPage(ui: PlayUi, detail: OpeningDetail, viewModel: PlayViewMo
                 }
             }
             item(key = "lines-head") {
-                Text("Lines", color = Palette.Text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 4.dp))
+                Row(Modifier.padding(top = 4.dp), verticalAlignment = Alignment.Bottom) {
+                    Text("Lines", color = Palette.Text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                    Text(if (ui.userWhite) "as White" else "as Black", color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
+                }
             }
             itemsIndexed(ui.lines, key = { index, _ -> "line-$index" }) { index, line ->
                 LineRow(index, line) { viewModel.trainLine(index) }
@@ -486,13 +556,20 @@ private fun OpeningPage(ui: PlayUi, detail: OpeningDetail, viewModel: PlayViewMo
     }
 }
 
+/** The opening's medal in the stats strip, or a dash before the first line is learned. */
 @Composable
-private fun StatTile(value: String, label: String, modifier: Modifier, highlight: Boolean = false) {
-    Column(
-        modifier.clip(RoundedCornerShape(12.dp)).background(Palette.Surface).padding(horizontal = 12.dp, vertical = 10.dp),
-    ) {
-        Text(value, color = if (highlight) Palette.Gold else Palette.Text, fontWeight = FontWeight.Bold, fontSize = 22.sp)
-        Text(label, color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall, maxLines = 2)
+private fun MedalStat(medal: OpeningMedal?, modifier: Modifier) {
+    Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+        if (medal != null) MedalMark(medalColor(medal), Modifier.size(26.dp)) else Text("–", color = Palette.Text, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+        Text(medal?.name?.lowercase() ?: "medal", color = Palette.TextMuted, style = MaterialTheme.typography.labelSmall, maxLines = 1)
+    }
+}
+
+@Composable
+private fun Stat(value: String, label: String, modifier: Modifier, color: Color = Palette.Text) {
+    Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(value, color = color, fontWeight = FontWeight.Bold, fontSize = 20.sp, maxLines = 1)
+        Text(label, color = Palette.TextMuted, style = MaterialTheme.typography.labelSmall, maxLines = 1)
     }
 }
 
@@ -512,25 +589,20 @@ private fun LineRow(index: Int, line: LineView, onClick: () -> Unit) {
             .background(Palette.Surface)
             .clickable(onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("${index + 1}. ${line.name}", color = Palette.Text, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
-            Column(horizontalAlignment = Alignment.End) {
-                Text(label, color = tint, style = MaterialTheme.typography.labelMedium)
-                line.next?.let { Text(it, color = Palette.TextMuted, style = MaterialTheme.typography.labelSmall) }
-            }
-        }
+        Text("${index + 1}. ${line.name}", color = Palette.Text, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
         Text(line.moves, color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
-        line.winRate?.let { rate ->
-            Text("You win $rate% from here on Lichess", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(top = 2.dp))
-        }
-        line.best?.let { best ->
+        // Everything else about the line on one row: status and next review, Lichess result, Survival best.
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(
-                "Survival best: $best ${if (best == 1) "move" else "moves"}",
-                color = Palette.Survival,
+                line.next?.let { "$label · ${it.replaceFirstChar { c -> c.lowercase() }}" } ?: label,
+                color = tint,
                 style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.padding(top = 2.dp),
             )
+            line.winRate?.let { Text("Wins $it%", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium) }
+            Box(Modifier.weight(1f))
+            line.best?.let { Text("Survival $it", color = Palette.Survival, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium) }
         }
     }
 }

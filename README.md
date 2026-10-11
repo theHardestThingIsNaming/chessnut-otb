@@ -18,8 +18,9 @@ Android app for the Chessnut Air smart board. Play over the board with clocks, v
 - A move history you can step back through during the game.
 
 ### Opening trainer
+- **Medals**: each opening earns bronze for a learned line, silver for half its lines and a Survival run of 2, gold for every line and a run of 5, per side. The list shows them with icons for lines learned, lines due, Survival best and Lichess win rate.
 - **Grouped variations**: an opening's listed variations, such as the Scotch's Göring Gambit and Scotch Gambit, are part of its page, its lines and its Survival games instead of separate entries. Search still finds them on their own.
-- **Opening pages**: tap any opening for its own page: lines learned, lines due, Survival best, best accuracy and Lichess win rate, your chosen moves, every line with its review date and how often your colour wins from it on Lichess, and its history, with Train at the bottom.
+- **Opening pages**: tap any opening for its own page: lines learned, lines due, medal, Survival best and Lichess win rate, your chosen moves, every line with its review date and how often your colour wins from it on Lichess, and its history, with Train at the bottom.
 - Everyday openings, a gambits section and a meme openings section (Bongcloud, the Cow, Kilkenny Gambit, Jerome, Alien and more). Filters for gambits, White's, Black's, memes and openings not yet played. The chosen opening shows its start position, moves and progress.
 - **Learn every line**: each opening is split into lines the way a coach writes a repertoire: one move for your side, the opponent's most common replies. A game follows one line. With Explain off it is graded from memory with spaced repetition, and the list shows how many lines you know. Reviews that come due appear at the top. See all lines by variation name, and tap one to drill it.
 - **Survival**: from an opening's page, play one of your learned lines picked at random against a varied opponent, then keep going with book moves or the engine's top two for as long as you can. Reviews aren't affected. Each line keeps its own best run, shown on the opening page.

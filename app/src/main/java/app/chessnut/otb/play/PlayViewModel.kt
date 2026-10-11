@@ -55,6 +55,7 @@ import app.chessnut.otb.review.POSITION_PREFIX
 import app.chessnut.otb.repertoire.DepthRun
 import app.chessnut.otb.play.BOARD_SETTLE_MS
 import app.chessnut.otb.openings.OpeningSide
+import app.chessnut.otb.repertoire.OpeningMedal
 
 enum class PlayKind { Bot, Trainer }
 
@@ -72,6 +73,8 @@ data class OpeningRow(
     val lines: Int? = null,
     /** Your longest run of engine-approved moves past the book, from this side. */
     val depthBest: Int? = null,
+    /** How well you know it, from lines learned and your Survival best. */
+    val medal: OpeningMedal? = null,
 )
 
 data class OpeningSection(val title: String, val rows: List<OpeningRow>)
@@ -95,6 +98,7 @@ data class OpeningDetail(
     val choices: List<String>,
     /** Lines come from an imported study rather than the book. */
     val study: Boolean,
+    val medal: OpeningMedal? = null,
 )
 
 enum class LineStatus { New, Learned, Due, Missed }
@@ -208,6 +212,8 @@ data class PlayUi(
     val evalTerminal: Terminal? = null,
     /** The bot game starts from this position instead of the usual start, such as one set up on the board. */
     val startFen: String? = null,
+    /** Medals across every opening and side you have started. */
+    val medals: Map<OpeningMedal, Int> = emptyMap(),
     /** A review session is running through due lines from several openings. */
     val reviewing: Boolean = false,
     /** No review lines are left after this one. */
@@ -581,6 +587,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             story = OpeningLore.of(name),
             choices = choices,
             study = study,
+            medal = OpeningMedal.of(learnedCount, lines.size, depth?.best),
         )
     }
 
@@ -1806,9 +1813,11 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                         } else {
                             null
                         }
+                        val best = app.depthRecords.of(name, side)?.best
                         OpeningRow(
                             name, scores[name], rates[name], due, progress?.first, progress?.second,
-                            depthBest = app.depthRecords.of(name, side)?.best,
+                            depthBest = best,
+                            medal = progress?.let { (learned, total) -> OpeningMedal.of(learned, total, best) },
                         )
                     }
                 if (rows.isEmpty()) null else OpeningSection(section.title, rows)
@@ -1817,17 +1826,28 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             val now = System.currentTimeMillis()
             val dueRows = if (query.isNotBlank()) emptyList() else started.filter { it.second == side }.mapNotNull { (name, white) ->
                 val overdue = Drill.overdue(bookLines(name, white), app.lineProgress.reviews(name, white), now)
-                if (overdue == 0) null else OpeningRow(name, scores[name], rates[name], due = overdue)
+                if (overdue == 0) {
+                    null
+                } else {
+                    val lines = bookLines(name, white)
+                    val keys = lines.map(Drill::key).toSet()
+                    val learned = app.lineProgress.learned(name, white).count { it in keys }
+                    val best = app.depthRecords.of(name, white)?.best
+                    OpeningRow(name, scores[name], rates[name], due = overdue, learned = learned, lines = keys.size, depthBest = best, medal = OpeningMedal.of(learned, keys.size, best))
+                }
             }.sortedByDescending { it.due }
             val shown = if (dueRows.isEmpty()) sections else listOf(OpeningSection(DUE_SECTION, dueRows)) + sections
             // The summary counts every opening and side, not only the one shown.
             var learnedTotal = 0
             var dueTotal = 0
+            val medals = mutableMapOf<OpeningMedal, Int>()
             for ((name, white) in started) {
                 val lines = bookLines(name, white)
                 val keys = lines.map(Drill::key).toSet()
-                learnedTotal += app.lineProgress.learned(name, white).count { it in keys }
+                val learned = app.lineProgress.learned(name, white).count { it in keys }
+                learnedTotal += learned
                 dueTotal += Drill.overdue(lines, app.lineProgress.reviews(name, white), now)
+                OpeningMedal.of(learned, keys.size, app.depthRecords.of(name, white)?.best)?.let { medals[it] = (medals[it] ?: 0) + 1 }
             }
             state.update {
                 it.copy(
@@ -1836,6 +1856,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                     learnedTotal = learnedTotal,
                     openingsStarted = started.size,
                     dueTotal = dueTotal,
+                    medals = medals,
                 )
             }
             fetchOpeningStats()

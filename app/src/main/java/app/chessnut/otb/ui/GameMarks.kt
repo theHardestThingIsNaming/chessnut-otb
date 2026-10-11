@@ -211,3 +211,47 @@ fun TargetMark(tint: Color, modifier: Modifier = Modifier.size(18.dp)) {
         drawCircle(tint, radius = size.minDimension * 0.08f)
     }
 }
+
+/** Survival's mark: a lightning bolt. */
+@Composable
+fun BoltMark(tint: Color, modifier: Modifier = Modifier.size(14.dp)) {
+    Canvas(modifier) {
+        val w = size.width
+        val h = size.height
+        val path = Path().apply {
+            moveTo(w * 0.58f, h * 0.04f)
+            lineTo(w * 0.18f, h * 0.56f)
+            lineTo(w * 0.46f, h * 0.56f)
+            lineTo(w * 0.38f, h * 0.96f)
+            lineTo(w * 0.82f, h * 0.40f)
+            lineTo(w * 0.54f, h * 0.40f)
+            close()
+        }
+        drawPath(path, tint)
+    }
+}
+
+/** A medal: a coloured disc on a ribbon. */
+@Composable
+fun MedalMark(fill: Color, modifier: Modifier = Modifier.size(26.dp)) {
+    Canvas(modifier) {
+        val w = size.width
+        val h = size.height
+        val ribbon = Path().apply {
+            moveTo(w * 0.28f, 0f)
+            lineTo(w * 0.44f, 0f)
+            lineTo(w * 0.56f, h * 0.42f)
+            lineTo(w * 0.40f, h * 0.42f)
+            close()
+            moveTo(w * 0.72f, 0f)
+            lineTo(w * 0.56f, 0f)
+            lineTo(w * 0.44f, h * 0.42f)
+            lineTo(w * 0.60f, h * 0.42f)
+            close()
+        }
+        drawPath(ribbon, Color(0xFF5B7FB8))
+        val center = Offset(w / 2f, h * 0.64f)
+        drawCircle(fill, radius = w * 0.32f, center = center)
+        drawCircle(Color.White.copy(alpha = 0.35f), radius = w * 0.20f, center = center, style = Stroke(width = w * 0.05f))
+    }
+}
