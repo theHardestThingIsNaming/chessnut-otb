@@ -54,7 +54,12 @@ class OtbApp : Application() {
     private val keeper by lazy { GameKeeper(store, digests) }
 
     /** Names that mean "me" in a game's headers: the one set here, and the Lichess login. */
-    val myNames: List<String> get() = listOfNotNull(myName.ifBlank { null }, vault.username())
+    val myNames: List<String> get() = listOfNotNull(myName.ifBlank { null }, vault.username(), chessComUser.ifBlank { null })
+
+    /** Your Chess.com username, for importing your games there. */
+    var chessComUser: String
+        get() = settings.getString(KEY_CHESS_COM, "").orEmpty()
+        set(value) = settings.edit().putString(KEY_CHESS_COM, value).apply()
 
     private val gamesFlow = MutableStateFlow<List<SavedGame>>(emptyList())
     val games: StateFlow<List<SavedGame>> = gamesFlow.asStateFlow()
@@ -292,7 +297,9 @@ class OtbApp : Application() {
         val request = OneTimeWorkRequestBuilder<AnalysisWorker>()
             .setInputData(workDataOf(AnalysisWorker.KEY_GAME_ID to id))
             .build()
-        WorkManager.getInstance(this).enqueueUniqueWork("analyse-$id", ExistingWorkPolicy.KEEP, request)
+        // One queue, run in order: an import of many games would otherwise run several Stockfish side by side.
+        // A game already analysed when its turn comes is skipped by the worker.
+        WorkManager.getInstance(this).enqueueUniqueWork(ANALYSIS_QUEUE, ExistingWorkPolicy.APPEND_OR_REPLACE, request)
         reportProgress(id, 0f)
     }
 
@@ -307,6 +314,8 @@ class OtbApp : Application() {
 
     private companion object {
         const val KEY_MY_NAME = "my_name"
+        const val ANALYSIS_QUEUE = "analysis-queue"
+        const val KEY_CHESS_COM = "chess_com_user"
         const val KEY_AUTO_UPLOAD = "auto_upload"
         const val KEY_LINK_PREFIX = "lichess_link_"
         const val KEY_PENDING = "lichess_pending_uploads"

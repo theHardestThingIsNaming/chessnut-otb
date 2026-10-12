@@ -1,5 +1,7 @@
 package app.chessnut.otb.play
 
+import app.chessnut.otb.chesscom.ChessComGames
+import app.chessnut.otb.chesscom.ChessComHttp
 import app.chessnut.otb.engine.EngineHolder
 import java.io.IOException
 import app.chessnut.otb.lichess.LichessHttpException
@@ -65,6 +67,9 @@ enum class PlayKind { Bot, Trainer }
 
 /** The bot's time menu entry for untimed play. */
 const val NO_CLOCK = "No clock"
+
+/** Where games imported from Chess.com go, out of the main list's tidy-up. */
+const val CHESS_COM_FOLDER = "Chess.com"
 
 /** [winRate] is how often the opening's side wins on Lichess, as a percentage, once fetched. */
 data class OpeningRow(
@@ -263,11 +268,17 @@ data class PlayUi(
     val reviewing: Boolean = false,
     /** No review lines are left after this one. */
     val reviewLast: Boolean = false,
+    /** Your Chess.com username, and how the last import of this opening's games went. */
+    val chessComUser: String = "",
+    val chessComNote: String? = null,
+    val chessComBusy: Boolean = false,
 )
 
 class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private val app = application as OtbApp
-    private val state = MutableStateFlow(PlayUi(explain = app.explainOpening, history = app.openingHistory, ideas = app.moveIdeas))
+    private val state = MutableStateFlow(
+        PlayUi(explain = app.explainOpening, history = app.openingHistory, ideas = app.moveIdeas, chessComUser = app.chessComUser),
+    )
     val ui: StateFlow<PlayUi> = state.asStateFlow()
     private val sounds = BoardSounds()
     private val speech = MoveSpeaker(application)
@@ -718,6 +729,49 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         app.repertoire.clear()
         if (app.repertoire.isRepertoire(state.value.openingName)) state.update { it.copy(openingName = null) }
         refreshOpenings(state.value.openingQuery)
+    }
+
+    /**
+     * Brings in your Chess.com games of the last 30 days in this opening, from
+     * its side: each one saved to the Chess.com folder and analysed, so its
+     * mistakes (yours only, by name) join your practice.
+     */
+    fun importChessCom(username: String) {
+        val name = state.value.openingName ?: return
+        val white = state.value.userWhite
+        val user = username.trim()
+        if (!ChessComGames.USERNAME.matches(user)) {
+            state.update { it.copy(chessComNote = "That doesn't look like a Chess.com username.") }
+            return
+        }
+        app.chessComUser = user
+        state.update { it.copy(chessComUser = user, chessComBusy = true, chessComNote = "Looking through your Chess.com games…") }
+        viewModelScope.launch(Dispatchers.IO) {
+            val note = try {
+                val now = System.currentTimeMillis()
+                val months = ChessComGames.recentArchives(ChessComGames.archives(ChessComHttp.get(ChessComGames.archivesUrl(user))), now)
+                val games = months.flatMap { ChessComGames.games(ChessComHttp.get(it), since = now - 30L * 24 * 60 * 60 * 1000) }
+                val found = games.mapNotNull { ChessComGames.saved(it, name, white, user) }
+                var added = 0
+                for (game in found) {
+                    if (!app.store.addIfNew(game)) continue
+                    app.store.moveToFolder(game.id, CHESS_COM_FOLDER)
+                    app.analyse(game.id)
+                    added++
+                }
+                app.refreshGames()
+                val side = if (white) "White" else "Black"
+                when {
+                    found.isEmpty() -> "No $name games with $side in the last 30 days."
+                    added == 0 -> "All ${found.size} of your $name games are already here."
+                    else -> "Imported $added $name ${if (added == 1) "game" else "games"} into the Chess.com folder. " +
+                        "Their mistakes join your practice once Stockfish has been through them."
+                }
+            } catch (e: Exception) {
+                e.message ?: "Couldn't reach Chess.com."
+            }
+            withContext(Dispatchers.Main) { state.update { it.copy(chessComBusy = false, chessComNote = note) } }
+        }
     }
 
     /** Train from the opening's page: opens with a due review, else the line practised longest ago, else line 1. */

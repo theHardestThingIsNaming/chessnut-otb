@@ -566,6 +566,7 @@ private fun OpeningPage(ui: PlayUi, detail: OpeningDetail, viewModel: PlayViewMo
                     }
                 }
             }
+            item(key = "chess-com") { ChessComImport(ui, viewModel::importChessCom) }
             item(key = "lines-head") {
                 Row(Modifier.padding(top = 4.dp), verticalAlignment = Alignment.Bottom) {
                     Text("Lines", color = Palette.Text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
@@ -1175,4 +1176,45 @@ private fun StudyDialog(ui: PlayUi, viewModel: PlayViewModel, onDismiss: () -> U
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Done") } },
     )
+}
+
+/** Brings in your recent Chess.com games of this opening, so their mistakes join your practice. */
+@Composable
+private fun ChessComImport(ui: PlayUi, onImport: (String) -> Unit) {
+    var asking by remember { mutableStateOf(false) }
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        TextButton(
+            onClick = { if (ui.chessComUser.isBlank()) asking = true else onImport(ui.chessComUser) },
+            enabled = !ui.chessComBusy,
+            colors = clubTextButtonColors(),
+        ) {
+            Text("Import my Chess.com games from the last 30 days", color = Palette.Accent)
+        }
+        ui.chessComNote?.let { Text(it, color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall) }
+        if (ui.chessComUser.isNotBlank() && !ui.chessComBusy) {
+            Text(
+                "As ${ui.chessComUser} · change",
+                color = Palette.TextMuted,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.clickable { asking = true },
+            )
+        }
+    }
+    if (asking) {
+        var name by remember { mutableStateOf(ui.chessComUser) }
+        AlertDialog(
+            onDismissRequest = { asking = false },
+            title = { Text("Your Chess.com username") },
+            text = {
+                OutlinedTextField(value = name, onValueChange = { name = it }, singleLine = true, label = { Text("Username") })
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    asking = false
+                    onImport(name)
+                }, colors = clubTextButtonColors()) { Text("Import", color = Palette.Accent) }
+            },
+            dismissButton = { TextButton(onClick = { asking = false }, colors = clubTextButtonColors()) { Text("Cancel", color = Palette.TextMuted) } },
+        )
+    }
 }
