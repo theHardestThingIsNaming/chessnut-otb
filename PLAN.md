@@ -6,7 +6,7 @@ What is already on the phone is under Done. What is worth doing next is under Ne
 The app teaches an opening, then three things past move 15: middlegame plans, middlegame tactics,
 and endgames. Built the same way for the main openings, including the Bishop's Opening.
 
-Last shipped, and on the phone: the six Nimzo-Indian plans, on `main`. Every Nimzo-Indian line now has a plan.
+Last shipped: the nine Slav plans, on `main`. Every Slav line now has a plan. The phone was away, so this build is on the emulator; install it when the phone is back.
 
 ## Done
 
@@ -25,6 +25,7 @@ Last shipped, and on the phone: the six Nimzo-Indian plans, on `main`. Every Nim
 - [x] Every Vienna line now leads into a middlegame plan: one new one, the fork on c7 after the queen trade. You gave a knight for a pawn; trade queens, step the bishop back to e2, and Nb5. When Black's knight checks on f2 and the bishop takes the rook, Nxc7+ forks the king and the other rook. Played on by Stockfish and checked (worst move of yours 7cp). The game stays level. The same test now covers the Vienna with the Scotch.
 - [x] Every London line now leads into a middlegame plan: one new one, the e4 break against ...Qb6. The queen leaves b2, White takes on c5, plays h3 and Bd3, castles, and breaks with e4. Both bishops end in the centre. Played on by Stockfish and checked (worst move of yours 8cp). White keeps a small edge. The covered-openings test now includes the London.
 - [x] Every Nimzo-Indian line now leads into a middlegame plan: six new ones (the knight to e4, the doubled c-pawns, the bishop on a6, queens off on d1, the queen taking the rook on a1, the open f-file). Played on by Stockfish and checked (worst move of yours 13cp). Where White keeps the bishop pair, or a small edge, or the game stays level after the queen grabs a rook, the summary says so. The covered-openings test now includes the Nimzo-Indian.
+- [x] Every Slav line now leads into a middlegame plan: nine new ones (the extra pawn on c4, the pawn on b3, the king on d2, queens off on b3, the knight on b4, the pawn on c2, doubled b-pawns, the half-open c-file, meeting the e4 break). Played on by Stockfish and checked (worst move of yours 12cp). The pawn on b3 keeps about half a pawn; the pawn on c2 is two extra pawns and still about level, because the knight attacks the pawn on c2 and the king has not castled. The covered-openings test now includes the Slav.
 - [x] Slimmer opening page: the stats are one row of icons (learned, due, medal, Lichess wins, Survival best, punished) with an ⓘ legend; each line has a Middlegame plan button; Explain, Ideas and History are left to the Train screen.
 - [x] Plans are linked to their lines: each line on the opening's page names the plan that starts where it ends (tap to open it), and finishing that line in Train offers "Continue with the plan". Back from a plan opened this way returns to where you were.
 - [x] The opening's page has a clearer order: one stats card (lines learned, due, medal, Lichess wins; then Survival best, last run and punished), Beyond the opening, then the lines, with the Chess.com import at the end. Train's options (Explain, Ideas, History) are pinned just above the Train, Punish and Survival buttons.
@@ -41,7 +42,7 @@ Last shipped, and on the phone: the six Nimzo-Indian plans, on `main`. Every Nim
 ## Next
 
 - [ ] Optional. Two more Essential endgames if they earn a place: the Vancura (rook against a rook's pawn) and queen against a pawn. The eight already cover the usual club endings.
-- [ ] A middlegame plan after every line, one opening at a time (the Scotch, the Vienna, the London and the Nimzo-Indian are done). Lines still without a plan: Slav 9, Pirc 10, Italian 12, French 14, King's Indian 16, Caro-Kann 17, Sicilian 18, Ruy Lopez 24, English 25. Tools: `LineDumpTest` lists an opening's lines and their plans; `PlanGenTest` plays Stockfish on from each line's end; `PlanCheckTest` checks the result.
+- [ ] A middlegame plan after every line, one opening at a time (the Scotch, the Vienna, the London, the Nimzo-Indian and the Slav are done). Lines still without a plan: Pirc 10, Italian 12, French 14, King's Indian 16, Caro-Kann 17, Sicilian 18, Ruy Lopez 24, English 25. Tools: `LineDumpTest` lists an opening's lines and their plans; `PlanGenTest` plays Stockfish on from each line's end; `PlanCheckTest` checks the result.
 
 ### UX review, 2026-10-12
 
