@@ -1,5 +1,7 @@
 package app.chessnut.otb.review
 
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import app.chessnut.otb.games.GameSource
@@ -261,16 +263,18 @@ private fun gambitHighlights(ui: ReviewState): Set<Int> {
 @Composable
 private fun AccuracyRow(ui: ReviewState, onAnalyse: () -> Unit) {
     val report = ui.report
+    // The same height whether analysing or done, so the board doesn't jump when the report arrives.
+    val steady = Modifier.fillMaxWidth().heightIn(min = 60.dp)
     when {
-        ui.progress != null -> Column {
+        ui.progress != null -> Column(steady, verticalArrangement = Arrangement.Center) {
             Text("Stockfish is analysing… ${(ui.progress * 100).toInt()}%", color = Palette.TextMuted)
             LinearProgressIndicator(progress = { ui.progress }, modifier = Modifier.fillMaxWidth())
         }
-        report != null -> Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        report != null -> Column(steady, verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)) {
             SideSummary("White", report.whiteAccuracy, light = true, report.moves.filter { it.whiteMoved })
             SideSummary("Black", report.blackAccuracy, light = false, report.moves.filter { !it.whiteMoved })
         }
-        else -> Row(verticalAlignment = Alignment.CenterVertically) {
+        else -> Row(steady, verticalAlignment = Alignment.CenterVertically) {
             Text("Not analysed yet.", color = Palette.TextMuted, modifier = Modifier.weight(1f))
             Button(onClick = onAnalyse) { Text("Analyse") }
         }
@@ -470,7 +474,8 @@ private fun sideLineText(ui: ReviewState): String {
 
 @Composable
 private fun EnginePanel(ui: ReviewState, onPlay: (String) -> Unit) {
-    val engine = ui.engine ?: return
+    // The panel keeps its size while Stockfish works: a heading, three line slots and the note, always.
+    val engine = ui.engine ?: EngineView(null, null, emptyList(), live = true)
     Box(Modifier.fillMaxWidth().clubPanel()) {
         Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             val heading = when (engine.terminal) {
@@ -480,16 +485,21 @@ private fun EnginePanel(ui: ReviewState, onPlay: (String) -> Unit) {
                     engine.lines.isEmpty() && engine.live -> "Stockfish is thinking…"
                     engine.lines.isEmpty() -> "No engine lines for this position."
                     engine.live -> "Live Stockfish, depth ${engine.lines.first().depth}"
-                    else -> null
+                    else -> "Stockfish, depth ${engine.lines.first().depth}"
                 }
             }
-            if (heading != null) Text(heading, color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
+            Text(heading, color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium, maxLines = 1)
             val playedHere = if (!ui.exploring) ui.uci.getOrNull(ui.cursor) else null
             val gambitMoves = OpeningBook.view(shownSan(ui)).gambits.map { it.san.last() }.toSet()
-            engine.lines.forEach { line ->
+            for (slot in 0 until maxOf(ENGINE_SLOTS, engine.lines.size)) {
+                val line = engine.lines.getOrNull(slot)
+                if (line == null) {
+                    Text("…", color = Palette.TextMuted, fontSize = 16.sp, modifier = Modifier.height(ENGINE_ROW).padding(horizontal = 4.dp))
+                    continue
+                }
                 val gambit = line.san.firstOrNull() in gambitMoves
                 Row(
-                    Modifier.fillMaxWidth().clip(RoundedCornerShape(6.dp))
+                    Modifier.fillMaxWidth().height(ENGINE_ROW).clip(RoundedCornerShape(6.dp))
                         .clickable(enabled = line.firstUci != null) { line.firstUci?.let(onPlay) }
                         .padding(vertical = 2.dp, horizontal = 4.dp),
                     verticalAlignment = Alignment.CenterVertically,
@@ -534,7 +544,11 @@ private fun EnginePanel(ui: ReviewState, onPlay: (String) -> Unit) {
                         color = classColor(move.classification),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
+                        minLines = 2,
+                        maxLines = 2,
                     )
+                } else {
+                    Text("", fontSize = 16.sp, minLines = 2)
                 }
             }
         }
@@ -685,3 +699,7 @@ private fun EditInfoDialog(
         dismissButton = { TextButton(onClick = onDismiss, colors = clubTextButtonColors()) { Text("Cancel", color = Palette.Accent) } },
     )
 }
+
+/** Engine lines shown at once, and each one's height, so the panel never changes size. */
+private const val ENGINE_SLOTS = 3
+private val ENGINE_ROW = 30.dp

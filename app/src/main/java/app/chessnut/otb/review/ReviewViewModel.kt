@@ -283,14 +283,22 @@ class ReviewViewModel(application: Application, private val gameId: String) : An
             state.update { it.copy(engine = EngineView(null, terminal, emptyList(), live = false)) }
             return
         }
-        state.update { it.copy(engine = EngineView(null, null, emptyList(), live = true)) }
+        // Keep the last score until this position's first result, so the eval bar doesn't snap to even.
+        state.update { it.copy(engine = EngineView(it.engine?.score, null, emptyList(), live = true)) }
         liveJob = viewModelScope.launch(Dispatchers.Default) {
             try {
                 val engine = engineLock.withLock {
                     liveEngine ?: UciEngine(StockfishProcess.start(app), threads = 2).also { liveEngine = it }
                 }
                 engine.start()
+                var shownAt = 0L
+                var shownCount = 0
                 engine.analyseLive(fen, multiPv = 3).collect { lines ->
+                    // A few updates a second is plenty to read; every depth makes the panel flicker.
+                    val now = System.currentTimeMillis()
+                    if (now - shownAt < LIVE_UPDATE_MS && lines.size <= shownCount) return@collect
+                    shownAt = now
+                    shownCount = lines.size
                     state.update { current ->
                         if (current.fen != fen) current else current.copy(
                             engine = EngineView(lines.firstOrNull()?.score, null, shown(fen, lines), live = true),
@@ -334,6 +342,9 @@ class ReviewViewModel(application: Application, private val gameId: String) : An
 
 
     private companion object {
+        /** Fastest the live engine lines refresh on screen. */
+        const val LIVE_UPDATE_MS = 300L
+
         const val THREAT_DEPTH = 14
     }
 
