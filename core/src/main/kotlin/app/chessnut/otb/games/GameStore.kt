@@ -101,6 +101,10 @@ class GameStore(private val root: File) {
     @Synchronized
     fun unfiled(): List<SavedGame> = gamesIn(root)
 
+    /** Games in the folder [name]. */
+    @Synchronized
+    fun inFolder(name: String): List<SavedGame> = gamesIn(folderDir(name))
+
     /** Newest first. Games in the main list and in named folders. */
     @Synchronized
     fun all(): List<SavedGame> =

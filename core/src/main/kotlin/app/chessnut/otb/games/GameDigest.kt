@@ -132,6 +132,24 @@ class GameKeeper(private val store: GameStore, private val digests: DigestStore)
         return removed
     }
 
+    /**
+     * Lets go of games in [folder] older than [maxAgeMs], such as imported Chess.com games past
+     * the 30 days a re-import would fetch. Like [tidy], each is digested first, so its mistakes
+     * and opening score stay; anything in [protect], or not yet analysed, is left alone.
+     */
+    fun tidyFolder(folder: String, now: Long, maxAgeMs: Long, myNames: List<String>, protect: Set<String> = emptySet()): List<String> {
+        val removed = mutableListOf<String>()
+        for (game in store.inFolder(folder)) {
+            if (now - game.createdAt <= maxAgeMs || game.id in protect) continue
+            val analysis = store.loadAnalysis(game.id)
+            if (analysis == null && game.sanMoves.size >= 2 && now - game.createdAt < maxAgeMs + ANALYSIS_GRACE_MS) continue
+            digests.save(GameDigest.of(game, analysis, myNames))
+            store.delete(game.id)
+            removed += game.id
+        }
+        return removed
+    }
+
     companion object {
         const val ANALYSIS_GRACE_MS = 7L * 24 * 60 * 60 * 1000
     }

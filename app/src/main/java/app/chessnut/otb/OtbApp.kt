@@ -15,6 +15,7 @@ import app.chessnut.otb.games.GameStore
 import app.chessnut.otb.games.GameSource
 import app.chessnut.otb.games.SavedGame
 import app.chessnut.otb.lichess.HttpImporter
+import app.chessnut.otb.play.CHESS_COM_FOLDER
 import app.chessnut.otb.lichess.LichessHttp
 import app.chessnut.otb.lichess.LichessVault
 import app.chessnut.otb.repertoire.DepthRecords
@@ -258,7 +259,10 @@ class OtbApp : Application() {
      */
     fun refreshGames() {
         val busy = progressFlow.value.keys + pendingUploads()
-        val removed = keeper.tidy(System.currentTimeMillis(), myNames, protect = busy)
+        val now = System.currentTimeMillis()
+        val removed = keeper.tidy(now, myNames, protect = busy) +
+            // Imported Chess.com games keep the 30 days an import fetches; older ones are digested and let go.
+            keeper.tidyFolder(CHESS_COM_FOLDER, now, CHESS_COM_DAYS * DAY_MS, myNames, protect = busy)
         if (removed.isNotEmpty()) Log.i(TAG, "tidied ${removed.size} older game(s)")
         gamesFlow.value = store.all()
     }
@@ -316,6 +320,8 @@ class OtbApp : Application() {
     }
 
     private companion object {
+        const val CHESS_COM_DAYS = 30L
+        const val DAY_MS = 24L * 60 * 60 * 1000
         const val KEY_MY_NAME = "my_name"
         const val ANALYSIS_QUEUE = "analysis-queue"
         const val KEY_CHESS_COM = "chess_com_user"

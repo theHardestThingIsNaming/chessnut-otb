@@ -106,4 +106,26 @@ class GameKeeperTest {
         assertEquals(digest, digests.all().single())
         assertEquals("abcdef0123456789:7", digests.all().single().mistakes.single().key)
     }
+
+    @Test
+    fun aFolderKeepsItsLastThirtyDaysAndDigestsOlderGames() {
+        val root = tempDir()
+        val store = GameStore(File(root, "games"))
+        val digests = DigestStore(File(root, "digests"))
+        val fresh = game("e4 e5", now - 10 * day)
+        val old = game("d4 d5", now - 40 * day)
+        val other = game("c4 e5", now - 40 * day)
+        for (g in listOf(fresh, old, other)) {
+            store.save(g)
+            store.saveAnalysis(g.id, flatAnalysis(g.sanMoves.size))
+        }
+        store.moveToFolder(fresh.id, "Chess.com")
+        store.moveToFolder(old.id, "Chess.com")
+        store.moveToFolder(other.id, "Mine")
+        val removed = GameKeeper(store, digests).tidyFolder("Chess.com", now, 30 * day, listOf("Me"))
+        assertEquals(listOf(old.id), removed)
+        assertTrue(store.contains(fresh.id), "a game from the last 30 days stays")
+        assertTrue(store.contains(other.id), "other folders are never touched")
+        assertTrue(digests.all().any { it.gameId == old.id }, "the old game's mistakes and score are kept")
+    }
 }
