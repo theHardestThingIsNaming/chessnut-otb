@@ -127,6 +127,8 @@ data class OpeningDetail(
     val medal: OpeningMedal? = null,
     /** Common mistakes in this opening's lines that Punish mode can set. */
     val punishable: Int = 0,
+    /** Of those, the ones you've punished without help at least once. */
+    val punished: Int = 0,
 )
 
 enum class LineStatus { New, Learned, Due, Missed }
@@ -624,7 +626,11 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                         name, white, chapter != null, views,
                         learnedCount = learned?.count { key -> lines.any { Drill.key(it) == key } }
                             ?: views.count { it.status == LineStatus.Learned },
-                    ).copy(punishable = traps.count { (it.before.size % 2 == 1) == white }),
+                    ).let { detail ->
+                        val yours = traps.filter { (it.before.size % 2 == 1) == white }
+                        val clean = app.lineProgress.learned(punishKey(name), white)
+                        detail.copy(punishable = yours.size, punished = yours.count { Drill.key(it.before + it.moves) in clean })
+                    },
                 ) else it }
         }
     }

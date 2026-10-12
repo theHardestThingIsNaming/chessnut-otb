@@ -499,6 +499,33 @@ private fun SurvivalCard(detail: OpeningDetail) {
     }
 }
 
+/** Punish's own card, in its orange beside Survival's red: how many of the opening's mistakes you've punished without help. */
+@Composable
+private fun PunishCard(detail: OpeningDetail) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(Palette.Mistake.copy(alpha = 0.12f))
+            .border(1.dp, Palette.Mistake.copy(alpha = 0.6f), RoundedCornerShape(12.dp))
+            .padding(horizontal = 14.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text("Punish", color = Palette.Mistake, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+            Text(
+                "Common mistakes you punished without help",
+                color = Palette.TextMuted,
+                style = MaterialTheme.typography.bodySmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        Stat("${detail.punished}/${detail.punishable}", "punished", Modifier, Palette.Mistake)
+    }
+}
+
 /** One opening from one side: what you know of it, its lines and its history, with training a tap away. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -540,6 +567,7 @@ private fun OpeningPage(
                 }
             }
             item(key = "survival") { SurvivalCard(detail) }
+            if (detail.punishable > 0) item(key = "punish") { PunishCard(detail) }
             item(key = "coach") {
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
