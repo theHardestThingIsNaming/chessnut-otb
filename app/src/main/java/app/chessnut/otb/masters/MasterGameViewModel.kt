@@ -247,6 +247,8 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         run {
             while (ply < g.end && (ply % 2 == 0) != g.userWhite) {
                 if (ply == g.start) lineEnds()
+                // The voice sets the pace: the next move waits until the last one has been said.
+                awaitSpeech()
                 delay(OPPONENT_DELAY_MS)
                 val san = g.moves[ply]
                 if (app.phoneSounds) {
@@ -266,14 +268,19 @@ class MasterGameViewModel(application: Application, private val id: String) : An
                 ply++
             }
             if (ply >= g.end) {
+                awaitSpeech()
                 finish()
             } else {
                 if (ply == g.start) lineEnds()
+                // The introduction doesn't hold up your first move; your move cuts it short.
+                if (ply > 0) awaitSpeech()
                 hints = 0
                 val ask = if (ply < g.start) "Your move: play your line." else "Your move: what did ${g.master} play?"
                 // In your line, the green arrow shows its move.
                 val guide = if (ply < g.start) r.uci[ply] else null
                 state.update { it.copy(busy = false, status = ask, guideUci = guide) }
+                // A move played on the board while it was still talking counts now.
+                if (physical) app.latestPlacement?.let { onSettled(it) }
                 // A spoken prompt when it's your guess, so you can keep your eyes on the board.
                 if (ply >= g.start && app.phoneSounds) speech.narrate("Your move.")
             }
@@ -335,6 +342,8 @@ class MasterGameViewModel(application: Application, private val id: String) : An
             )
         }
         if (app.phoneSounds) {
+            // Your first move cuts the introduction short, so the voice keeps up with the board.
+            if (ply <= 1) speech.stop()
             if (lineMove) speech.say(san) else speech.narrate(words)
             noteText(ply)?.let(speech::narrate)
         }
@@ -348,8 +357,21 @@ class MasterGameViewModel(application: Application, private val id: String) : An
                 state.update { it.copy(boardNote = null) }
             }
             delay(AFTER_GUESS_MS)
+            awaitSpeech()
             pauseAt(ply - 1)
             advance()
+        }
+    }
+
+    /** Waits while the voice is still reading the last move and its note, so it always matches the board. */
+    private suspend fun awaitSpeech() {
+        if (!app.phoneSounds) return
+        // Give a just-queued phrase a moment to start.
+        delay(SPEECH_START_MS)
+        var waited = 0L
+        while (speech.speaking() && waited < MAX_SPEECH_WAIT_MS) {
+            delay(SPEECH_POLL_MS)
+            waited += SPEECH_POLL_MS
         }
     }
 
@@ -387,6 +409,7 @@ class MasterGameViewModel(application: Application, private val id: String) : An
                 }
             }
             while (ply < g.moves.size) {
+                awaitSpeech()
                 if (!physical) delay(WATCH_MS)
                 state.update {
                     it.copy(fen = r.fens[ply + 1], lastUci = r.uci[ply], theirNote = noteAt(ply) ?: "${moveLabel(ply)}${g.moves[ply]}")
@@ -475,6 +498,7 @@ class MasterGameViewModel(application: Application, private val id: String) : An
     private fun moveLabel(at: Int): String = "${at / 2 + 1}${if (at % 2 == 0) ". " else "… "}"
 
     override fun onCleared() {
+        speech.stop()
         if (physical) {
             app.boardBorrowed = false
             app.playEngaged = engagedBefore
@@ -495,7 +519,11 @@ class MasterGameViewModel(application: Application, private val id: String) : An
     companion object {
         private const val OPPONENT_DELAY_MS = 700L
         private const val AFTER_GUESS_MS = 1_600L
-        private const val WATCH_MS = 1_800L
+        private const val WATCH_MS = 800L
+        private const val SPEECH_START_MS = 250L
+        private const val SPEECH_POLL_MS = 150L
+        /** A note is a sentence or two; never wait longer than this for one. */
+        private const val MAX_SPEECH_WAIT_MS = 30_000L
         const val MASTER_FOLDER = "Master games"
         private const val MAX_LIT = BoardRead.MAX_LIT
     }

@@ -40,6 +40,9 @@ class MoveSpeaker(context: Context) {
     /** A longer passage, such as an opening's history. Queued after any move being said. */
     fun narrate(text: String) = enqueue(text)
 
+    /** Still talking: a screen can wait for this before moving on. Speech that never started never holds anything up. */
+    fun speaking(): Boolean = ready && runCatching { speech.isSpeaking }.getOrDefault(false)
+
     fun stop() {
         handler.post {
             waiting.clear()
