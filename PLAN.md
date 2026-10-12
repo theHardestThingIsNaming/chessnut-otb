@@ -30,6 +30,33 @@ Last shipped, and on the phone: the commit that adds Explain board lights, on `m
 - [ ] Optional. Two more Essential endgames if they earn a place: the Vancura (rook against a rook's pawn) and queen against a pawn. The eight already cover the usual club endings.
 - [ ] Optional. A third Vienna plan and a third London plan, if a sound one turns up. The Vienna with ...g5 is already a tactic (the queen trade on f6), not a plan. Against the London's ...Qb6 the engine wants Na4, which is not written up yet.
 
+### UX review, 2026-10-12
+
+Walked through on the emulator: Home, Openings, an opening's page, Train, Punish, Mistakes, Endgames, a puzzle, plans. Not yet looked at: bot play, online, analysis, settings.
+
+Fix first:
+- [ ] Back (the gesture and the ← arrow) from Train, Punish or Survival goes straight to Home, skipping the opening's page and the list. It should return to the opening's page you started from.
+- [ ] The Explain caption on the opening's page is out of date ("arrows show the book moves"). Say the green arrow is this line's move, and that the board lights it.
+- [ ] Endgames don't use their blue: the Home tile has the bot's pawn icon in green, and a puzzle's Hint button is green with a gold progress bar. The Home subtitle ("Puzzles from real endings, by type") leaves out the Essentials.
+- [ ] Punish's prompt card has a green border; Punish is orange.
+
+Consistency:
+- [ ] Hints differ: Punish lights the whole move at once, puzzles light the piece then the move. Pick one (the two steps).
+- [ ] Puzzles don't say what the opponent just played; Punish and Mistakes do ("Your opponent played 7… Qxg2").
+- [ ] In Train and Punish the opening's name is in the top bar and again as the green heading under it, and that heading is also where status text ("Hint lit") appears. Use the heading for status only.
+- [ ] On the opening's page the plan count is gold and the tactics count green. Use one colour.
+- [ ] The Essentials and puzzle sections on Endgames use different card styles. Essentials show no state (not tried, slipped, mastered).
+
+Smaller:
+- [ ] The Openings header reads "3 lines learned · In 5 openings": it counts openings started, which reads as if three lines were spread over five. Say "Started 5 openings" or count only openings with a learned line.
+- [ ] An empty puzzle progress bar shows a stray dot at its right end (Material's stop indicator).
+- [ ] Mistakes opens on a bare spinner for several seconds. Show what it's doing ("Loading 31 positions…").
+- [ ] Punish, Mistakes and puzzles leave half the screen empty under the board. Room for the game's moves, or the idea and the eval after you answer.
+- [ ] Home's Openings and Mistakes tiles change their subtitles once the counts load, which shifts the text. Reserve the line.
+- [ ] An unanalysed game shows "Accuracy – · –". Say "Not analysed yet".
+- [ ] "Lichess wins –" with no login gives no hint that logging in fills it.
+- [ ] The plans list doesn't show which plans you've stepped through or tried against the bot.
+
 ## Left as it is
 
 Bringing a solved puzzle or essential back early because a new mistake in a game "should have been" caught by it. Matching the exact position is possible and almost never happens: a club game does not reach the Lichess puzzle you solved. Matching the idea (a fork, a pin, the Lucena shape) would put the wrong puzzles back into To do. The day steps above are the schedule.
