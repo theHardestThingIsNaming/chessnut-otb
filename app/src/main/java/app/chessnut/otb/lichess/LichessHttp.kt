@@ -46,8 +46,9 @@ class LichessHttp(private val token: () -> String?) {
 
     fun account(): String = call("GET", "/api/account", null, auth = true).body
 
-    fun revoke() {
-        runCatching { call("DELETE", "/api/token", null, auth = true) }
+    /** Revokes [token] on Lichess. It's passed in because the vault is cleared before this runs. */
+    fun revoke(token: String) {
+        runCatching { LichessHttp { token }.call("DELETE", "/api/token", null, auth = true) }
     }
 
     fun move(gameId: String, uci: String): LichessCall {

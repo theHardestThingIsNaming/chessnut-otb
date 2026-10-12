@@ -9,6 +9,7 @@ import app.chessnut.otb.analysis.ChessLines
 import app.chessnut.otb.analysis.Terminal
 import app.chessnut.otb.board.BoardSounds
 import app.chessnut.otb.board.MoveSpeaker
+import app.chessnut.otb.pgn.GameFingerprint
 import app.chessnut.otb.games.GameSource
 import app.chessnut.otb.games.SavedGame
 import app.chessnut.otb.lichess.LichessEvent
@@ -248,7 +249,8 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
 
     fun logout() {
         stopStreams()
-        viewModelScope.launch(Dispatchers.IO) { http.revoke() }
+        val token = vault.token()
+        if (token != null) viewModelScope.launch(Dispatchers.IO) { http.revoke(token) }
         vault.clear()
         accountId = null
         username = null
@@ -854,8 +856,10 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
         if (sans.isEmpty()) return
         val now = System.currentTimeMillis()
         val me = username ?: app.myName.ifBlank { "Me" }
+        // Keyed by the Lichess game, so two games with the same moves are both kept.
+        val clock = current.initialMillis?.let { OnlineControl((it / 60_000).toInt(), (current.incrementMillis / 1000).toInt()).label } ?: control.label
         val saved = SavedGame(
-            id = SavedGame.idFor(sans, emptyList()),
+            id = GameFingerprint.of("lichess ${current.id}"),
             createdAt = now,
             source = GameSource.Play,
             sanMoves = sans,
@@ -863,7 +867,7 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
             stopReason = finished,
             white = if (current.userWhite) me else current.opponent,
             black = if (current.userWhite) current.opponent else me,
-            event = "Lichess ${control.label}",
+            event = "Lichess $clock",
             date = SimpleDateFormat("yyyy.MM.dd", Locale.ROOT).format(Date(now)),
             result = LichessPlay.result(current.status, current.winner),
         )
@@ -880,6 +884,8 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
             current.status == "mate" -> "Checkmate"
             current.status == "resign" && current.winner == mine -> "Opponent resigned"
             current.status == "resign" -> "You resigned"
+            // Out of time with no winner: the other side couldn't have mated.
+            current.status == "outoftime" && current.winner == null -> "Draw"
             current.status == "outoftime" && current.winner == mine -> "Opponent flagged"
             current.status == "outoftime" -> "You flagged"
             current.status == "stalemate" || current.status == "draw" || current.status == "timeout" -> "Draw"
