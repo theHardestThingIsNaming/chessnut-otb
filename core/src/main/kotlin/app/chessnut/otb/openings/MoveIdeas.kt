@@ -186,6 +186,17 @@ object MoveIdeas {
         "e4 e5 Nf3 d5" to "The Elephant Gambit. Black strikes back in the centre straight away.",
         "e4 e5 Nf3 f5" to "The Latvian Gambit, a risky counterattack on e4 that weakens Black's own king.",
 
+        // Bishop's Opening. 2.Bc4, before the knight.
+        "e4 e5 Bc4" to "The Bishop's Opening. The bishop aims at f7 before the knight comes out.",
+        "e4 e5 Bc4 Nf6" to "The Berlin reply. The knight attacks e4.",
+        "e4 e5 Bc4 Nf6 Nc3" to "Develops a piece and defends e4. This is the move that keeps a small advantage.",
+        "e4 e5 Bc4 Nc6" to "Develops the knight and watches e5.",
+        "e4 e5 Bc4 Nc6 d3" to "A small pawn move that opens the dark bishop and keeps the centre solid. Nf3 instead would be the Italian.",
+        "e4 e5 Bc4 Bc5" to "Black copies, aiming the bishop at f2.",
+        "e4 e5 Bc4 Bc5 Nf3" to "Develops with a threat, attacking the e5 pawn.",
+        "e4 e5 Bc4 d6" to "A solid pawn move. It opens the light bishop and defends e5.",
+        "e4 e5 Bc4 d6 Nf3" to "Develops with a threat against e5, ready to break with d4.",
+
         // Italian
         "e4 e5 Nf3 Nc6 Bc4" to "The Italian. The bishop aims at f7, the weakest square in Black's camp.",
         "e4 e5 Nf3 Nc6 Bc4 Bc5" to "Black copies White, aiming the bishop at f2.",

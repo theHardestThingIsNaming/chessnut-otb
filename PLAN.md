@@ -4,7 +4,8 @@ One list for the next session. The older "common mistakes and Punish" notes are 
 What is already on the phone is under Done. What is worth doing next is under Next.
 
 The app teaches an opening, then three things past move 15: middlegame plans, middlegame tactics,
-and endgames. Built the same way for all 13 main openings.
+and endgames. Built the same way for the main openings. The Bishop's Opening is the newest:
+its lines and punishes are in, and it does not have middlegame plans or tactics yet.
 
 ## Done
 
@@ -14,7 +15,8 @@ and endgames. Built the same way for all 13 main openings.
 - [x] Eight Essential endgames against the Lichess tablebase (the ladder, queen and rook mates, the square of the pawn, taking and holding the opposition, Lucena, Philidor). A move that lets the result slip is turned back. A mastered essential is hidden on the Endgames page until you tap "Show mastered".
 - [x] A puzzle section with nothing left due (an endgame type, or an opening's middlegame tactics) is hidden the same way, with "Show solved". It comes back on its own when a puzzle is due again.
 - [x] Middlegame plans for all 13. Four each, except the English (3), the Vienna (2) and the London (2), which have fewer distinct structures in the lines you drill. Each plan starts from a line you drill, has a note per move, and no move of the planning side gives away more than about 60 centipawns at Stockfish depth 18.
-- [x] Common mistakes and Punish mode, traps for all 13 main openings, and the book audit that keeps your own blunders out of the lines.
+- [x] Common mistakes and Punish mode, traps for the main openings, and the book audit that keeps your own blunders out of the lines.
+- [x] Bishop's Opening for White. The four replies players rated 1400–2000 actually play (Nf6, Nc6, Bc5, d6), and in each the white move that keeps the advantage. Punishes after 3.Nf3 against ...Bc5: ...Qg5 loses the queen, ...f5 loses e5 and opens the king, ...d5 loses a pawn. No middlegame plans or tactics for it yet.
 
 ## Next
 

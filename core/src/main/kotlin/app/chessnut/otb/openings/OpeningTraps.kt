@@ -812,5 +812,46 @@ object OpeningTraps {
             ),
             "White wins a piece.",
         ),
+
+        // Bishop's Opening. After 3.Nf3 against ...Bc5, the tries that lose.
+        Trap(
+            "The queen on g5",
+            san("e4 e5 Bc4 Bc5 Nf3"),
+            san("Qg5 Nxg5"),
+            listOf(
+                "The queen comes out early to eye g2.",
+                "But g5 is attacked by the knight on f3. White simply takes the queen.",
+            ),
+            "White wins the queen for a knight.",
+        ),
+        Trap(
+            "The f-pawn leaves e5",
+            san("e4 e5 Bc4 Bc5 Nf3"),
+            san("f5 Nxe5 Nc6 Qh5+ g6 Nxg6"),
+            listOf(
+                "The f-pawn charges, and stops defending e5.",
+                "The knight takes the pawn and eyes f7.",
+                "Black develops the knight.",
+                "Check from h5. The queen and the knight attack together.",
+                "g6 kicks the queen, and opens the king's side.",
+                "The knight takes on g6. The queen on h5 protects it.",
+            ),
+            "White's attack breaks through against the king.",
+        ),
+        Trap(
+            "The early central strike",
+            san("e4 e5 Bc4 Bc5 Nf3"),
+            san("d5 exd5 Bd6 d4 e4 Ng5"),
+            listOf(
+                "Black opens the centre while the king is still on e8.",
+                "White takes the pawn. The e5 pawn is now loose.",
+                "The bishop steps back.",
+                "d4 attacks that e-pawn.",
+                "The pawn runs on.",
+                "The knight jumps to g5, attacking f7.",
+            ),
+            "White is a pawn up, with the knight bearing down on f7.",
+            mistake = true,
+        ),
     )
 }

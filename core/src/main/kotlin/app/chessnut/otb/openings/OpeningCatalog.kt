@@ -71,6 +71,7 @@ object OpeningCatalog {
         "Ruy Lopez",
         "Scotch Game",
         "Vienna Game",
+        "Bishop's Opening",
         "Sicilian Defense",
         "French Defense",
         "Caro-Kann Defense",

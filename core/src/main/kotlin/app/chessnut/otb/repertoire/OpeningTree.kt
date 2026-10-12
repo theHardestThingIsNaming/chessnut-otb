@@ -1,6 +1,7 @@
 package app.chessnut.otb.repertoire
 
 import app.chessnut.otb.openings.BookBlunders
+import app.chessnut.otb.openings.CuratedLines
 import app.chessnut.otb.openings.OpeningBook
 import app.chessnut.otb.openings.OpeningCatalog
 
@@ -42,7 +43,8 @@ object OpeningTree {
                     .filter { it in replies }
                     .distinct()
             } else {
-                replies.take(maxReplies)
+                // A curated opening already lists the replies worth drilling. The book cap would drop one.
+                if (CuratedLines.replies(family, line) != null) replies else replies.take(maxReplies)
             }
             for (reply in branches) walk(line + reply)
         }
@@ -71,7 +73,7 @@ object OpeningTree {
                     .filter { it in replies }
                     .distinct()
             } else {
-                replies.take(maxReplies)
+                if (CuratedLines.replies(family, line) != null) replies else replies.take(maxReplies)
             }
             for (reply in branches) walk(line + reply)
         }
@@ -79,8 +81,9 @@ object OpeningTree {
         return ends
     }
 
-    /** The book's replies after [line], leaving out moves of yours that are known blunders. */
+    /** Curated replies when this opening has them, else the book, leaving out moves of yours that are known blunders. */
     private fun usable(line: List<String>, family: String, yourMove: Boolean): List<String> {
+        CuratedLines.replies(family, line)?.let { return it }
         val replies = OpeningBook.rankedReplies(line, family)
         return if (yourMove) replies.filterNot { BookBlunders.avoid(line, it) } else replies
     }

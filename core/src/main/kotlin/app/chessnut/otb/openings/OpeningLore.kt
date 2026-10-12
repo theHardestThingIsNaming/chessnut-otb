@@ -22,6 +22,8 @@ object OpeningLore {
             "The Scotch Game takes its name from a correspondence match between Edinburgh and London in the 1820s. It had faded from top play until Garry Kasparov revived it in the 1990s.",
         "Vienna Game" to
             "The Vienna Game was a favourite of the Viennese masters of the nineteenth century. White develops the queen's knight first, keeping the f-pawn free to advance.",
+        "Bishop's Opening" to
+            "The Bishop's Opening is one of the oldest replies to 1...e5. Ruy López wrote about the bishop on c4 in 1561, aimed at f7. The lines here are the four replies players rated 1400 to 2000 actually play, and in each one White's move is the one that keeps the advantage.",
         "Sicilian Defense" to
             "The Sicilian was already described by Giulio Polerio in 1594. Today it is the most popular reply to e4 among strong players. Bobby Fischer and Garry Kasparov both built their careers on it.",
         "French Defense" to

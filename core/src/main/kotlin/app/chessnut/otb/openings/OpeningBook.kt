@@ -155,6 +155,7 @@ object OpeningBook {
         "Ruy Lopez",
         "Scotch Game",
         "Vienna Game",
+        "Bishop's Opening",
         "King's Gambit",
         "Sicilian Defense",
         "French Defense",

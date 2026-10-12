@@ -100,4 +100,15 @@ class OpeningTreeTest {
         assertTrue(reread.reviews("Italian Game", false).isEmpty())
         assertEquals(setOf("Italian Game" to true), reread.started())
     }
+
+    @Test
+    fun theBishopsOpeningFollowsTheClubReplies() {
+        val lines = OpeningTree.lines("Bishop's Opening", userWhite = true)
+        assertEquals(4, lines.size)
+        assertEquals(setOf("Nf6", "Nc6", "Bc5", "d6"), lines.map { it[3] }.toSet())
+        assertTrue(lines.all { it.take(3) == listOf("e4", "e5", "Bc4") && it.size == 15 })
+        assertEquals("Nc3", lines.first { it[3] == "Nf6" }[4])
+        assertEquals("d3", lines.first { it[3] == "Nc6" }[4])
+        assertEquals("Nf3", lines.first { it[3] == "Bc5" }[4])
+    }
 }
