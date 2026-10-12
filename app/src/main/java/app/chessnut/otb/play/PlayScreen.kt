@@ -467,61 +467,6 @@ private fun DepthStrip(run: Int, best: Int?, over: Boolean) {
     }
 }
 
-/** Survival's own card, in its red: your best and last run, in one row. */
-@Composable
-private fun SurvivalCard(detail: OpeningDetail) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(Palette.Survival.copy(alpha = 0.12f))
-            .border(1.dp, Palette.Survival.copy(alpha = 0.6f), RoundedCornerShape(12.dp))
-            .padding(horizontal = 14.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        Column(Modifier.weight(1f)) {
-            Text("Survival", color = Palette.Survival, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-            Text(
-                if (detail.learned > 0) "A learned line, then the engine's best moves" else "Learn a line in Train to unlock it",
-                color = Palette.TextMuted,
-                style = MaterialTheme.typography.bodySmall,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
-        detail.depthLast?.let { Stat(it.toString(), "last", Modifier, Palette.Text) }
-        Stat(detail.depthBest?.toString() ?: "–", "best", Modifier, Palette.Survival)
-    }
-}
-
-/** Punish's own card, in its orange beside Survival's red: how many of the opening's mistakes you've punished without help. */
-@Composable
-private fun PunishCard(detail: OpeningDetail) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(Palette.Mistake.copy(alpha = 0.12f))
-            .border(1.dp, Palette.Mistake.copy(alpha = 0.6f), RoundedCornerShape(12.dp))
-            .padding(horizontal = 14.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        Column(Modifier.weight(1f)) {
-            Text("Punish", color = Palette.Mistake, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-            Text(
-                "Common mistakes you punished without help",
-                color = Palette.TextMuted,
-                style = MaterialTheme.typography.bodySmall,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
-        Stat("${detail.punished}/${detail.punishable}", "punished", Modifier, Palette.Mistake)
-    }
-}
-
 /** One opening from one side: what you know of it, its lines and its history, with training a tap away. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -552,39 +497,41 @@ private fun OpeningPage(
                 }
             }
             item(key = "scores") {
-                // One strip of four, so the lines start higher up the page.
-                Row(
+                // Everything you know of the opening in one card: the lines on top, Survival and Punish below.
+                Column(
                     Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface).padding(vertical = 10.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
-                    Stat("${detail.learned}/${detail.total}", "learned", Modifier.weight(1f), if (detail.total > 0 && detail.learned == detail.total) Palette.Gold else Palette.Text)
-                    Stat(detail.due.toString(), "due", Modifier.weight(1f), if (detail.due > 0) Palette.Gold else Palette.Text)
-                    MedalStat(detail.medal, Modifier.weight(1f))
-                    Stat(detail.winRate?.let { "$it%" } ?: "–", if (detail.winRate == null && !ui.lichessLinked) "Log in to Lichess" else "Lichess wins", Modifier.weight(1f))
+                    Row(Modifier.fillMaxWidth()) {
+                        Stat("${detail.learned}/${detail.total}", "learned", Modifier.weight(1f), if (detail.total > 0 && detail.learned == detail.total) Palette.Gold else Palette.Text)
+                        Stat(detail.due.toString(), "due", Modifier.weight(1f), if (detail.due > 0) Palette.Gold else Palette.Text)
+                        MedalStat(detail.medal, Modifier.weight(1f))
+                        Stat(detail.winRate?.let { "$it%" } ?: "–", if (detail.winRate == null && !ui.lichessLinked) "Log in to Lichess" else "Lichess wins", Modifier.weight(1f))
+                    }
+                    Box(Modifier.fillMaxWidth().padding(horizontal = 14.dp).height(1.dp).background(Palette.SurfaceHigh))
+                    Row(Modifier.fillMaxWidth()) {
+                        Stat(detail.depthBest?.toString() ?: "–", "Survival best", Modifier.weight(1f), Palette.Survival)
+                        Stat(detail.depthLast?.toString() ?: "–", "last run", Modifier.weight(1f))
+                        if (detail.punishable > 0) {
+                            Stat("${detail.punished}/${detail.punishable}", "punished", Modifier.weight(1f), Palette.Mistake)
+                        }
+                    }
                 }
             }
-            item(key = "survival") { SurvivalCard(detail) }
-            if (detail.punishable > 0) item(key = "punish") { PunishCard(detail) }
-            item(key = "coach") {
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    itemVerticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text("Train", color = Palette.Accent, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(end = 4.dp))
-                    FilterChip(selected = ui.explain, onClick = { viewModel.setExplain(!ui.explain) }, label = { Text("Explain") }, colors = clubChipColors())
-                    FilterChip(selected = ui.ideas, onClick = { viewModel.setIdeas(!ui.ideas) }, label = { Text("Ideas") }, colors = clubChipColors())
-                    FilterChip(selected = ui.history, onClick = { viewModel.setHistory(!ui.history) }, label = { Text("History") }, colors = clubChipColors())
+            item(key = "beyond") {
+                // A variation's page has its own lines; the plans, tactics and Punish live on the main opening's page.
+                val family = OpeningCatalog.family(detail.name)
+                if (family != null) {
+                    FamilyLink(family) { viewModel.openDetail(family) }
+                } else {
+                    BeyondTheOpening(detail.name, ui.userWhite, onPuzzles, onPlans)
                 }
             }
-            item(key = "mode") {
-                Text(
-                    if (ui.explain) {
-                        "Learning: the green arrow is this line's move, and a connected board lights it. Nothing is scored."
-                    } else {
-                        "Testing from memory. Clean lines come back in 1, 3, 7, 14, then 30 days; a miss comes back tomorrow."
-                    },
-                    color = Palette.TextMuted,
-                    style = MaterialTheme.typography.bodySmall,
-                )
+            item(key = "lines-head") {
+                Row(Modifier.padding(top = 4.dp), verticalAlignment = Alignment.Bottom) {
+                    Text("Lines", color = Palette.Text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                    Text(if (ui.userWhite) "as White" else "as Black", color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
+                }
             }
             if (detail.choices.isNotEmpty()) {
                 item(key = "choices") {
@@ -600,25 +547,10 @@ private fun OpeningPage(
                     }
                 }
             }
-            item(key = "beyond") {
-                // A variation's page has its own lines; the plans, tactics and Punish live on the main opening's page.
-                val family = OpeningCatalog.family(detail.name)
-                if (family != null) {
-                    FamilyLink(family) { viewModel.openDetail(family) }
-                } else {
-                    BeyondTheOpening(detail.name, ui.userWhite, onPuzzles, onPlans)
-                }
-            }
-            item(key = "chess-com") { ChessComImport(ui, viewModel::importChessCom) }
-            item(key = "lines-head") {
-                Row(Modifier.padding(top = 4.dp), verticalAlignment = Alignment.Bottom) {
-                    Text("Lines", color = Palette.Text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                    Text(if (ui.userWhite) "as White" else "as Black", color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
-                }
-            }
             itemsIndexed(ui.lines, key = { index, _ -> "line-$index" }) { index, line ->
                 LineRow(index, line) { viewModel.trainLine(index) }
             }
+            item(key = "chess-com") { ChessComImport(ui, viewModel::importChessCom) }
             detail.story?.let { story ->
                 item(key = "story") {
                     Column(
@@ -631,6 +563,19 @@ private fun OpeningPage(
                 }
             }
         }
+        // Train's options sit with the Train button, pinned under the list.
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+            FilterChip(selected = ui.explain, onClick = { viewModel.setExplain(!ui.explain) }, label = { Text("Explain") }, colors = clubChipColors())
+            FilterChip(selected = ui.ideas, onClick = { viewModel.setIdeas(!ui.ideas) }, label = { Text("Ideas") }, colors = clubChipColors())
+            FilterChip(selected = ui.history, onClick = { viewModel.setHistory(!ui.history) }, label = { Text("History") }, colors = clubChipColors())
+        }
+        Text(
+            if (ui.explain) "Explain: arrows and board lights show the line. Not scored." else "From memory, scored. Reviews in 1, 3, 7, 14, 30 days.",
+            color = Palette.TextMuted,
+            style = MaterialTheme.typography.bodySmall,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
         Row(Modifier.fillMaxWidth().height(52.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             // Train, then Punish, then Survival: from learning the lines to testing them.
             PrimaryAction(
