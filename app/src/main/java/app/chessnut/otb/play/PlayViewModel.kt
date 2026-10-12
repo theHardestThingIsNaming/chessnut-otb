@@ -2334,8 +2334,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         refreshEval()
         val at = glance
         val (shownFen, shownLast) = shownPosition()
-        // On your turn the line's own move comes first, green: the book's favourite isn't always this line's.
-        val lineMove = if (userToMove() && punishTrap == null) drillMove() else null
+        // The line's own move comes first, green, on either side's turn: the book's favourite isn't always
+        // this line's, and on the board you play the opponent's moves too.
+        val lineMove = if (punishTrap == null) drillMove() else null
         val explained = if (at == null && kind == PlayKind.Trainer && explain && finished == null && !retry) {
             val book = legalBookSteps().ifEmpty { engineIdeas() }
             val line = lineMove?.let { uci -> book.firstOrNull { it.second == uci } ?: PlayPosition.after(fen, uci)?.first?.let { it to uci } }
