@@ -684,6 +684,11 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
                 light(uci)
             }
         } else if (next.moves.size > spokenMoves) {
+            // Your own move, confirmed by Lichess: said too, like over the board.
+            if (next.moves.size > previous && app.phoneSounds) {
+                val san = LichessPlay.position("startpos", next.moves).second.lastOrNull()
+                if (san != null) speech.say(san, mate = ChessLines.terminalOf(fen) == Terminal.Checkmate)
+            }
             spokenMoves = next.moves.size
             prompt = null
             light(null)
