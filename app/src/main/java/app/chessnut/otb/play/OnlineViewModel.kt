@@ -1,5 +1,7 @@
 package app.chessnut.otb.play
 
+import app.chessnut.otb.board.BoardLights
+
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
@@ -796,7 +798,8 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
         if (thinking) return
         val uci = if (table?.userToMove == true) PlayPosition.uciMatching(fen, placement) else null
         if (uci == null) {
-            hintMismatch(placement)
+            // A piece in the hand is a move under way, never a mistake.
+            if (BoardRead.read(fen, placement) is BoardReading.Unexpected) hintMismatch(placement)
             return
         }
         send(uci)
@@ -808,10 +811,10 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
      */
     private fun hintMismatch(placement: String) {
         mismatchJob = viewModelScope.launch {
-            delay(MISMATCH_MS)
+            delay(BoardRead.MISMATCH_MS)
             if (!playing || finished != null || prompt != null) return@launch
             val wrong = PlayPosition.differences(fen, placement)
-            if (wrong.isEmpty() || wrong.size > MAX_MISMATCH) return@launch
+            if (wrong.isEmpty() || wrong.size > BoardRead.MAX_LIT) return@launch
             mismatchShown = true
             status = "The board doesn't match the game. Check ${wrong.joinToString(", ")}."
             lightSquares(wrong)
@@ -912,14 +915,10 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
     private fun light(uci: String?) =
         lightSquares(if (uci == null || uci.length < 4) emptyList() else listOf(uci.substring(0, 2), uci.substring(2, 4)))
 
-    private fun lightSquares(squares: List<String>) {
-        if (app.boardSession == null) return
-        viewModelScope.launch(Dispatchers.IO) {
-            withTimeoutOrNull(2.seconds) {
-                runCatching { app.boardSession?.setLeds(squares) }
-            }
-        }
-    }
+    /** Shared with every screen that plays on the board: the newest request wins. */
+    private val boardLights by lazy { BoardLights(app, viewModelScope) }
+
+    private fun lightSquares(squares: List<String>) = boardLights.show(squares)
 
     private suspend fun report(error: Exception) {
         Log.w(TAG, "lichess", error)
@@ -1018,11 +1017,6 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
         const val QUIET_MS = 20_000L
 
         const val RECONNECTING = "Connection lost. Reconnecting…"
-
-        /** How long a wrong-looking board must stay put before the squares are named. */
-        const val MISMATCH_MS = 2_500L
-
-        const val MAX_MISMATCH = 6
 
         val LOW_TIME = listOf(60_000L to "One minute left", 30_000L to "Thirty seconds", 10_000L to "Ten seconds")
     }

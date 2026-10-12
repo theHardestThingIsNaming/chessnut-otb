@@ -79,6 +79,13 @@ object PlayPosition {
 
     fun matches(fen: String, placement: String): Boolean = same(placementOf(fen), placement)
 
+    /** Squares that hold a piece in [fen] but are empty on the board's [placement]. */
+    fun emptiedSquares(fen: String, placement: String): List<String> {
+        val want = squares(placementOf(fen))
+        val have = squares(placement)
+        return (0 until 64).filter { want[it] != '.' && have[it] == '.' }.map { i -> "${'a' + i % 8}${8 - i / 8}" }
+    }
+
     /** Squares where the board's [placement] differs from [fen], such as "c1", in board order. */
     fun differences(fen: String, placement: String): List<String> {
         val want = squares(placementOf(fen))

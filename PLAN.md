@@ -127,6 +127,10 @@ Build with `JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/
 
 Use the emulator (`pixel_api36`, `./scripts/launch-emulator.sh`) when the phone may be in use. Check the result there, then install on the phone at the end. Plain wording in the UI. Colours stay: green openings, orange Punish, red Survival, gold highlights, blue endgames.
 
+## The physical board
+
+Every screen that plays on the board reads it the same way (`BoardRead`, core, tested in `BoardReadTest`): a settled reading is the same position, a legal move, a piece in the hand (pieces lifted, nothing new put down: a move under way, never a mistake), or unexpected (castling half done, a piece on the wrong square). An unexpected board must stay that way for two seconds (`BoardRead.MISMATCH_MS`) before its squares are named and lit, at most eight (`MAX_LIT`). Lights go through `BoardLights`: the newest request wins and a stalled radio can't hold things up. Used by Train/Survival/Punish (`PlayViewModel`), online play (`OnlineViewModel`) and master games. The over-the-board recorder (`LiveGameTracker`) already had the same piece-in-the-hand rule and keeps its own lights. Train now also names a mismatched board, as online play did; it used to stay silent.
+
 ## Master games
 
 Built 2026-10-12, Scotch only, for review before spreading to other openings.

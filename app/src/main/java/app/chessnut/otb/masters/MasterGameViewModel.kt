@@ -17,7 +17,10 @@ import app.chessnut.otb.openings.MasterGame
 import app.chessnut.otb.openings.MasterGames
 import app.chessnut.otb.openings.MasterReview
 import app.chessnut.otb.openings.MoveIdeas
+import app.chessnut.otb.board.BoardLights
 import app.chessnut.otb.play.BOARD_SETTLE_MS
+import app.chessnut.otb.play.BoardRead
+import app.chessnut.otb.play.BoardReading
 import app.chessnut.otb.play.PlayPosition
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -28,8 +31,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 
 data class MasterGameUi(
     val game: MasterGame? = null,
@@ -128,31 +129,37 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         }
         val target = boardTarget
         if (target != null) {
-            if (PlayPosition.matches(target, placement)) {
-                boardTarget = null
-                light(emptyList())
-                boardWaiter?.complete(Unit)
-            } else {
-                // Light what still has to change, when there are few enough squares to help.
-                val wrong = PlayPosition.differences(target, placement)
-                if (wrong.size <= MAX_LIT) light(wrong)
+            when (val reading = BoardRead.read(target, placement)) {
+                BoardReading.Same -> {
+                    boardTarget = null
+                    light(emptyList())
+                    boardWaiter?.complete(Unit)
+                }
+                // A piece in the hand: the move is under way, so the lights stay as they are.
+                is BoardReading.InHand -> Unit
+                // Otherwise light what still has to change, when there are few enough squares to help.
+                is BoardReading.Move, is BoardReading.Unexpected -> {
+                    val wrong = PlayPosition.differences(target, placement)
+                    if (wrong.size <= MAX_LIT) light(wrong)
+                }
             }
             return
         }
         val s = state.value
         if (s.busy || s.done) return
-        val move = PlayPosition.uciMatching(s.fen, placement)
-        when {
-            move != null -> guess(move)
-            PlayPosition.matches(s.fen, placement) -> {
+        when (val reading = BoardRead.read(s.fen, placement)) {
+            is BoardReading.Move -> guess(reading.uci)
+            BoardReading.Same -> {
                 if (s.boardNote != null) state.update { it.copy(boardNote = null) }
                 light(emptyList())
             }
-            else -> {
+            // A piece in the hand is a move under way, never a mistake.
+            is BoardReading.InHand -> Unit
+            is BoardReading.Unexpected -> {
                 // Neither this position nor one move from it. A move may still be under way
                 // (a capture lifts two pieces), so only if the board stays like this is it called wrong.
                 mismatchJob = viewModelScope.launch {
-                    delay(MISMATCH_MS)
+                    delay(BoardRead.MISMATCH_MS)
                     val now = state.value
                     if (now.busy || now.done || app.latestPlacement != placement) return@launch
                     val wrong = PlayPosition.differences(now.fen, placement)
@@ -175,17 +182,10 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         waiter.await()
     }
 
-    /** The newest light request wins, even if an older one's write is still on its way. */
-    private val lightLock = Mutex()
-    private var lightSeq = 0
+    /** Shared with every screen that plays on the board: the newest request wins. */
+    private val boardLights by lazy { BoardLights(app, viewModelScope) }
 
-    private fun light(squares: List<String>) {
-        val session = app.boardSession ?: return
-        val mine = ++lightSeq
-        viewModelScope.launch(Dispatchers.IO) {
-            lightLock.withLock { if (mine == lightSeq) runCatching { session.setLeds(squares) } }
-        }
-    }
+    private fun light(squares: List<String>) = boardLights.show(squares)
 
     private fun squaresOf(uci: String): List<String> = listOf(uci.substring(0, 2), uci.substring(2, 4))
 
@@ -497,9 +497,6 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         private const val AFTER_GUESS_MS = 1_600L
         private const val WATCH_MS = 1_800L
         const val MASTER_FOLDER = "Master games"
-        /** Up to this many squares to put right are lit; more would only confuse. */
-        private const val MAX_LIT = 8
-        /** How long the board must stay in an unexpected position before it's called wrong. */
-        private const val MISMATCH_MS = 2_000L
+        private const val MAX_LIT = BoardRead.MAX_LIT
     }
 }

@@ -21,6 +21,7 @@ import app.chessnut.otb.analysis.ChessLines
 import app.chessnut.otb.analysis.Score
 import app.chessnut.otb.analysis.Terminal
 import app.chessnut.otb.board.BoardSounds
+import app.chessnut.otb.board.BoardLights
 import app.chessnut.otb.board.MoveSpeaker
 import app.chessnut.otb.engine.UciEngine
 import app.chessnut.otb.games.GameSource
@@ -1535,7 +1536,25 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /** Names the squares when the board stays unlike the game, as online play does. */
+    private var mismatchJob: Job? = null
+    private var mismatchShown = false
+
+    private fun hintMismatch(placement: String) {
+        mismatchJob = viewModelScope.launch {
+            delay(BoardRead.MISMATCH_MS)
+            if (!playing || busy || finished != null || app.latestPlacement != placement) return@launch
+            val reading = BoardRead.read(fen, placement) as? BoardReading.Unexpected ?: return@launch
+            val lit = BoardRead.lightsFor(reading)
+            mismatchShown = true
+            status = "The board doesn't match the game." + if (lit.isNotEmpty()) " Check ${lit.joinToString(", ")}." else ""
+            publish()
+            lightSquares(lit)
+        }
+    }
+
     private fun onSettled(placement: String) {
+        mismatchJob?.cancel()
         if (!playing || !physical || trap != null) return
         if (awaitingBoard) {
             if (PlayPosition.matches(fen, placement)) {
@@ -1602,9 +1621,10 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         }
         if (placement == ignorePlacement) return
         if (PlayPosition.matches(fen, placement)) {
-            if (retry || rejectUci != null) {
+            if (retry || rejectUci != null || mismatchShown) {
                 retry = false
                 rejectUci = null
+                mismatchShown = false
                 status = if (kind == PlayKind.Trainer) "Try a solid move" else "Your move"
                 publish()
                 light(null)
@@ -1614,6 +1634,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         val uci = PlayPosition.uciMatching(fen, placement)
         if (uci == null) {
             note("board frame is not a legal move")
+            // A piece in the hand is a move under way. Anything else, if it stays, gets its squares named.
+            if (BoardRead.read(fen, placement) is BoardReading.Unexpected) hintMismatch(placement)
             return
         }
         note("board played $uci")
@@ -2127,18 +2149,10 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         else -> "Almost set up. Check ${wrong.joinToString(", ")}. They are lit on the board."
     }
 
-    private fun lightSquares(squares: List<String>) {
-        if (app.boardSession == null) return
-        viewModelScope.launch(Dispatchers.IO) {
-            note("leds ${squares.joinToString().ifEmpty { "off" }}")
-            val wrote = withTimeoutOrNull(2.seconds) {
-                runCatching { app.boardSession?.setLeds(squares) }
-                    .onFailure { note("leds failed: ${it.message}") }
-                    .isSuccess
-            }
-            if (wrote == null) note("leds timed out")
-        }
-    }
+    /** Shared with every screen that plays on the board: the newest request wins. */
+    private val boardLights by lazy { BoardLights(app, viewModelScope) { note(it) } }
+
+    private fun lightSquares(squares: List<String>) = boardLights.show(squares)
 
     private fun note(message: String) {
         Log.i(TAG, message)
