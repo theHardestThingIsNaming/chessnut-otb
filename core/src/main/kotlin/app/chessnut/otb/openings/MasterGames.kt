@@ -15,6 +15,9 @@ data class MasterGame(
     val year: String,
     val event: String,
     val result: String,
+    /** Ratings at the time, when known (not for 1840s games, say). */
+    val whiteElo: Int? = null,
+    val blackElo: Int? = null,
     val moves: List<String>,
     val start: Int,
     val end: Int,
@@ -36,7 +39,15 @@ data class MasterGame(
     /** Plies in the guessing stretch where it's your side to move. */
     val yourPlies: List<Int> get() = (start until end).filter { (it % 2 == 0) == userWhite }
 
-    private fun surname(name: String) = name.substringBefore(',').trim()
+    /** "Carlsen" from "Magnus Carlsen" (or from "Carlsen, Magnus"). */
+    private fun surname(name: String) = if (',' in name) name.substringBefore(',').trim() else name.trim().substringAfterLast(' ')
+
+    /** "Magnus Carlsen · 2814", or just the name when the rating isn't known. */
+    fun player(white: Boolean): String {
+        val name = if (white) this.white else black
+        val elo = if (white) whiteElo else blackElo
+        return elo?.let { "$name · $it" } ?: name
+    }
 }
 
 /** How a guess compares with the master's move. */
@@ -86,6 +97,8 @@ object MasterGames {
                 end = g[11].toInt(),
                 moves = g[12].split(' '),
                 intro = g[13],
+                whiteElo = g.getOrNull(14)?.toIntOrNull(),
+                blackElo = g.getOrNull(15)?.toIntOrNull(),
                 notes = mine.associate { it[2].toInt() to it[3] },
                 good = mine.mapNotNull { n -> n.getOrNull(4)?.takeIf { it.startsWith("good:") }?.let { n[2].toInt() to it.removePrefix("good:").split(',').filter(String::isNotBlank).toSet() } }.toMap(),
                 threats = mine.mapNotNull { n -> n.getOrNull(4)?.takeIf { it.startsWith("threat:") }?.let { n[2].toInt() to it.removePrefix("threat:") } }.toMap(),

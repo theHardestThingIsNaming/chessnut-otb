@@ -156,6 +156,7 @@ How to add master games for an opening (no phone needed):
 
 Next for master games:
 - [ ] Review the Scotch set with the user, then spread to the other openings (PGN Mentor has files for all of them).
-- [x] Board play: with the board connected and already showing the game's start (as it does straight after the line in Train), the opponent's moves are lit for you to play, your guess is read from the board, and a different guess lights the squares to put right. Hints light the piece, then the move. Otherwise the game is on the screen, with a note saying why. Play leaves the board alone meanwhile (`OtbApp.boardBorrowed`). Untested on a real board: check it next time the board is on.
+- [x] Master games start from move 1: you play your line first (exact moves, with the opening notes), then guess the master's moves once the screen says the line has ended. Separate scores for the line and the master's moves. The players' names and ratings show above and below the board (none for the 1840 game).
+- [x] Board play: with the board connected, set up the starting position (squares still wrong are lit, up to 8), then the opponent's moves are lit for you to play, your moves are read from the pieces, and a different move lights the squares to put right. Hints light the piece, then the move. Play leaves the board alone meanwhile (`OtbApp.boardBorrowed`). Check it with the real board.
 - [ ] Re-derive later plan moves from master practice where data is dense (from about move 10 of each plan).
 

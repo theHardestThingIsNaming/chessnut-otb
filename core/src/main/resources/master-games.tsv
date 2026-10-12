@@ -1,5 +1,5 @@
-# Master games for guess-the-move: GAME id opening side line white black year event result start end moves intro; NOTE id ply note good:/threat:
-GAME	EaKbGYdG	Scotch Game	w	e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Bc5 Be3 Qf6 c3 Nge7 Qd2 d5 Nb5	Smerdon, David	Solomon, Stephen J	2009	Oceania zt	1-0	15	27	e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Bc5 Be3 Qf6 c3 Nge7 Qd2 d5 Nb5 Bxe3 Qxe3 O-O Nd2 dxe4 Nxe4 Qe5 Nc5 Qxe3+ fxe3 Nd5 e4 Ne3 Nxc7 Rb8 Kf2 Nxf1 Rhxf1 b6 Nd3 Rd8 Rad1 Bg4 Rd2 f5 Ke3 Rd7 Nd5 Re8 Nf2 Ne5 Kf4 Ng6+ Kg3 Be2 Rxe2 Rxd5 exd5 Rxe2 Nd3 Rd2 Rf3 h5 d6 h4+ Kh3 Kf7 Nf4 Ne5 Re3 Ng4 Re7+ Kf6 Re2 Rxd6 c4 Rd4 g3 Rxc4 Nd5+ Kf7 Re7+ Kf8 Rxa7 Rc2 Kxh4 Rxb2 Kg5 Rxh2 Nxb6 Rg2 Kxf5 Rxg3 a4 Nf6 a5 Rb3 Nc4 Kg8 a6 Rc3 Rc7 Nd5 Rc8+ Kh7 a7 Ne7+ Kg5 Nxc8 a8=Q Rxc4 Qh1+ Kg8 Qd5+ Kf8 Qxc4 Ne7 Qe6 Ke8 Kf4 Kf8 Ke5 Ng8 Qc8+	Smerdon–Solomon, Oceania Zonal 2009. White's knight on b5 eyes c7, and Black has to untangle before it lands there.
+# Master games for guess-the-move: GAME id opening side line white black year event result start end moves intro whiteElo blackElo; NOTE id ply note good:/threat:
+GAME	EaKbGYdG	Scotch Game	w	e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Bc5 Be3 Qf6 c3 Nge7 Qd2 d5 Nb5	David Smerdon	Stephen Solomon	2009	Oceania zt	1-0	15	27	e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Bc5 Be3 Qf6 c3 Nge7 Qd2 d5 Nb5 Bxe3 Qxe3 O-O Nd2 dxe4 Nxe4 Qe5 Nc5 Qxe3+ fxe3 Nd5 e4 Ne3 Nxc7 Rb8 Kf2 Nxf1 Rhxf1 b6 Nd3 Rd8 Rad1 Bg4 Rd2 f5 Ke3 Rd7 Nd5 Re8 Nf2 Ne5 Kf4 Ng6+ Kg3 Be2 Rxe2 Rxd5 exd5 Rxe2 Nd3 Rd2 Rf3 h5 d6 h4+ Kh3 Kf7 Nf4 Ne5 Re3 Ng4 Re7+ Kf6 Re2 Rxd6 c4 Rd4 g3 Rxc4 Nd5+ Kf7 Re7+ Kf8 Rxa7 Rc2 Kxh4 Rxb2 Kg5 Rxh2 Nxb6 Rg2 Kxf5 Rxg3 a4 Nf6 a5 Rb3 Nc4 Kg8 a6 Rc3 Rc7 Nd5 Rc8+ Kh7 a7 Ne7+ Kg5 Nxc8 a8=Q Rxc4 Qh1+ Kg8 Qd5+ Kf8 Qxc4 Ne7 Qe6 Ke8 Kf4 Kf8 Ke5 Ng8 Qc8+	Smerdon–Solomon, Oceania Zonal 2009. White's knight on b5 eyes c7, and Black has to untangle before it lands there.	2489	2455
 NOTE	EaKbGYdG	15	Black trades bishops, and the bishop on e3 now hits your queen.	threat:e3d2
 NOTE	EaKbGYdG	16	Take back with the queen. It keeps your pawns whole and eyes a7.	good:f2e3
 NOTE	EaKbGYdG	17	Black castles. The d5 pawn is pressing on e4.	threat:d5e4
@@ -12,7 +12,7 @@ NOTE	EaKbGYdG	23	Black trades queens with check.
 NOTE	EaKbGYdG	24	Take back with the f-pawn: the only move. The pawns on e3 cover d4 and f4.	good:
 NOTE	EaKbGYdG	25	Black's knight comes to d5, hitting e3 and c3.	
 NOTE	EaKbGYdG	26	Push the pawn with gain of time: the knight must move, and your e-pawns are no longer a weakness.	good:
-GAME	DI6VFpYt	Scotch Game	w	e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Bc5 Be3 Qf6 c3 Qg6 Qd3	Mulligan, Barrie	Toman, Antonín	2014	CZE-AUS/NZ 2014	1-0	13	25	e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Bc5 Be3 Qf6 c3 Qg6 Qd3 a6 Nxc6 Qxc6 Bxc5 Qxc5 Qg3 g6 Nd2 Nf6 Be2 d6 Qh4 g5 Qh6 Ng4 Bxg4 Bxg4 h4 gxh4 Qg7	Mulligan–Toman, Czech Republic v Australia and New Zealand 2014. Black keeps your knight out of b5 with ...a6, so White trades pieces and goes after the dark squares round Black's king.
+GAME	DI6VFpYt	Scotch Game	w	e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Bc5 Be3 Qf6 c3 Qg6 Qd3	Barrie Mulligan	Antonín Toman	2014	CZE-AUS/NZ 2014	1-0	13	25	e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Bc5 Be3 Qf6 c3 Qg6 Qd3 a6 Nxc6 Qxc6 Bxc5 Qxc5 Qg3 g6 Nd2 Nf6 Be2 d6 Qh4 g5 Qh6 Ng4 Bxg4 Bxg4 h4 gxh4 Qg7	Mulligan–Toman, Czech Republic v Australia and New Zealand 2014. Black keeps your knight out of b5 with ...a6, so White trades pieces and goes after the dark squares round Black's king.	2210	2227
 NOTE	DI6VFpYt	13	A quiet move that keeps your knight out of b5.	
 NOTE	DI6VFpYt	14	Trade knights before Black's knight reaches e5, where it would hit your queen.	good:h2h4,b1d2
 NOTE	DI6VFpYt	15	The queen takes back and now eyes your e4 pawn.	
@@ -25,7 +25,7 @@ NOTE	DI6VFpYt	21	Black develops and hits e4.
 NOTE	DI6VFpYt	22	Develop the bishop and get ready to castle.	good:f1d3,e1c1
 NOTE	DI6VFpYt	23	Black opens the line for the c8 bishop.	
 NOTE	DI6VFpYt	24	The queen hits the f6 knight, which nothing guards, and eyes h6. The engine prefers f4 or b4, but this keeps Black busy on the kingside.	good:f2f4,b2b4,e1g1
-GAME	3tYhl2kR	Scotch Game	w	e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Qh4 Nb5 Bb4+ Bd2 Qxe4+ Be2 Kd8 O-O	Sveshnikov, Evgeny	Sermek, Drazen	1994	Bled op 15th	1/2-1/2	15	27	e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Qh4 Nb5 Bb4+ Bd2 Qxe4+ Be2 Kd8 O-O Bxd2 Nxd2 Qe5 Re1 Nf6 Bc4 Qf5 Nf3 Qc5 Qd3 d6 Nbd4 Nxd4 Nxd4 Rf8 Rad1 Bg4 f3 Bd7 Qb3 Qb6 Bxf7 c6 Be6 Re8 Bxd7 Rxe1+ Rxe1 Qxb3 axb3 Kxd7 g4 g6 Kf2 a6 h4 c5 Ne6 Re8 Nf4 Rxe1 Kxe1 Ke7 Ke2 Kf7 Kd3 h6 b4 b5 bxc5 dxc5 c4 g5 hxg5 hxg5 Nh3 Kg6 Nf2 Nd7 cxb5 axb5 Ke4 Nb6 Nd3 Na4 b3 Nc3+ Ke5 c4 bxc4 bxc4 Nb2 Ne2 Nxc4 Ng1 Nd2 Ne2 Ke6 Ng1 Ke7 Kg7 Kd6 Kf6 Kd5 Ne2 Ne4+ Kg6 Ke5 Ng1 Nd2 Ne2 Nb3 Ng1 Nd4 Nh3 Ne2 Nf2 Kd4 Kf6 Nc3 Nh3 Ne2 Nf2 Ng3 Kg6 Kc3 Nh3 Ne2 Kf6 Kd2 Nf2 Ng3 Ke5 Ke2 Nxg4	Sveshnikov–Sermek, Bled 1994. Black has won a pawn, but the king is stuck on d8. White develops with gain of time and keeps it there.
+GAME	3tYhl2kR	Scotch Game	w	e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Qh4 Nb5 Bb4+ Bd2 Qxe4+ Be2 Kd8 O-O	Evgeny Sveshnikov	Drazen Sermek	1994	Bled op 15th	1/2-1/2	15	27	e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Qh4 Nb5 Bb4+ Bd2 Qxe4+ Be2 Kd8 O-O Bxd2 Nxd2 Qe5 Re1 Nf6 Bc4 Qf5 Nf3 Qc5 Qd3 d6 Nbd4 Nxd4 Nxd4 Rf8 Rad1 Bg4 f3 Bd7 Qb3 Qb6 Bxf7 c6 Be6 Re8 Bxd7 Rxe1+ Rxe1 Qxb3 axb3 Kxd7 g4 g6 Kf2 a6 h4 c5 Ne6 Re8 Nf4 Rxe1 Kxe1 Ke7 Ke2 Kf7 Kd3 h6 b4 b5 bxc5 dxc5 c4 g5 hxg5 hxg5 Nh3 Kg6 Nf2 Nd7 cxb5 axb5 Ke4 Nb6 Nd3 Na4 b3 Nc3+ Ke5 c4 bxc4 bxc4 Nb2 Ne2 Nxc4 Ng1 Nd2 Ne2 Ke6 Ng1 Ke7 Kg7 Kd6 Kf6 Kd5 Ne2 Ne4+ Kg6 Ke5 Ng1 Nd2 Ne2 Nb3 Ng1 Nd4 Nh3 Ne2 Nf2 Kd4 Kf6 Nc3 Nh3 Ne2 Nf2 Ng3 Kg6 Kc3 Nh3 Ne2 Kf6 Kd2 Nf2 Ng3 Ke5 Ke2 Nxg4	Sveshnikov–Sermek, Bled 1994. Black has won a pawn, but the king is stuck on d8. White develops with gain of time and keeps it there.	2585	2520
 NOTE	3tYhl2kR	15	Black trades the bishop for yours on d2.	
 NOTE	3tYhl2kR	16	Take back with the knight. It's ready for f3, and your queen stays home.	good:
 NOTE	3tYhl2kR	17	The queen leaves e4 before Re1 can hit it, and eyes b2 and the e2 bishop.	
@@ -38,7 +38,7 @@ NOTE	3tYhl2kR	23	Black's queen hits your c4 bishop.	threat:c5c4
 NOTE	3tYhl2kR	24	Guard the bishop with the queen, which also looks down the d-file at Black's king.	good:
 NOTE	3tYhl2kR	25	Black opens the line for the c8 bishop.	
 NOTE	3tYhl2kR	26	The knight comes back to the centre and offers a trade. All your pieces are out; Black's king is still on d8.	good:
-GAME	kTn1iL3J	Scotch Game	w	e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Nf6 Nxc6 bxc6 e5	Carlsen, Magnus	Aronian, Levon	2011	Tata Steel-A 73rd	1/2-1/2	11	23	e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Nf6 Nxc6 bxc6 e5 Qe7 Qe2 Nd5 c4 Ba6 Nd2 g6 b3 Bg7 Bb2 Nb4 O-O-O Nxa2+ Kb1 Nb4 Ne4 O-O Qf3 Rfe8 Nf6+ Bxf6 exf6 Qc5 h4 d5 Qf4 dxc4 bxc4 Rab8 Qh6 Qf8 Qxf8+ Kxf8 h5 Bc8 hxg6 fxg6 Rxh7 Bf5+ Ka1 Nc2+ Ka2 Nb4+ Ka1	Carlsen–Aronian, Wijk aan Zee 2011. The Mieses: White keeps the e5 pawn and gains queenside space with c4, as in this line's plan.
+GAME	kTn1iL3J	Scotch Game	w	e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Nf6 Nxc6 bxc6 e5	Magnus Carlsen	Levon Aronian	2011	Tata Steel-A 73rd	1/2-1/2	11	23	e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Nf6 Nxc6 bxc6 e5 Qe7 Qe2 Nd5 c4 Ba6 Nd2 g6 b3 Bg7 Bb2 Nb4 O-O-O Nxa2+ Kb1 Nb4 Ne4 O-O Qf3 Rfe8 Nf6+ Bxf6 exf6 Qc5 h4 d5 Qf4 dxc4 bxc4 Rab8 Qh6 Qf8 Qxf8+ Kxf8 h5 Bc8 hxg6 fxg6 Rxh7 Bf5+ Ka1 Nc2+ Ka2 Nb4+ Ka1	Carlsen–Aronian, Wijk aan Zee 2011. The Mieses: White keeps the e5 pawn and gains queenside space with c4, as in this line's plan.	2814	2805
 NOTE	kTn1iL3J	11	The queen hits your e5 pawn: ...Qxe5 would come with check.	threat:e7e5
 NOTE	kTn1iL3J	12	Guard e5 with the queen. Black's knight on f6 is still attacked by the pawn and has to move.	good:
 NOTE	kTn1iL3J	13	The knight jumps to d5.	
@@ -51,7 +51,7 @@ NOTE	kTn1iL3J	19	The bishop joins the attack on e5: ...Bxe5 is the threat.	threa
 NOTE	kTn1iL3J	20	The bishop guards e5 from the long diagonal.	good:d2f3
 NOTE	kTn1iL3J	21	The knight heads for c2, where it would fork your king and rook.	threat:b4c2
 NOTE	kTn1iL3J	22	Castle long: the king leaves e1, so ...Nc2+ is no longer a fork, and the rook comes to the d-file.	good:d2f3,d2e4
-GAME	49s67exu	Scotch Game	w	e4 e5 Nf3 Nc6 d4 exd4 Bc4 Bc5 Ng5 Nh6 Nxf7 Nxf7 Bxf7+ Kxf7 Qh5+	Mamedov, Rau	Anand, V.	2022	37th ECC Open 2022	1/2-1/2	15	27	e4 e5 Nf3 Nc6 d4 exd4 Bc4 Bc5 Ng5 Nh6 Nxf7 Nxf7 Bxf7+ Kxf7 Qh5+ g6 Qxc5 d5 O-O dxe4 c3 Re8 cxd4 Qxd4 Qg5 Qf6 Qg3 Nd4 Nc3 c6 Bg5 Qe5 Rad1 Nf5 Qxe5 Rxe5 Rfe1 h6 Bf4 Re8 Nxe4 g5 Nd6+ Nxd6 Bxd6 Rxe1+ Rxe1 Be6 a3 Rd8 Bb4 Re8 Bc3 Bd5 Rxe8 Kxe8 f3 Kf7 Kf2 h5	Mamedov–Anand, European Club Cup 2022. After the sacrifice on f7, White wins the piece back with Qxc5. Then both kings are a little loose, and the queens decide who's more comfortable.
+GAME	49s67exu	Scotch Game	w	e4 e5 Nf3 Nc6 d4 exd4 Bc4 Bc5 Ng5 Nh6 Nxf7 Nxf7 Bxf7+ Kxf7 Qh5+	Rauf Mamedov	Viswanathan Anand	2022	37th ECC Open 2022	1/2-1/2	15	27	e4 e5 Nf3 Nc6 d4 exd4 Bc4 Bc5 Ng5 Nh6 Nxf7 Nxf7 Bxf7+ Kxf7 Qh5+ g6 Qxc5 d5 O-O dxe4 c3 Re8 cxd4 Qxd4 Qg5 Qf6 Qg3 Nd4 Nc3 c6 Bg5 Qe5 Rad1 Nf5 Qxe5 Rxe5 Rfe1 h6 Bf4 Re8 Nxe4 g5 Nd6+ Nxd6 Bxd6 Rxe1+ Rxe1 Be6 a3 Rd8 Bb4 Re8 Bc3 Bd5 Rxe8 Kxe8 f3 Kf7 Kf2 h5	Mamedov–Anand, European Club Cup 2022. After the sacrifice on f7, White wins the piece back with Qxc5. Then both kings are a little loose, and the queens decide who's more comfortable.	2646	2756
 NOTE	49s67exu	15	Black blocks the check with a pawn, and the c5 bishop is left loose.	threat:g6h5
 NOTE	49s67exu	16	The queen takes c5 and wins the piece back.	good:
 NOTE	49s67exu	17	Black strikes in the centre and opens the c8 bishop.	
@@ -64,7 +64,7 @@ NOTE	49s67exu	23	Black's queen takes d4 and hits yours.	threat:d4c5
 NOTE	49s67exu	24	The queen keeps out of a trade and stays near Black's king, eyeing f6 and d8.	good:c5b5,c5a3
 NOTE	49s67exu	25	Black offers a queen trade, guarding the dark squares round the king.	
 NOTE	49s67exu	26	Keep the queens on: Black's king is the looser one. Qxf6+ was just as good.	good:g5f6,g5h6
-GAME	STAPOP40	Scotch Game	w	e4 e5 Nf3 Nc6 d4 exd4 Bc4 Bb4+ c3 dxc3 bxc3 Ba5 e5	Staunton, Howard	Popert, HW.	1840	London m	1-0	13	25	e4 e5 Nf3 Nc6 d4 exd4 Bc4 Bb4+ c3 dxc3 bxc3 Ba5 e5 d6 Qb3 Qe7 O-O dxe5 Ba3 Qf6 Nbd2 Bf5 Bxf7+ Qxf7 Qxb7 Rd8 Qxc6+ Bd7 Qc5 Bb6 Qxe5+ Ne7 Rae1 c5 Ne4 Bc6 Nfg5	Staunton–Popert, London 1840: the Cochrane line in its own time. Black grabs two pawns; Staunton uses the time to line up on f7 and stop Black castling.
+GAME	STAPOP40	Scotch Game	w	e4 e5 Nf3 Nc6 d4 exd4 Bc4 Bb4+ c3 dxc3 bxc3 Ba5 e5	Howard Staunton	Hugh Popert	1840	London m	1-0	13	25	e4 e5 Nf3 Nc6 d4 exd4 Bc4 Bb4+ c3 dxc3 bxc3 Ba5 e5 d6 Qb3 Qe7 O-O dxe5 Ba3 Qf6 Nbd2 Bf5 Bxf7+ Qxf7 Qxb7 Rd8 Qxc6+ Bd7 Qc5 Bb6 Qxe5+ Ne7 Rae1 c5 Ne4 Bc6 Nfg5	Staunton–Popert, London 1840: the Cochrane line in its own time. Black grabs two pawns; Staunton uses the time to line up on f7 and stop Black castling.		
 NOTE	STAPOP40	13	Black challenges the e5 pawn.	
 NOTE	STAPOP40	14	The queen lines up behind the bishop on f7, and eyes b7.	good:
 NOTE	STAPOP40	15	Black guards f7 and hits e5.	threat:c6e5
@@ -77,7 +77,7 @@ NOTE	STAPOP40	21	Black develops, hoping to castle long next.
 NOTE	STAPOP40	22	Bxf7+! If the queen takes back, b7 falls with an attack on the a8 rook.	good:
 NOTE	STAPOP40	23	The queen takes the bishop.	threat:f7b3
 NOTE	STAPOP40	24	Qxb7 forks the a8 rook and the c6 knight. White wins the material back with interest.	good:
-GAME	NAKONI15	Scotch Game	w	e4 e5 Nf3 Nc6 d4 exd4 Bc4 Nf6 e5	Nakamura,Hi	Onischuk,Al	2015	ch-USA 2015	1-0	9	21	e4 e5 Nf3 Nc6 d4 exd4 Bc4 Nf6 e5 d5 Bb5 Ne4 Nxd4 Bc5 Be3 O-O Nxc6 bxc6 Bxc5 Nxc5 Bxc6 Rb8 O-O Rxb2 Qxd5 Qxd5 Bxd5 Rxc2 Na3 Re2 Rac1 Nd3 Rxc7 Be6 Bb3 a5 Ra7 Bxb3 axb3 Rxe5 Nc4 Rb5 Rb1 Nc5 Nxa5 Re8 g3 g6 b4 Nd3 Nc6 Re2 Rd7 Nxf2 Nd4 Nh3+ Kh1 Nf2+ Kg2 Nd1+ Nxe2	Nakamura–Onischuk, US Championship 2015. White pins with Bb5, wins the d4 pawn back, and trades into a position where Black's queenside pawns are broken.
+GAME	NAKONI15	Scotch Game	w	e4 e5 Nf3 Nc6 d4 exd4 Bc4 Nf6 e5	Hikaru Nakamura	Alexander Onischuk	2015	ch-USA 2015	1-0	9	21	e4 e5 Nf3 Nc6 d4 exd4 Bc4 Nf6 e5 d5 Bb5 Ne4 Nxd4 Bc5 Be3 O-O Nxc6 bxc6 Bxc5 Nxc5 Bxc6 Rb8 O-O Rxb2 Qxd5 Qxd5 Bxd5 Rxc2 Na3 Re2 Rac1 Nd3 Rxc7 Be6 Bb3 a5 Ra7 Bxb3 axb3 Rxe5 Nc4 Rb5 Rb1 Nc5 Nxa5 Re8 g3 g6 b4 Nd3 Nc6 Re2 Rd7 Nxf2 Nd4 Nh3+ Kh1 Nf2+ Kg2 Nd1+ Nxe2	Nakamura–Onischuk, US Championship 2015. White pins with Bb5, wins the d4 pawn back, and trades into a position where Black's queenside pawns are broken.	2798	2665
 NOTE	NAKONI15	9	Black hits your bishop and grabs space in the centre.	threat:d5c4
 NOTE	NAKONI15	10	The bishop steps to b5 and pins the c6 knight to the king.	good:
 NOTE	NAKONI15	11	The knight jumps to e4, out of the e5 pawn's reach.	threat:f8b4
@@ -90,7 +90,7 @@ NOTE	NAKONI15	17	Black takes back, doubling the c-pawns.	threat:c5e3
 NOTE	NAKONI15	18	Trade the bishops: c5 was Black's best piece.	good:
 NOTE	NAKONI15	19	The knight takes back, and the c6 pawn now hits your bishop.	threat:c6b5
 NOTE	NAKONI15	20	Take on c6: White is a clean pawn up, the bishop hits the a8 rook, and Black's queenside is broken.	good:
-GAME	aES18c7n	Scotch Game	w	e4 e5 Nf3 Nc6 d4 exd4 c3 dxc3 Bc4 Nf6 Nxc3 Bb4 e5	Ljubojevic, Ljubomir	Lombardy, William James	1973	Manila	1/2-1/2	13	25	e4 e5 Nf3 Nc6 d4 exd4 c3 dxc3 Bc4 Nf6 Nxc3 Bb4 e5 d5 exf6 dxc4 Qxd8+ Kxd8 fxg7 Re8+ Be3 Bxc3+ bxc3 Ke7 O-O-O Kf6 Rhe1 Be6 Nd4 Kxg7 Nxc6 bxc6 Bd4+ Kg6 Re3 Bd5 Rde1 Rxe3 Rxe3 Rb8 f3 Rb5 Re7 Ra5 Kb2 c5 Bf2 c6 Ka1 a6 Ra7 Kf5 Bg3 h5 Ra8 f6 Ra7 Rb5 Rxa6 Rb7 a4 Rb3 Be1 h4 Ka2 h3 gxh3 Bxf3 Ra8 Be4 a5 Kf4 Rb8 Rb5 Rxb5 cxb5 Bf2 b4 Bxc5 bxc3 Bd4 c2 Kb2 Kg5 h4+	Ljubojevic–Lombardy, Manila 1973. The Göring Gambit: the queens come off at once, and White's pawn on g7 shapes the ending.
+GAME	aES18c7n	Scotch Game	w	e4 e5 Nf3 Nc6 d4 exd4 c3 dxc3 Bc4 Nf6 Nxc3 Bb4 e5	Ljubomir Ljubojevic	William Lombardy	1973	Manila	1/2-1/2	13	25	e4 e5 Nf3 Nc6 d4 exd4 c3 dxc3 Bc4 Nf6 Nxc3 Bb4 e5 d5 exf6 dxc4 Qxd8+ Kxd8 fxg7 Re8+ Be3 Bxc3+ bxc3 Ke7 O-O-O Kf6 Rhe1 Be6 Nd4 Kxg7 Nxc6 bxc6 Bd4+ Kg6 Re3 Bd5 Rde1 Rxe3 Rxe3 Rb8 f3 Rb5 Re7 Ra5 Kb2 c5 Bf2 c6 Ka1 a6 Ra7 Kf5 Bg3 h5 Ra8 f6 Ra7 Rb5 Rxa6 Rb7 a4 Rb3 Be1 h4 Ka2 h3 gxh3 Bxf3 Ra8 Be4 a5 Kf4 Rb8 Rb5 Rxb5 cxb5 Bf2 b4 Bxc5 bxc3 Bd4 c2 Kb2 Kg5 h4+	Ljubojevic–Lombardy, Manila 1973. The Göring Gambit: the queens come off at once, and White's pawn on g7 shapes the ending.	2565	2520
 NOTE	aES18c7n	13	Black hits the bishop instead of moving the knight.	threat:b4c3
 NOTE	aES18c7n	14	Take the knight.	good:
 NOTE	aES18c7n	15	Black takes the bishop.	threat:b4c3
@@ -103,7 +103,7 @@ NOTE	aES18c7n	21	Black gives up the bishop to double your pawns.
 NOTE	aES18c7n	22	Take back.	good:
 NOTE	aES18c7n	23	The king heads for f6 to round up the g7 pawn.	
 NOTE	aES18c7n	24	Castle long: the king is safe and the rook takes the open d-file.	good:h2h4,h2h3
-GAME	jyOcagdl	Scotch Game	w	e4 e5 Nf3 Nc6 d4 exd4 c3 d5 exd5	Ljubojevic, Ljubomir	Portisch, Lajos	1975	Milan	1/2-1/2	9	21	e4 e5 Nf3 Nc6 d4 exd4 c3 d5 exd5 Qxd5 cxd4 Bb4+ Nc3 Nf6 Be2 Ne4 Bd2 Bxc3 bxc3 O-O O-O Nxd2 Nxd2 Bf5 Qb3 Qa5 Nc4 Qa6 Qb2 Ne7 Ne3 Qb6 Qa3 Qd6 Qxd6 cxd6 Bf3 Rab8 Rfe1 Rfc8 Nxf5 Nxf5 Rab1 g6 Rb3 Rc7 Kf1	Ljubojevic–Portisch, Milan 1975. Against ...d5 White takes back on d4 and develops fast. The pin on the c3 knight is the theme of the next moves.
+GAME	jyOcagdl	Scotch Game	w	e4 e5 Nf3 Nc6 d4 exd4 c3 d5 exd5	Ljubomir Ljubojevic	Lajos Portisch	1975	Milan	1/2-1/2	9	21	e4 e5 Nf3 Nc6 d4 exd4 c3 d5 exd5 Qxd5 cxd4 Bb4+ Nc3 Nf6 Be2 Ne4 Bd2 Bxc3 bxc3 O-O O-O Nxd2 Nxd2 Bf5 Qb3 Qa5 Nc4 Qa6 Qb2 Ne7 Ne3 Qb6 Qa3 Qd6 Qxd6 cxd6 Bf3 Rab8 Rfe1 Rfc8 Nxf5 Nxf5 Rab1 g6 Rb3 Rc7 Kf1	Ljubojevic–Portisch, Milan 1975. Against ...d5 White takes back on d4 and develops fast. The pin on the c3 knight is the theme of the next moves.	2615	2635
 NOTE	jyOcagdl	9	The queen takes back in the middle of the board.	
 NOTE	jyOcagdl	10	Take back: a pawn on d4 in the centre.	good:f1e2
 NOTE	jyOcagdl	11	Black checks.	
@@ -116,7 +116,7 @@ NOTE	jyOcagdl	17	Black trades on c3.	threat:c3d2
 NOTE	jyOcagdl	18	Take back with the pawn. The pawns on c3 and d4 hold the centre.	good:
 NOTE	jyOcagdl	19	Black castles.	
 NOTE	jyOcagdl	20	Castle too. Your pieces are out and the centre is yours.	good:h2h3,d1c2
-GAME	KGMF0HWo	Scotch Game	w	e4 e5 Nf3 Nc6 d4 Nxd4 Nxd4 exd4 Qxd4	Minasian, Artashes	Anastasian, Ashot	1996	ARM-ch	1-0	9	21	e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Nxd4 Qxd4 Ne7 Bc4 Nc6 Qd5 Qf6 O-O Be7 Nc3 O-O Qd1 Bd8 Nd5 Qg6 Re1 Ne5 Be2 d6 f4 Bh3 Ne3 Bh4 Rf1 Qxe4 gxh3 Ng6 Bd3	Minasian–Anastasian, Armenian Championship 1996. After 3...Nxd4 the queens stay on: White develops fast and aims the queen and bishop at f7.
+GAME	KGMF0HWo	Scotch Game	w	e4 e5 Nf3 Nc6 d4 Nxd4 Nxd4 exd4 Qxd4	Artashes Minasian	Ashot Anastasian	1996	ARM-ch	1-0	9	21	e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Nxd4 Qxd4 Ne7 Bc4 Nc6 Qd5 Qf6 O-O Be7 Nc3 O-O Qd1 Bd8 Nd5 Qg6 Re1 Ne5 Be2 d6 f4 Bh3 Ne3 Bh4 Rf1 Qxe4 gxh3 Ng6 Bd3	Minasian–Anastasian, Armenian Championship 1996. After 3...Nxd4 the queens stay on: White develops fast and aims the queen and bishop at f7.	2580	2520
 NOTE	KGMF0HWo	9	Black brings the knight round towards c6, to hit your queen.	
 NOTE	KGMF0HWo	10	Develop the bishop, aiming at f7. The engine prefers Nc3 or Bd2.	good:c1d2,b1c3,d4d3
 NOTE	KGMF0HWo	11	The knight hits the queen.	threat:c6d4

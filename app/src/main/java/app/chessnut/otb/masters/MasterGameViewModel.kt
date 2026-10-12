@@ -15,6 +15,7 @@ import app.chessnut.otb.games.PgnImport
 import app.chessnut.otb.openings.Guess
 import app.chessnut.otb.openings.MasterGame
 import app.chessnut.otb.openings.MasterGames
+import app.chessnut.otb.openings.MoveIdeas
 import app.chessnut.otb.play.BOARD_SETTLE_MS
 import app.chessnut.otb.play.PlayPosition
 import kotlinx.coroutines.CompletableDeferred
@@ -51,6 +52,9 @@ data class MasterGameUi(
     val matched: Int = 0,
     val good: Int = 0,
     val guessed: Int = 0,
+    /** Your moves in the line itself, before the master's own moves begin. */
+    val lineMatched: Int = 0,
+    val lineGuessed: Int = 0,
     val done: Boolean = false,
     val busy: Boolean = true,
     /** Playing out the rest of the game after your guesses. */
@@ -110,9 +114,9 @@ class MasterGameViewModel(application: Application, private val id: String) : An
                 light(emptyList())
                 boardWaiter?.complete(Unit)
             } else {
-                // Light what still has to change, when it's a move's worth.
+                // Light what still has to change, when there are few enough squares to help.
                 val wrong = PlayPosition.differences(target, placement)
-                if (wrong.size <= 4) light(wrong)
+                if (wrong.size <= MAX_LIT) light(wrong)
             }
             return
         }
@@ -144,29 +148,49 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         val g = game ?: return
         val r = replay ?: return
         job?.cancel()
-        ply = g.start
+        // From move 1: your line first, then the master's own moves.
+        ply = 0
         hints = 0
-        // The game starts mid-way, so the board is used only when it already shows the start,
-        // as it does straight after the line in Train. Otherwise it's played on the screen.
-        val session = app.boardSession != null
-        physical = session && app.latestPlacement?.let { PlayPosition.matches(r.fens[ply], it) } == true
+        physical = app.boardSession != null
         app.boardBorrowed = physical
         boardTarget = null
         boardWaiter?.cancel()
+        val start = r.fens[0]
+        val ready = !physical || app.latestPlacement?.let { PlayPosition.matches(start, it) } == true
         state.value = MasterGameUi(
-            game = g, fen = r.fens[ply], lastUci = r.uci.getOrNull(ply - 1), busy = true,
-            status = "The game reached your line here.", intro = g.intro, onBoard = physical,
-            boardNote = if (session && !physical) "The board isn't in this position, so this game is on the screen." else null,
+            game = g, fen = start, busy = true, onBoard = physical, intro = g.intro,
+            status = if (ready) "Your line first, from move 1." else "Set up the starting position.",
+            boardNote = if (ready) null else "Squares still to set up are lit.",
         )
-        advance()
+        job = viewModelScope.launch {
+            if (!ready) {
+                val wrong = app.latestPlacement?.let { PlayPosition.differences(start, it) }.orEmpty()
+                awaitBoard(start, if (wrong.size <= MAX_LIT) wrong else emptyList())
+                state.update { it.copy(boardNote = null, status = "Your line first, from move 1.") }
+            }
+            playOn()
+        }
+    }
+
+    /** The note for the move at [at]: the game's own note, or, in your line, the opening notes. */
+    private fun noteAt(at: Int): String? {
+        val g = game ?: return null
+        val r = replay ?: return null
+        val note = g.notes[at] ?: if (at < g.start) MoveIdeas.explain(g.moves.take(at + 1), r.fens[at], r.uci[at]) else null
+        return note?.let { "${moveLabel(at)}${g.moves[at]}  $it" }
+    }
+
+    private fun advance() {
+        job = viewModelScope.launch { playOn() }
     }
 
     /** Plays the opponent's moves until it's your guess, or the stretch is over. */
-    private fun advance() {
+    private suspend fun playOn() {
         val g = game ?: return
         val r = replay ?: return
-        job = viewModelScope.launch {
+        run {
             while (ply < g.end && (ply % 2 == 0) != g.userWhite) {
+                if (ply == g.start) lineEnds()
                 delay(OPPONENT_DELAY_MS)
                 val san = g.moves[ply]
                 if (app.phoneSounds) speech.say(san)
@@ -174,7 +198,7 @@ class MasterGameViewModel(application: Application, private val id: String) : An
                     it.copy(
                         fen = r.fens[ply + 1], lastUci = r.uci[ply], selected = null, targets = emptySet(),
                         masterUci = null, wrongUci = null, threatUci = g.threats[ply],
-                        theirNote = g.notes[ply]?.let { n -> "${moveLabel(ply)}$san  $n" },
+                        theirNote = noteAt(ply),
                     )
                 }
                 // On the board, you play the opponent's move: it's lit until the board shows it.
@@ -184,10 +208,18 @@ class MasterGameViewModel(application: Application, private val id: String) : An
             if (ply >= g.end) {
                 finish()
             } else {
+                if (ply == g.start) lineEnds()
                 hints = 0
-                state.update { it.copy(busy = false, status = "Your move: what did ${g.master} play?") }
+                val ask = if (ply < g.start) "Your move: play your line." else "Your move: what did ${g.master} play?"
+                state.update { it.copy(busy = false, status = ask) }
             }
         }
+    }
+
+    /** Marks where the line ends and the master's own moves begin. */
+    private fun lineEnds() {
+        val g = game ?: return
+        state.update { it.copy(intro = "Your line ends here. From now on, guess ${g.master}'s moves.") }
     }
 
     fun tap(square: Int) {
@@ -208,20 +240,25 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         // A hint counts as help: the move is shown, not guessed.
         val verdict = if (hints > 0) Guess.Miss else MasterGames.judge(g, ply, uci, master)
         if (app.phoneSounds) if (verdict == Guess.Miss) sounds.illegal() else speech.say(san)
-        val words = when (verdict) {
-            Guess.Match -> "Yes, ${g.master} played $san."
-            Guess.Good -> "Good too: the engine likes your move. ${g.master} played $san."
-            Guess.Miss -> "${g.master} played $san."
+        val inLine = ply < g.start
+        val words = when {
+            inLine && verdict == Guess.Match -> "Yes: $san, your line's move."
+            inLine -> "Your line plays $san."
+            verdict == Guess.Match -> "Yes, ${g.master} played $san."
+            verdict == Guess.Good -> "Good too: the engine likes your move. ${g.master} played $san."
+            else -> "${g.master} played $san."
         }
         state.update {
             it.copy(
                 busy = true, fen = r.fens[ply + 1], lastUci = master, selected = null, targets = emptySet(),
                 masterUci = master, threatUci = null, wrongUci = if (verdict == Guess.Miss && !uci.equals(master, true)) uci else null,
                 pass = verdict != Guess.Miss, mark = words, status = words, intro = null, theirNote = null,
-                yourNote = g.notes[ply]?.let { n -> "${moveLabel(ply)}$san  $n" },
-                guessed = it.guessed + 1,
-                matched = it.matched + if (verdict == Guess.Match) 1 else 0,
-                good = it.good + if (verdict == Guess.Good) 1 else 0,
+                yourNote = noteAt(ply),
+                lineGuessed = it.lineGuessed + if (inLine) 1 else 0,
+                lineMatched = it.lineMatched + if (inLine && verdict == Guess.Match) 1 else 0,
+                guessed = it.guessed + if (inLine) 0 else 1,
+                matched = it.matched + if (!inLine && verdict == Guess.Match) 1 else 0,
+                good = it.good + if (!inLine && verdict == Guess.Good) 1 else 0,
             )
         }
         val after = r.fens[ply + 1]
@@ -302,7 +339,8 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         state.update {
             it.copy(
                 busy = false, done = true, threatUci = null,
-                status = "You found ${it.matched} of ${it.guessed}" + (if (it.good > 0) ", and ${it.good} more as good." else "."),
+                status = "Your line: ${it.lineMatched} of ${it.lineGuessed}. ${g.master}'s moves: ${it.matched} of ${it.guessed}" +
+                    (if (it.good > 0) ", and ${it.good} more as good." else "."),
                 theirNote = "The game went on for ${(rest + 1) / 2} more moves. Play it out to see how it ended.",
             )
         }
@@ -343,5 +381,7 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         private const val AFTER_GUESS_MS = 1_600L
         private const val WATCH_MS = 1_000L
         const val MASTER_FOLDER = "Master games"
+        /** Up to this many squares to put right are lit; more would only confuse. */
+        private const val MAX_LIT = 8
     }
 }
