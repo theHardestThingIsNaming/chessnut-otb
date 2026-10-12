@@ -17,7 +17,7 @@ class MiddlegamePlansTest {
             val lines = OpeningTree.lines(plan.opening, plan.white)
             assertTrue(lines.any { it.take(plan.before.size) == plan.before }, "${plan.name} starts from a line you drill")
         }
-        assertEquals(10, MiddlegamePlans.of("Scotch Game", true).size)
+        assertEquals(12, MiddlegamePlans.of("Scotch Game", true).size)
         assertEquals(4, MiddlegamePlans.of("Italian Game", true).size)
         assertEquals(4, MiddlegamePlans.of("Ruy Lopez", true).size)
         assertEquals(3, MiddlegamePlans.of("Vienna Game", true).size)
