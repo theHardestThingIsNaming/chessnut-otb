@@ -147,6 +147,10 @@ class MainActivity : ComponentActivity() {
                         MasterGameScreen(
                             viewModel<MasterGameViewModel>(key = screen, factory = MasterGameViewModel.Factory(id)),
                             onBack = { screen = "play" },
+                            onAnalyse = { gameId ->
+                                afterReview = screen
+                                screen = "review:$gameId"
+                            },
                         )
                     }
                     screen.startsWith("plans:") -> {

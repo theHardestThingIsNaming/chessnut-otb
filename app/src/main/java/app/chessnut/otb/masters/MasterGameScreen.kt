@@ -40,7 +40,7 @@ import app.chessnut.otb.ui.clubAppBarColors
 /** Guess the master's moves from where the game reached your line. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MasterGameScreen(model: MasterGameViewModel, onBack: () -> Unit) {
+fun MasterGameScreen(model: MasterGameViewModel, onBack: () -> Unit, onAnalyse: (String) -> Unit = {}) {
     KeepScreenOn()
     val ui by model.ui.collectAsStateWithLifecycle()
     BackHandler(onBack = onBack)
@@ -89,6 +89,8 @@ fun MasterGameScreen(model: MasterGameViewModel, onBack: () -> Unit) {
                 if (ui.done && !ui.over) {
                     PrimaryAction(if (ui.watching) "Playing out…" else "Play out the game", Modifier.weight(1.4f).fillMaxHeight(), enabled = !ui.watching, onClick = model::watchRest)
                 } else if (ui.done) {
+                    // The whole game, with the engine, from your games' Master games folder.
+                    GameAction("Analyse", light = false, onClick = { model.saveForAnalysis()?.let(onAnalyse) }, modifier = Modifier.weight(1f).fillMaxHeight())
                     PrimaryAction("Done", Modifier.weight(1.4f).fillMaxHeight(), onClick = onBack)
                 } else {
                     PrimaryAction("Hint", Modifier.weight(1.4f).fillMaxHeight(), enabled = !ui.busy, onClick = model::hint)

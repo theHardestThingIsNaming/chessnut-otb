@@ -11,6 +11,7 @@ import app.chessnut.otb.board.BoardSounds
 import app.chessnut.otb.board.MoveSpeaker
 import app.chessnut.otb.chess.MoveInput
 import app.chessnut.otb.chess.squareIndex
+import app.chessnut.otb.games.PgnImport
 import app.chessnut.otb.openings.Guess
 import app.chessnut.otb.openings.MasterGame
 import app.chessnut.otb.openings.MasterGames
@@ -254,6 +255,30 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         }
     }
 
+    /**
+     * Saves the master game to your games, in the Master games folder, for analysis.
+     * Returns its id. It adds nothing to your mistakes: neither player is you.
+     */
+    fun saveForAnalysis(): String? {
+        val g = game ?: return null
+        val movetext = g.moves.mapIndexed { i, san -> if (i % 2 == 0) "${i / 2 + 1}. $san" else san }.joinToString(" ")
+        val pgn = """[Event "${g.event}"]
+            |[White "${g.white}"]
+            |[Black "${g.black}"]
+            |[Date "${g.year}.??.??"]
+            |[Result "${g.result}"]
+            |
+            |$movetext ${g.result}
+            |""".trimMargin()
+        val saved = runCatching { PgnImport.parse(pgn, System.currentTimeMillis()) }.getOrNull() ?: return null
+        if (app.store.addIfNew(saved)) {
+            app.store.moveToFolder(saved.id, MASTER_FOLDER)
+            app.analyse(saved.id)
+            app.refreshGames()
+        }
+        return saved.id
+    }
+
     /** First the piece, then the move, as in the puzzles. A hint means the move isn't counted as guessed. */
     fun hint() {
         val s = state.value
@@ -317,5 +342,6 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         private const val OPPONENT_DELAY_MS = 700L
         private const val AFTER_GUESS_MS = 1_600L
         private const val WATCH_MS = 1_000L
+        const val MASTER_FOLDER = "Master games"
     }
 }

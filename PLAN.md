@@ -121,6 +121,7 @@ Use the emulator (`pixel_api36`, `./scripts/launch-emulator.sh`) when the phone 
 Built 2026-10-12, Scotch only, for review before spreading to other openings.
 
 - [x] Master game mode: each Scotch line has a classical master game that reached its end (Carlsen–Aronian, Nakamura–Onischuk, Staunton–Popert and others). From the opening's page (a gold "Master game" button on the line) or after finishing the line in Train, you guess the master's next six moves. The opponent's moves play out with a note, and a red arrow when they make a real threat (a capture or check worth a pawn or more). A move within 0.3 of a pawn of Stockfish's best counts as good too. After your guesses, "Play out the game" shows the rest. Data: `core/src/main/resources/master-games.tsv`, checked by `MasterGamesTest`.
+- [x] After a master game, Analyse saves it to your games (a "Master games" folder, so it isn't trimmed with the recent five) and opens it in the analysis screen; Back returns to the master game. It adds nothing to your mistakes.
 - [x] Plans show how often masters played each move ("Masters: 4,994 of 6,274 games"), so book moves stand apart from the engine's ideas. Data: `plan-masters.tsv`, from `MasterStatsTest`.
 - [x] Two Scotch plans built from master practice: "f4 and Ba3 against ...g6" (Mieses) and "Castle long against ...d6" (3...Nxd4). White scores 64–78% in master games there; the old plans followed Stockfish, which masters mostly don't play at those points.
 
