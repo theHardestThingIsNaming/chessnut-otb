@@ -5,7 +5,7 @@ import app.chessnut.otb.play.PlayPosition
 import java.io.File
 import kotlin.test.Test
 
-/** Not a check: a tool. With TRAP_IN set, scores each candidate's last move with a local Stockfish. */
+/** Not a check: a tool. With TRAP_IN set (a file of `label|moves`, or `all`), scores each candidate's last move with a local Stockfish. */
 class TrapCheckTest {
     @Test
     fun scoreCandidates() {
@@ -31,9 +31,18 @@ class TrapCheckTest {
         send("uci"); while (r.readLine() != "uciok") {}
         send("setoption name Threads value 4")
         val out = StringBuilder()
-        for (row in File(input).readLines().filter { it.isNotBlank() }) {
-            val (label, sans) = row.split("|")
-            val moves = sans.split(" ")
+        // TRAP_IN=all checks every shipped trap: its mistake, and the punishing move after it.
+        val rows = if (input == "all") {
+            app.chessnut.otb.openings.OpeningTraps.all.map { "${it.name}|${(it.before + it.moves.take(2)).joinToString(" ")}|2" }
+        } else {
+            File(input).readLines().filter { it.isNotBlank() }
+        }
+        for (row in rows) {
+            val parts = row.split("|")
+            val label = parts[0]
+            val punish = parts.getOrNull(2) == "2"
+            val all = parts[1].split(" ")
+            val moves = if (punish) all.dropLast(1) else all
             val fens = ChessLines.replay(moves).fens
             val before = fens[fens.size - 2]
             val after = fens.last()
@@ -41,7 +50,14 @@ class TrapCheckTest {
             val (afterCp, afterPv) = go(after)
             // Both from the mistake-maker's view: before is theirs to move, after is the opponent's.
             val drop = bestCp + afterCp
-            out.append("$label: loses ${drop}cp. best was ${ChessLines.sanOf(before, bestPv.take(1)).joinToString()}; refutation ${ChessLines.sanOf(after, afterPv.take(9)).joinToString(" ")}\n")
+            out.append("$label: loses ${drop}cp. best was ${ChessLines.sanOf(before, bestPv.take(1)).joinToString()}; refutation ${ChessLines.sanOf(after, afterPv.take(9)).joinToString(" ")}")
+            if (punish) {
+                // The punishing move, against the engine's best there: what it gives back.
+                // A mating punish is the best there is: a mated position has no score to read.
+                val back = if (all.last().endsWith("#")) 0 else afterCp + go(ChessLines.replay(all).fens.last()).first
+                out.append(" | punish ${all.last()} gives back ${back}cp")
+            }
+            out.append("\n")
         }
         send("quit")
         File(System.getenv("TRAP_OUT")).writeText(out.toString())

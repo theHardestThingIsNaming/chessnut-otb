@@ -346,7 +346,7 @@ object MiddlegamePlans {
             "Dark squares after ...g6",
             VIENNA, true,
             san("e4 e5 Nc3 Bc5 Qg4"),
-            san("g6 Qf3 Nf6 Bc4 d6 Nge2 Nc6 d3 h6 Be3"),
+            san("g6 Qf3 Nf6 Bc4 d6 Nge2 Nc6 d3 h6 O-O"),
             listOf(
                 "Black stops the queen taking on g7, and weakens the dark squares to do it.",
                 "The queen steps back and still eyes f7.",
@@ -357,9 +357,9 @@ object MiddlegamePlans {
                 "Black develops.",
                 "d3 opens the dark bishop.",
                 "Black makes room.",
-                "The bishop offers the trade of Black's active bishop. The dark squares around the king stay soft.",
+                "Castle first. Be3 at once runs into ...Bg4, hitting the queen. Once the king is safe, Be3 offers to trade Black's active bishop, and the dark squares around the king stay soft.",
             ),
-            "Qg4 forces ...g6. Then ordinary development, Bc4 and d3, and Be3 to trade the bishop that was defending those dark squares.",
+            "Qg4 forces ...g6. Then ordinary development, Bc4 and d3, castling, and Be3 to trade the bishop that was defending those dark squares.",
         ),
         MiddlegamePlan(
             "The long diagonal",

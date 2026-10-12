@@ -5,7 +5,8 @@ import java.io.File
 import kotlin.test.Test
 
 /**
- * Not a check: a tool. Reads PLAN_IN (lines `label|before|moves`, SAN) and,
+ * Not a check: a tool. Reads PLAN_IN (lines `label|before|moves`, SAN, or
+ * `all` for every shipped plan) and,
  * for every move of the plan, writes to PLAN_OUT how many centipawns it gives
  * away against Stockfish's best at depth 18, and the best move when it's a
  * lot, so a written plan can be checked move by move.
@@ -34,7 +35,13 @@ class PlanCheckTest {
             }
         }
         val out = StringBuilder()
-        for (row in File(input).readLines().filter { '|' in it }) {
+        // PLAN_IN=all checks every plan shipped in MiddlegamePlans.
+        val rows = if (input == "all") {
+            app.chessnut.otb.openings.MiddlegamePlans.all.map { "${it.opening}: ${it.name}|${it.before.joinToString(" ")}|${it.moves.joinToString(" ")}" }
+        } else {
+            File(input).readLines().filter { '|' in it }
+        }
+        for (row in rows) {
             val (label, before, moves) = row.split('|').map { it.trim() }
             val start = before.split(' ').filter { it.isNotBlank() }
             val plan = moves.split(' ').filter { it.isNotBlank() }
