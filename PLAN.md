@@ -41,21 +41,21 @@ Fix first:
 - [x] Punish's prompt card has a green border; Punish is orange.
 
 Consistency:
-- [ ] Hints differ: Punish lights the whole move at once, puzzles light the piece then the move. Pick one (the two steps).
-- [ ] Puzzles don't say what the opponent just played; Punish and Mistakes do ("Your opponent played 7… Qxg2").
-- [ ] In Train and Punish the opening's name is in the top bar and again as the green heading under it, and that heading is also where status text ("Hint lit") appears. Use the heading for status only.
-- [ ] On the opening's page the plan count is gold and the tactics count green. Use one colour.
-- [ ] The Essentials and puzzle sections on Endgames use different card styles. Essentials show no state (not tried, slipped, mastered).
+- [x] Hints differ: Punish lights the whole move at once, puzzles light the piece then the move. Pick one (the two steps).
+- [x] Puzzles don't say what the opponent just played; Punish and Mistakes do ("Your opponent played 7… Qxg2").
+- [x] In Train and Punish the opening's name is in the top bar and again as the green heading under it, and that heading is also where status text ("Hint lit") appears. Use the heading for status only.
+- [x] On the opening's page the plan count is gold and the tactics count green. Use one colour.
+- [x] The Essentials and puzzle sections on Endgames use different card styles. Essentials show no state (not tried, slipped, mastered).
 
 Smaller:
-- [ ] The Openings header reads "3 lines learned · In 5 openings": it counts openings started, which reads as if three lines were spread over five. Say "Started 5 openings" or count only openings with a learned line.
-- [ ] An empty puzzle progress bar shows a stray dot at its right end (Material's stop indicator).
-- [ ] Mistakes opens on a bare spinner for several seconds. Show what it's doing ("Loading 31 positions…").
-- [ ] Punish, Mistakes and puzzles leave half the screen empty under the board. Room for the game's moves, or the idea and the eval after you answer.
-- [ ] Home's Openings and Mistakes tiles change their subtitles once the counts load, which shifts the text. Reserve the line.
-- [ ] An unanalysed game shows "Accuracy – · –". Say "Not analysed yet".
-- [ ] "Lichess wins –" with no login gives no hint that logging in fills it.
-- [ ] The plans list doesn't show which plans you've stepped through or tried against the bot.
+- [x] The Openings header reads "3 lines learned · In 5 openings": it counts openings started, which reads as if three lines were spread over five. Say "Started 5 openings" or count only openings with a learned line.
+- [x] An empty puzzle progress bar shows a stray dot at its right end (Material's stop indicator).
+- [x] Mistakes opens on a bare spinner for several seconds. Show what it's doing ("Loading 31 positions…").
+- [x] Punish, Mistakes and puzzles leave half the screen empty under the board. Room for the game's moves, or the idea and the eval after you answer. Left as it is: a mistake keeps only its position (its game may be gone from the list), so there are no moves to show for every one.
+- [x] Home's Openings and Mistakes tiles change their subtitles once the counts load, which shifts the text. Reserve the line. Checked: the line is one line high either way, so the text changes in place and nothing moves.
+- [x] An unanalysed game shows "Accuracy – · –". Say "Not analysed yet".
+- [x] "Lichess wins –" with no login gives no hint that logging in fills it.
+- [x] The plans list doesn't show which plans you've stepped through or tried against the bot.
 
 ## Left as it is
 

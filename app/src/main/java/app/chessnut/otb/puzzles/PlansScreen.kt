@@ -27,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -45,6 +46,7 @@ import app.chessnut.otb.ui.Palette
 import app.chessnut.otb.ui.PrimaryAction
 import app.chessnut.otb.ui.clubAppBarColors
 import kotlinx.coroutines.delay
+import java.io.File
 
 /**
  * An opening's middlegame plans: the list, then one plan stepped through on
@@ -55,6 +57,9 @@ import kotlinx.coroutines.delay
 fun PlansScreen(opening: String, white: Boolean, onBack: () -> Unit, onTry: (fen: String, white: Boolean) -> Unit) {
     val plans = remember(opening, white) { MiddlegamePlans.of(opening, white) }
     var open by rememberSaveable { mutableStateOf<String?>(null) }
+    val marks = PlanMarks(LocalContext.current.filesDir)
+    // Read again each time the list shows, so a plan just stepped through is marked.
+    val done = remember(open) { marks.all() }
     val plan = plans.firstOrNull { it.name == open }
     BackHandler { if (plan != null) open = null else onBack() }
     Scaffold(
@@ -85,17 +90,27 @@ fun PlansScreen(opening: String, white: Boolean, onBack: () -> Unit, onTry: (fen
                     ) {
                         Text(item.name, color = Palette.Text, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
                         Text(item.summary, color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall, maxLines = 3)
+                        val mark = done[PlanMarks.key(item)]
+                        Text(
+                            when (mark) {
+                                PlanMarks.TRIED -> "✓ Stepped through and tried against the bot"
+                                PlanMarks.SEEN -> "✓ Stepped through"
+                                else -> "Not opened yet"
+                            },
+                            color = if (mark == null) Palette.TextMuted else Palette.Accent,
+                            style = MaterialTheme.typography.labelMedium,
+                        )
                     }
                 }
             }
         } else {
-            PlanViewer(plan, modifier, onTry)
+            PlanViewer(plan, modifier, marks, onTry)
         }
     }
 }
 
 @Composable
-private fun PlanViewer(plan: MiddlegamePlan, modifier: Modifier, onTry: (fen: String, white: Boolean) -> Unit) {
+private fun PlanViewer(plan: MiddlegamePlan, modifier: Modifier, marks: PlanMarks, onTry: (fen: String, white: Boolean) -> Unit) {
     val replay = remember(plan) { ChessLines.replay(plan.before + plan.moves) }
     val start = plan.before.size
     var step by rememberSaveable(plan.name) { mutableIntStateOf(0) }
@@ -109,6 +124,7 @@ private fun PlanViewer(plan: MiddlegamePlan, modifier: Modifier, onTry: (fen: St
         delay(if (step == 0) 600 else STEP_MS)
         step++
     }
+    LaunchedEffect(step) { if (step >= plan.moves.size) marks.mark(plan, PlanMarks.SEEN) }
     val ply = start + step
     val lastUci = replay.uci.getOrNull(ply - 1)
     // Your side's moves in green, your opponent's in blue.
@@ -133,6 +149,7 @@ private fun PlanViewer(plan: MiddlegamePlan, modifier: Modifier, onTry: (fen: St
             GameAction(">", light = false, onClick = { playing = false; if (step < plan.moves.size) step++ }, modifier = Modifier.weight(1f).fillMaxHeight())
         }
         PrimaryAction("Try it against the bot", Modifier.fillMaxWidth().height(52.dp).padding(bottom = 4.dp)) {
+            marks.mark(plan, PlanMarks.TRIED)
             onTry(replay.fens[start], plan.white)
         }
     }
@@ -141,3 +158,28 @@ private fun PlanViewer(plan: MiddlegamePlan, modifier: Modifier, onTry: (fen: St
 private fun moveNumber(ply: Int): String = "${ply / 2 + 1}${if (ply % 2 == 0) ". " else "… "}"
 
 private const val STEP_MS = 2200L
+
+/** Which plans you've stepped through to the end, and which you've tried against the bot. */
+class PlanMarks(filesDir: File) {
+    private val file = File(filesDir, "plan-marks.tsv")
+
+    fun all(): Map<String, String> = runCatching {
+        if (!file.exists()) emptyMap() else file.readLines().mapNotNull { line ->
+            line.split('\t').takeIf { it.size == 2 }?.let { it[0] to it[1] }
+        }.toMap()
+    }.getOrDefault(emptyMap())
+
+    /** Records [mark], never lowering a plan from tried to seen. */
+    fun mark(plan: MiddlegamePlan, mark: String) {
+        val now = all().toMutableMap()
+        if (now[key(plan)] == TRIED) return
+        now[key(plan)] = mark
+        runCatching { file.writeText(now.entries.joinToString("") { "${it.key}\t${it.value}\n" }) }
+    }
+
+    companion object {
+        const val SEEN = "seen"
+        const val TRIED = "tried"
+        fun key(plan: MiddlegamePlan) = "${plan.opening}|${if (plan.white) "w" else "b"}|${plan.name}"
+    }
+}

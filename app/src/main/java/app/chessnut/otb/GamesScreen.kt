@@ -519,6 +519,11 @@ private fun GameRow(
                         color = Palette.Accent,
                         trackColor = Palette.Outline,
                     )
+                    accuracy != null && accuracy.first == null && accuracy.second == null -> Text(
+                        "No accuracy for this game",
+                        color = Palette.TextMuted,
+                        fontSize = 13.sp,
+                    )
                     accuracy != null -> Text(
                         "Accuracy  ${fmt(accuracy.first)}  ·  ${fmt(accuracy.second)}",
                         color = Palette.Gold,

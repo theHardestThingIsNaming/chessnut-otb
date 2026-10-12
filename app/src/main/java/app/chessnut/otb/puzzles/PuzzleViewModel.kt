@@ -83,6 +83,13 @@ class PuzzleViewModel(application: Application, private val key: String) : Andro
 
     fun retryMissed() = begin(deck.filter { results[it.id] != true })
 
+    /** "34. " or "34… " for the move about to be played in [fen]. */
+    private fun moveLabel(fen: String): String {
+        val parts = fen.split(' ')
+        val number = parts.getOrNull(5) ?: "1"
+        return if (parts.getOrNull(1) == "w") "$number. " else "$number… "
+    }
+
     private fun show(index: Int) {
         moveJob?.cancel()
         val puzzle = deck.getOrNull(index) ?: return finish()
@@ -102,8 +109,11 @@ class PuzzleViewModel(application: Application, private val key: String) : Andro
         moveJob = viewModelScope.launch {
             delay(OPPONENT_DELAY_MS)
             val first = next.start()
-            if (app.phoneSounds) PlayPosition.after(puzzle.fen, first)?.first?.let { speech.say(it) }
-            state.update { it.copy(fen = next.fen, lastUci = first, busy = false, status = "Find the best move for $side.") }
+            val san = PlayPosition.after(puzzle.fen, first)?.first
+            if (app.phoneSounds) san?.let { speech.say(it) }
+            // Name the move you're answering, as Punish and Mistakes do.
+            val played = san?.let { "Your opponent played ${moveLabel(puzzle.fen)}$it. " }.orEmpty()
+            state.update { it.copy(fen = next.fen, lastUci = first, busy = false, status = "${played}Find the best move for $side.") }
         }
     }
 

@@ -378,7 +378,7 @@ private fun ProgressCard(ui: PlayUi, onReview: () -> Unit) {
                 fontWeight = FontWeight.Bold,
             )
             Text(
-                "In ${ui.openingsStarted} ${if (ui.openingsStarted == 1) "opening" else "openings"}" +
+                "${ui.openingsStarted} ${if (ui.openingsStarted == 1) "opening" else "openings"} started" +
                     if (ui.dueTotal > 0) " · ${ui.dueTotal} due today" else " · nothing due",
                 color = if (ui.dueTotal > 0) Palette.Gold else Palette.TextMuted,
                 style = MaterialTheme.typography.bodySmall,
@@ -559,7 +559,7 @@ private fun OpeningPage(
                     Stat("${detail.learned}/${detail.total}", "learned", Modifier.weight(1f), if (detail.total > 0 && detail.learned == detail.total) Palette.Gold else Palette.Text)
                     Stat(detail.due.toString(), "due", Modifier.weight(1f), if (detail.due > 0) Palette.Gold else Palette.Text)
                     MedalStat(detail.medal, Modifier.weight(1f))
-                    Stat(detail.winRate?.let { "$it%" } ?: "–", "Lichess wins", Modifier.weight(1f))
+                    Stat(detail.winRate?.let { "$it%" } ?: "–", if (detail.winRate == null && !ui.lichessLinked) "Log in to Lichess" else "Lichess wins", Modifier.weight(1f))
                 }
             }
             item(key = "survival") { SurvivalCard(detail) }
@@ -1273,7 +1273,7 @@ private fun BeyondTheOpening(opening: String, white: Boolean, onPuzzles: (String
     ) {
         Text("Beyond the opening", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp))
         if (plans > 0) {
-            BeyondRow("Middlegame plans", "What to aim for once your lines end", "$plans", Palette.Gold) { onPlans(opening, white) }
+            BeyondRow("Middlegame plans", "What to aim for once your lines end", "$plans", Palette.Accent) { onPlans(opening, white) }
         }
         if (counts.total > 0 && (!counts.resting || showSolved)) {
             BeyondRow(

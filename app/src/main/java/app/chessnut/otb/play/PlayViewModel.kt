@@ -52,6 +52,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import app.chessnut.otb.chess.MoveInput
+import app.chessnut.otb.chess.squareIndex
 import app.chessnut.otb.repertoire.OpeningTree
 import app.chessnut.otb.review.POSITION_PREFIX
 import app.chessnut.otb.repertoire.DepthRun
@@ -272,6 +273,8 @@ data class PlayUi(
     val reviewLast: Boolean = false,
     /** Your Chess.com username, and how the last import of this opening's games went. */
     val chessComUser: String = "",
+    /** Logged in to Lichess, which the win rates and trap figures need. */
+    val lichessLinked: Boolean = false,
     val chessComNote: String? = null,
     val chessComBusy: Boolean = false,
 )
@@ -279,7 +282,10 @@ data class PlayUi(
 class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private val app = application as OtbApp
     private val state = MutableStateFlow(
-        PlayUi(explain = app.explainOpening, history = app.openingHistory, ideas = app.moveIdeas, chessComUser = app.chessComUser),
+        PlayUi(
+            explain = app.explainOpening, history = app.openingHistory, ideas = app.moveIdeas, chessComUser = app.chessComUser,
+            lichessLinked = LichessVault(application).token() != null,
+        ),
     )
     val ui: StateFlow<PlayUi> = state.asStateFlow()
     private val sounds = BoardSounds()
@@ -521,7 +527,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             if (on && retry) {
                 retry = false
                 rejectUci = null
-                if (!busy && finished == null) status = openingName ?: "Opening trainer"
+                if (!busy && finished == null) status = trainerStart()
             }
             publish()
             // The board's prompt follows: lit with Explain on, dark with it off.
@@ -856,6 +862,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         // Punish mode starts mid-game, so it's played on the screen rather than set up on the board.
         physical = app.boardSession != null && punishTrap == null
         hint = null
+        hintPiece = null
         prompt = null
         rejectUci = null
         retry = false
@@ -898,7 +905,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         choiceOffer = null
         status = when {
             awaitingBoard -> setupStatus(setupWrong)
-            kind == PlayKind.Trainer -> openingName ?: "Opening trainer"
+            kind == PlayKind.Trainer -> trainerStart()
             userWhite -> "You have White · $elo"
             else -> "You have Black · $elo"
         }
@@ -923,7 +930,19 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         launchPlay {
             // A hint in Punish mode shows the refutation, and counts as help.
             if (punishTrap != null) drillMissed = true
-            val uci = (if (punishTrap != null) drillMove() else null) ?: bookMove() ?: engineBest()
+            // Two steps, as in the puzzles: first the piece, then the move. The second keeps the first's move.
+            val shownPiece = hintPiece?.takeIf { hintFen == fen }
+            val uci = shownPiece ?: (if (punishTrap != null) drillMove() else null) ?: bookMove() ?: engineBest() ?: return@launchPlay
+            if (shownPiece == null) {
+                hintPiece = uci
+                hintFen = fen
+                selected = squareIndex(uci.substring(0, 2))
+                status = if (physical) "This piece moves. It's lit on the board." else "This piece moves."
+                note("hint piece $uci")
+                publish()
+                lightSquares(listOf(uci.substring(0, 2)))
+                return@launchPlay
+            }
             hint = uci
             status = if (physical) "Hint lit. Play it on the board." else "Hint lit"
             note("hint $uci")
@@ -931,6 +950,13 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             light(uci)
         }
     }
+
+    /** The trainer's heading before a move is made. The opening's name is already in the title bar. */
+    private fun trainerStart(): String = if (userToMove()) "Your move" else "Your opponent's move"
+
+    /** The move whose piece the first hint showed. A second hint on the same move shows the move. */
+    private var hintPiece: String? = null
+    private var hintFen: String? = null
 
     /** Show an earlier ply. The live game, clocks, and board lights stay where they are. */
     fun glanceTo(ply: Int) {
@@ -1324,6 +1350,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         awaitingBoard = false
         prompt = null
         hint = null
+        hintPiece = null
         rejectUci = null
         finished = null
         retry = false
@@ -1610,6 +1637,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         running?.cancel()
         prompt = null
         hint = null
+        hintPiece = null
         clockNoted = null
         finished = null
         selected = null
@@ -1631,7 +1659,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             }
             status = if (userWhite) "You have White · $elo" else "You have Black · $elo"
         } else if (kind == PlayKind.Trainer) {
-            status = openingName ?: "Opening trainer"
+            status = trainerStart()
             openingName?.let { tell(OpeningLore.of(it)) }
         }
         publish()
@@ -1974,6 +2002,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         glance = null
         revision = if (fromBoard) shot else null
         hint = null
+        hintPiece = null
         prompt = null
         selected = null
         when (ChessLines.terminalOf(fen)) {
@@ -2135,6 +2164,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         clockJob?.cancel()
         prompt = null
         hint = null
+        hintPiece = null
         publish()
     }
 
@@ -2403,6 +2433,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 bookFirstIsLine = lineMove != null && explained.firstOrNull()?.second == lineMove,
                 lineLabel = if (kind == PlayKind.Trainer) lineLabelShown else null,
                 lineDone = kind == PlayKind.Trainer && drillGraded,
+                lichessLinked = vault.token() != null,
                 lineClean = lineClean,
                 survival = survival,
                 punish = punishTrap != null,

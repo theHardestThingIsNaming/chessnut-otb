@@ -68,6 +68,12 @@ fun MistakesScreen(model: MistakesViewModel, onBack: () -> Unit, onOpenGame: (St
         ) {
             if (ui.loading) {
                 CircularProgressIndicator(Modifier.size(28.dp).align(Alignment.CenterHorizontally), color = Palette.Accent)
+                Text(
+                    "Gathering the mistakes from your analysed games…",
+                    color = Palette.TextMuted,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                )
                 return@Column
             }
             ui.summary?.let {

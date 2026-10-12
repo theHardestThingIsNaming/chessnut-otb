@@ -54,6 +54,11 @@ fun EndgamesScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onEssential: (S
         val progress = PuzzleProgress(context.filesDir)
         Essentials.ALL.filter { progress.mastered(EssentialViewModel.PROGRESS_PREFIX + it.id) }.map { it.id }.toSet()
     }
+    // Played through with a slip: worth another go.
+    val slipped = remember(lifecycle) {
+        val known = PuzzleProgress(context.filesDir).all()
+        Essentials.ALL.map { it.id }.filter { it !in mastered && known.containsKey(EssentialViewModel.PROGRESS_PREFIX + it) }.toSet()
+    }
     var showMastered by remember { mutableStateOf(false) }
     var showSolved by remember { mutableStateOf(false) }
     val essentials = Essentials.ALL.filter { showMastered || it.id !in mastered }
@@ -77,16 +82,21 @@ fun EndgamesScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onEssential: (S
                 )
             }
             items(essentials, key = { "essential-" + it.id }) { e ->
+                // The same card as a puzzle section below: title, then the goal where the bar would be.
                 Row(
                     Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface)
-                        .clickable { onEssential(e.id) }.padding(horizontal = 14.dp, vertical = 12.dp),
+                        .clickable { onEssential(e.id) }.padding(14.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Column(Modifier.weight(1f)) {
-                        Text(e.name, color = Palette.Text, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleSmall)
+                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(e.name, color = Palette.Text, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
                         Text(if (e.goal == Goal.Win) "Win it" else "Hold the draw", color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
                     }
-                    Text(if (e.id in mastered) "✓ Mastered" else "", color = Palette.Endgame, fontWeight = FontWeight.Bold)
+                    when (e.id) {
+                        in mastered -> Text("✓ Mastered", color = Palette.Endgame, fontWeight = FontWeight.Bold)
+                        in slipped -> Text("Try again", color = Palette.Gold, fontWeight = FontWeight.Bold)
+                        else -> Text("New", color = Palette.TextMuted, fontWeight = FontWeight.Bold)
+                    }
                 }
             }
             if (mastered.isNotEmpty()) {
@@ -125,6 +135,9 @@ fun EndgamesScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onEssential: (S
                         progress = { if (counts.total == 0) 0f else counts.solved.toFloat() / counts.total },
                         color = Palette.Endgame,
                         trackColor = Palette.SurfaceHigh,
+                        // No end dot and no gap: an empty bar is just the track.
+                        gapSize = 0.dp,
+                        drawStopIndicator = {},
                         modifier = Modifier.fillMaxWidth().height(4.dp),
                     )
                 }
