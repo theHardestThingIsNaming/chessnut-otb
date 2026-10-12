@@ -222,6 +222,8 @@ class MistakesViewModel(application: Application, private val gameId: String?) :
         state.update { it.copy(checking = true, wrongUci = null, status = "Checking…") }
         viewModelScope.launch {
             val (winBest, winAnswer) = if (uci.equals(mistake.bestUci, ignoreCase = true)) null to null else evaluate(mistake.fen, uci)
+            // Skip or Next while the engine worked: this answer belongs to a position no longer shown.
+            if (!stillOn(mistake)) return@launch
             if (!MistakeDeck.solved(uci, mistake.bestUci, winBest, winAnswer)) {
                 missed = true
                 val lost = if (winBest != null && winAnswer != null) " It gives away about ${Math.round(winBest - winAnswer)}% winning chances." else ""
@@ -243,12 +245,14 @@ class MistakesViewModel(application: Application, private val gameId: String?) :
             state.update { it.copy(fen = after.second, lastUci = uci, bestUci = null, status = "$good Your opponent is replying…") }
             // The opponent answers with the engine's best, then you find the follow-up.
             val reply = topLines(after.second, 1).firstOrNull()?.uci?.firstOrNull()
+            if (!stillOn(mistake)) return@launch
             val replied = reply?.let { PlayPosition.after(after.second, it) }
             if (replied == null || ChessLines.terminalOf(replied.second) != null) {
                 complete(mistake, replied?.second ?: after.second, reply ?: uci, good)
                 return@launch
             }
             val lines = topLines(replied.second, MistakeDeck.FOLLOW_UP_CHOICES)
+            if (!stillOn(mistake)) return@launch
             followGood = MistakeDeck.goodFollowUps(lines, whiteMoves = replied.second.split(' ')[1] == "w")
             followBest = lines.firstOrNull()?.uci?.firstOrNull()
             if (followGood.isEmpty()) {
@@ -266,6 +270,8 @@ class MistakesViewModel(application: Application, private val gameId: String?) :
             }
         }
     }
+
+    private fun stillOn(mistake: Mistake): Boolean = state.value.mistake?.key == mistake.key && !state.value.solved
 
     /** The second step: a move close to the engine's best after the opponent's reply. */
     private fun answerFollowUp(mistake: Mistake, uci: String) {
