@@ -48,6 +48,10 @@ data class MasterGameUi(
     val guessed: Int = 0,
     val done: Boolean = false,
     val busy: Boolean = true,
+    /** Playing out the rest of the game after your guesses. */
+    val watching: Boolean = false,
+    /** The whole game has been shown. */
+    val over: Boolean = false,
 )
 
 /**
@@ -152,6 +156,23 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         }
     }
 
+    /** After your guesses: plays the rest of the game out on the board, one move a second. */
+    fun watchRest() {
+        val g = game ?: return
+        val r = replay ?: return
+        if (!state.value.done || state.value.watching) return
+        job?.cancel()
+        state.update { it.copy(watching = true, masterUci = null, wrongUci = null, threatUci = null, pass = null, mark = null, yourNote = null) }
+        job = viewModelScope.launch {
+            while (ply < g.moves.size) {
+                delay(WATCH_MS)
+                state.update { it.copy(fen = r.fens[ply + 1], lastUci = r.uci[ply], theirNote = "${moveLabel(ply)}${g.moves[ply]}") }
+                ply++
+            }
+            state.update { it.copy(watching = false, over = true, theirNote = outcome(g)) }
+        }
+    }
+
     /** First the piece, then the move, as in the puzzles. A hint means the move isn't counted as guessed. */
     fun hint() {
         val s = state.value
@@ -174,8 +195,19 @@ class MasterGameViewModel(application: Application, private val id: String) : An
             it.copy(
                 busy = false, done = true, threatUci = null,
                 status = "You found ${it.matched} of ${it.guessed}" + (if (it.good > 0) ", and ${it.good} more as good." else "."),
-                theirNote = "The game went on for ${(rest + 1) / 2} more moves: ${g.result}, ${g.event}.",
+                theirNote = "The game went on for ${(rest + 1) / 2} more moves. Play it out to see how it ended.",
             )
+        }
+    }
+
+    /** "White won after 17 moves." */
+    private fun outcome(g: MasterGame): String {
+        val moves = (g.moves.size + 1) / 2
+        return when (g.result) {
+            "1-0" -> "White won after $moves moves."
+            "0-1" -> "Black won after $moves moves."
+            "1/2-1/2" -> "A draw after $moves moves."
+            else -> "The game ended after $moves moves."
         }
     }
 
@@ -197,5 +229,6 @@ class MasterGameViewModel(application: Application, private val id: String) : An
     companion object {
         private const val OPPONENT_DELAY_MS = 700L
         private const val AFTER_GUESS_MS = 1_600L
+        private const val WATCH_MS = 1_000L
     }
 }

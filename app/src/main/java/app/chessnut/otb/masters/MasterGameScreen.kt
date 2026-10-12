@@ -85,7 +85,9 @@ fun MasterGameScreen(model: MasterGameViewModel, onBack: () -> Unit) {
             Spacer(Modifier.height(0.dp))
             Row(Modifier.fillMaxWidth().height(52.dp).padding(bottom = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 GameAction("Restart", light = false, onClick = model::restart, modifier = Modifier.weight(1f).fillMaxHeight())
-                if (ui.done) {
+                if (ui.done && !ui.over) {
+                    PrimaryAction(if (ui.watching) "Playing out…" else "Play out the game", Modifier.weight(1.4f).fillMaxHeight(), enabled = !ui.watching, onClick = model::watchRest)
+                } else if (ui.done) {
                     PrimaryAction("Done", Modifier.weight(1.4f).fillMaxHeight(), onClick = onBack)
                 } else {
                     PrimaryAction("Hint", Modifier.weight(1.4f).fillMaxHeight(), enabled = !ui.busy, onClick = model::hint)
