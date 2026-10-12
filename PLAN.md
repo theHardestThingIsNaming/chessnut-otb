@@ -1,71 +1,65 @@
-# Plan: beyond the opening (middlegame plans, middlegame tactics, endgames)
+# Club games: plan and leftovers
 
-The app teaches openings well: Train, Punish, Survival, traps, mistakes. This plan carries
-a player past move 15 with three things, built the same way for every opening, starting with
-the Scotch (White) and the Pirc (Black).
+One list for the next session. The older "common mistakes and Punish" notes are folded in here.
+What is already on the phone is under Done. What is worth doing next is under Next.
 
-## What the player gets
+The app teaches an opening, then three things past move 15: middlegame plans, middlegame tactics,
+and endgames. Built the same way for all 13 main openings.
 
-1. **Middlegame plans** for each opening: the 3–5 typical plans that follow from its lines
-   (the Scotch's queenside pawn majority, the Pirc's ...c5/...e5 breaks and so on). Each is a
-   short animated walk-through on the board, with notes and arrows, like the trap viewer.
-   Ends with "Try it": play the position on against Stockfish.
-2. **Middlegame tactics** for each opening: real puzzles from games that started with your
-   lines, so the tactics are the ones *your* structures produce. Solved on the board, one
-   move at a time, with spaced repetition.
-3. **Endgames**, a new section on the home screen:
-   - **Endgame puzzles** by type (pawn, rook, minor piece, queen), easiest first.
-   - **Essential endgames**: Lucena, Philidor, king and pawn opposition, the square rule and
-     more, played against perfect defence, with every move checked by the tablebase. A move
-     that throws away the win (or the draw) is caught at once, with the right one shown.
+## Done
 
-## Open resources (all free to use)
+- [x] Puzzle pipeline, puzzle trainer, and spaced repetition (1, 3, 7, 14, 30 days).
+- [x] Middlegame tactics on every main opening's page. Lichess puzzles whose games started in your lines: Scotch 60, Italian 60, Nimzo-Indian 60, Pirc 58, King's Indian 57, Caro-Kann 57, Ruy Lopez 55, Slav 55, French 53, Vienna 52, Sicilian 49, London 45, English 7. Commit `479b919`.
+- [x] Endgames on the home screen: 360 puzzles in six types, easiest first.
+- [x] Eight Essential endgames against the Lichess tablebase (the ladder, queen and rook mates, the square of the pawn, taking and holding the opposition, Lucena, Philidor). A move that lets the result slip is turned back. A mastered essential is hidden on the Endgames page until you tap "Show mastered".
+- [x] A puzzle section with nothing left due (an endgame type, or an opening's middlegame tactics) is hidden the same way, with "Show solved". It comes back on its own when a puzzle is due again. The wait is still 1, 3, 7, 14, then 30 days; a miss comes back the next day.
+- [x] Middlegame plans for all 13. Four each, except the English (3), the Vienna (2) and the London (2), which have fewer distinct structures in the lines you drill. Each plan starts from a line you drill, has a note per move, and no move of the planning side gives away more than about 60 centipawns at Stockfish depth 18.
+- [x] Common mistakes and Punish mode, traps for all 13 main openings, and the book audit that keeps your own blunders out of the lines.
 
-| Source | Licence | Used for |
-|---|---|---|
-| Lichess puzzle database (database.lichess.org) | CC0 | Middlegame tactics (themes `middlegame` + opening tags), endgame puzzles (`pawnEndgame`, `rookEndgame`, `bishopEndgame`, `knightEndgame`, `queenEndgame`, `queenRookEndgame`) |
-| Lichess game export (`/api/games/export/_ids`) | Lichess ToS, public games | The moves before each puzzle, to check it came from your lines |
-| Lichess tablebase API (tablebase.lichess.ovh) | Free, no login | Perfect play and move-by-move checking in essential endgames (7 pieces or fewer) |
-| Stockfish (bundled) | GPL | Checking every plan's moves; "Try it" opponent; offline fallback |
-| Plans' wording | Written here | Facts about structures are free; no text copied from books or sites |
+## Next
 
-## How it fits the app (UX)
+- [ ] A "punished" count or medal on the opening's page, next to the lines and Survival figures.
+- [ ] The branch note in Train wraps in the middle of a move ("4." on one line, "Nxd4" on the next). Keep the move together.
+- [ ] Rerun the loosened puzzle match for the Scotch and the Pirc only. The other openings already had it (`OpeningTraps.fits`: only your own moves need to follow the lines). Those two still have the older, stricter set.
+- [ ] Common-mistake scan for the openings other than the Scotch and the Pirc. The explorer hook was removed after the Scotch/Pirc run; recreate it, scan, then `MistakeMineTest` at depth 20 and keep the moves that lose 150cp or more.
+- [ ] Optional. Two more Essential endgames if they earn a place: the Vancura (rook against a rook's pawn) and queen against a pawn. The eight already cover the usual club endings.
+- [ ] Optional. A third Vienna plan and a third London plan, if a sound one turns up. The Vienna with ...g5 is already a tactic (the queen trade on f6), not a plan. Against the London's ...Qb6 the engine wants Na4, which is not written up yet.
 
-- **The opening page grows a "Beyond the opening" card** under the Train / Punish / Survival
-  row: *Middlegame plans (4)* and *Middlegame tactics (40)*, with progress like the lines'.
-  No new screens to learn: plans use the trap viewer, tactics use the Punish-style board flow
-  (prompt, ✓/✗ mark, hint, explain, next).
-- **Home gets an "Endgames" tile** next to Openings and Mistakes, with a due count.
-- **One puzzle trainer** serves middlegame tactics and endgame puzzles: same board, marks,
-  hints, spaced repetition (1, 3, 7, 14, 30 days) and "Next".
-- **Colour language stays**: orange for punishing, red for Survival, gold for highlights, and
-  a new calm blue for endgames.
+## Left as it is
 
-## Scalable pipeline (any opening, one command)
+Bringing a solved puzzle or essential back early because a new mistake in a game "should have been" caught by it. Matching the exact position is possible and almost never happens: a club game does not reach the Lichess puzzle you solved. Matching the idea (a fork, a pin, the Lucena shape) would put the wrong puzzles back into To do. The day steps above are the schedule.
 
-Tools in `core/src/test` (gated, like the existing ones), with downloads cached in
-`data-cache/` (git-ignored):
+## Checking a plan
 
-1. `PuzzleExportTest`: from the puzzle CSV, picks per opening (a) middlegame puzzles from
-   the opening's tag, solved by the opening's side, popularity ≥ 80; (b) endgame puzzles by
-   type, spread over ratings 800–2200. Fetches their games and keeps middlegame puzzles whose
-   game came from your lines (`OpeningTraps.fits`, with a longer reach).
-2. Writes `core/src/main/resources/puzzles-middlegame.tsv` and `puzzles-endgame.tsv`, small
-   enough to ship (a few hundred rows each).
-3. Plans live in `MiddlegamePlans.kt`, one entry per plan (name, opening, side, the line
-   it starts from, model moves, a note per move); a test checks every plan is legal, starts
-   from your lines and that Stockfish doesn't refute its moves.
+Plans live in `MiddlegamePlans.kt`. `before` is the end of a line from `OpeningTree.lines` (it must be a prefix of one). `moves` is both sides, starting with the opponent. One note per move.
 
-Adding an opening = run the export with its name, write its plans, run the tests.
+Write candidates as `label|before|moves` and run:
 
-## Phases
+```
+PLAN_IN=/tmp/plan-in.txt PLAN_OUT=/tmp/plan-out.txt STOCKFISH=/opt/homebrew/bin/stockfish \
+  ./gradlew :core:test --tests '*PlanCheckTest*' --rerun-tasks
+```
 
-- [x] 1. Pipeline: export middlegame tactics (Scotch, Pirc) and endgame puzzles to resources.
-- [x] 2. Puzzle trainer: one screen for both, with marks, hints, spaced repetition.
-- [x] 3. Opening page: "Beyond the opening" card with Middlegame tactics.
-- [x] 4. Home: Endgames tile, endgame puzzles by type.
-- [x] 5. Middlegame plans for the Scotch and the Pirc, in the trap viewer, engine-checked.
-- [x] 6. Essential endgames against the tablebase.
-- [ ] 7. Extend tactics and plans to the other main openings. Tactics done for all 13 (7 for the English, 45–60 for the rest); plans still only for the Scotch and Pirc.
+The number after each move is the centipawns it gives away. Keep the planning side's under about 60. The first move of `moves` is the opponent's; then they alternate. `ILLEGAL` means the move does not parse. Gradle caches tests, so a changed input needs `--rerun-tasks`.
 
-Each phase: tests, emulator check, commit, install.
+`MiddlegamePlansTest` checks every plan is legal and starts from a drilled line.
+
+## Adding tactics for an opening
+
+Needs `data-cache/puzzles.csv` (decompress `puzzles.csv.zst`, or download `https://database.lichess.org/lichess_db_puzzle.csv.zst`). Games are cached in `data-cache/games.ndjson`, so a re-run resumes.
+
+```
+EXPORT_OPENINGS="Scotch Game|w,Pirc Defense|b" ./gradlew :core:test --tests '*PuzzleExportTest*' --rerun-tasks
+```
+
+Side is `w` or `b`. Output is `core/src/main/resources/puzzles-middlegame.tsv`.
+
+## How to work
+
+Build with `JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home`. adb is `~/Library/Android/sdk/platform-tools/adb`. Commit and push straight to `main`. After each round, install on the phone:
+
+```
+~/Library/Android/sdk/platform-tools/adb -s 5B100DLCH001K6 install -r app/build/outputs/apk/debug/*.apk
+```
+
+Use the emulator (`pixel_api36`, `./scripts/launch-emulator.sh`) when the phone may be in use. Check the result there, then install on the phone at the end. Plain wording in the UI. Colours stay: green openings, orange Punish, red Survival, gold highlights, blue endgames.

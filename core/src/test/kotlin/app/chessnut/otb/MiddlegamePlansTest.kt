@@ -18,6 +18,17 @@ class MiddlegamePlansTest {
             assertTrue(lines.any { it.take(plan.before.size) == plan.before }, "${plan.name} starts from a line you drill")
         }
         assertEquals(4, MiddlegamePlans.of("Scotch Game", true).size)
+        assertEquals(4, MiddlegamePlans.of("Italian Game", true).size)
+        assertEquals(4, MiddlegamePlans.of("Ruy Lopez", true).size)
+        assertEquals(2, MiddlegamePlans.of("Vienna Game", true).size)
+        assertEquals(3, MiddlegamePlans.of("English Opening", true).size)
+        assertEquals(2, MiddlegamePlans.of("London System", true).size)
+        assertEquals(4, MiddlegamePlans.of("Sicilian Defense", false).size)
+        assertEquals(4, MiddlegamePlans.of("French Defense", false).size)
+        assertEquals(4, MiddlegamePlans.of("Caro-Kann Defense", false).size)
+        assertEquals(4, MiddlegamePlans.of("Slav Defense", false).size)
+        assertEquals(4, MiddlegamePlans.of("Nimzo-Indian Defense", false).size)
+        assertEquals(4, MiddlegamePlans.of("King's Indian Defense", false).size)
         assertEquals(4, MiddlegamePlans.of("Pirc Defense", false).size)
     }
 }

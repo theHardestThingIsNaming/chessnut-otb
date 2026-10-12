@@ -1242,6 +1242,7 @@ private fun BeyondTheOpening(opening: String, white: Boolean, onPuzzles: (String
     // Read each time the page shows, so solving some updates the numbers.
     val counts = remember(key, LocalLifecycleOwner.current.lifecycle.currentState) { PuzzleProgress(context.filesDir).counts(key, System.currentTimeMillis()) }
     val plans = remember(opening, white) { MiddlegamePlans.of(opening, white).size }
+    var showSolved by remember(key) { mutableStateOf(false) }
     if (counts.total == 0 && plans == 0) return
     Column(
         Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface).padding(vertical = 6.dp),
@@ -1250,13 +1251,18 @@ private fun BeyondTheOpening(opening: String, white: Boolean, onPuzzles: (String
         if (plans > 0) {
             BeyondRow("Middlegame plans", "What to aim for once your lines end", "$plans", Palette.Gold) { onPlans(opening, white) }
         }
-        if (counts.total > 0) {
+        if (counts.total > 0 && (!counts.resting || showSolved)) {
             BeyondRow(
                 "Middlegame tactics",
                 "${counts.total} puzzles from games that began in your lines",
                 if (counts.due > 0) "${counts.due} due" else "${counts.solved}/${counts.total}",
                 if (counts.due > 0) Palette.Gold else Palette.Accent,
             ) { onPuzzles(key) }
+        }
+        if (counts.resting) {
+            TextButton(onClick = { showSolved = !showSolved }, colors = clubTextButtonColors(), modifier = Modifier.padding(horizontal = 6.dp)) {
+                Text(if (showSolved) "Hide solved tactics" else "Show solved tactics", color = Palette.Accent)
+            }
         }
     }
 }

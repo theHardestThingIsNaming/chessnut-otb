@@ -40,7 +40,10 @@ class PuzzleProgress(filesDir: File) {
         return (due + fresh).take(size)
     }
 
-    data class Counts(val total: Int, val solved: Int, val due: Int)
+    data class Counts(val total: Int, val solved: Int, val due: Int) {
+        /** Every puzzle has been solved, and none is due yet. */
+        val resting: Boolean get() = total > 0 && due == 0 && solved == total
+    }
 
     companion object {
         const val SESSION = 10

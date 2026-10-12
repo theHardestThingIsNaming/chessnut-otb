@@ -18,9 +18,13 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,6 +36,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import app.chessnut.otb.ui.BackButton
 import app.chessnut.otb.ui.Palette
 import app.chessnut.otb.ui.clubAppBarColors
+import app.chessnut.otb.ui.clubTextButtonColors
 
 /** Endgame puzzles by type, each with how far you've got. */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,6 +54,11 @@ fun EndgamesScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onEssential: (S
         val progress = PuzzleProgress(context.filesDir)
         Essentials.ALL.filter { progress.mastered(EssentialViewModel.PROGRESS_PREFIX + it.id) }.map { it.id }.toSet()
     }
+    var showMastered by remember { mutableStateOf(false) }
+    var showSolved by remember { mutableStateOf(false) }
+    val essentials = Essentials.ALL.filter { showMastered || it.id !in mastered }
+    val sections = rows.filter { showSolved || !it.third.resting }
+    val solvedSections = rows.count { it.third.resting }
     Scaffold(
         containerColor = Color.Transparent,
         contentColor = Palette.Text,
@@ -66,7 +76,7 @@ fun EndgamesScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onEssential: (S
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
-            items(Essentials.ALL, key = { "essential-" + it.id }) { e ->
+            items(essentials, key = { "essential-" + it.id }) { e ->
                 Row(
                     Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface)
                         .clickable { onEssential(e.id) }.padding(horizontal = 14.dp, vertical = 12.dp),
@@ -79,15 +89,25 @@ fun EndgamesScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onEssential: (S
                     Text(if (e.id in mastered) "✓ Mastered" else "", color = Palette.Endgame, fontWeight = FontWeight.Bold)
                 }
             }
+            if (mastered.isNotEmpty()) {
+                item(key = "show-mastered") {
+                    TextButton(onClick = { showMastered = !showMastered }, colors = clubTextButtonColors()) {
+                        Text(
+                            if (showMastered) "Hide mastered" else "Show ${mastered.size} mastered",
+                            color = Palette.Endgame,
+                        )
+                    }
+                }
+            }
             item {
                 Text("Puzzles", color = Palette.Endgame, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp))
                 Text(
-                    "Real endings from Lichess games, easiest first. Solved ones come back after 1, 3, 7, 14 and 30 days.",
+                    "Real endings from Lichess games, easiest first. A section stays hidden once everything in it is solved, until one is due again.",
                     color = Palette.TextMuted,
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
-            items(rows, key = { it.first }) { (type, name, counts) ->
+            items(sections, key = { it.first }) { (type, name, counts) ->
                 Column(
                     Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface)
                         .clickable { onOpen(PuzzleSets.endgameKey(type)) }.padding(14.dp),
@@ -107,6 +127,17 @@ fun EndgamesScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onEssential: (S
                         trackColor = Palette.SurfaceHigh,
                         modifier = Modifier.fillMaxWidth().height(4.dp),
                     )
+                }
+            }
+            if (solvedSections > 0) {
+                item(key = "show-solved") {
+                    TextButton(onClick = { showSolved = !showSolved }, colors = clubTextButtonColors()) {
+                        val noun = if (solvedSections == 1) "section" else "sections"
+                        Text(
+                            if (showSolved) "Hide solved sections" else "Show $solvedSections solved $noun",
+                            color = Palette.Endgame,
+                        )
+                    }
                 }
             }
         }
