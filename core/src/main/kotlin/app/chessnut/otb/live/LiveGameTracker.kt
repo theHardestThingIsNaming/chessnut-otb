@@ -226,7 +226,7 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
     }
 
     private fun flagIfExpired(now: Long): LiveEvent.Finished? {
-        if (!started || ended || !whitePressed) return null
+        if (!started || ended || !whitePressed || control.untimed) return null
         val extra = runningExtra(now)
         val remaining = (if (board.sideToMove == Side.WHITE) whiteMillis else blackMillis) - extra
         if (remaining > 0) return null
@@ -276,6 +276,10 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
     }
 
     private fun deduct(now: Long): LiveEvent.Finished? {
+        if (control.untimed) {
+            runningSince = now
+            return null
+        }
         val extra = runningExtra(now)
         if (board.sideToMove == Side.WHITE) {
             whiteMillis -= extra

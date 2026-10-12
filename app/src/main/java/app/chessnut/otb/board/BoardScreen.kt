@@ -1,5 +1,6 @@
 package app.chessnut.otb.board
 
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import android.Manifest
@@ -55,6 +56,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.chessnut.otb.live.LiveEnd
 import app.chessnut.otb.live.LiveSnapshot
+import app.chessnut.otb.live.LowTime
 import app.chessnut.otb.live.TimeControl
 import app.chessnut.otb.ui.ChessBoard
 import app.chessnut.otb.ui.Palette
@@ -333,7 +335,8 @@ private fun LiveGamePanel(
             Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 PlayerStrip(
                     name = "Black",
-                    millis = live.blackMillis,
+                    millis = live.blackMillis.takeUnless { live.control.untimed },
+                    lowMillis = LowTime.threshold(live.control.initialMillis),
                     running = playing && !live.toMoveWhite,
                     flagged = live.flaggedBlack,
                     light = false,
@@ -359,7 +362,8 @@ private fun LiveGamePanel(
                 )
                 PlayerStrip(
                     name = "White",
-                    millis = live.whiteMillis,
+                    millis = live.whiteMillis.takeUnless { live.control.untimed },
+                    lowMillis = LowTime.threshold(live.control.initialMillis),
                     running = playing && live.toMoveWhite,
                     flagged = live.flaggedWhite,
                     light = true,
@@ -395,7 +399,7 @@ private fun statusLine(live: LiveSnapshot): String = when (live.end) {
         live.ended -> "Game over ${live.result}"
         live.started && live.sanMoves.isEmpty() -> "White to move"
         live.started -> moveLine(live.sanMoves)
-        else -> "Set up the starting position to start ${live.control.label}."
+        else -> if (live.control.untimed) "Set up the starting position to start." else "Set up the starting position to start ${live.control.label}."
     }
 }
 
@@ -422,7 +426,7 @@ private fun TimeControlChip(current: TimeControl, enabled: Boolean, onSelect: (T
             )
         }
         ExposedDropdownMenu(expanded = open && enabled, onDismissRequest = { open = false }) {
-            TimeControl.Presets.forEach { preset ->
+            (TimeControl.Presets + TimeControl.Untimed).forEach { preset ->
                 DropdownMenuItem(
                     text = { Text(preset.label) },
                     onClick = {
@@ -441,7 +445,10 @@ private val MIN_STRIP = 76.dp
 @Composable
 private fun PlayerStrip(
     name: String,
-    millis: Long,
+    /** Null when the game has no clock. */
+    millis: Long?,
+    /** The clock turns red at or below this. */
+    lowMillis: Long,
     running: Boolean,
     flagged: Boolean,
     light: Boolean,
@@ -462,7 +469,19 @@ private fun PlayerStrip(
         ) {
             Column(Modifier.weight(1.3f).fillMaxHeight()) {
                 Text(name, color = Palette.TextMuted, fontSize = 12.sp, fontWeight = FontWeight.Medium)
-                ClockFace(millis, light, running, Modifier.fillMaxWidth().weight(1f), flagged = flagged, fontSize = clockSize)
+                if (millis != null) {
+                    ClockFace(
+                        millis,
+                        light,
+                        running,
+                        Modifier.fillMaxWidth().weight(1f),
+                        flagged = flagged,
+                        fontSize = clockSize,
+                        low = millis <= lowMillis,
+                    )
+                } else {
+                    Spacer(Modifier.weight(1f))
+                }
             }
             if (playing) {
                 GameAction(

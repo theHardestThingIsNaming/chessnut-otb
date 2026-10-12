@@ -2,8 +2,12 @@ package app.chessnut.otb.live
 
 /** Fischer clock: [initialMillis] on each side, [incrementMillis] added after a move. */
 data class TimeControl(val initialMillis: Long, val incrementMillis: Long) {
+    /** No clock: nobody runs out of time. */
+    val untimed: Boolean get() = initialMillis <= 0
+
     val label: String
         get() {
+            if (untimed) return UNTIMED_LABEL
             val minutes = initialMillis / 60_000
             val increment = incrementMillis / 1_000
             return if (increment == 0L) "$minutes min" else "$minutes+$increment"
@@ -30,7 +34,11 @@ data class TimeControl(val initialMillis: Long, val incrementMillis: Long) {
 
         val Default: TimeControl = minutes(5, 5)
 
+        val Untimed: TimeControl = TimeControl(0, 0)
+
+        const val UNTIMED_LABEL = "No clock"
+
         fun fromLabel(label: String): TimeControl =
-            Presets.firstOrNull { it.label == label } ?: Default
+            if (label == UNTIMED_LABEL) Untimed else Presets.firstOrNull { it.label == label } ?: Default
     }
 }

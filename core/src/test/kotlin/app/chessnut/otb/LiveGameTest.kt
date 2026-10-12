@@ -66,6 +66,19 @@ class LiveGameTest {
     }
 
     @Test
+    fun noClockNeverFlags() {
+        val tracker = LiveGameTracker(TimeControl.Untimed)
+        tracker.onPlacement(FakeChessnutBoard.START_PLACEMENT, 0)
+        tracker.onPlacement(after("1. e4"), 1_000)
+        assertIs<LiveEvent.Ignored>(tracker.poll(10 * 60 * 60_000L))
+        tracker.onPlacement(after("1. e4 e5"), 10 * 60 * 60_000L)
+        val snapshot = tracker.snapshot(20 * 60 * 60_000L)
+        assertFalse(snapshot.ended)
+        assertEquals(listOf("e4", "e5"), snapshot.sanMoves)
+        assertEquals("No clock", TimeControl.fromLabel("No clock").label)
+    }
+
+    @Test
     fun droppingAPawnOnE5IsIllegal() {
         val tracker = LiveGameTracker()
         tracker.onPlacement(FakeChessnutBoard.START_PLACEMENT, 0)
