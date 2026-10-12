@@ -20,6 +20,7 @@ import app.chessnut.otb.lichess.LichessVault
 import app.chessnut.otb.lichess.OnlineControl
 import app.chessnut.otb.lichess.OnlineTable
 import app.chessnut.otb.lichess.OngoingGame
+import app.chessnut.otb.lichess.RatingStakes
 import com.github.bhlangonijr.chesslib.Board
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -49,6 +50,11 @@ data class OnlineUi(
     val fen: String = Board().fen,
     val status: String = "Log in with Lichess. This phone keeps the login.",
     val opponent: String = "Opponent",
+    /** Ratings beside the names, "1688?" when provisional. */
+    val opponentRating: String? = null,
+    val userRating: String? = null,
+    /** A rated game's stakes for you, such as "Rated rapid · Win +6 · Draw −1 · Loss −8". */
+    val stakes: String? = null,
     val userWhite: Boolean = true,
     val whiteMillis: Long = OnlineControl.Default.minutes * 60_000L,
     val blackMillis: Long = OnlineControl.Default.minutes * 60_000L,
@@ -89,6 +95,9 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
     @Volatile private var seeking = false
     @Volatile private var playing = false
     private var table: OnlineTable? = null
+    /** What this game could do to your rating, once both deviations are in. */
+    private var stakes: RatingStakes? = null
+    private var stakesFor: String? = null
     private var fen = Board().fen
     private var status = if (username == null) "Log in with Lichess. This phone keeps the login." else "Signed in as $username"
     private var prompt: String? = null
@@ -591,6 +600,7 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
     private fun showFull(next: OnlineTable) {
         val previous = table?.moves?.size ?: 0
         table = next
+        fetchStakes(next)
         fen = next.fen
         whiteMillis = next.whiteMillis
         blackMillis = next.blackMillis
@@ -855,6 +865,27 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
         else -> error.message ?: "Something went wrong"
     }
 
+    /** For a rated game, fetches both players' rating deviations once and works out the stakes. */
+    private fun fetchStakes(game: OnlineTable) {
+        if (!game.rated || stakesFor == game.id) return
+        val speed = game.speed ?: return
+        val mine = game.userRating ?: return
+        val theirs = game.opponentRating ?: return
+        stakesFor = game.id
+        stakes = null
+        viewModelScope.launch(Dispatchers.IO) {
+            val found = runCatching {
+                val myRd = RatingStakes.deviation(http.user(game.userId), speed) ?: return@runCatching null
+                val theirRd = RatingStakes.deviation(http.user(game.opponentId), speed) ?: return@runCatching null
+                RatingStakes.of(mine, myRd, theirs, theirRd)
+            }.onFailure { Log.w(TAG, "stakes", it) }.getOrNull()
+            if (found != null && table?.id == game.id) {
+                stakes = found
+                publish()
+            }
+        }
+    }
+
     private fun publish() {
         val current = table
         val whiteToMove = current == null || current.moves.size % 2 == 0
@@ -870,6 +901,12 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
             fen = fen,
             status = status,
             opponent = current?.opponent ?: "Opponent",
+            opponentRating = current?.opponentRating?.let { "$it" + if (current.opponentProvisional) "?" else "" },
+            userRating = current?.userRating?.let { "$it" + if (current.userProvisional) "?" else "" },
+            stakes = current?.takeIf { it.rated && it.id == stakesFor }?.let { game ->
+                val kind = "Rated ${game.speed.orEmpty()}".trim()
+                stakes?.let { "$kind · ${it.label}" } ?: kind
+            },
             userWhite = current?.userWhite ?: true,
             whiteMillis = shownMillis(whiteMillis, running && whiteToMove),
             blackMillis = shownMillis(blackMillis, running && !whiteToMove),

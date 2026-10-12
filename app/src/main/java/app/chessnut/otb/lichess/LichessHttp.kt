@@ -69,6 +69,12 @@ class LichessHttp(private val token: () -> String?) {
         return call("GET", "https://explorer.lichess.org/lichess?$query&play=$play", null, auth = true, json = true).body
     }
 
+    /** A player's public profile, with each rating and its deviation. No login needed. */
+    fun user(id: String): String {
+        require(USER_ID.matches(id)) { "Bad user" }
+        return call("GET", "/api/user/$id", null, auth = false, json = true).body
+    }
+
     /** A study's chapters as PGN. Public and unlisted studies need no login; private ones need study:read. */
     fun study(id: String): String {
         require(STUDY_ID.matches(id)) { "Bad study" }
@@ -145,6 +151,7 @@ class LichessHttp(private val token: () -> String?) {
         val GAME_ID = Regex("^[A-Za-z0-9]{8}$")
         val UCI = Regex("^[a-h][1-8][a-h][1-8][nbrq]?$")
         val STUDY_ID = Regex("^[A-Za-z0-9]{8}$")
+        val USER_ID = Regex("^[A-Za-z0-9_-]{2,30}$")
         val PLAY = Regex("^([a-h][1-8][a-h][1-8][nbrq]?)(,[a-h][1-8][a-h][1-8][nbrq]?)*$")
     }
 }

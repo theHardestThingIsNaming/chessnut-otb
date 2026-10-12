@@ -34,8 +34,24 @@ data class OnlineTable(
     val winner: String?,
     val whiteDraw: Boolean,
     val blackDraw: Boolean,
+    val whiteId: String = "",
+    val blackId: String = "",
+    val whiteRating: Int? = null,
+    val blackRating: Int? = null,
+    /** A rating Lichess marks with "?": too few games to be settled. */
+    val whiteProvisional: Boolean = false,
+    val blackProvisional: Boolean = false,
+    val rated: Boolean = false,
+    /** "rapid" or "classical": which of your ratings the game counts for. */
+    val speed: String? = null,
 ) {
     val opponent: String get() = if (userWhite) black else white
+    val opponentId: String get() = if (userWhite) blackId else whiteId
+    val userId: String get() = if (userWhite) whiteId else blackId
+    val opponentRating: Int? get() = if (userWhite) blackRating else whiteRating
+    val userRating: Int? get() = if (userWhite) whiteRating else blackRating
+    val opponentProvisional: Boolean get() = if (userWhite) blackProvisional else whiteProvisional
+    val userProvisional: Boolean get() = if (userWhite) whiteProvisional else blackProvisional
     val live: Boolean get() = status == "started" || status == "created"
     val userToMove: Boolean get() = userWhite == (moves.size % 2 == 0)
 
@@ -172,6 +188,14 @@ object LichessPlay {
                 winner = clock.winner,
                 whiteDraw = clock.whiteDraw,
                 blackDraw = clock.blackDraw,
+                whiteId = whiteId,
+                blackId = blackId,
+                whiteRating = white?.long("rating")?.toInt(),
+                blackRating = black?.long("rating")?.toInt(),
+                whiteProvisional = white?.bool("provisional") == true,
+                blackProvisional = black?.bool("provisional") == true,
+                rated = root.bool("rated"),
+                speed = root.str("speed"),
             ),
         )
     }

@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -223,7 +224,7 @@ private fun Table(ui: OnlineUi, viewModel: OnlineViewModel, modifier: Modifier, 
                 CircularProgressIndicator(Modifier.size(22.dp), color = Palette.Accent, strokeWidth = 2.dp)
             }
         }
-        PlayerBar(ui.opponent, opponentLight, ui.fen, topMillis, topRunning)
+        PlayerBar(ui.opponent + (ui.opponentRating?.let { " · $it" } ?: ""), opponentLight, ui.fen, topMillis, topRunning)
         ChessBoard(
             fen = ui.fen,
             flipped = !ui.userWhite,
@@ -234,7 +235,9 @@ private fun Table(ui: OnlineUi, viewModel: OnlineViewModel, modifier: Modifier, 
             highlights = moveSquares(ui.promptUci),
             onSquare = viewModel::tap,
         )
-        PlayerBar(ui.username ?: "You", ui.userWhite, ui.fen, bottomMillis, bottomRunning)
+        PlayerBar((ui.username ?: "You") + (ui.userRating?.let { " · $it" } ?: ""), ui.userWhite, ui.fen, bottomMillis, bottomRunning)
+        // What's at stake in a rated game, so you know before you play on.
+        ui.stakes?.let { Text(it, color = Palette.Gold, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold) }
         if (ui.finished == null) {
             Row(Modifier.fillMaxWidth().height(48.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 GameAction(if (ui.drawOffered) "Accept draw" else "Draw", ui.userWhite, viewModel::draw, Modifier.weight(1f).fillMaxHeight()) {
