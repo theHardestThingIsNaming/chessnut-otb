@@ -37,6 +37,7 @@ Last shipped, and on the phone: the commit that adds the twelve scanned mistakes
 ## Next
 
 - [ ] Optional. Two more Essential endgames if they earn a place: the Vancura (rook against a rook's pawn) and queen against a pawn. The eight already cover the usual club endings.
+- [ ] A middlegame plan after every line, one opening at a time (the Scotch is done). Lines still without a plan: Vienna 1, London 1, Nimzo-Indian 6, Slav 9, Pirc 10, Italian 12, French 14, King's Indian 16, Caro-Kann 17, Sicilian 18, Ruy Lopez 24, English 25. Tools: `LineDumpTest` lists an opening's lines and their plans; `PlanGenTest` plays Stockfish on from each line's end; `PlanCheckTest` checks the result.
 - [ ] Optional. A third Vienna plan and a third London plan, if a sound one turns up. The Vienna with ...g5 is already a tactic (the queen trade on f6), not a plan. Against the London's ...Qb6 the engine wants Na4, which is not written up yet.
 
 ### UX review, 2026-10-12
