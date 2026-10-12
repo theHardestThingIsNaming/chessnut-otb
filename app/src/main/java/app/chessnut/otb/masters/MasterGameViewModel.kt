@@ -28,6 +28,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 data class MasterGameUi(
     val game: MasterGame? = null,
@@ -111,7 +113,11 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         }
     }
 
+    /** Waits before calling a board wrong: a capture or castling passes through odd positions. */
+    private var mismatchJob: Job? = null
+
     private fun onSettled(placement: String) {
+        mismatchJob?.cancel()
         // The board can connect after the game is opened: take it up then.
         if (!physical) {
             if (app.boardSession == null) return
@@ -143,10 +149,16 @@ class MasterGameViewModel(application: Application, private val id: String) : An
                 light(emptyList())
             }
             else -> {
-                // Neither this position nor one move from it: show what to put right.
-                val wrong = PlayPosition.differences(s.fen, placement)
-                light(if (wrong.size <= MAX_LIT) wrong else emptyList())
-                state.update { it.copy(boardNote = "Set the board to match the screen." + if (wrong.size <= MAX_LIT) " The wrong squares are lit." else "") }
+                // Neither this position nor one move from it. A move may still be under way
+                // (a capture lifts two pieces), so only if the board stays like this is it called wrong.
+                mismatchJob = viewModelScope.launch {
+                    delay(MISMATCH_MS)
+                    val now = state.value
+                    if (now.busy || now.done || app.latestPlacement != placement) return@launch
+                    val wrong = PlayPosition.differences(now.fen, placement)
+                    light(if (wrong.size <= MAX_LIT) wrong else emptyList())
+                    state.update { it.copy(boardNote = "Set the board to match the screen." + if (wrong.size <= MAX_LIT) " The wrong squares are lit." else "") }
+                }
             }
         }
     }
@@ -163,9 +175,16 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         waiter.await()
     }
 
+    /** The newest light request wins, even if an older one's write is still on its way. */
+    private val lightLock = Mutex()
+    private var lightSeq = 0
+
     private fun light(squares: List<String>) {
         val session = app.boardSession ?: return
-        viewModelScope.launch(Dispatchers.IO) { runCatching { session.setLeds(squares) } }
+        val mine = ++lightSeq
+        viewModelScope.launch(Dispatchers.IO) {
+            lightLock.withLock { if (mine == lightSeq) runCatching { session.setLeds(squares) } }
+        }
     }
 
     private fun squaresOf(uci: String): List<String> = listOf(uci.substring(0, 2), uci.substring(2, 4))
@@ -288,6 +307,10 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         // A hint counts as help: the move is shown, not guessed.
         val verdict = if (hints > 0) Guess.Miss else MasterGames.judge(g, ply, uci, master)
         if (app.phoneSounds) if (verdict == Guess.Miss) sounds.illegal()
+        // A move has been read: old lights and board notes go.
+        mismatchJob?.cancel()
+        if (physical) light(emptyList())
+        if (state.value.boardNote != null) state.update { it.copy(boardNote = null) }
         val inLine = ply < g.start
         // In your line the arrow shows the move, so playing it isn't a guess: no mark, no score.
         val lineMove = inLine && uci.equals(master, true)
@@ -425,6 +448,8 @@ class MasterGameViewModel(application: Application, private val id: String) : An
 
     private fun finish() {
         val g = game ?: return
+        mismatchJob?.cancel()
+        if (physical) light(emptyList())
         val rest = g.moves.size - g.end
         state.update {
             it.copy(
@@ -474,5 +499,7 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         const val MASTER_FOLDER = "Master games"
         /** Up to this many squares to put right are lit; more would only confuse. */
         private const val MAX_LIT = 8
+        /** How long the board must stay in an unexpected position before it's called wrong. */
+        private const val MISMATCH_MS = 2_000L
     }
 }
