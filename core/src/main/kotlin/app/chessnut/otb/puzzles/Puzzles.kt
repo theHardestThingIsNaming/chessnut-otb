@@ -97,6 +97,9 @@ object PuzzleReview {
     const val CONFIRM_DAYS = 3
     private const val DAY_MS = 24L * 60 * 60 * 1000
 
+    /** Solved cleanly at least once. A miss waits a day too, so a future date alone doesn't mean solved. */
+    fun solved(review: LineReview?): Boolean = review != null && review.box >= 1
+
     fun grade(previous: LineReview?, clean: Boolean, now: Long): LineReview = when {
         !clean -> LineReview(0, now + DAY_MS)
         previous != null && previous.box >= 1 -> LineReview(previous.box, Long.MAX_VALUE)

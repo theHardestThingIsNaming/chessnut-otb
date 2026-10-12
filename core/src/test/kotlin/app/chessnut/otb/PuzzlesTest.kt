@@ -10,6 +10,7 @@ import app.chessnut.otb.puzzles.PuzzleRun
 import app.chessnut.otb.puzzles.PuzzleSets
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
@@ -25,6 +26,14 @@ class PuzzleReviewTest {
         assertEquals(Long.MAX_VALUE, done.dueAt)
         val missed = PuzzleReview.grade(first, clean = false, now + 3 * day)
         assertEquals(now + 4 * day, missed.dueAt)
+    }
+
+    @Test
+    fun aMissIsNotASolve() {
+        // A miss waits a day like a solve waits three: only a clean solve counts as solved.
+        assertFalse(PuzzleReview.solved(PuzzleReview.grade(null, clean = false, 0)))
+        assertTrue(PuzzleReview.solved(PuzzleReview.grade(null, clean = true, 0)))
+        assertFalse(PuzzleReview.solved(null))
     }
 }
 

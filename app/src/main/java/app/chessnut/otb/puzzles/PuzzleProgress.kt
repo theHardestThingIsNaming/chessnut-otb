@@ -27,7 +27,7 @@ class PuzzleProgress(filesDir: File) {
         val known = all()
         return Counts(
             total = set.size,
-            solved = set.count { known[it.id]?.let { r -> r.box > 0 || r.dueAt > now } == true },
+            solved = set.count { PuzzleReview.solved(known[it.id]) },
             due = set.count { known[it.id]?.let { r -> r.dueAt <= now } == true },
         )
     }
