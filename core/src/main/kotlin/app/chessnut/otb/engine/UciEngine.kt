@@ -144,10 +144,11 @@ class UciEngine(
     private suspend fun exchange(command: String, timeout: Duration, isLast: (String) -> Boolean): List<String> =
         coroutineScope {
             val seen = mutableListOf<String>()
+            var answered = false
             val reader = async(start = CoroutineStart.UNDISPATCHED) {
                 process.output.first { line ->
                     seen += line
-                    isLast(line)
+                    isLast(line).also { if (it) answered = true }
                 }
             }
             process.send(command)
@@ -155,10 +156,32 @@ class UciEngine(
                 withTimeout(timeout) { reader.await() }
             } catch (e: kotlinx.coroutines.TimeoutCancellationException) {
                 reader.cancel()
+                if (!answered) settle(command)
                 throw EngineException("No answer to '$command' within ${timeout.inWholeSeconds} s.")
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                if (!answered) settle(command)
+                throw e
             }
             seen
         }
+
+    /**
+     * After a search was cut short, by a timeout or the caller being
+     * cancelled, stops it and swallows its `bestmove`, so the next search
+     * doesn't take that late answer for its own.
+     */
+    private suspend fun settle(command: String) {
+        if (!command.startsWith("go")) return
+        withContext(NonCancellable) {
+            runCatching {
+                coroutineScope {
+                    val done = async(start = CoroutineStart.UNDISPATCHED) { process.output.first { it.startsWith("bestmove") } }
+                    process.send("stop")
+                    withTimeout(5.seconds) { done.await() }
+                }
+            }
+        }
+    }
 
     private fun Int.minutes(): Duration = (this * 60).seconds
 
