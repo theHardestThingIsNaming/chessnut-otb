@@ -1,5 +1,6 @@
 package app.chessnut.otb.play
 
+import app.chessnut.otb.engine.EngineHolder
 import java.io.IOException
 import app.chessnut.otb.lichess.LichessHttpException
 import app.chessnut.otb.repertoire.StudyPgn
@@ -19,7 +20,6 @@ import app.chessnut.otb.analysis.Score
 import app.chessnut.otb.analysis.Terminal
 import app.chessnut.otb.board.BoardSounds
 import app.chessnut.otb.board.MoveSpeaker
-import app.chessnut.otb.engine.StockfishProcess
 import app.chessnut.otb.engine.UciEngine
 import app.chessnut.otb.games.GameSource
 import app.chessnut.otb.games.SavedGame
@@ -47,8 +47,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import app.chessnut.otb.chess.MoveInput
@@ -272,8 +270,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private val sounds = BoardSounds()
     private val speech = MoveSpeaker(application)
     private val random = Random.Default
-    private var engine: UciEngine? = null
-    private val engineLock = Mutex()
+    /** The bot, the eval bar and the idea arrows share one engine. */
+    private val engines = EngineHolder(application)
     private val vault = LichessVault(application)
     private val trapStats = TrapStatsCache(File(application.filesDir, "trap-stats.tsv"), LichessHttp { vault.token() })
     private var trapStatsJob: Job? = null
@@ -922,10 +920,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         if (kind == PlayKind.Bot) clock.freeze(System.currentTimeMillis())
         job?.cancel()
         busy = false
-        val closing = engine
-        engine = null
+        engines.close()
         job = null
-        closing?.close()
         val now = System.currentTimeMillis()
         val date = SimpleDateFormat("yyyy.MM.dd", Locale.ROOT).format(Date(now))
         val me = app.myName.ifBlank { "Me" }
@@ -1259,9 +1255,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         busy = false
         speech.stop()
         app.playEngaged = false
-        val closing = engine
-        engine = null
-        closing?.close()
+        engines.close()
         playing = false
         awaitingBoard = false
         prompt = null
@@ -1285,8 +1279,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     override fun onCleared() {
         job?.cancel()
         app.playEngaged = false
-        engine?.close()
-        engine = null
+        engines.close()
         sounds.release()
         speech.release()
         val session = app.boardSession
@@ -2068,16 +2061,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         publish()
     }
 
-    /** The one engine, started on first use. The bot, the eval bar and the idea arrows can all ask at once. */
-    private suspend fun engine(): UciEngine = engineLock.withLock {
-        engine?.let { return@withLock it }
-        val created = withContext(Dispatchers.IO) {
-            UciEngine(StockfishProcess.start(getApplication()), threads = 2)
-        }
-        created.start()
-        engine = created
-        created
-    }
+    private suspend fun engine(): UciEngine = engines.get()
 
     private fun launchPlay(block: suspend () -> Unit) {
         val previous = job

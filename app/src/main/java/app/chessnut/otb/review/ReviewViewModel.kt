@@ -15,8 +15,7 @@ import app.chessnut.otb.analysis.GameReport
 import app.chessnut.otb.analysis.MoveReport
 import app.chessnut.otb.analysis.Score
 import app.chessnut.otb.analysis.Terminal
-import app.chessnut.otb.engine.StockfishProcess
-import app.chessnut.otb.engine.UciEngine
+import app.chessnut.otb.engine.EngineHolder
 import app.chessnut.otb.games.SavedGame
 import com.github.bhlangonijr.chesslib.Board
 import kotlinx.coroutines.CancellationException
@@ -29,8 +28,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import app.chessnut.otb.chess.MoveInput
 import app.chessnut.otb.games.GameSource
@@ -113,12 +110,11 @@ class ReviewViewModel(application: Application, private val gameId: String) : An
         }
     }
 
-    private val engineLock = Mutex()
-    @Volatile private var liveEngine: UciEngine? = null
+    private val liveEngines = EngineHolder(application)
     private var liveJob: Job? = null
 
-    private val threatLock = Mutex()
-    @Volatile private var threatEngine: UciEngine? = null
+    /** A second, lighter engine, so the threat arrow doesn't wait on the live lines. */
+    private val threatEngines = EngineHolder(application, threads = 1)
     private var threatJob: Job? = null
 
     init {
@@ -253,10 +249,7 @@ class ReviewViewModel(application: Application, private val gameId: String) : An
         val passed = ChessLines.passFen(fen) ?: return
         threatJob = viewModelScope.launch(Dispatchers.Default) {
             try {
-                val engine = threatLock.withLock {
-                    threatEngine ?: UciEngine(StockfishProcess.start(app), threads = 1).also { threatEngine = it }
-                }
-                engine.start()
+                val engine = threatEngines.get()
                 val lines = engine.analyseLive(passed, multiPv = 1).first { it.first().depth >= THREAT_DEPTH }
                 val uci = lines.first().uci.firstOrNull() ?: return@launch
                 state.update { if (it.fen == fen) it.copy(threat = Threat(fen, uci)) else it }
@@ -287,10 +280,7 @@ class ReviewViewModel(application: Application, private val gameId: String) : An
         state.update { it.copy(engine = EngineView(it.engine?.score, null, emptyList(), live = true)) }
         liveJob = viewModelScope.launch(Dispatchers.Default) {
             try {
-                val engine = engineLock.withLock {
-                    liveEngine ?: UciEngine(StockfishProcess.start(app), threads = 2).also { liveEngine = it }
-                }
-                engine.start()
+                val engine = liveEngines.get()
                 var shownAt = 0L
                 var shownCount = 0
                 engine.analyseLive(fen, multiPv = 3).collect { lines ->
@@ -323,21 +313,17 @@ class ReviewViewModel(application: Application, private val gameId: String) : An
     fun pause() {
         liveJob?.cancel()
         liveJob = null
-        val engine = liveEngine
-        liveEngine = null
-        engine?.close()
+        liveEngines.close()
         threatJob?.cancel()
         threatJob = null
-        val threats = threatEngine
-        threatEngine = null
-        threats?.close()
+        threatEngines.close()
     }
 
     override fun onCleared() {
         liveJob?.cancel()
-        liveEngine?.close()
+        liveEngines.close()
         threatJob?.cancel()
-        threatEngine?.close()
+        threatEngines.close()
     }
 
 

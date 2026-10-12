@@ -11,8 +11,7 @@ import app.chessnut.otb.analysis.EngineLine
 import app.chessnut.otb.analysis.MoveClass
 import app.chessnut.otb.analysis.Score
 import app.chessnut.otb.analysis.Terminal
-import app.chessnut.otb.engine.StockfishProcess
-import app.chessnut.otb.engine.UciEngine
+import app.chessnut.otb.engine.EngineHolder
 import app.chessnut.otb.play.PlayPosition
 import app.chessnut.otb.repertoire.Drill
 import app.chessnut.otb.repertoire.LineReview
@@ -24,8 +23,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import app.chessnut.otb.chess.MoveInput
 
@@ -90,8 +87,7 @@ class MistakesViewModel(application: Application, private val gameId: String?) :
     /** Follow-up moves that count, and the engine's own, for a hint. */
     private var followGood: Set<String> = emptySet()
     private var followBest: String? = null
-    private var engine: UciEngine? = null
-    private val engineLock = Mutex()
+    private val engines = EngineHolder(application)
 
     init {
         viewModelScope.launch(Dispatchers.Default) {
@@ -315,36 +311,29 @@ class MistakesViewModel(application: Application, private val gameId: String?) :
 
     /** The engine's top [count] lines for [fen]. */
     private suspend fun topLines(fen: String, count: Int): List<EngineLine> = withContext(Dispatchers.IO) {
-        runCatching { engineLock.withLock { engine().analyseMillis(fen, 900, count) } }.getOrDefault(emptyList())
+        runCatching { engines.get().analyseMillis(fen, 900, count) }.getOrDefault(emptyList())
     }
 
-    private suspend fun engine(): UciEngine = engine ?: UciEngine(StockfishProcess.start(getApplication()), threads = 2).also {
-        it.start()
-        engine = it
-    }
 
     /** The mover's winning chances after the engine's best move and after [uci]. */
     private suspend fun evaluate(fen: String, uci: String): Pair<Double?, Double?> = withContext(Dispatchers.IO) {
         runCatching {
-            engineLock.withLock {
-                val eng = engine()
-                val whiteMoves = fen.split(' ')[1] == "w"
-                val best = eng.analyseMillis(fen, 700, 1).firstOrNull()?.score ?: Score.Even
-                val after = PlayPosition.after(fen, uci)?.second ?: return@withLock null to null
-                val reply = when (ChessLines.terminalOf(after)) {
-                    Terminal.Checkmate -> if (whiteMoves) Score.BlackMated else Score.WhiteMated
-                    Terminal.Stalemate -> Score.Even
-                    null -> eng.analyseMillis(after, 700, 1).firstOrNull()?.score ?: Score.Even
-                }
-                fun mover(score: Score) = if (whiteMoves) score.whiteWinPercent else 100 - score.whiteWinPercent
-                mover(best) to mover(reply)
+            val eng = engines.get()
+            val whiteMoves = fen.split(' ')[1] == "w"
+            val best = eng.analyseMillis(fen, 700, 1).firstOrNull()?.score ?: Score.Even
+            val after = PlayPosition.after(fen, uci)?.second ?: return@runCatching null to null
+            val reply = when (ChessLines.terminalOf(after)) {
+                Terminal.Checkmate -> if (whiteMoves) Score.BlackMated else Score.WhiteMated
+                Terminal.Stalemate -> Score.Even
+                null -> eng.analyseMillis(after, 700, 1).firstOrNull()?.score ?: Score.Even
             }
+            fun mover(score: Score) = if (whiteMoves) score.whiteWinPercent else 100 - score.whiteWinPercent
+            mover(best) to mover(reply)
         }.getOrDefault(null to null)
     }
 
     override fun onCleared() {
-        engine?.close()
-        engine = null
+        engines.close()
     }
 
     class Factory(private val gameId: String?) : ViewModelProvider.Factory {
