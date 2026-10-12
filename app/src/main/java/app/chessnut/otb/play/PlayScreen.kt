@@ -600,7 +600,15 @@ private fun OpeningPage(
                     }
                 }
             }
-            item(key = "beyond") { BeyondTheOpening(detail.name, ui.userWhite, onPuzzles, onPlans) }
+            item(key = "beyond") {
+                // A variation's page has its own lines; the plans, tactics and Punish live on the main opening's page.
+                val family = OpeningCatalog.family(detail.name)
+                if (family != null) {
+                    FamilyLink(family) { viewModel.openDetail(family) }
+                } else {
+                    BeyondTheOpening(detail.name, ui.userWhite, onPuzzles, onPlans)
+                }
+            }
             item(key = "chess-com") { ChessComImport(ui, viewModel::importChessCom) }
             item(key = "lines-head") {
                 Row(Modifier.padding(top = 4.dp), verticalAlignment = Alignment.Bottom) {
@@ -1251,6 +1259,19 @@ private fun ChessComImport(ui: PlayUi, onImport: (String) -> Unit) {
             },
             dismissButton = { TextButton(onClick = { asking = false }, colors = clubTextButtonColors()) { Text("Cancel", color = Palette.TextMuted) } },
         )
+    }
+}
+
+/** On a variation's page: where its opening's middlegame plans, tactics and Punish mistakes are. */
+@Composable
+private fun FamilyLink(family: String, onOpen: () -> Unit) {
+    Column(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface).clickable(onClick = onOpen).padding(14.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Text("Beyond the opening", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
+        Text("Middlegame plans, tactics and Punish are on the $family page.", color = Palette.Text, style = MaterialTheme.typography.bodyMedium)
+        Text("Open $family", color = Palette.Accent, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleSmall)
     }
 }
 
