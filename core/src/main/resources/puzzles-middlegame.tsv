@@ -116,3 +116,553 @@ Pirc Defense	b	tWnrc	2264	advantage middlegame short trappedPiece	r5r1/1bpn1knQ/
 Pirc Defense	b	MChNl	2270	crushing master masterVsMaster middlegame short	r1b2rk1/ppp4p/3p2p1/3Nnp2/4P2q/4Q3/PPP1B1KP/5RNR w - - 0 16	g1f3 h4g4 g2f2 f5e4	16
 Pirc Defense	b	I99j4	2286	advantage middlegame short trappedPiece	3r1rk1/1pqn1p1p/2p2bpQ/p3p3/P3Pn2/1BN1B2P/1PP2PP1/3RR1K1 w - - 5 18	g2g3 f6g5 e3f4 g5h6	18
 Pirc Defense	b	KZcvT	2296	crushing intermezzo long middlegame	rn3rk1/ppp2pbp/4b1p1/4N3/4n3/1BN1B3/PPP2PPP/3RK2R w K - 0 11	e5g6 g7c3 b2c3 h7g6 b3e6 f7e6	11
+Italian Game	w	geBNk	1075	mate mateIn1 middlegame oneMove	r1bq4/pppp1Qp1/2n3nk/5P2/2B1P3/5R2/P5PP/bN5K b - - 0 17	d8h4 f7g6	17
+Italian Game	w	HD5Yk	1121	crushing fork middlegame short	r1bq1b1r/pp4pp/2pk4/4p3/1PB5/P1N2Q2/3P1PPP/n1BK3R b - - 1 13	d8f6 c3e4 d6e7 e4f6	13
+Italian Game	w	vOOx5	1140	crushing middlegame short	r2qk2r/pQpbbppp/2np3n/3Bp3/3PP3/B1P2N2/P4PPP/RN2K2R b KQkq - 2 10	c6a5 b7a8 d8a8 d5a8	10
+Italian Game	w	zNvGO	1145	mate mateIn1 middlegame oneMove	r1b2bkr/p5pp/1qp1P3/1p4B1/6B1/2n2Q2/PP3PPP/n2R2K1 b - - 0 18	c3d1 f3f7	18
+Italian Game	w	oL3Oa	1146	advantage fork middlegame short	r4b1r/pp4pp/2pk1q2/3np3/8/P1NP4/1Pb1QPPP/R1B2RK1 b - - 0 15	c2b3 c3e4 d6c7 e4f6	15
+Italian Game	w	93XMA	1177	advantage fork middlegame short	2kr3r/1pp3p1/p4p1p/n7/q1P2Q2/P2P1N2/2P2PPP/R4RK1 b - - 0 18	a4c2 f4f5 c8b8 f5a5	18
+Italian Game	w	qt5ar	1193	crushing middlegame short	r2r2k1/p5pp/b1p5/5p2/1q2p3/3P3P/PPPBQPP1/1R3RK1 b - - 5 19	e4d3 e2e6 g8h8 d2b4	19
+Italian Game	w	EySdH	1198	crushing middlegame short skewer	r2q3r/p1p3pp/1p1b1k2/1Q3b2/2Pp3P/8/PP3PP1/R1B1R1K1 b - - 0 18	h8e8 c1g5 f6g6 g5d8	18
+Italian Game	w	MKzPv	1264	advantage middlegame pin short	r1b1k2r/p1p2Npp/2nb1n2/1B1qp3/8/8/PPPPQPPP/RNB1K2R b KQkq - 0 8	e8f7 b5c4 c6d4 c4d5	8
+Italian Game	w	Md557	1274	crushing kingsideAttack middlegame short	r1bq1rk1/ppp1bppp/3n4/3NB3/2B5/1Q6/P4PPP/R2R2K1 b - - 0 15	c7c6 d5e7 d8e7 e5d6	15
+Italian Game	w	OSMNq	1282	mate mateIn2 middlegame short	r1bq1b1r/ppp1k1pp/8/3Bp3/8/P1N2Q2/1P1P1PPP/n1BK3R b - - 4 13	c7c6 f3f7 e7d6 c3e4	13
+Italian Game	w	WK9VT	1296	advantage fork middlegame short	3rr3/pppq1kbp/6p1/n7/8/2P3Q1/P1PP1PPP/1RBK3R b - - 2 16	a5c4 g3f4 f7g8 f4c4	16
+Italian Game	w	V2mSH	1317	attraction crushing discoveredAttack long middlegame	r3k1r1/ppp2pPp/4b3/b7/2p5/N7/qB2QPPP/3R2K1 b q - 1 16	a8d8 d1d8 e8d8 b2f6 d8c8 e2a2	16
+Italian Game	w	GiWKd	1327	backRankMate long mate mateIn3 middlegame sacrifice	r4k1r/ppp2ppp/6q1/4Q2n/8/5PB1/P4P1P/R3R1K1 b - - 2 19	h5g3 e5e7 f8g8 e7e8 a8e8 e1e8	19
+Italian Game	w	4DICw	1334	advancedPawn deflection kingsideAttack mate mateIn2 middlegame pin promotion short	r1b3qk/ppp2Pp1/2np2Qp/6N1/3bP3/8/P5PP/RN3n1K b - - 1 19	h6g5 g6h5 g8h7 f7f8q	19
+Italian Game	w	SSgW0	1345	crushing fork middlegame short	r1bq1b1r/pp4pp/2pk4/4p3/1PB5/P1N2Q2/3P1PPP/n1B2K1R b - - 1 13	d8f6 c3e4 d6e7 e4f6	13
+Italian Game	w	tE0Ki	1372	crushing deflection master middlegame short	r1bq1r2/ppp1k1pp/2np1n2/4p1N1/3bP3/1BN5/PPP2PPP/R1BQ1RK1 b - - 1 9	c8g4 c3d5 f6d5 d1g4	9
+Italian Game	w	PtHkh	1400	crushing kingsideAttack middlegame short	r2q1rk1/p4pp1/5n2/n1p1b1B1/3pN3/7Q/PPP2PPP/R4RK1 b - - 2 17	d8d7 e4f6 e5f6 h3d7	17
+Italian Game	w	FT1fz	1436	crushing fork middlegame short	r1bq1b1r/ppp3pp/3k4/3Bp3/1P6/P1N2Q2/3P1PPP/n1BK3R b - - 0 12	d8f6 c3e4 d6e7 e4f6	12
+Italian Game	w	gaSFs	1443	mate mateIn2 middlegame short	1rb1r3/p1p2Qpk/2q4p/4pp2/1b6/2NP4/PPPB1P1P/2KR2R1 b - - 9 18	e8e7 g1g7 h7h8 g7h7	18
+Italian Game	w	a5v62	1462	advantage long middlegame	r1b4r/pppkbQpp/8/4q3/1N6/PB2B3/1P2KPPP/n6R b - - 7 18	a1b3 h1d1 b3d4 d1d4 e5d4 e3d4	18
+Italian Game	w	vahe3	1464	advantage discoveredAttack discoveredCheck middlegame short	r1b2k1r/pppp2p1/2n5/4p1q1/4B3/3P4/PPP2KPP/RN1Q1R2 b - - 1 11	h8h2 f2g1 f8e7 g1h2	11
+Italian Game	w	mff67	1488	crushing discoveredAttack fork middlegame pin short	r3k2r/ppp1qp1p/3b1p2/8/4b3/8/PPP1QPPP/RNB1R1K1 b kq - 1 13	e4d5 e2b5 d5c6 e1e7	13
+Italian Game	w	rAjao	1489	crushing discoveredCheck doubleCheck fork middlegame short	r1bq1b1r/ppp3pp/3k4/3Bp3/8/P1NP1Q2/1P3PPP/n1BK3R b - - 0 12	d8f6 c3e4 d6d5 e4f6	12
+Italian Game	w	81ibs	1504	crushing middlegame short skewer	r1bq3r/2p1k1pp/p1nb4/1pNQp3/3P4/8/PPP2PPP/R1B1K2R b KQ - 0 19	d6c5 c1g5 e7e8 g5d8	19
+Italian Game	w	wpOKI	1555	kingsideAttack long mate mateIn3 middlegame operaMate sacrifice	r1b2rk1/pp1pRppp/2p3q1/6N1/2Q5/B7/P4PPP/R5K1 b - - 0 16	g6g5 c4f7 f8f7 e7e8 f7f8 e8f8	16
+Italian Game	w	m8F1P	1580	advantage long middlegame skewer	r1bq1b1r/ppp3pp/6n1/4p3/2k5/2Q5/PP1P1PPP/R1B1K2R b KQ - 1 16	c4d5 c3d3 d5c6 d3d8 f8d6 d8g5	16
+Italian Game	w	tp4Cg	1591	advantage attraction discoveredAttack long middlegame sacrifice	r1b2rk1/pppp1ppp/8/3P4/1QB3n1/5N2/P4PPP/q1B2RK1 b - - 0 15	a7a5 b4f8 g8f8 c1a3 d7d6 f1a1	15
+Italian Game	w	5Dzga	1597	advantage exposedKing fork long middlegame	r5nr/ppp3pp/5k2/3Qn3/4P2q/8/PPP2bKP/RNB2R2 b - - 6 15	e5g4 d5f5 f6e7 c1g5 g8f6 g5h4	15
+Italian Game	w	9E7Dy	1607	crushing fork middlegame short	r4k1r/pppq2pp/3p4/7Q/3bP3/5P2/P5PP/1RB2R1K b - - 1 18	b7b6 h5d5 a8e8 d5d4	18
+Italian Game	w	IRYy7	1631	advantage fork middlegame short	r3k2r/ppp1q1pp/1b1pb3/8/3PP1p1/3B4/P1QN1PPP/R4RK1 b kq - 0 16	b6d4 c2a4 e7d7 a4d4	16
+Italian Game	w	zz6QE	1646	advantage middlegame short	r2q1b1r/pp4pp/1Npkb3/4p3/2B5/P2Q4/1P1P1PPP/n1BKR3 b - - 1 14	d6c7 b6a8 d8a8 c4e6	14
+Italian Game	w	o3PG0	1663	mate mateIn2 middlegame short	r1bq1b1r/ppN1k1pp/2p1B3/8/1Q6/P7/1P1P1PPP/n1BK4 b - - 7 17	d8d6 b4h4 g7g5 h4g5	17
+Italian Game	w	gcMse	1706	crushing middlegame pin short	r4r2/pbp2pkp/2qb1N2/4pp2/8/1P1P1N2/1P1Q1PPP/R3R1K1 b - - 3 18	g7f6 d2g5 f6e6 f3d4	18
+Italian Game	w	3tpVz	1713	crushing intermezzo middlegame short	r3k2r/pppqbppp/5n2/8/Q1Bn4/B1N2P2/P4P1P/R3R1K1 b kq - 1 16	d7a4 e1e7 e8d8 c3a4	16
+Italian Game	w	qpsAD	1715	discoveredCheck doubleCheck epauletteMate mate mateIn2 middlegame short	r1bq1b1r/pp4pp/2p5/2k1R3/2B2Q2/2N5/PP3PPP/n5K1 b - - 2 16	c5b6 c3a4 b6c7 e5e7	16
+Italian Game	w	FVdd8	1725	advantage clearance fork long master middlegame	r2qk2r/ppp1Bppp/4b3/b2n4/2BP4/5N2/P3QPPP/RN3RK1 b kq - 0 12	d8e7 c4d5 e6d5 e2b5 c7c6 b5a5	12
+Italian Game	w	T6MVO	1752	kingsideAttack mate mateIn2 middlegame short	r1bq3k/ppp1n3/2n3pB/b2p4/2B1P2Q/2p5/P4PPP/RN3RK1 b - - 1 15	d5c4 h4f6 h8h7 f6g7	15
+Italian Game	w	6r0nM	1770	advantage attraction fork long middlegame sacrifice	Q1b1r3/2qpnkpp/p1p2b2/1p6/3NN3/2P1B3/P4PPP/R5K1 b - - 5 18	c8b7 a8b7 c7b7 e4d6 f7g6 d6b7	18
+Italian Game	w	R95xa	1781	advantage middlegame short	r3r1k1/pppq1ppp/8/n5N1/8/2b1B3/P1P1QPPP/3R1RK1 b - - 1 15	d7e7 e2d3 g7g6 d3c3	15
+Italian Game	w	RKxQr	1827	crushing middlegame short trappedPiece	2k3r1/pbp2p1p/3b4/4p1P1/4P3/2N2N2/PPq2PP1/R1B2RK1 b - - 3 17	b7e4 f3e1 c2c3 b2c3	17
+Italian Game	w	U2HGe	1837	advantage fork middlegame short	r3k2r/pbp1nppp/qp2p3/3R4/2B5/3Q1N2/P4PPP/5RK1 b kq - 1 18	a6a4 c4b5 a4b5 d5b5	18
+Italian Game	w	JN3Wg	1863	advantage long middlegame	r2qr3/pp4kp/2p3p1/8/2Bb4/2B4Q/PP3PPP/R5K1 b - - 0 19	d8f6 h3d7 e8e7 d7d4 f6d4 c3d4	19
+Italian Game	w	HOc2z	1882	crushing deflection middlegame short	r1b2b1r/pp4pp/5k2/3Qq3/4N3/8/PPnP1PPP/R1B3K1 b - - 1 16	f6f5 g2g4 f5g6 d5e5	16
+Italian Game	w	5wCae	1900	master mate mateIn2 middlegame sacrifice short	r1bk3r/pppn1Bpp/8/n3Nq2/2N5/B1p5/P4PPP/3RR1K1 b - - 0 17	a5c4 e5c6 b7c6 a3e7	17
+Italian Game	w	QGK19	1903	dovetailMate mate mateIn2 middlegame sacrifice short	r1bk2nr/ppN2Qpp/3p4/8/2BnP3/B7/P2K1PPP/7q b - - 2 15	h1g2 f7f8 d8c7 f8d6	15
+Italian Game	w	rI3Op	1907	advantage middlegame short trappedPiece	r1b2rk1/p2p1pp1/2p4p/1pb1P2q/3n1P1N/1B1Q2P1/P5KP/RN3R2 b - - 1 17	a7a5 b3d1 h5h4 g3h4	17
+Italian Game	w	34TnM	1927	advantage fork middlegame short	r6r/ppp1k1pp/2b3q1/Q2nP3/3P4/5P2/P5PP/RN3RK1 b - - 0 17	d5e3 a5a3 e7f7 a3e3	17
+Italian Game	w	86Vuh	1969	advantage discoveredAttack discoveredCheck kingsideAttack long middlegame sacrifice	r1bq1r1k/pppp1Bp1/2n1N2p/2b4Q/3nP3/2N5/P4PPP/R1B2RK1 b - - 3 14	d7e6 c1h6 f8f7 h6g5 h8g8 g5d8	14
+Italian Game	w	5fvOd	1970	crushing fork long middlegame	r2q1b1r/ppp3pp/8/2kn1b2/2Bp1B2/8/PPP1QPPP/2KR3R b - - 1 14	d5f4 e2e5 f4d5 e5d4 c5c6 c4d5	14
+Italian Game	w	93SAc	2016	attraction crushing deflection kingsideAttack long middlegame sacrifice	r3r1k1/p1p2pp1/3b3p/5Q2/8/4B3/PPP2PqP/2KR2R1 b - - 3 19	g2e4 g1g7 g8g7 d1g1 g7f8 e3h6	19
+Italian Game	w	AoqDp	2017	advantage middlegame pin short	r1bq1b1r/p5pp/2p1k3/1p1np3/2BnQ3/2N5/PP3PPP/R1B1R1K1 b - - 1 13	d8d6 c4d5 c6d5 e4d4	13
+Italian Game	w	860eP	2019	kingsideAttack long mate mateIn3 middlegame	r1b1qbkr/6pp/6n1/p2p4/PpPQ4/1B1PB3/1P3PPP/R3K2R b KQ - 4 18	d5c4 d4c4 c8e6 c4e6 e8e6 b3e6	18
+Italian Game	w	JaOwi	2025	crushing middlegame short	r1bq1b1r/ppp3pp/3k4/4p3/1NB5/P4Q2/1P1P1PPP/n1BK3R b - - 2 12	d8f6 f3d3 d6e7 b4d5	12
+Italian Game	w	Jnk8Y	2097	advantage middlegame short	r4rk1/pp3ppp/2pqb3/3n4/2PQ4/3B4/P4PPP/RN1R2K1 b - - 0 19	c6c5 d4h4 g7g6 c4d5	19
+Italian Game	w	vmPgs	2112	advantage fork long middlegame pin	r1bk1b1r/pppp1Q1p/2n5/3Bp1q1/4P3/3P4/PPPN1PPP/R3K2R b KQ - 3 12	g5g2 f7f6 c6e7 f6h8 g2h1 e1e2	12
+Italian Game	w	qseWc	2114	advantage middlegame pin short	r3k1nr/pp3ppp/2pq4/2bb2B1/2Q5/5N2/P4PPP/3RR1K1 b kq - 1 17	e8d7 c4g4 d7c7 g5f4	17
+Italian Game	w	3afQ2	2136	crushing deflection long middlegame	r1b1kq1r/p1pp1ppp/1pn5/2n1P1N1/2B5/4B3/P1Q2PPP/R4RK1 b kq - 1 15	c5e6 c4e6 f7e6 g5e6 d7e6 c2c6	15
+Italian Game	w	5rsOK	2172	crushing discoveredAttack kingsideAttack middlegame short	r1b2r1k/ppp2pp1/2n3q1/4p1N1/5P2/2Q3R1/PB4PP/R5K1 b - - 1 19	e5f4 g5f7 g6f7 g3g7	19
+Italian Game	w	LurZA	2188	crushing intermezzo long middlegame	r2q1b1r/ppp3pp/8/2k2n2/2B1Q3/4P3/PPP3PP/R3K2R b KQ - 0 17	f5e3 b2b4 c5b6 e4e3 c7c5 b4c5	17
+Ruy Lopez	w	Hph78	925	crushing fork middlegame short	r4rk1/1bp2ppp/p1n3q1/3Np3/8/3PRN1P/PP3PP1/R2Q2K1 b - - 0 17	c6d4 d5e7 g8h8 e7g6	17
+Ruy Lopez	w	paxuL	941	kingsideAttack mate mateIn2 middlegame short	r2qrbk1/2p2p2/p1bp3p/1p4p1/P2PP3/1BP2QnP/1P3PP1/RN2R1K1 b - - 1 17	g3e4 f3f7 g8h8 f7g8	17
+Ruy Lopez	w	VS0vH	1033	crushing fork middlegame short	3r3r/Q1pkbp2/2pn1q2/P5pp/4N3/4B3/1PP2PPP/3R2K1 b - - 3 19	f6e6 e4c5 d7e8 c5e6	19
+Ruy Lopez	w	qqX2R	1040	mate mateIn2 middlegame short	r1b1rk2/2p3p1/p2b4/1p5B/6nq/2P2Q1P/PP1P1PP1/RNB3K1 b - - 0 18	f8e7 f3f7 e7d8 f7e8	18
+Ruy Lopez	w	B7XVj	1107	kingsideAttack mate mateIn2 middlegame short	1r1qr1k1/2p1bppp/p4n1B/5Q2/1p4R1/1B6/PPP2PPP/5RK1 b - - 4 19	f6g4 f5f7 g8h8 f7g7	19
+Ruy Lopez	w	jiVys	1131	advantage capturingDefender intermezzo middlegame short	r2q2k1/5pp1/pbpprn1p/1p6/4PP1B/3Q4/PP2BP1P/3R1RK1 b - - 0 19	e6e4 h4f6 d8f6 d3e4	19
+Ruy Lopez	w	0qQO7	1161	clearance kingsideAttack mate mateIn2 middlegame sacrifice short	r2qrbk1/1bp2pp1/pn1p3p/1p1nP3/3PN3/1P1Q1N1P/PBB2PP1/R3R1K1 b - - 1 18	d5f4 e4f6 d8f6 d3h7	18
+Ruy Lopez	w	QpfZ8	1167	advantage middlegame short	r2q1rk1/1bp2ppp/p5n1/3p3Q/1Pp5/2P5/P1BN1PPP/3R1RK1 b - - 3 18	d8h4 c2g6 h4h5 g6h5	18
+Ruy Lopez	w	whHFj	1174	crushing middlegame pin short	r3k2r/p1p2ppp/1bpPq3/3n4/3P4/2N5/PP3PPP/R1BQ1RK1 b kq - 0 13	c7d6 f1e1 e8g8 e1e6	13
+Ruy Lopez	w	3TiUM	1188	advantage fork middlegame short	r3k3/pppqn1pr/3p1p2/3Np3/4P3/3PP1Q1/PPP2KP1/R4R2 b q - 3 16	e7d5 g3g6 d7f7 g6h7	16
+Ruy Lopez	w	gw4Qd	1238	crushing hangingPiece intermezzo master masterVsMaster middlegame short	2kr1r2/pp4pp/2pbbn2/4N1B1/2BPp1P1/7q/PPP1Q2P/2KR1R2 b - - 0 17	d6e5 c4e6 c8b8 d4e5	17
+Ruy Lopez	w	EhxDT	1238	anastasiaMate attraction kingsideAttack long mate mateIn3 middlegame sacrifice	r4rk1/1np2ppp/p7/1p1NR2Q/1q6/8/PPP2PPP/3R2K1 b - - 4 19	b4b2 d5e7 g8h8 h5h7 h8h7 e5h5	19
+Ruy Lopez	w	AwDwa	1279	advancedPawn attackingF2F7 discoveredCheck doubleCheck mate mateIn2 middlegame short	1r2kb1r/1bpp1ppp/p3Pq2/1p2R3/8/1B3Q2/PPP2PPP/RNB3K1 b k - 0 13	b7f3 e6f7 e8d8 e5e8	13
+Ruy Lopez	w	WVHwC	1322	crushing discoveredAttack middlegame short	r4k1r/1bp3pp/1p3n2/p4Q2/8/1PP5/P1B2PPP/R1B1qNK1 b - - 0 19	a8e8 c1a3 f8f7 a1e1	19
+Ruy Lopez	w	JC35S	1327	crushing middlegame short	6k1/brp1qppp/p2pr3/3QP3/1P6/P6P/2P2PP1/R1B1R1K1 b - - 0 18	e6e5 e1e5 e7e5 d5b7	18
+Ruy Lopez	w	7nf0o	1334	crushing middlegame pin short	r3k2r/ppp1qpp1/2p2n2/2b4p/2P1PP2/2N4P/PPP3P1/R1BQ1R1K b kq - 2 13	f6e4 c3e4 e7e4 f1e1	13
+Ruy Lopez	w	oRZ6Y	1383	attraction crushing fork long middlegame	1r1q1rk1/bbp2p2/p1np3p/1p1N2p1/3P4/1B3NPP/PP4P1/R2QR1K1 b - - 0 17	f8e8 e1e8 d8e8 d5f6 g8g7 f6e8	17
+Ruy Lopez	w	eN1sO	1386	crushing fork long middlegame	r4rk1/1pp2pp1/pbnp1q1p/3N4/B2PP1b1/5N2/PP3PPP/R2Q1RK1 b - - 1 13	f6g6 a4c6 b7c6 d5e7 g8h8 e7g6	13
+Ruy Lopez	w	v8Y0p	1413	advantage middlegame short	r4b1r/1ppkn1pp/p3b3/3n4/4N3/1B6/PPPP1PPP/R1B1K2R b KQ - 0 15	d5f6 e4c5 d7d6 c5e6	15
+Ruy Lopez	w	Kt0h6	1414	advantage deflection middlegame short	r2r2k1/1bp2ppp/p7/1p1q4/3P2Q1/N7/PP3PPP/R3R1K1 b - - 2 17	d5d4 e1e8 d8e8 g4d4	17
+Ruy Lopez	w	YXlFh	1417	advantage fork middlegame short	2kr1b1r/2p1n2p/p1p2p2/8/2qN4/2N1BQ2/PP3PPP/R5K1 b - - 5 19	f8g7 f3g4 f6f5 g4g7	19
+Ruy Lopez	w	2vPPj	1482	advantage attraction fork long middlegame sacrifice	r1b2rk1/2p2ppp/pbNp1q2/1pnP4/8/2P2N2/PPQ2PPP/R1B2RK1 b - - 3 15	c8f5 c2f5 f6f5 c6e7 g8h8 e7f5	15
+Ruy Lopez	w	xRitV	1538	advantage middlegame veryLong	r2q1r1k/p1p2R1p/1b6/8/3B4/5b2/PP3PPP/R2Q2K1 b - - 0 17	b6d4 f7f8 d8f8 d1d4 f8g7 d4g7 h8g7 g2f3	17
+Ruy Lopez	w	VXi3J	1578	advantage attackingF2F7 discoveredAttack discoveredCheck long middlegame	r1bqk3/ppp2pp1/1b1p2r1/4p1np/1PBPPP2/2P3QP/PB4PK/RN3R2 b q - 0 15	g5h3 c4f7 e8f7 f4e5 f7g8 g3g6	15
+Ruy Lopez	w	XuCzi	1590	crushing discoveredAttack middlegame short	r3k3/3b1p1p/pqp2pr1/1pR5/3QP2B/1P5P/PP3P2/5K1R b q - 0 19	a8d8 c5e5 f6e5 d4b6	19
+Ruy Lopez	w	kfe4c	1598	advantage middlegame short	r4rk1/ppp1bpp1/3p1n1p/4P3/3Q2qB/2P5/PP3PPP/RN2R1K1 b - - 0 13	d6e5 d4g4 f6g4 h4e7	13
+Ruy Lopez	w	JJUdY	1631	crushing middlegame short	4r1k1/pp2rppp/1qpQ4/4P3/6n1/1P2B3/P1P2PPP/R3R1K1 b - - 2 19	e7e5 d6e5 g4e5 e3b6	19
+Ruy Lopez	w	PDIVi	1633	advantage middlegame short	r4rk1/3qnpp1/p1pp1n1p/1pb1pP2/8/2PPB1NP/PPB2PP1/R2Q1RK1 b - - 4 16	e7f5 g3f5 d7f5 d3d4	16
+Ruy Lopez	w	PvTlA	1668	crushing middlegame short trappedPiece	1r3rk1/1bp1nppn/pb3q1p/1p1BP3/8/2N1BN1P/PP3PP1/R2QR1K1 b - - 0 18	f6g6 f3h4 e7d5 h4g6	18
+Ruy Lopez	w	dae1B	1684	advantage middlegame short	r2q1rk1/1pp2ppp/pbp2n2/8/3PP1b1/2N1RN2/PP3PPP/R1BQ2K1 b - - 3 11	d8d4 d1d4 b6d4 f3d4	11
+Ruy Lopez	w	wnq1y	1710	discoveredCheck doubleCheck mate mateIn2 middlegame short	r2qk2r/1ppb1p1p/p1n3p1/3p3Q/Bb1PN3/8/PP3PPP/RNB1R1K1 b kq - 0 12	g6h5 e4f6 e8f8 c1h6	12
+Ruy Lopez	w	b0IiJ	1719	crushing middlegame short trappedPiece	r3rbk1/1pp2pp1/p1bp3p/4q3/P1B1P3/2N2R2/1PP2PPP/R2Q2K1 b - - 3 16	e8e7 f3f5 e5f5 e4f5	16
+Ruy Lopez	w	cde65	1730	advantage middlegame short	r3k2r/1pp2pp1/1bp1b2p/p3Pn2/P3N3/2B2N2/1PP2PPP/R3R1K1 b - - 1 15	e8e7 g2g4 h8d8 g4f5	15
+Ruy Lopez	w	eCN4p	1743	crushing long middlegame pin	1r1k2nr/2p2ppp/p1Qp2q1/1pb4b/4P3/1B2BP1P/PP3P1K/RN4R1 b - - 8 16	g6f6 e3g5 g8e7 g5f6 g7f6 c6a6	16
+Ruy Lopez	w	AtITt	1810	advantage defensiveMove long middlegame	r3k2r/2pqbppp/p1p5/3n4/8/2N5/PP2QPPP/R1B1R1K1 b kq - 0 14	e8g8 c3d5 c6d5 e2e7 f8e8 e7b4	14
+Ruy Lopez	w	2CgVb	1821	long mate mateIn3 middlegame	r2q2k1/1bp2ppR/p4b2/8/R2P2Q1/1BP5/1P3PnP/2r2NK1 b - - 0 19	g8h7 g4h5 h7g8 h5f7 g8h8 f7h5	19
+Ruy Lopez	w	6rWl3	1827	advantage middlegame short trappedPiece	r2k3r/ppp1Bpp1/2p1b2p/4Pn2/4N3/5N2/PPP2PPP/R4RK1 b - - 0 12	d8e7 g2g4 f5d6 e5d6	12
+Ruy Lopez	w	WdL7h	1871	advantage fork middlegame short	r2q1rk1/2p3pp/p3p3/1pnpn3/8/2P5/PPB2PPP/RN1Q1RK1 b - - 1 14	d8h4 d1d4 h4d4 c3d4	14
+Ruy Lopez	w	U9aRN	1885	kingsideAttack mate mateIn2 middlegame pin sacrifice short	r1b2rk1/2p2ppp/p7/1p4B1/3P3q/1BP2Q1P/PP3nPb/RN2RK2 b - - 1 17	h4g5 f3f7 f8f7 e1e8	17
+Ruy Lopez	w	eIKZ8	1904	crushing discoveredAttack middlegame pin short	r3k2r/2p1qppp/p1pb4/3p4/3Pn3/8/PPPNQPPP/R1B1R1K1 b kq - 3 12	e4d2 e2d2 e8g8 e1e7	12
+Ruy Lopez	w	AI1q5	1988	attackingF2F7 discoveredAttack mate mateIn2 middlegame sacrifice short	r2qkb1r/2p1nppp/p7/1p1NN3/3nP1b1/1B6/PPPP1PPP/R1BQ1RK1 b kq - 0 9	g4d1 d5f6 g7f6 b3f7	9
+Ruy Lopez	w	VCU7G	2001	advantage long middlegame	r2q1rk1/2pbnppp/p2p1n2/b2PP1B1/8/2PQ1N1P/P1B2PP1/R4RK1 b - - 0 17	d6e5 g5f6 d7f5 d3f5 e7f5 f6d8	17
+Ruy Lopez	w	Q0B36	2017	advantage fork middlegame short	r3r1k1/2p1qppp/pbnp4/1p3N2/3Pn1P1/2N1B2P/PP3P2/R2QR1K1 b - - 1 18	e7e6 d4d5 e4c3 b2c3	18
+Ruy Lopez	w	OWh5E	2019	discoveredAttack discoveredCheck kingsideAttack master mate mateIn2 middlegame pillsburysMate sacrifice short	r1bq2rk/8/p1pb1p1B/1p1nR2Q/3P4/2P5/PP3PPP/RN4K1 b - - 4 18	c8g4 h6f8 g4h5 e5h5	18
+Ruy Lopez	w	tW8Uy	2047	crushing middlegame short	1r3rk1/4bpp1/p1pq1n1p/2pp1P1N/7B/1P3Q2/P1P2PPP/R3R1K1 b - - 3 18	b8b7 e1e7 b7e7 h4f6	18
+Ruy Lopez	w	I5nXe	2091	advantage fork long middlegame sacrifice	r1bqk2r/2p2pp1/p2p4/1p5p/3Nn3/1P2P2P/1PPN2P1/R2Q1RK1 b kq - 1 14	e4g3 d1f3 g3f1 a1f1 e8g8 f3a8	14
+Ruy Lopez	w	WJeyn	2126	capturingDefender crushing long middlegame pin	r1bq1rk1/2ppnppp/p1n5/1p4N1/3PP3/1B6/PP1N1PPP/R2QK2R b KQ - 2 11	e7g6 d1h5 h7h6 g5f7 f8f7 h5g6	11
+Ruy Lopez	w	vE7AC	2172	advantage long middlegame pin	r4rk1/2p1nqpp/p2p1p2/np2pN2/4P1PP/2PPP3/bPBNQ3/2KR3R b - - 0 18	a5b3 c2b3 a2b3 f5e7 f7e7 d2b3	18
+Ruy Lopez	w	KwcdK	2186	crushing long middlegame	3r1r1k/2nqbppp/p3b3/1p1pP3/2p2B1P/2P3Q1/PPBN1PP1/3RR1K1 b - - 1 19	e6f5 e5e6 f7e6 c2f5 e7d6 f4d6	19
+Ruy Lopez	w	kfOJo	2196	crushing long middlegame trappedPiece	r4rk1/5pp1/pq1p1nnp/2pPp3/Q3P3/2P1PN1P/1P1N2P1/R3R1K1 b - - 0 19	b6b2 e1b1 b2c3 a1a3 c3a3 a4a3	19
+Ruy Lopez	w	6PKm6	2201	crushing long middlegame xRayAttack	b2q1r2/5pkp/2p2bp1/np1n4/6N1/2PQ4/1PB2PPP/1NB1R1K1 b - - 5 19	f6g5 d3d4 g7g8 g4h6 g5h6 c1h6	19
+Ruy Lopez	w	oEbCZ	2247	advantage long middlegame	3r1rk1/1pp2p2/pbp2q1p/5b2/5Q2/2N2N2/PP3PPP/R4RK1 b - - 5 17	f8e8 g2g4 f6g6 f4f5 g6f5 g4f5	17
+Ruy Lopez	w	3B2v3	2258	advantage fork middlegame veryLong	r4rk1/1bpnqppp/p7/1p2P3/3p4/1B6/PPPNQPPP/R3R1K1 b - - 3 15	f8e8 e5e6 f7e6 e2e6 e7e6 b3e6 e8e6 e1e6	15
+Ruy Lopez	w	hbxca	2263	crushing middlegame short	r3k2r/1pp2pbp/p1b2np1/4N1B1/4P3/2P5/PP3PPP/RN1R2K1 b kq - 0 12	c6e4 d1e1 e8g8 g5f6	12
+Ruy Lopez	w	5nsvq	2275	advantage attackingF2F7 fork long middlegame sacrifice	r1bqkbnr/2p2ppp/p2p4/1p2n1N1/3QP3/1B6/PPP2PPP/RNB1K2R b KQkq - 0 8	h7h6 g5f7 e5f7 d4d5 d8d7 d5a8	8
+Vienna Game	w	U6nea	919	advantage fork middlegame short	r4rk1/ppp2ppp/3p2q1/3Nn3/4P3/3BQ2P/PPP3P1/5RK1 b - - 3 17	e5d3 d5e7 g8h8 e7g6	17
+Vienna Game	w	YKvOk	927	crushing intermezzo middlegame short	r3kb1r/ppp2ppp/2n5/3q4/3P1B2/5B2/PPP3PP/R2QK2R b KQkq - 0 10	d5d4 f3c6 b7c6 d1d4	10
+Vienna Game	w	vakN4	977	crushing deflection master middlegame short	r1bq1k1r/ppppnpb1/2n4p/6N1/2B1P3/2NP2P1/PPP5/R1BQ1RK1 b - - 0 10	h6g5 f1f7 f8e8 f7g7	10
+Vienna Game	w	UR7X2	994	discoveredCheck doubleCheck mate mateIn1 middlegame oneMove pillsburysMate	3krb1r/B1pb1p1p/Bp6/4n1p1/3Np3/2P3P1/PPP4P/2KR3R b - - 1 17	d7g4 d4c6	17
+Vienna Game	w	GPAws	1093	advantage fork middlegame short	r1bq1kr1/ppp4Q/2np1p2/8/4P2N/8/PPPP3p/R1B2R1K b - - 0 14	d8e7 h4g6 g8g6 h7g6	14
+Vienna Game	w	W6y3b	1118	crushing middlegame queensideAttack short	2k2rn1/pppqb2r/8/2PP2pp/4Np2/5Q2/PB4PP/R4RK1 b - - 0 18	d7d5 e4d6 d5d6 c5d6	18
+Vienna Game	w	7Zbjd	1168	mate mateIn1 middlegame oneMove	2r2rk1/pp1q2pp/1b2b3/2ppQN2/3P2P1/B1P5/P1P4P/R4R1K b - - 0 18	g7g6 f5h6	18
+Vienna Game	w	L3hzg	1191	advantage long middlegame	r2q3r/ppp1bkpp/2n2n2/4B3/3P2b1/2N2N2/PPP3PP/R2QK2R b KQ - 0 10	c6e5 f3e5 f7g8 e5g4 f6g4 d1g4	10
+Vienna Game	w	Lvmxh	1192	crushing long middlegame	r4rk1/pppqbppp/3p1n2/3P4/4PBb1/2NB2QP/PPP3P1/R4RK1 b - - 0 12	f6h5 g3g4 d7g4 h3g4 h5f4 f1f4	12
+Vienna Game	w	hv51P	1193	mate mateIn2 middlegame queensideAttack short	k2r1r2/p1p1q1pp/B3bn2/1Q1pB3/3P4/2P5/P1P3PP/5RK1 b - - 3 17	c7c6 b5c6 e7b7 a6b7	17
+Vienna Game	w	gMtmC	1233	mate mateIn1 middlegame oneMove	r3k2r/pp3ppp/4b2q/3N4/3n4/2KB2Q1/P1P3PP/R3R3 b kq - 2 17	e8c8 g3c7	17
+Vienna Game	w	jlHO4	1273	advantage fork middlegame short	r1bqk2r/ppp2ppp/2p5/8/3Pnp2/2P2N2/P1P3PP/R1BQ1RK1 b kq - 0 9	e4c3 d1e1 c8e6 e1c3	9
+Vienna Game	w	mjybg	1293	crushing middlegame short trappedPiece	3r1rk1/ppp1bppp/8/3bP3/3Np3/1PP1B1P1/PKP4P/3R3R b - - 2 16	a7a6 d4f5 e7a3 b2a3	16
+Vienna Game	w	jxpaA	1325	advantage long middlegame	r2q1rk1/2p2ppp/p1pp3b/6Nn/3PPNbP/P2Q4/1PP2KP1/R1B4R b - - 0 16	d8f6 e4e5 f6f5 d3f5 g4f5 f4h5	16
+Vienna Game	w	ffuJo	1334	crushing fork middlegame short	2k2b1r/1p3Qpp/1p1p4/P1p1r3/4Pp1q/2P4P/3P2P1/R1B2K1R b - - 0 19	e5e4 f7f5 c8b8 f5e4	19
+Vienna Game	w	yR2kV	1341	mate mateIn2 middlegame short	r2q1k1r/ppp1n1pp/2n2R2/4N3/3P4/1BN5/PPP4p/R1Bb3K b - - 0 16	g7f6 c1h6 f8e8 b3f7	16
+Vienna Game	w	llrBG	1379	crushing middlegame pin short	r1b3nr/ppQp2kp/7b/8/3qPN2/8/PP4PP/n1B2R1K b - - 0 15	g8f6 f4e6 g7f7 e6d4	15
+Vienna Game	w	rLwaq	1402	crushing long middlegame	r2qk2r/pp3ppp/4b3/3pP3/1b1P4/3B1Q2/P1P2KPP/R1B4R b kq - 2 12	b4c3 d3b5 e6d7 b5d7 d8d7 f3c3	12
+Vienna Game	w	W9kri	1439	advantage kingsideAttack long middlegame	rn1q1rk1/ppp4p/6pQ/3pPb2/3P2pb/B1PB4/P1P1N2P/R2K3R b - - 3 14	h4g5 h6f8 d8f8 a3f8 f5d3 c2d3	14
+Vienna Game	w	0B6uj	1459	advantage discoveredAttack middlegame short	rnb2rk1/pp4pp/2p5/q2pPp2/3P4/1B3Q2/P1PBN1PP/b2K3R b - - 3 13	a5a3 b3d5 c6d5 f3a3	13
+Vienna Game	w	GFgFD	1492	advantage intermezzo middlegame short	r2q1rk1/pQp2ppp/3b1n2/3N4/3p4/8/PPPP2PP/R1B2R1K b - - 2 14	d6h2 d5f6 g7f6 h1h2	14
+Vienna Game	w	zlqxP	1499	crushing fork long middlegame	r3r1k1/p4ppp/b4b2/2p2N2/5B2/2P5/PP4PP/2KRR3 b - - 5 19	a6c4 e1e8 a8e8 f5d6 e8e2 d6c4	19
+Vienna Game	w	Dc50b	1501	crushing discoveredAttack kingsideAttack long master middlegame	r2q1r1k/p3bppp/2p1b3/2ppP3/3P1N2/2P3Q1/P1P3PP/R1B2RK1 b - - 7 13	e7h4 f4e6 f7e6 f1f8 d8f8 g3h4	13
+Vienna Game	w	LO7nI	1535	attraction clearance crushing kingsideAttack long middlegame sacrifice	1r3rk1/pp3ppp/2n5/q2pP3/3P1B2/2bB1R2/P5PP/1R1Q2K1 b - - 0 17	c6d4 d3h7 g8h7 f3h3 h7g8 d1h5	17
+Vienna Game	w	AR7zu	1562	advantage discoveredAttack middlegame short	1r1q1rk1/p4ppp/4b1n1/p2pP1N1/2pP3P/2P3Q1/2P1B1P1/R4RK1 b - - 0 18	h7h6 g5e6 f7e6 g3g6	18
+Vienna Game	w	l6yjy	1567	advantage attraction kingsideAttack middlegame sacrifice veryLong	r2q1rk1/pp3ppp/4b3/2PpP3/3b4/3B1Q1N/P1P3PP/1R3R1K b - - 1 16	d4c5 d3h7 g8h7 f3h5 h7g8 h3g5 d8g5 h5g5	16
+Vienna Game	w	3ifpb	1593	kingsideAttack long mate mateIn3 middlegame sacrifice	r1b2rk1/ppp2ppp/8/b2pq3/8/2PB1Q2/PP4PP/4RR1K b - - 1 17	e5g5 f3f7 f8f7 e1e8 f7f8 f1f8	17
+Vienna Game	w	iXxW5	1598	crushing deflection middlegame queensideAttack short	2kr1b1r/ppp3pp/8/3nP3/4B1P1/2P5/PP5P/1K1R3R b - - 0 19	d5e3 e4b7 c8b7 d1d8	19
+Vienna Game	w	fOxoE	1656	advantage master middlegame short	r2q1rk1/ppp3pp/2b5/b2pP3/4nB2/P1N2Q2/1PP1N1PP/2KR3R b - - 0 13	d8e7 c3d5 c6d5 d1d5	13
+Vienna Game	w	fF1pM	1668	advantage fork long middlegame	r1bqr1k1/2p3pp/2Pp1p2/p5NN/3Q4/7P/PPP3P1/R6K b - - 1 19	e8e7 d4d5 g8h8 g5f7 e7f7 d5f7	19
+Vienna Game	w	swBMz	1671	advantage middlegame veryLong	2k4r/B1p2pbp/b1p5/8/5N2/2P3P1/r6P/1R2R1K1 b - - 0 19	g7c3 b1b8 c8d7 e1d1 a2d2 d1d2 c3d2 b8h8	19
+Vienna Game	w	bZ0Bh	1681	crushing middlegame queensideAttack sacrifice veryLong	2kr4/pppq1pb1/3p3n/3Nn1p1/4Pp2/1B1P1P2/PPPB1Q2/2K4R b - - 4 17	c7c6 f2a7 c6d5 a7a8 c8c7 d2a5 b7b6 a8a7	17
+Vienna Game	w	8cNvf	1687	advantage long middlegame	2kr3r/pp4Qp/2n1p3/2b1P3/2p2B2/2P5/PP2q1PP/4RR1K b - - 2 18	e2b2 e1b1 h8g8 g7g8 d8g8 b1b2	18
+Vienna Game	w	Uvdc6	1743	crushing discoveredAttack kingsideAttack long middlegame	r2q1r1k/p3bpp1/2p1b2p/3pP3/3P1N2/2P3Q1/P5PP/R1B2RK1 b - - 4 15	e7h4 f4e6 f7e6 f1f8 d8f8 g3h4	15
+Vienna Game	w	FMhQ3	1800	advantage middlegame short	r3kb1r/p4pp1/2p1b2p/q2pP3/3P3P/2P3Q1/1R4P1/2B1K1NR b Kkq - 0 15	f8a3 b2a2 a5b5 a2a3	15
+Vienna Game	w	xWrQX	1808	mate mateIn1 middlegame oneMove	r5kr/pp2q1p1/2nb4/2p4p/2B1p2P/2P2Q2/P1PP2P1/R1BK3R b - - 1 17	g8h7 f3h5	17
+Vienna Game	w	4XDCD	1820	advantage collinearMove long middlegame quietMove	r1bq1rk1/pp2bp1p/2n3pQ/3pP1B1/3p4/2PB3N/P1P3PP/R4RK1 b - - 1 13	c8h3 g5f6 e7f6 e5f6 d8f6 f1f6	13
+Vienna Game	w	BfDxU	1832	crushing defensiveMove long middlegame pin	r1bqk2r/pppp1p1p/4nb2/4P2Q/2B5/2N5/PPP3PP/R1B3K1 b kq - 0 12	f6g5 c4e6 d7e6 c1g5 d8d4 g1h1	12
+Vienna Game	w	15nIf	1845	crushing discoveredAttack discoveredCheck kingsideAttack long middlegame sacrifice	r1bq2k1/ppp2rp1/6Qp/1P1p4/3P1B1P/8/P1P3P1/R4RK1 b - - 0 17	d8h4 g6f7 g8f7 f4g5 f7g6 g5h4	17
+Vienna Game	w	b3VTI	1926	crushing discoveredAttack long master middlegame	r1b2rk1/pp2bppp/2n5/3pP1N1/3P4/q2B1Q2/P1PB2PP/R3K2R b KQ - 4 13	e7g5 d3h7 g8h7 f3a3 g5d2 e1d2	13
+Vienna Game	w	cDwrD	1978	advantage long middlegame quietMove sacrifice trappedPiece	r3k2r/ppp2ppp/2n5/3pPb2/3PqB2/2P2QP1/Pb2BK1P/3R2NR b kq - 9 14	b2c3 f3c3 e4h1 g1f3 h1d1 e2d1	14
+Vienna Game	w	mmbBR	2004	crushing fork long middlegame pin	r3k2r/ppp1nppp/2n5/3q4/1b1P1Bb1/2N2N2/PPP1Q1PP/2KR1B1R b kq - 4 9	g4f3 c3d5 f3e2 d5c7 e8d7 f1e2	9
+Vienna Game	w	l6PHp	2035	advantage interference middlegame sacrifice short	r1bk2nr/p2pbR1p/2p5/1pq1p2Q/4P2P/1BNP4/PPP3P1/5R1K b - - 1 16	d8c7 c3d5 c6d5 h5e5	16
+Vienna Game	w	uAK34	2043	collinearMove crushing long middlegame	2kr3r/p2q1pp1/Qpn1b3/3pP2p/3P4/2P5/PRP1N1PP/1R4K1 b - - 1 19	c8c7 b2b6 d8b8 b6b7 b8b7 b1b7	19
+Vienna Game	w	LFYUE	2050	advantage middlegame short	r1q1k2r/ppp1bppp/3p4/3P4/5B2/3B1Q1P/PPP3P1/5RK1 b kq - 0 14	e8g8 f3e4 f7f5 e4e7	14
+Vienna Game	w	bi4t3	2055	crushing long middlegame	r1bq1r1k/ppp1b3/2n3QB/3pp3/3P4/2P5/P1P1N1PP/R4RK1 b - - 1 14	f8g8 g6h5 d8e8 f1f7 e8f7 h5f7	14
+Vienna Game	w	9gsMd	2161	advantage castling discoveredAttack discoveredCheck middlegame short	r1bq3r/pppp1k1p/6p1/4Q3/1b1PnB2/2N5/PPP3PP/R3K2R b KQ - 0 11	e4c3 e1g1 d7d6 f4h6	11
+Vienna Game	w	3FMFS	2166	advancedPawn crushing discoveredAttack discoveredCheck long middlegame	r1bqkb1r/ppp1np2/3pP2p/3P2p1/2B2p2/2NQ1N1P/PPP3P1/R1B1K2n b Qkq - 0 12	f7f6 c4b5 c7c6 d5c6 c8e6 c6c7	12
+Vienna Game	w	15mRP	2192	crushing long middlegame	2k4r/ppp2ppp/5nq1/8/2P2B2/4RB1P/P1P3P1/3R2K1 b - - 2 18	h8e8 f3g4 e8e6 e3e6 f7e6 g4e6	18
+Vienna Game	w	emTeX	2214	attraction crushing deflection long middlegame	r2r4/p1Qbkppp/8/2b1P3/8/2P1q3/PPP1N1PP/3RKR2 b - - 8 17	a8c8 d1d7 d8d7 f1f7 e7f7 c7d7	17
+Vienna Game	w	WJ0Sb	2239	advantage castling discoveredAttack discoveredCheck long middlegame	r3r3/ppp2kpp/2n5/8/3pP1bq/4b1N1/PPP1B1PP/R1BQK2R b KQ - 4 16	e8e4 c1e3 g4e2 d1e2 e4e3 e1g1	16
+Vienna Game	w	Wfdqg	2299	crushing long master middlegame	rnbq1rk1/pp2b1pp/2p2p2/3pP3/5B2/2PB1Q1N/PPP3PP/2KR3R b - - 1 10	f6e5 f3h5 e5e4 d3e4 d5e4 d1d8	10
+English Opening	w	mHwlH	1344	crushing long middlegame	rn3rk1/1bpp1ppp/8/pp6/1q6/2RPP3/1PQB1PPP/4KB1R b K - 1 15	a5a4 c3c7 b4d6 c7b7 a4a3 b2a3	15
+English Opening	w	ihH8E	1404	crushing long master middlegame	2rr2k1/p2q1ppp/1pn2b2/3p4/QP6/3PB1P1/4PPBP/1RR3K1 b - - 2 19	c6d4 a4d7 c8c1 b1c1 d4e2 g1f1	19
+English Opening	w	EN8Dy	1511	advantage middlegame short	r2r2k1/ppp1qpp1/6bp/8/2P1n3/PQ1P2P1/1B3PBP/R4RK1 b - - 1 19	e4d2 b3c3 e7f8 c3d2	19
+English Opening	w	6m5dA	1637	advantage long middlegame queensideAttack	2kr3r/pppq2pp/1bn1bp2/3np3/1P6/P1NP1NP1/2Q1PPBP/R1B2RK1 b - - 0 12	e6h3 c3d5 h3g2 d5b6 c7b6 g1g2	12
+English Opening	w	ZR7ru	1744	crushing intermezzo kingsideAttack middlegame short	r2q1rk1/1b2b2p/p3p1p1/3nBp2/4N3/6PQ/PP3PBP/3R1RK1 b - - 1 17	f5e4 h3e6 f8f7 g2e4	17
+English Opening	w	2abYR	1854	crushing middlegame short	r1b2rk1/pp3pp1/1b1p3p/3P4/1q6/2N1P3/1BQ2PPP/R4RK1 b - - 1 19	c8g4 a1a4 g4f5 e3e4	19
+English Opening	w	Q1RZe	2054	crushing middlegame pin short	r2qr1k1/ppp3p1/2np2Qp/8/2PP2b1/2P3P1/P3P2P/R1B2RK1 b - - 0 17	g4e2 f1f7 d8f6 f7f6	17
+London System	w	CkZO1	1010	kingsideAttack mate mateIn2 middlegame short	1rbq1rk1/4pp2/p4bB1/1p1p2Np/2pP3P/2P1P3/PPQ2PP1/R3K2R b KQ - 0 16	f7g6 c2g6 f6g7 g6h7	16
+London System	w	xvaE8	1057	mate mateIn1 middlegame oneMove	r1bq3r/pp2kpbp/2nNp3/2P2B2/8/1Q6/P4PPP/1N3RK1 b - - 0 16	e6f5 b3f7	16
+London System	w	0vllQ	1189	mate mateIn1 middlegame oneMove	r2qr1kQ/ppp5/2n1b1p1/3p1p2/8/3BP1P1/PP1N1PP1/R3K2R b KQ - 1 17	g8f7 h1h7	17
+London System	w	tTFbY	1190	advantage middlegame short	r1b2rk1/pp1ppp2/2n3p1/6QP/3P2n1/2PB1N2/P5q1/RN1K1R2 b - - 1 15	g4f2 f1f2 g2g5 f3g5	15
+London System	w	wJZ9V	1232	mate mateIn2 middlegame short	r2q1k1r/1b1np1b1/pp1p1nQ1/2p3Np/3P1B1P/2P1P3/PP1N1PP1/R3K2R b KQ - 2 13	d8e8 g5e6 f8g8 g6g7	13
+London System	w	1xJK8	1236	advantage discoveredAttack middlegame short	5rk1/3nppbp/2pp1np1/8/1Q1P1B2/1B2P3/1qP1NPPP/4NK2 b - - 0 17	c6c5 b3f7 f8f7 b4b2	17
+London System	w	IviAI	1289	mate mateIn2 middlegame short	2rq1k1r/pb1np1b1/1p2p1Q1/3p2Np/2pP1BnP/2P1P3/PP2BPP1/R3K2R b KQ - 2 15	d8e8 g5e6 f8g8 g6g7	15
+London System	w	JynhW	1301	advantage master middlegame short	r3r3/pq1n1pk1/1p1N1bpp/8/2pP4/2PQ1N1P/PP3PP1/R3R1K1 b - - 0 19	e8e1 a1e1 c4d3 d6b7	19
+London System	w	g1qY2	1322	crushing master middlegame short	rn3rk1/pp2ppbp/1q1pb1p1/3n4/2BP4/1QP2NBP/PP1N1PP1/R3K2R b KQ - 6 11	h7h6 c4d5 e6d5 b3d5	11
+London System	w	qAvaJ	1332	advantage fork middlegame short	r1b2rk1/pp3B2/7R/2ppb1q1/8/2P1P1P1/PPQN1PP1/R3K3 b Q - 0 16	f8f7 h6g6 g5g6 c2g6	16
+London System	w	gEGWM	1363	kingsideAttack mate mateIn1 middlegame oneMove	r2qr2k/pppb2bp/1nnp1p2/8/3P2pN/2P3B1/PPQN1PPP/1B2RRK1 b - - 6 17	e8e1 c2h7	17
+London System	w	4RC5b	1418	crushing discoveredAttack fork long middlegame	r5k1/1pp1qpbp/p2p2p1/5bPn/4NP2/3B3r/PP4QB/2KRR3 b - - 3 19	a8e8 e4f6 g7f6 e1e7 f6e7 d3f5	19
+London System	w	SuEdK	1439	advantage middlegame short	r2qnr1k/pp2p1bP/8/2ppnb1Q/5B2/2P1P3/PPBN1PP1/R3K2R b KQ - 3 15	f5g6 c2g6 e5g6 h5g6	15
+London System	w	VDri4	1456	crushing middlegame short trappedPiece	r2qr1k1/pp1b1pb1/6p1/4p2p/2PnN2P/3B1P2/PP1B2P1/R2Q1RK1 b - - 0 17	d8h4 d2g5 h4g5 e4g5	17
+London System	w	ALQp0	1459	crushing middlegame short	rnr3k1/pp2ppbp/6p1/q2p4/3PbB2/2N1PN1P/PP1Q1PP1/R3K2R b KQ - 1 13	b8a6 c3e4 a5d2 e4d2	13
+London System	w	NqZwS	1462	advantage middlegame short trappedPiece	rnb2rk1/pp2ppbp/1q1p1np1/2pP4/5B2/P1N1PN2/1PP1BPPP/R2QK2R b KQ - 0 8	b6b2 c3a4 b2a1 d1a1	8
+London System	w	EZk92	1500	advantage fork middlegame veryLong	r2q2k1/ppp2p1p/6p1/4r3/4n1B1/2P5/PP3PPP/R2Q1RK1 b - - 0 17	d8g5 f2f4 g5h6 f4e5 h6e3 g1h1 e4f2 f1f2	17
+London System	w	6wq8G	1548	advantage master middlegame short	r4rk1/pR2ppbp/3p2p1/8/2PB4/P1q2B1P/5PP1/3Q1RK1 b - - 0 17	g7d4 b7b3 c3b3 d1b3	17
+London System	w	5IvGN	1574	advantage master middlegame pin short	r4rk1/5pbN/1qn2pp1/pp1b4/2pP1B2/P1P4P/1PB1QPP1/R4RK1 b - - 0 18	g8h7 e2h5 h7g8 h5d5	18
+London System	w	32KCf	1613	crushing deflection long middlegame	r2qr1k1/1p2p1bR/2p2nn1/p2p4/3P1B2/2P1PN2/PPQ2PP1/R3K3 b Q - 0 15	g8h7 f3g5 h7g8 c2g6 e8f8 g5e6	15
+London System	w	rjzmt	1622	attraction kingsideAttack long mate mateIn3 middlegame sacrifice	r1bq3k/pp1n2bp/2n3p1/2P2rP1/2B1Q3/2P1PN2/PP3PP1/R3K2R b KQ - 2 16	d8e7 h1h7 h8h7 e4h4 g7h6 h4h6	16
+London System	w	fDvo2	1626	advantage middlegame short	r1b3k1/pp3p1p/2p3p1/3r4/2B1N1nq/2P2Q1P/PP3P2/R4RK1 b - - 1 18	d5f5 f3g4 h4g4 h3g4	18
+London System	w	q2Jtk	1662	advantage middlegame short	r2q1r2/1ppb1Bkp/p1n3pb/4p1Nn/4P2P/8/PPPQ1PPB/RN3RK1 b - - 0 15	f8f7 g5f7 h6d2 f7d8	15
+London System	w	r6yTp	1688	crushing kingsideAttack middlegame short	r1bq1rk1/pp2ppbp/2n5/3p2Np/3P1B2/2NB4/PPP2PP1/R2QK3 b Q - 1 11	e7e5 d3h7 g8h8 d1h5	11
+London System	w	xSpMq	1697	crushing master middlegame short	2r2rk1/1b1qppbp/1pnp1np1/pB4B1/3P4/Q3PN2/PP1N1PPP/2R2RK1 b - - 1 14	h7h6 g5f6 g7f6 d4d5	14
+London System	w	gZycV	1746	attraction kingsideAttack mate mateIn2 middlegame pin sacrifice short	r4rk1/pp2p1b1/1qnp2Q1/6N1/3p1Pb1/2P5/PP1N1PP1/R3K2R b KQ - 0 15	f8f6 h1h8 g8h8 g6h7	15
+London System	w	4vJRE	1767	advantage middlegame short	r3r1k1/1pp2p1p/2n2bp1/p3p3/4B1PP/2P1PN2/qPQ2P2/2KR3R b - - 0 17	a5a4 e4d5 a2d5 d1d5	17
+London System	w	rlX56	1781	advantage long middlegame	3qk2r/p1pn1p2/3p3p/4b1p1/4QP2/3BP2P/P1P3P1/1N2K2R b Kk - 0 17	d7c5 e4c6 d8d7 c6d7 c5d7 f4e5	17
+London System	w	JzFzp	1804	mate mateIn1 middlegame oneMove	r1bqr3/pppn1pbN/3pk3/3Pp2p/5B1N/4P3/PPP2PP1/R2QK3 b Q - 0 15	e6e7 h4f5	15
+London System	w	DtkiC	1807	advantage long middlegame trappedPiece	rn2kb1r/1p1bpppp/p4n2/3p4/3N1B2/P1N1P3/1qPKBPPP/R2Q3R b kq - 0 9	b8c6 c3a4 f6e4 d2e1 e4c3 a4b2	9
+London System	w	oZiCv	1808	advantage intermezzo middlegame short	rn1q1rk1/pbp1p1bp/1p3n2/6QP/2pP1B2/2N1PN2/PP3PP1/R3K2R b KQ - 0 13	b7f3 h5h6 f8f7 g2f3	13
+London System	w	KpSMl	1817	crushing fork long master middlegame	rnbqk2r/p3ppbp/1p3np1/2pp4/3P1B2/2P1PN1P/PP2BPP1/RN1QK2R b KQkq - 0 7	c8a6 e2a6 b8a6 d1a4 d8d7 a4a6	7
+London System	w	PKdeT	1818	advantage long middlegame	2r2rk1/pbq1ppbp/1p4p1/2nnP1B1/2B5/5N2/PP1N1PPP/2RQR1K1 b - - 6 16	e7e6 c4d5 b7d5 b2b4 c7b7 b4c5	16
+London System	w	TcoFb	1934	advantage long middlegame	r4rk1/pp2ppbp/1qnpbnp1/2p5/2BP1B2/1PP1PN2/P2N1PPP/R2Q1RK1 b - - 4 10	f6d5 c4d5 e6d5 e3e4 d5e4 d2e4	10
+London System	w	ooFAC	1957	crushing kingsideAttack long middlegame pin	r1b2rk1/pp2ppb1/1q1p2pp/3B4/3N4/2NQ2P1/PPP2PP1/1R2K2R b K - 0 16	g7d4 d3g6 d4g7 h1h6 c8f5 g6f5	16
+London System	w	6W0zx	1962	advantage fork middlegame sacrifice veryLong	r2q1rk1/pppn1pb1/6Bp/3pp1N1/3P1BnP/2P1P3/PPQ2PP1/R3K2R b KQ - 0 12	e5f4 g6f7 f8f7 c2h7 g8f8 g5e6 f8e7 e6d8	12
+London System	w	4Z3hE	2000	capturingDefender crushing intermezzo master middlegame short	r2qr1k1/p1p1npbp/1p1p2p1/1B1P4/3Pb3/1Q3N1P/PP3PPB/2R1R1K1 b - - 3 17	e4d5 e1e7 e8e7 b3d5	17
+London System	w	x7dFM	2028	advantage discoveredAttack discoveredCheck long middlegame	r1b1rk2/pp2p1bQ/2nq4/3pNp2/3P1P1p/2P5/PPB3PP/R4RK1 b - - 3 18	c6e5 f4e5 d6h6 c2f5 h6h7 f5h7	18
+London System	w	vIuBt	2030	advantage middlegame short	2rq1rk1/pp2ppbp/5np1/1B1pN3/1n1P1B2/P3P2P/1PbNQPP1/2R1K2R b K - 2 13	c2d3 c1c8 b4c2 c8c2	13
+London System	w	EMXDu	2040	crushing middlegame short	r3r1k1/ppp2pb1/2b1qnpp/8/2B1p2B/2P1N2P/PPQ2PP1/R4RK1 b - - 8 18	f6d5 c2b3 b7b5 c4d5	18
+London System	w	UhpJK	2144	advantage master middlegame short	r1b1k2r/4bpp1/p1n1p2p/3pP3/1PpP3P/q7/P2B1PPN/1R1QRBK1 b kq - 0 18	c6d4 d2c1 a3a2 b1b2	18
+London System	w	Iagbt	2178	advantage fork long middlegame	3r2k1/p3pp1p/5bp1/q1r5/8/1Q4N1/PP3PPP/2R2RK1 b - - 1 19	d8d2 c1c5 a5c5 g3e4 c5d5 e4d2	19
+London System	w	cHGgb	2197	advantage kingsideAttack middlegame short	r1b2rk1/pp5p/1q2p1p1/3pb3/3P4/1N6/PP2B1PP/R3QR1K b - - 1 17	e5d4 f1f8 g8f8 e1h4	17
+London System	w	aeFUU	2237	advantage fork long middlegame sacrifice	r1b1r1k1/ppp2p1p/6p1/8/3qn2B/3B3P/PPP3P1/R2Q1R1K b - - 1 18	e4c5 d3g6 d4d1 g6f7 g8g7 a1d1	18
+London System	w	Ev0yN	2254	advantage attraction intermezzo kingsideAttack middlegame short	2rqr1k1/pb1nppb1/1p1p2pp/2p3Bn/2BP4/2P1PN2/PPQN1PP1/1K1R3R b - - 1 14	h6g5 c4f7 g8f7 f3g5	14
+Sicilian Defense	b	fIswW	1135	crushing long middlegame pin queensideAttack	2kr3r/1bq1b2p/p2p1ppP/1pn1p1P1/4P3/P1N1BP2/1PPQB3/2KR3R w - - 0 19	c3d5 c5b3 c1b1 b3d2 d1d2 b7d5	19
+Sicilian Defense	b	SaDHc	1166	advantage fork middlegame short	r3kb2/pb2p2p/1pnqB1p1/2p1n1N1/8/2NP4/PPP3PP/R1BQ2K1 w q - 0 15	c1f4 d6d4 g1h1 d4f4	15
+Sicilian Defense	b	KzBb1	1174	crushing kingsideAttack middlegame pin short	rnb2r1k/1p2Npbp/p2p2p1/8/4PP2/2NBQ3/PqP3PP/R4RK1 w - - 1 14	c3d5 g7d4 a1b1 d4e3	14
+Sicilian Defense	b	uLolY	1193	crushing discoveredAttack middlegame short	1r2k2r/3nppbp/p2p1np1/2p5/2P1P3/1qQPBN2/1PN2PPP/2R1K2R w Kk - 2 16	e1d2 f6e4 d3e4 g7c3	16
+Sicilian Defense	b	63YGy	1194	advantage fork middlegame short	r3k2r/pp2qp1p/2n1bnp1/6N1/2p2P2/1BP5/P1P2KPP/R1BQR3 w kq - 0 14	b3c4 e7c5 f2f1 c5c4	14
+Sicilian Defense	b	natmy	1197	discoveredAttack kingsideAttack mate mateIn2 middlegame sacrifice short	r3k2r/1p2bppp/p2q4/3pn1B1/3Q2n1/P1NB4/1PP2PPP/R4RK1 w kq - 6 16	g5e7 e5f3 g2f3 d6h2	16
+Sicilian Defense	b	yI8kP	1239	crushing discoveredAttack middlegame short	r1b1k2r/pp1p1pbp/1q2p1p1/4Pn2/3n1P2/2NB4/PPPBNQPP/R3K2R w KQkq - 9 13	e1c1 d4b3 a2b3 b6f2	13
+Sicilian Defense	b	UXKhr	1249	crushing hangingPiece intermezzo middlegame short	r5k1/5ppp/2n1p3/1pbq4/3N4/2P1BP2/1P4PP/3Q1RK1 w - - 0 18	d4c6 c5e3 g1h1 d5c6	18
+Sicilian Defense	b	iubmj	1255	advantage fork middlegame short	2rqk2r/p2nbppp/3p4/8/4Q3/8/PP3PPP/RNB1K2R w KQk - 3 15	c1g5 d8a5 b1c3 a5g5	15
+Sicilian Defense	b	d6rFL	1264	advantage discoveredAttack interference middlegame short	r1b2rk1/pp4pp/2n5/3q1p2/4N3/2B1Q3/PPP2PPP/R4RK1 w - - 0 15	e4g5 f5f4 e3e2 d5g5	15
+Sicilian Defense	b	tfNUB	1271	advantage fork long middlegame	r1bq1rk1/1p1p1pbp/4p1p1/4B3/4P3/1p2QN2/PPP2PPP/2KR3R w - - 0 15	e3b3 g7e5 f3e5 d8g5 c1b1 g5e5	15
+Sicilian Defense	b	OKQhx	1277	advantage fork middlegame short	r2rb1k1/2q1bpp1/2nppn1p/pp6/4PP2/P1PB1NNP/1PQ3P1/R1B1R1K1 w - - 0 17	d3b5 c7b6 c1e3 b6b5	17
+Sicilian Defense	b	JSP2L	1334	advantage fork middlegame short	r4rk1/pp3pb1/1q1pp1p1/8/3nPP1P/2NB2Q1/PPP2P2/R2K3R w - - 2 19	h4h5 b6b2 a1b1 b2c3	19
+Sicilian Defense	b	tT2Ph	1334	crushing discoveredAttack middlegame short	Q4b1r/1p1qkp1p/2n1bp2/1p1p4/3N4/2N5/PPP2PPP/2KR3R w - - 1 14	c3b5 f8h6 c1b1 h8a8	14
+Sicilian Defense	b	vfSXB	1343	crushing master middlegame pin short	2r2rk1/1p1n1pb1/p2p2p1/4p2P/7q/1N1BQP1P/PPP5/2KR3R w - - 1 18	h5g6 g7h6 e3h6 h4h6	18
+Sicilian Defense	b	rhe05	1367	clearance deflection kingsideAttack mate mateIn4 middlegame sacrifice veryLong	2krr3/ppq2ppp/2nb4/2p5/4n3/NQP2B1P/PP3PP1/R1B2RK1 w - - 0 15	a3c4 d6h2 g1h1 e4f2 f1f2 e8e1 f2f1 e1f1	15
+Sicilian Defense	b	Hgdxi	1379	advantage fork long middlegame	r1bq1rk1/4bpp1/p1n4p/1p2p3/4P1n1/PNNBB3/1PP3PP/R3QRK1 w - - 1 14	e3c5 e7c5 b3c5 d8d4 g1h1 d4c5	14
+Sicilian Defense	b	ibQWD	1385	advantage fork master middlegame short	r1bq1rk1/1p1pbppp/p1n5/3BP1B1/7P/5N2/PP3PP1/R2QK2R w KQ - 3 12	d1e2 d8a5 e1f1 a5d5	12
+Sicilian Defense	b	Z94G0	1388	advantage fork middlegame short	5rk1/4bppp/p2p1n2/qp2p1PP/1n2P3/1PQ1BP2/1PP5/2KR1B1R w - - 3 19	g5f6 b4a2 c1b1 a2c3	19
+Sicilian Defense	b	Qsjn4	1418	advantage fork middlegame short	r2qr1k1/3n2pp/p2p1b2/1p1P1N2/5P2/5Q2/PPP3PP/R1B2RK1 w - - 3 18	f5d6 d8b6 g1h1 b6d6	18
+Sicilian Defense	b	it04U	1421	advantage fork master masterVsMaster middlegame short	r1bq1rk1/4bppp/pp3n2/2n1p3/P3P3/2NB1N2/1PP3PP/R1B1QRK1 w - - 2 13	f3e5 d8d4 g1h1 d4e5	13
+Sicilian Defense	b	pB4an	1458	advantage deflection long middlegame	r3r2k/2q1b1pp/p1ppQn2/8/5B2/1B6/PP3PPP/2RR2K1 w - - 1 19	f4d6 e7d6 e6d6 e8e1 d1e1 c7d6	19
+Sicilian Defense	b	6xuFD	1463	advantage clearance long middlegame pin sacrifice	r3k2r/pp2ppbp/6p1/8/1q1nnP2/3BQ2P/PPP3P1/R1B2RK1 w kq - 0 16	d3e4 d4c2 e4c2 g7d4 g1h1 d4e3	16
+Sicilian Defense	b	GI3CL	1482	advantage middlegame short	Q1bk1b1r/2qn2pp/B2p1p2/4p3/pp6/4B1P1/PPP3PP/R4RK1 w - - 3 19	a1d1 d7b6 a8e4 c8a6	19
+Sicilian Defense	b	3hyCe	1500	crushing deflection middlegame short	r1b1k2r/1p3ppp/8/2QNp3/4P3/2KB2P1/PP2nq1P/R1B4R w kq - 1 19	c3b4 a8a4 b4a4 f2c5	19
+Sicilian Defense	b	g8RHX	1503	advantage fork middlegame short	r1bq1rk1/3p1ppp/p7/4p3/Pb2P3/1P1Q1N2/1P2BPPP/2KR3R w - - 0 16	f3e5 d8g5 c1b1 g5e5	16
+Sicilian Defense	b	DRked	1507	advantage middlegame short	r2q1rk1/5ppp/p2p1n2/1p2p1B1/4b3/1B3Q2/PPP2PPP/3R1RK1 w - - 0 16	g5f6 e4f3 f6d8 f3d1	16
+Sicilian Defense	b	QDaJF	1549	crushing middlegame short trappedPiece	r3k3/pb1p1pqp/1p1Qp3/2n1N3/4n3/6P1/P3BP1P/3R1RK1 w q - 3 19	d6c7 a8c8 c7b7 c5b7	19
+Sicilian Defense	b	xGXjP	1569	advantage intermezzo middlegame short	r1bq1rk1/1p2bppp/p3p3/6B1/1n2p3/5N2/PPPQBPPP/R2R2K1 w - - 0 14	d2b4 d8d1 a1d1 e7b4	14
+Sicilian Defense	b	H3xIr	1569	advantage master middlegame pin queensideAttack short	r3k2r/2q1bppp/p2pp3/1pn3PP/3Bb3/P1N4B/1PPQ1P2/2KR3R w kq - 0 16	c3e4 c5b3 c1b1 b3d2	16
+Sicilian Defense	b	zdZ6s	1589	crushing middlegame short	3r1rk1/4bpp1/p4n1p/1p2p3/3nP2B/2N2B2/PPP3PP/2KR3R w - - 1 18	c3d5 f6d5 h4e7 d5e7	18
+Sicilian Defense	b	buePA	1594	advantage middlegame pin short	r2b1rk1/1p3ppp/p1np4/q2NpQ2/4P3/1BP5/PP3PPP/R3K2R w KQ - 1 16	h2h4 c6d4 f5d7 d4b3	16
+Sicilian Defense	b	8xak9	1625	discoveredAttack kingsideAttack mate mateIn2 middlegame short	r4rk1/1b2bpp1/p1qpp2p/1p3P2/4n2B/PBN5/1PP3PP/R2Q1R1K w - - 0 16	h4e7 e4g3 h1g1 c6g2	16
+Sicilian Defense	b	8NZPN	1659	advantage attraction capturingDefender deflection exposedKing fork long master middlegame sacrifice	r2q1rk1/pp3pbp/2np2p1/2p1p1N1/2B1Pn2/1PNP3P/PBP5/R2Q1RK1 w - - 0 13	d1g4 d8g5 g4g5 f4h3 g1h1 h3g5	13
+Sicilian Defense	b	ml7Kb	1678	crushing fork long middlegame	r4rk1/1bq2pbp/p2p2p1/4p3/PN2nP2/1B6/1PP1Q1PP/R1B2RK1 w - - 0 18	b4d5 b7d5 b3d5 c7c5 c1e3 c5d5	18
+Sicilian Defense	b	JRsk0	1685	advantage clearance middlegame pin sacrifice short	4r1kb/p2bpp1p/2pp1npB/8/4PP2/2qBQ2P/PRP3P1/5RK1 w - - 0 17	b2b1 f6g4 h3g4 h8d4	17
+Sicilian Defense	b	wddD8	1694	crushing middlegame short	r3k2r/1b2bppp/p2p4/q4NP1/2p1PP2/4B3/PPP3Q1/R3K2R w KQkq - 1 19	e3d2 a5f5 e4f5 b7g2	19
+Sicilian Defense	b	rXrzL	1727	crushing fork long middlegame	r4rk1/pp2ppbp/3p2p1/q2Pn3/6bP/4BNP1/PPP1QPB1/R3R1K1 w - - 5 18	e2d2 e5f3 g2f3 a5d2 e3d2 g4f3	18
+Sicilian Defense	b	ZHDzm	1741	attraction crushing exposedKing fork long middlegame sacrifice	r1b2k1r/1p2qp1p/p2p4/4pPRQ/2BnP3/2N5/PPP4P/R3K3 w Q - 3 19	c3d5 e7g5 h5g5 d4f3 e1e2 f3g5	19
+Sicilian Defense	b	uw2Jo	1771	crushing middlegame short trappedPiece	r2qkb1r/1b2p1p1/p2p1p2/1p2n1Bp/3NP1n1/P1NB2QP/1PP2PP1/R4RK1 w kq - 0 13	g5f4 h5h4 f4e5 h4g3	13
+Sicilian Defense	b	79p86	1772	crushing middlegame short	r4rk1/5ppp/p1bqp3/3n4/Np6/1B3P2/PPP1Q1PP/2KR3R w - - 0 17	a4b6 d6f4 c1b1 d5b6	17
+Sicilian Defense	b	vbgfW	1792	crushing middlegame short	r4rk1/1bq2pbp/p2ppnp1/Pp4B1/1P1NP3/2NP4/3Q1PPP/R3R1K1 w - - 1 16	g5h6 g7h6 d2h6 c7c3	16
+Sicilian Defense	b	8h6X2	1811	advantage discoveredAttack long middlegame	1k1r3r/1pqbbpp1/p1nppn2/6B1/3NP2P/2N2P1B/PPPQ4/2KR3R w - - 3 15	h1g1 c6d4 d2d4 e6e5 d4d3 d7h3	15
+Sicilian Defense	b	SMbIG	1818	advantage exposedKing fork long middlegame	r3k2r/1b2bp1p/pq3p2/3ppP1Q/2B5/2N5/PPP3PP/1R2K2R w Kkq - 0 16	c3d5 b7d5 c4d5 b6a5 c2c3 a5d5	16
+Sicilian Defense	b	Neegx	1826	advantage middlegame short	3q1rk1/1p3ppp/p1r2b2/8/1P6/P1NP4/5PPP/2RQR1K1 w - - 0 19	d1d2 f6g5 f2f4 d8d4	19
+Sicilian Defense	b	HPGzp	1925	advantage deflection middlegame short	r4rk1/1b2b1pp/p2p2q1/1p1Pp3/5p2/1BP5/PP2QPPP/2BR1RK1 w - - 1 19	b3c2 f4f3 e2f3 g6c2	19
+Sicilian Defense	b	HRlmD	1954	advantage middlegame short	2kr3r/pp2qp1p/3pb1p1/8/1b2PB2/3Q4/2P3PP/2KR1BNR w - - 2 17	g1f3 e7f6 c1b1 f6f4	17
+Sicilian Defense	b	7O6rp	1970	discoveredAttack long mate mateIn3 middlegame pin	2r1k2r/2q2pbp/p2Qp3/1pn3P1/4b3/P1N1B3/1PP1B2P/2KR3R w k - 0 19	c3e4 c5b3 c1b1 c7c2 b1a2 c2b2	19
+Sicilian Defense	b	EbsMv	1991	advantage fork long middlegame sacrifice	2r2r1k/pp2bppp/3p4/3Pp3/1q1nP3/1P1BB1Q1/P4PPP/2R2RK1 w - - 3 17	d3c4 c8c4 c1c4 d4e2 g1h1 e2g3	17
+French Defense	b	7a0I0	1133	advantage master middlegame short	3rr1k1/ppp2pBp/4q1n1/3p1nQN/3P4/P1PP4/5PPP/R4RK1 w - - 3 18	h5f6 g8g7 f6e8 d8e8	18
+French Defense	b	Du0hr	1135	advantage fork middlegame short	r3k2r/1pqn1ppp/p3p3/3pP3/3N1n2/B1P3Q1/P1P3PP/R3K2R w KQkq - 0 14	g3f4 c7c3 e1f2 c3a3	14
+French Defense	b	RD6Cd	1157	kingsideAttack mate mateIn2 middlegame short	1b2r1k1/ppqn1ppp/2p2n2/3p2B1/3P4/PPN2B1P/2PQ1PP1/R5K1 w - - 0 19	a1e1 c7h2 g1f1 h2h1	19
+French Defense	b	6g6dh	1166	advantage discoveredAttack kingsideAttack middlegame short	2kr1r2/pp5p/1qb1p1p1/3PP3/3n4/1P3B2/5PPP/RN1Q1RK1 w - - 1 19	d5c6 d4f3 g2f3 d8d1	19
+French Defense	b	iKjfr	1166	kingsideAttack mate mateIn2 middlegame short	r3r1k1/ppqn1ppp/3b4/3p1N2/2pPn3/P4Q1P/1PPBNPP1/R3R1K1 w - - 1 18	f3g4 d6h2 g1f1 e4d2	18
+French Defense	b	MZ2KT	1174	crushing deflection middlegame short	3r1rk1/pp3ppp/4b3/2q1Pp2/5P2/1PP2Q2/P5PP/RN2K2R w KQ - 0 16	f3f2 d8d1 e1d1 c5f2	16
+French Defense	b	AIFbI	1175	advantage middlegame short	r6r/pp3Rpp/2k1p3/2bpP3/Pq4P1/1nN1B3/1P5P/2RQ2K1 w - - 6 19	e3c5 b4c5 g1h1 b3c1	19
+French Defense	b	9stgy	1228	advantage middlegame short skewer	2kr2nQ/pp3p1p/4p3/1qB1P3/1P1p4/8/P1P2PbP/R3K1NR w KQ - 0 15	h8h7 b5f1 e1d2 f1a1	15
+French Defense	b	18VJV	1258	advantage fork middlegame short	r1b1k2r/1p2bpp1/p1n1p2p/2P1P3/1P1p1BPn/P4N2/2PN1P1P/R3KB1R w KQkq - 1 14	f1d3 h4g2 e1f1 g2f4	14
+French Defense	b	6QP8p	1263	advantage hangingPiece middlegame short	r4rk1/1pqb1ppp/p2bp3/3pn3/3N1B2/N1PB4/5PPP/R2Q1RK1 w - - 2 18	d1h5 e5d3 f4d6 c7d6	18
+French Defense	b	MRCKP	1290	advantage long middlegame	r4rk1/pnq2ppp/1p2p3/1B1n4/Q7/8/PPPB1PPP/R2R2K1 w - - 12 19	b5c6 b7c5 a4b5 a7a6 b5e2 c7c6	19
+French Defense	b	Mac8V	1305	clearance deflection exposedKing long mate mateIn3 middlegame sacrifice	rnb1k3/ppp2p1Q/4pq2/3p4/3Pn3/P1P5/2P2rPP/R1B1KBNR w KQq - 1 14	f1d3 f2f1 d3f1 f6f2 e1d1 f2f1	14
+French Defense	b	nRZBF	1319	crushing fork middlegame short	rn2r1k1/p1p2ppp/1p6/3Pp2q/2P1R3/B4P2/P1P2P1P/R2Q2K1 w - - 0 17	f3f4 h5g6 g1f1 g6e4	17
+French Defense	b	YBBlS	1322	crushing middlegame pin short	r3k2r/1p3ppp/p1b1p1n1/q1bpP1B1/8/P1N2N2/1PP1QPPP/R3K2R w KQkq - 0 12	b2b4 c5b4 a3b4 a5a1	12
+French Defense	b	z25o1	1386	advantage middlegame short	r1b2k2/ppp2p1p/4p1p1/4q3/1b2p1Q1/2N5/PPP2PPP/R4RK1 w - - 0 14	g4e4 b4c3 e4e5 c3e5	14
+French Defense	b	sDVW2	1405	advantage discoveredCheck doubleCheck long middlegame	2r2rk1/1p3ppp/pqn1p3/3pP3/Q2P1P2/PP6/3NN1PP/2R2RK1 w - - 1 19	b3b4 c6d4 c1c8 d4e2 g1h1 f8c8	19
+French Defense	b	rWvjG	1406	advantage middlegame short	7r/pbpknpp1/1p2pn2/3q4/3P4/P1PBB2Q/2P3PP/R4RK1 w - - 7 17	c3c4 h8h3 c4d5 h3e3	17
+French Defense	b	GIJYj	1427	advantage long master middlegame skewer	r3k2r/pp1b1ppp/1q2p3/3pP3/1n1P4/3B1N2/PP3PPP/R2QK2R w KQkq - 0 13	e1g1 b4d3 d1d3 d7b5 d3c2 b5f1	13
+French Defense	b	qkmEm	1433	advantage master middlegame short	4k2r/1p2bp1p/1q2p2p/pb1pPB2/Q2P4/P1r2N2/3N1PPP/R4RK1 w k - 0 17	f1b1 c3c1 b1c1 b5a4	17
+French Defense	b	5Tb9k	1479	advantage interference middlegame short	2k4r/p1pnqp2/bp2pnrp/8/2PPp2Q/P3B1P1/2P1NPBP/R4RK1 w - - 1 19	g2e4 g6g4 h4h3 g4e4	19
+French Defense	b	DCL0T	1490	crushing hangingPiece long middlegame	r4k1r/p3q1bp/2p1PpnB/3pp2Q/8/2N5/PPP3PP/R4RK1 w - - 3 17	f1f6 e7f6 a1f1 g6f4 h6f4 e5f4	17
+French Defense	b	4E7q3	1524	advantage discoveredAttack kingsideAttack middlegame short	r3k2r/pp1qn1pp/2nb1p2/1B1p4/6bB/1N3N2/PPP2PPP/R2QR1K1 w kq - 4 13	d1d5 d6h2 f3h2 d7d5	13
+French Defense	b	0izGP	1527	discoveredAttack discoveredCheck mate mateIn4 middlegame queensideAttack sacrifice veryLong	4k2r/1p1b1pR1/pq2p2p/3pP3/1n1P3Q/2r1B3/PP3P1P/1K1R1B2 w k - 0 19	b2c3 b4d3 b1c2 b6b2 c2d3 d7b5 c3c4 b5c4	19
+French Defense	b	hSvFY	1531	advantage deflection fork long middlegame	2r1k2r/pp1bnppp/4p3/3pP3/1q1P1P2/8/4BKPP/RNBQ3R w k - 2 15	h1f1 c8c1 d1c1 b4d4 c1e3 d4a1	15
+French Defense	b	J6Bu4	1548	advantage fork middlegame short	r1b1k2r/pp3ppp/2n1p2n/2BpP3/8/2P2N2/Pq3PPP/RN1QKB1R w KQkq - 0 9	b1a3 b2c3 f3d2 c3c5	9
+French Defense	b	xqaOn	1578	attraction crushing fork long middlegame sacrifice	r2q1rk1/1p1b1p2/p5p1/3pnpNP/7Q/1N6/PP3P1P/R4RK1 w - - 0 19	h5g6 d8g5 h4g5 e5f3 g1g2 f3g5	19
+French Defense	b	lYpID	1605	advantage fork middlegame short	r2qr1k1/pp2bppp/2n2n2/3p1B2/3N1B2/P4P2/1PPQ2PP/4RRK1 w - - 1 18	d4b5 d8b6 g1h1 b6b5	18
+French Defense	b	5ti6u	1623	advantage middlegame short	r4k2/p4ppp/b1p1p3/q2pPn2/3P4/1R3N2/P4PPP/3QR1K1 w - - 4 19	d1c2 f5d4 c2b1 d4b3	19
+French Defense	b	F7dxP	1660	crushing middlegame skewer veryLong	rn2k3/pp2np1Q/4pq2/3p4/b2P3P/P2B4/2PBNPr1/R3K2R w KQq - 1 15	e2f4 f6d4 f4g2 d4a1 e1e2 a1h1 h7h8 e8d7	15
+French Defense	b	UP5gq	1685	crushing hangingPiece middlegame short	3k1b1r/ppNb1ppp/2n2n2/6B1/2Q5/8/PPP1BPqP/2KR3R w - - 0 17	c4f7 g2g5 c1b1 d8c7	17
+French Defense	b	Curwu	1692	attraction crushing exposedKing fork long middlegame sacrifice	r1b2rk1/p4ppp/2p1p3/q2pP3/1b1n1P2/P1N5/2PB2PP/R2QK1NR w KQ - 0 15	a3b4 a5a1 d1a1 d4c2 e1f2 c2a1	15
+French Defense	b	51JRi	1693	crushing middlegame short	2rq1rk1/1p2b1pp/p3p3/2npPn2/P4P2/2N2N1P/1P4PK/R1BQ1R2 w - - 3 16	f3d4 f5d4 d1d4 c5b3	16
+French Defense	b	sQG5q	1723	crushing kingsideAttack long middlegame skewer	2r3k1/pp1b1ppp/3Bp3/q2pP3/3n4/7P/3NBPP1/3Q1RK1 w - - 0 19	d2f3 d4e2 d1e2 d7b5 e2b2 b5f1	19
+French Defense	b	fnCic	1780	advantage middlegame short	r5nr/pp1kbQpp/1q2p3/3pP3/8/1PN5/P2B1PPP/R3K2R w KQ - 1 14	d2g5 a8f8 f7f8 e7f8	14
+French Defense	b	lzAmY	1794	advantage middlegame short	1r2kbr1/R2b1Npp/4p3/3pPn2/3B4/1P6/5PPP/1N3RK1 w - - 1 17	f7d6 f8d6 e5d6 f5d4	17
+French Defense	b	YN2tw	1805	intermezzo kingsideAttack long mate mateIn3 middlegame	r2q3r/3k1pp1/p3p3/2bpPn1R/2p2P2/2P5/PP1NQ1PP/R1B4K w - - 1 19	h5h8 f5g3 h2g3 d8h8 e2h5 h8h5	19
+French Defense	b	9odur	1841	crushing long middlegame	r3r1k1/ppq2ppp/1b6/3Q2B1/2n5/1NP4P/PP3PP1/R4RK1 w - - 1 18	a1b1 e8e5 g5f4 e5d5 f4c7 b6c7	18
+French Defense	b	jaZe0	1849	crushing middlegame pin short	r2q1rk1/ppp5/1bb1p2p/5pp1/3P4/P5B1/1PP1NPPP/R2Q1RK1 w - - 0 16	g3e5 d8d5 f2f3 d5e5	16
+French Defense	b	nm3oL	1868	advantage interference middlegame short	2kr3r/pp1b1ppp/1q6/2bQPpN1/8/8/PP3PPP/R1B2RK1 w - - 3 15	g5f7 d7e6 d5f3 e6f7	15
+French Defense	b	QifMs	1893	advantage discoveredAttack exposedKing kingsideAttack long middlegame pin	r1b1k2r/1p2bppp/pq2p3/4P3/1P1n1PP1/P1NBpN1P/4Q3/R4RK1 w kq - 1 16	e2e3 d4e2 g1f2 b6e3 f2e3 e2c3	16
+French Defense	b	pGfAO	1921	advantage fork long middlegame sacrifice	2kr3r/1b2b1pp/p1p4n/3pP3/2qN4/2N1B3/PPP3PP/R2QR1K1 w - - 5 17	d4e6 d5d4 e6d8 h8d8 e3f2 d4c3	17
+French Defense	b	vUWqh	1949	capturingDefender crushing deflection middlegame short	1qr1k2r/1p1b1pbp/1P2p2p/p2pPn2/N2P4/PQ3N2/4BPPP/R3K2R w KQk - 3 17	e2b5 f5d4 f3d4 b8e5	17
+French Defense	b	IDtPE	1960	advantage master middlegame short	r4rk1/pppqnppp/2n5/3p1b1N/3P4/P1PB4/2P2PPP/R1BQ1RK1 w - - 5 12	c1h6 f5g4 h5f6 g7f6	12
+French Defense	b	MCM93	1980	advantage long middlegame	2r1k2r/pp1n1ppp/1q2p3/3pP3/1b1n4/2N5/PP1BNPPP/2RQ1RK1 w k - 0 13	c3d5 c8c1 d2c1 d4e2 d1e2 e6d5	13
+French Defense	b	3lvDH	1987	backRankMate deflection mate mateIn5 middlegame sacrifice veryLong	4k2r/Q2b1ppp/4p3/3p4/8/4B3/Prq1BPPP/R4K1R w k - 4 19	a1e1 c2e2 e1e2 b2b1 e3c1 b1c1 e2e1 d7b5 f1g1 c1e1	19
+French Defense	b	ueTDn	1993	advantage middlegame sacrifice short	r1n2rk1/1p2bppp/1q6/pP1pPp2/Q2P4/P4N2/3B1PPP/RR4K1 w - - 3 19	d2b4 a5b4 a4a8 c8a7	19
+French Defense	b	T4FDX	2009	crushing middlegame short xRayAttack	B3k2r/p2b1pp1/3bpn2/3p4/7p/4B1Pq/P2N1P1P/R2QR1K1 w k - 0 18	e3f4 h4g3 f4g3 d6g3	18
+French Defense	b	F5k3B	2020	advantage exposedKing fork middlegame veryLong	1k3r1r/p1q1n2P/bpn1Q3/3pP3/5P2/P1p5/2P1N1P1/R1B1KB1R w KQ - 1 18	g2g4 a6e2 f1e2 c6d4 e6d6 d4c2 e1f2 c2a1	18
+French Defense	b	wfRqK	2032	crushing kingsideAttack long middlegame	2r1kbnr/pp3ppp/q3p3/P2pP3/3p4/2P5/1P2RPPP/RNBQ2K1 w k - 0 13	c3d4 a6e2 d1e2 c8c1 e2f1 c1f1	13
+French Defense	b	wjeXq	2123	crushing fork long middlegame	r5k1/1p1n2pp/2nqNr1B/p2p4/Pbp5/2N5/1PP2PPP/2RQR1K1 w - - 3 19	c3b5 f6e6 b5d6 e6e1 d1e1 b4e1	19
+French Defense	b	Y86Y0	2201	crushing kingsideAttack middlegame short	r4r2/p2kn1bp/bq2p1p1/3pP1N1/8/2N5/PP3PPP/R1BQ1RK1 w - - 3 16	f1e1 b6f2 g1h1 a6f1	16
+French Defense	b	met8E	2242	clearance crushing kingsideAttack master masterVsMaster middlegame veryLong	r5k1/ppqb2pp/2nbp3/3p2B1/3P2n1/5r2/PP2BPPP/2RQRNK1 w - - 0 17	e2f3 d6h2 f1h2 c7h2 g1f1 c6d4 d1d4 d7b5 c1c4 b5c4	17
+French Defense	b	ntsbT	2270	crushing exposedKing long middlegame	r1b1k2r/pp3ppp/2n1p3/1Q1pP3/5P2/1R3N2/q2BK1PP/5B1R w kq - 2 18	f3d4 a7a6 b5b6 c6d4 b6d4 a2b3	18
+Caro-Kann Defense	b	D2bsD	1114	crushing middlegame pin short	r3k2r/pp3ppb/2p1pq1p/4N3/1bBPn1P1/4B2P/PPP1QP2/R4K1R w kq - 1 17	c2c3 e4g3 f1g2 g3e2	17
+Caro-Kann Defense	b	FAEYN	1137	hangingPiece mate mateIn2 middlegame short	r2qk2r/1p3pp1/p1n1p1p1/3p4/3P3N/PP6/2P1NPPb/R1BQR1K1 w kq - 0 16	g1h2 d8h4 h2g1 h4h1	16
+Caro-Kann Defense	b	NuljV	1145	advantage discoveredAttack kingsideAttack middlegame short	r2q1rk1/p4ppp/2pb4/8/2Q1p3/8/PPP2PPP/R1BR2K1 w - - 0 15	c4c6 d6h2 g1h2 d8d1	15
+Caro-Kann Defense	b	CfHCW	1161	advantage middlegame short	r4rk1/pp3pp1/3bp1qp/5nB1/3PR1QP/2PB4/PP3PP1/R5K1 w - - 0 18	h4h5 g6g5 g4g5 h6g5	18
+Caro-Kann Defense	b	sNppS	1174	advantage long middlegame	1r3rk1/ppb2ppp/2nq1n2/3pp1B1/3P4/1QPB1N1P/PP3PP1/2R2RK1 w - - 0 15	d4e5 c6e5 f3e5 d6e5 f2f4 e5e3	15
+Caro-Kann Defense	b	RbrzP	1177	advantage middlegame short	r3nrk1/pp1bqppp/4p3/1B1pP3/8/P1N5/1PP2PPP/R2Q1RK1 w - - 0 13	f2f4 e7c5 g1h1 d7b5	13
+Caro-Kann Defense	b	UMPzJ	1184	crushing long middlegame queensideAttack	r3kb1r/pp3pp1/2p2n2/8/3P1P2/3QB2p/qPP2P1P/2KR1B1R w kq - 0 16	f1e2 a2a1 c1d2 f8b4 c2c3 a1b2	16
+Caro-Kann Defense	b	HCBPu	1223	advantage fork long middlegame	3qkb1r/r2n1ppp/4pnb1/1B1pN1P1/3P4/7P/PPP2P2/R1BQK2R w KQk - 1 14	g5f6 d8a5 c2c3 a5b5 f6g7 f8g7	14
+Caro-Kann Defense	b	eCMpp	1276	advantage middlegame short	2kr3r/p1bnnpp1/1pp3p1/q3p3/3P1B2/2N2N1P/PPPQ1PP1/1K1R3R w - - 0 17	f4e5 d7e5 f3e5 c7e5	17
+Caro-Kann Defense	b	dAb8p	1287	kingsideAttack mate mateIn2 middlegame short	r2q1rk1/pB3pbp/4p1p1/2Pp4/3P1n2/2N2P2/PP3P1P/R2Q1RK1 w - - 0 14	b7a8 d8g5 g1h1 g5g2	14
+Caro-Kann Defense	b	JEHfZ	1326	mate mateIn2 middlegame short	r3k2r/ppq1bpp1/4p1p1/3p4/3P2n1/1BP1Q2P/PP4K1/R1B2R2 w kq - 0 18	h3g4 c7h2 g2f3 h8h3	18
+Caro-Kann Defense	b	a4V2U	1330	advantage fork middlegame short	2rqk2r/pp2b1pp/2n1p2n/1B2P3/Q3p2N/P5P1/1P3P1P/R1B1K2R w KQk - 1 15	a4e4 d8a5 e1f1 a5b5	15
+Caro-Kann Defense	b	uKrWs	1344	advantage discoveredAttack middlegame short	r4b1r/pQ3ppp/4pk2/1B6/3q2P1/P6P/1P3P2/R3K2R w KQ - 1 18	b7a8 f8b4 e1f1 h8a8	18
+Caro-Kann Defense	b	aikC4	1344	advantage fork middlegame short	r3kb1r/1p1npppp/pq6/3p2B1/3P4/2N5/PPP1QPPP/R3K2R w KQkq - 0 11	c3d5 b6a5 d5c3 a5g5	11
+Caro-Kann Defense	b	TBdzk	1360	advantage long middlegame	3q1bnr/p1r2p2/4pkpp/2Pp4/1Q1P3P/5P2/PP3P2/RNB1K2R w KQ - 0 15	c1g5 h6g5 h4g5 f6g7 h1h8 g7h8	15
+Caro-Kann Defense	b	4BnJT	1427	crushing middlegame short	r3k1nr/1p3ppp/pqn1p3/1B1pPb2/Q2P4/5N2/PP1N1PPP/R3K2R w KQkq - 0 11	a1c1 b6b5 a4b5 a6b5	11
+Caro-Kann Defense	b	S0z6w	1431	crushing long middlegame	r1bqr1k1/pp3ppp/8/8/4p3/2P1PQ1P/PPB3P1/R3K2R w KQ - 0 15	c2e4 d8h4 g2g3 h4e4 f3e4 e8e4	15
+Caro-Kann Defense	b	rHSg8	1433	capturingDefender crushing long middlegame	1br1r1k1/pp2qppp/2p2n2/5p1b/1PPP1B2/P4NPP/4BP2/R2Q1RK1 w - - 3 18	f4b8 e7e2 d1e2 e8e2 b8f4 h5f3	18
+Caro-Kann Defense	b	YImOY	1463	crushing discoveredAttack master middlegame short	2r2rk1/pp3pbp/1n2bnp1/1Bq3B1/8/2N2N2/PPQ2PPP/3RR1K1 w - - 6 18	g5e3 c5b5 c3b5 c8c2	18
+Caro-Kann Defense	b	kzguO	1465	crushing deflection middlegame short	r1b3k1/pp2r1pp/2n5/1N6/q2p4/6B1/P2Q1PPP/R2K1BNR w - - 6 17	d2c2 e7e1 d1e1 a4c2	17
+Caro-Kann Defense	b	LUieE	1493	long mate mateIn3 middlegame pin	r3r1k1/p1b2ppp/2B2pn1/8/2P5/4B2P/PP1Q1PPq/R2R1K2 w - - 1 19	c6a8 h2h1 f1e2 g6f4 e2f3 h1g2	19
+Caro-Kann Defense	b	QBVJC	1516	advantage middlegame short	r5nr/1p1kb2p/1p2p3/1N1pP1p1/8/P3B3/1PP3PP/R1R3K1 w - - 0 19	e3b6 d7c6 b6f2 c6b5	19
+Caro-Kann Defense	b	7r6Ue	1540	advantage discoveredAttack middlegame short	r1b1rnk1/pp2qp1p/4pQp1/3p4/3P4/3B3R/PPP2PPP/RN4K1 w - - 1 17	f6f4 e6e5 d4e5 c8h3	17
+Caro-Kann Defense	b	TvHJ8	1566	mate mateIn2 middlegame short	r3k2r/pp3ppp/2p1pn2/q7/n1PP3P/P2B1QN1/P4PP1/1K1R3R w kq - 1 16	g3e2 a5b6 b1a1 b6b2	16
+Caro-Kann Defense	b	9AVSM	1590	crushing middlegame queensideAttack short	2kr3r/pp3pbp/1qp1p1p1/4P3/1nP5/5BP1/PP1BQP1P/2KR3R w - - 1 18	a2a3 b4d3 e2d3 d8d3	18
+Caro-Kann Defense	b	G4bSl	1623	advantage middlegame short trappedPiece	r1b2rk1/4qpp1/p4n1p/3pp3/3P3B/8/PPP1NPPP/R2Q1RK1 w - - 0 15	e2g3 g7g5 h4g5 h6g5	15
+Caro-Kann Defense	b	B7lpQ	1629	advantage clearance long middlegame pin	r3k2r/pp1bbpp1/1qp1pn1p/3n4/3P4/P4PN1/1PPQNBPP/2KR1B1R w kq - 6 14	g3e4 f6e4 f3e4 e7g5 e4d5 g5d2	14
+Caro-Kann Defense	b	oSRdc	1649	advantage master middlegame short	rnbq3k/pp3ppB/2p5/8/3P4/2P1r3/PPQ4P/2KR2NR w - - 1 15	h7f5 d8g5 c2d2 c8f5	15
+Caro-Kann Defense	b	RTCA2	1657	advantage fork master middlegame short	2rq1r2/p2n1pkp/4p1p1/3p4/1n1P4/4QN1P/PP1N1PP1/R1R3K1 w - - 2 18	a2a3 b4c2 e3d3 c2a1	18
+Caro-Kann Defense	b	5VfoR	1693	crushing kingsideAttack middlegame short	r3r1k1/p4p1p/2p3p1/2Bpb3/5nq1/2P2NPb/PPB2P1P/R2Q1RK1 w - - 3 18	f3e5 f4e2 d1e2 g4e2	18
+Caro-Kann Defense	b	TEsBP	1694	kingsideAttack mate mateIn2 middlegame pin short	r3k1r1/pp3p1p/3Q1p2/4n2q/2B5/6Nb/PP3PP1/R1B2RK1 w q - 3 16	g3h5 e5f3 g1h1 h3g2	16
+Caro-Kann Defense	b	y03oU	1712	attraction crushing fork long middlegame	r4rk1/pp2p1bp/2p1R1p1/3n3q/3B4/2N3Q1/PPP3PP/5RK1 w - - 1 18	d4g7 f8f1 g1f1 h5f5 f1g1 f5e6	18
+Caro-Kann Defense	b	S2VRn	1717	advantage middlegame short	r3k2r/2q2ppp/p2bpn2/3pNb2/N2P4/8/PPP2PPP/R1BQ1RK1 w kq - 4 13	c1f4 f5c2 d1f3 c2a4	13
+Caro-Kann Defense	b	Js0Lz	1722	advantage fork middlegame short	r2r2k1/pp1bbppp/1q2p3/8/6N1/2PB1P2/PP2Q1PP/R3RK2 w - - 3 19	e2e4 f7f5 g4h6 g7h6	19
+Caro-Kann Defense	b	XYReh	1797	advantage long middlegame skewer	r3k2r/pp1n1pp1/2p1pn2/q5BN/3P1b1P/2P5/PP3PP1/R2QK2R w KQkq - 0 13	h5f4 a5g5 h4g5 h8h1 e1e2 h1d1	13
+Caro-Kann Defense	b	tMLa6	1801	crushing long middlegame	3r1rk1/p3bppp/2p2n2/q5B1/8/2N4P/PP1Q1PP1/R4RK1 w - - 8 18	d2f4 f6h5 f4h4 a5g5 h4g5 e7g5	18
+Caro-Kann Defense	b	Ap5ML	1819	advantage middlegame short	r1b2b1r/p1q1k1p1/2p2pB1/3pp3/3P2Q1/2P5/PP3PP1/RNB1R1K1 w - - 0 15	e1e5 c7e5 d4e5 c8g4	15
+Caro-Kann Defense	b	s0Tgy	1827	crushing middlegame short	r1b1r1k1/1p3p2/p2q1n1p/3p2p1/P1n5/2PBQ1PP/1P2N1P1/RN3RK1 w - - 6 18	f1f6 e8e3 f6d6 c4d6	18
+Caro-Kann Defense	b	3Vm1z	1827	attraction crushing discoveredAttack fork middlegame sacrifice veryLong	3r1rk1/pp3ppp/4b3/3n4/1q2N3/3Q3P/PP2NPP1/3R1RK1 w - - 2 18	e2d4 d5f4 d3e3 d8d4 d1d4 b4d4 e3d4 f4e2 g1h1 e2d4	18
+Caro-Kann Defense	b	n8DXY	1863	mate mateIn2 middlegame short	2k2b1r/pp2pppp/8/1B3n2/3rK3/2N2P2/PP3P1P/2R4R w - - 7 17	e4f5 g7g6 f5g5 f7f6	17
+Caro-Kann Defense	b	otxbx	1900	crushing deflection long middlegame pin queensideAttack sacrifice	2r2rk1/pp3p1p/4pb2/q2p1p2/1n1P2P1/2P2N1P/PP1N1P2/1QKR3R w - - 3 16	a2a3 c8c3 b2c3 a5a3 b1b2 b4d3	16
+Caro-Kann Defense	b	g0Iqv	1947	advantage long middlegame	2rq1rk1/1p2bppp/p3p1b1/3p2B1/P2Pn3/2P2N1P/1P1NQPP1/2R2RK1 w - - 3 18	d2e4 d5e4 g5e7 e4f3 e2f3 d8e7	18
+Caro-Kann Defense	b	Luwb6	1958	advantage master middlegame short	2bq1rk1/1r2ppbp/5np1/3pB3/1p1P4/2PB3P/1PQ2PP1/RN2R1K1 w - - 0 16	d3a6 b7a7 c3b4 a7a6	16
+Caro-Kann Defense	b	NgpOF	1968	advantage discoveredAttack middlegame short	r3r1k1/pb1q1p1p/1pn1pbpB/3n4/3PQ3/P1NB1N2/1P3PPP/3RR1K1 w - - 6 16	f3e5 c6e5 d4e5 d5c3	16
+Caro-Kann Defense	b	KVPrF	1968	advantage kingsideAttack middlegame short	r4rk1/1p1bqpb1/p1n2n1p/3pNP2/6p1/2PB2B1/PP2Q1PP/RN3RK1 w - - 1 18	e5g4 f6g4 e2g4 e7e3	18
+Caro-Kann Defense	b	HDb2A	1991	crushing exposedKing fork long middlegame	r3r1k1/ppB2ppp/8/3p4/6b1/2P2Nn1/PP2Bq1P/R2QR2K w - - 0 19	h2g3 e8e2 d1e2 g4f3 e2f3 f2f3	19
+Caro-Kann Defense	b	JLYlT	2013	clearance crushing kingsideAttack long middlegame pin	r4rk1/2q2ppp/p1p5/2bpn2b/2P3P1/1P3N1P/PB1N1P2/R1Q2RK1 w - - 0 16	g4h5 e5f3 d2f3 c7g3 g1h1 g3f3	16
+Caro-Kann Defense	b	4vI9G	2046	clearance long mate mateIn3 middlegame queensideAttack sacrifice	2kr1b1N/pp4pb/2p1p2p/7P/1qnP4/6N1/PPP1QPP1/2KR3R w - - 1 18	c2c3 b4c3 b2c3 f8a3 e2b2 a3b2	18
+Caro-Kann Defense	b	XSWZm	2055	advantage middlegame pin short	r3k1nr/pp1bqpbp/6p1/1B1pn3/5B2/2P5/PP1NQPPP/R3K1NR w KQkq - 4 11	g1f3 e5f3 d2f3 d7b5	11
+Caro-Kann Defense	b	hlMNR	2152	master mate mateIn2 middlegame queensideAttack sacrifice short	3r1rk1/pp2bppb/1np1p2p/q3P2P/2B2BQ1/2P3N1/PP3PP1/2KRR3 w - - 7 18	f4h6 a5c3 b2c3 e7a3	18
+Caro-Kann Defense	b	MhapE	2161	advantage long master middlegame	2rr2k1/pp3pp1/2n1pb1p/3b4/Q2P4/P3B2P/1P1N1PP1/4R1K1 w - - 0 19	d2b3 b7b5 a4b5 c8b8 b5a4 b8b3	19
+Caro-Kann Defense	b	dATzw	2166	crushing master middlegame short	r3k2r/pp3pp1/2p1pn1p/2np4/1q2P1P1/2NP3P/2PB1PQ1/K2R1B1R w kq - 4 15	d1b1 b4a5 c3a2 a5d2	15
+Caro-Kann Defense	b	oZoz1	2174	advantage fork long middlegame	r3qk1r/pN1nppbp/2p3p1/6B1/8/3P4/PPP1QPPP/R3K2R w KQ - 1 13	c2c3 a8b8 b7a5 b8b5 a5c6 b5g5	13
+Caro-Kann Defense	b	bRilN	2179	crushing long middlegame trappedPiece	r1bq1r1k/pp2b3/4p1Q1/3n1p2/3n4/2NB1N2/PP3PPP/2KR3R w - - 2 15	f3d4 e7g5 c1b1 d5f4 h2h4 f4g6	15
+Caro-Kann Defense	b	3IpTr	2197	advantage middlegame short	r3kb1r/1p3ppp/pq2p3/4P3/4pBPP/1P6/P1P5/R2QKB1R w KQkq - 0 16	d1e2 f8b4 f4d2 e4e3	16
+Caro-Kann Defense	b	AMYEJ	2208	crushing long middlegame	2rq1rk1/pp2bpp1/4p2p/3p1b2/3Pn2B/2P2N1P/PP1NQPP1/R4RK1 w - - 3 16	d2e4 d5e4 h4e7 e4f3 e2f3 d8e7	16
+Caro-Kann Defense	b	OhfMg	2274	advantage middlegame short	r2q1rk1/pp2bppp/1n3n2/3p2B1/3N2b1/1BN5/PP3PPP/R2QR1K1 w - - 4 15	g5f6 g4d1 f6e7 f8e8	15
+Slav Defense	b	6TicJ	915	crushing discoveredAttack master middlegame short	r3r1k1/pp3ppp/2q3b1/2bRP3/P4B2/5N2/1P2QPPP/R5K1 w - - 3 19	e2c4 c5f2 g1f2 c6c4	19
+Slav Defense	b	rwNVI	953	advantage fork middlegame short	2rqk2r/p3bpp1/2p1p2p/1N1p4/3P4/P2QP1P1/1P3PP1/2R1K2R w Kk - 0 17	b5a7 d8a5 b2b4 a5a7	17
+Slav Defense	b	FCEDA	971	crushing discoveredAttack middlegame short	r3k2r/1p1qbp1p/p1n1pnp1/3p4/1P1P4/P2BPP2/1B1NKP1P/2RQ3R w kq - 2 14	d1a4 c6d4 b2d4 d7a4	14
+Slav Defense	b	J0Ey7	980	advantage fork middlegame short	rn2kn1r/pp3pp1/2p1p1p1/2Pp2P1/3P4/2N1P1qP/PPQB4/R3KB1R w KQkq - 1 17	e1d1 g3f3 d1e1 f3h1	17
+Slav Defense	b	hZXMS	997	master middlegame	r2q1rk1/p2b1pp1/2p2n1p/1pnPb3/3QP3/2N3P1/PP3PBP/R1B1R1K1 w - - 0 17	d4e5 c5d3 e5d4 d3e1	17
+Slav Defense	b	4Q0zG	1028	advantage capturingDefender middlegame short	r1rb2k1/1p2npp1/1q2p2p/pB1p4/3P4/P1N1P3/1PRQ1PPP/4R1K1 w - - 10 19	e1c1 c8c3 b2c3 b6b5	19
+Slav Defense	b	dCeyW	1106	advantage middlegame pin short	r2qkb1r/5ppp/p1n1bp2/1p6/3P1B2/1Q1BP3/PP2NPPP/R3K2R w KQkq - 0 13	b3c3 f8b4 e1g1 b4c3	13
+Slav Defense	b	N4uE9	1128	crushing discoveredAttack middlegame short	2r2rk1/pp2bppp/1qb2n2/1B1p4/Q2Pp3/2N1P3/PP1N1PPP/R1R3K1 w - - 10 17	c1c2 c6b5 c3b5 c8c2	17
+Slav Defense	b	TMtcd	1160	advantage middlegame short	r4rk1/3n1pp1/p2qp2p/1p1pN3/1P1P1P2/3Q4/P4PPP/2R2RK1 w - - 0 18	c1c6 d7e5 c6d6 e5d3	18
+Slav Defense	b	PCnbc	1160	crushing middlegame short	2r2rk1/1p1qbp2/p3pn1p/3p1bp1/1P1P4/P1N1P1B1/4BPPP/2RQ1RK1 w - - 3 18	c3a4 c8c1 d1c1 d7a4	18
+Slav Defense	b	iYpNt	1165	crushing fork middlegame short	r1bqk2r/pp3p1p/2n1pp2/8/3P4/5N2/PP3PPP/R2QKB1R w KQkq - 0 11	f1b5 d8a5 d1d2 a5b5	11
+Slav Defense	b	Q7ewq	1167	advantage kingsideAttack middlegame short	r5k1/pp3ppp/8/3p4/4r1Q1/P3PN2/4qPPP/R4RK1 w - - 1 18	f1e1 e2e1 a1e1 e4g4	18
+Slav Defense	b	eB5Mq	1203	attraction kingsideAttack mate mateIn2 middlegame sacrifice short	rn1qk2r/3n1pp1/p3p1p1/1pbP4/4P3/1QN5/PP2N1PP/R1B2RK1 w kq - 1 15	g1h1 h8h2 h1h2 d8h4	15
+Slav Defense	b	tfXAf	1222	mate mateIn2 middlegame short	rn1qk2r/pp3pbp/4p1p1/3p4/1P1Pb1n1/P3PP2/3NB2P/R1BQK1NR w KQkq - 0 11	f3e4 d8h4 e1f1 g4e3	11
+Slav Defense	b	uNJRG	1224	attraction discoveredAttack discoveredCheck kingsideAttack long mate mateIn3 middlegame sacrifice	2r1k2r/p1q2pp1/1ppbp1p1/6N1/2PP2n1/1P2P2P/PBQ2PP1/2R2RK1 w k - 2 17	h3g4 d6h2 g1h1 h2g1 h1g1 c7h2	17
+Slav Defense	b	iAQe9	1251	advantage discoveredAttack kingsideAttack middlegame short	r2r2k1/pp3ppp/1q1bbp2/8/3N4/PB2P3/1P3PPP/R2Q1RK1 w - - 2 16	d4e6 d6h2 g1h2 d8d1	16
+Slav Defense	b	2NdAk	1252	advantage capturingDefender long middlegame	2r2rk1/5ppp/Q1pqpn2/3p4/3P4/2N1P2P/PP3PP1/2R2RK1 w - - 1 17	c3a4 c8a8 a6c6 d6c6 c1c6 a8a4	17
+Slav Defense	b	fbEm7	1330	crushing exposedKing fork middlegame sacrifice veryLong	r4rk1/1p1b1pp1/pq2p2p/2npP3/5P2/2N1P1P1/PPB2QP1/R3K2R w KQ - 5 17	g3g4 b6b2 c2h7 g8h7 f2b2 c5d3 e1e2 d3b2	17
+Slav Defense	b	iY3nG	1359	advantage exposedKing fork long master middlegame pin	3rk2r/Bp3ppp/2p5/4q3/PbB1b3/2N5/1PQ3PP/R3K2R w KQk - 0 16	c2e2 b4c3 b2c3 e5c3 e1f2 d8d2	16
+Slav Defense	b	Y04yG	1375	advantage middlegame short	r4rk1/5ppp/B3pn2/8/1q1Pb3/4PN2/1P3PPP/R2Q1RK1 w - - 1 18	a6d3 a8a1 d1a1 e4d3	18
+Slav Defense	b	9bVU6	1408	advantage fork middlegame short	2r1kb1r/p4ppp/Bqp1p3/3p1b2/Q2P1n2/P3P3/1P3PPP/2RNK2R w Kk - 0 15	a6c8 f4d3 e1d2 d3c1	15
+Slav Defense	b	AXOx8	1410	advantage middlegame short	3r1rk1/pb3ppp/2p1p3/Np2P3/5q2/P2B4/1P4PP/R2Q2KR w - - 3 19	a5b7 f4e3 g1f1 d8d3	19
+Slav Defense	b	UQntJ	1418	advantage discoveredAttack fork middlegame short	r2k1b1r/1q3p1p/p3pp2/1B1p1b2/1n1P4/1QN1P3/PP2NPPP/2R1K2R w K - 0 14	a2a3 b4d3 b5d3 b7b3	14
+Slav Defense	b	LZFbe	1457	advantage middlegame pin short	rnb2rk1/6p1/p1p1p2p/1p2N3/2pP4/P1N1q3/1PQ3P1/3RKB1R w K - 0 18	c2e2 e3g3 e1d2 f8f2	18
+Slav Defense	b	8yBLm	1539	crushing master middlegame short trappedPiece	r2r2k1/1pq1ppbp/2p2np1/p7/QnbPP3/2N1BNPP/PP3PB1/R2R2K1 w - - 3 17	a2a3 b7b5 a4b4 a5b4	17
+Slav Defense	b	BQ5Wc	1563	advantage middlegame short trappedPiece	r2qk2r/1p3ppp/p1nbpn2/3p4/3P2b1/1QN1PN2/PP2BPPP/R1B2RK1 w kq - 2 10	b3b7 c6a5 b7a8 d8a8	10
+Slav Defense	b	lRcW0	1577	advantage master middlegame short trappedPiece	2r1kb1r/1q3p1p/2p1pp2/p2p1b2/Q2P4/2N1P3/PP2BPPP/2R2RK1 w k - 0 16	a4a5 c8a8 a5a8 b7a8	16
+Slav Defense	b	MvJls	1604	advantage middlegame pin short	r4rk1/pp4pp/2nbpnp1/q2p2B1/3P4/P2BPN2/1P3PPP/R2QK2R w KQ - 4 13	d1d2 d6b4 a3b4 a5a1	13
+Slav Defense	b	vWSUZ	1606	advantage middlegame short	r1r3k1/pp3ppp/3qp3/3p4/3Pn1b1/P3PN2/1P2BPPP/2RQ1RK1 w - - 8 18	f3e5 c8c1 d1c1 g4e2	18
+Slav Defense	b	3GJRc	1627	crushing fork long middlegame pin	r3k2r/pp1b1ppp/4p3/4P3/1P2Q3/q3P3/P4PPP/R3KB1R w KQkq - 1 15	f1d3 a3c3 e1e2 c3b2 e2f3 d7c6	15
+Slav Defense	b	liQQg	1665	crushing intermezzo master middlegame short superGM	r3k2r/1p1b1ppp/p3p3/2npP3/5P2/2NBP1Pq/PP3K1P/2RQ3R w kq - 5 16	c3d5 c5d3 d1d3 e6d5	16
+Slav Defense	b	5w7cg	1667	crushing middlegame short	r1b1kb1r/pp3ppp/4p3/q2p2N1/1n1P4/2NBP3/PPQ2PPP/R3K2R w KQkq - 2 11	d3b5 a5b5 c3b5 b4c2	11
+Slav Defense	b	LAQvv	1668	crushing fork middlegame short	r3k2r/pp3pp1/1qb4p/3QP3/6n1/2N5/PP3PPP/2KR1B1R w kq - 3 16	d5d4 g4f2 d4b6 a7b6	16
+Slav Defense	b	J5APu	1675	crushing discoveredAttack long middlegame	r2q1rk1/pp3ppp/2p1pn2/P4b2/2BPn3/2P1PN2/3BQPPP/R4RK1 w - - 1 13	f3h4 e4d2 e2d2 f6e4 d2e1 d8h4	13
+Slav Defense	b	itFzN	1782	advantage long middlegame	3q1b1r/p1Nk1p1p/2n1pn2/5bp1/2pP1B2/4P3/1P3PPP/R2QKBNR w KQ - 0 12	f4g3 f8b4 e1e2 f5d3 d1d3 c4d3	12
+Slav Defense	b	UQWm2	1799	crushing fork long middlegame	rn2k2r/pp3ppp/2pqpn2/8/2BP4/2N2P1P/PP3PP1/R2QK2R w KQkq - 0 12	c3e4 f6e4 f3e4 d6b4 d1d2 b4c4	12
+Slav Defense	b	fi3Sx	1821	crushing fork long middlegame sacrifice	1q2k2r/pp3ppp/2n1p3/5b2/1b1P4/1Q3N2/PP2PPPP/R3KB1R w KQk - 2 12	f3d2 c6d4 b3b4 d4c2 e1d1 c2b4	12
+Slav Defense	b	t9IWm	1835	advantage attraction fork long middlegame sacrifice	r6r/p4ppp/4pk2/5b2/Q2Pn3/B1PqP3/P3NPPP/R3K2R w KQ - 8 18	a1d1 d3e2 e1e2 e4c3 e2d2 c3a4	18
+Slav Defense	b	Ab7AF	1838	advantage middlegame short	3r1rk1/pp1nqppp/2pbp3/8/2PPn3/1P1Q1N2/PB3PPP/R3R1K1 w - - 0 14	e1e4 d7c5 d3e2 c5e4	14
+Slav Defense	b	M4C3L	1886	advantage clearance long middlegame sacrifice	r3k2r/pp1b1p1p/2n1pp2/q2p4/1b1P4/2N1PNP1/PP3PBP/R2QK2R w KQkq - 3 11	d1b3 c6d4 f3d4 d7a4 b3b4 a5b4	11
+Slav Defense	b	9gNmw	1926	advantage long master middlegame sacrifice skewer	3k3r/p1r2p1p/2R2p2/1B1p1b2/1b1P4/4P3/PP3PPP/4K1NR w K - 1 15	e1e2 f5d7 c6c7 d7b5 e2f3 d8c7	15
+Slav Defense	b	znv0c	1941	mate mateIn2 middlegame pin short	N2k2nr/pp1q1p1p/2n3p1/4Pb2/1b3B2/1Q2P3/PP3PPP/R3KBNR w KQ - 1 12	e1e2 f5g4 g1f3 d7d2	12
+Slav Defense	b	X4Ue1	1980	advantage attraction kingsideAttack long middlegame	2rq1rk1/1p3pbp/p4np1/3pn3/1P6/P1N1PB2/1B3PPP/R2Q1RK1 w - - 0 17	c3d5 e5f3 d1f3 d8d5 b2f6 d5f3	17
+Slav Defense	b	UwkL6	1988	advantage attraction fork middlegame sacrifice veryLong	3q1rk1/4ppbp/2r3p1/p1Bp4/Np1Pn3/1P2PQ2/P4PPP/2R2RK1 w - - 2 18	c5e7 c6c1 e7d8 c1f1 g1f1 e4d2 f1e2 d2f3	18
+Slav Defense	b	RfWU5	2003	crushing intermezzo master middlegame short	2r1r1k1/p4ppp/1q2p1bB/2ppP3/6QP/1P2P3/P4PP1/2R2RK1 w - - 5 19	h6g7 h7h5 g4g5 g8g7	19
+Slav Defense	b	RbYrY	2041	crushing long middlegame	r4rk1/pp3p1p/2Pb4/1B3p2/3P3q/4P2p/P4PP1/R1BQR1K1 w - - 0 17	g2h3 h4h3 f2f4 g8h8 g1f2 h3h2	17
+Slav Defense	b	7Pdd8	2083	advantage deflection master middlegame pin short	1n3rk1/2R3pp/2b1pn2/1p6/2P1p3/2b1BP2/5KPP/5BNR w - - 4 19	c4b5 f6g4 f2g3 g4e3	19
+Slav Defense	b	SjT0G	2086	advantage long middlegame	2rq1rk1/5pp1/3b3p/pp1Q4/2n5/P1N1PN1P/1P3PP1/R4RK1 w - - 1 19	a1b1 b5b4 a3b4 a5b4 d5d4 b4c3	19
+Slav Defense	b	rVhGU	2178	crushing long middlegame	r1q3k1/1b3rpp/n1p1Qb2/1p6/p2P4/B1N3PB/P4P1P/R2R2K1 w - - 1 19	a3c5 a6c5 e6f7 g8f7 h3c8 b7c8	19
+Slav Defense	b	IwBon	2186	attackingF2F7 deflection mate mateIn2 middlegame sacrifice short	r7/p2nkp2/7Q/2bqp3/Ppp1n1b1/8/NP1B1PPP/R3KBNR w KQ - 1 16	d2e3 d5d2 e3d2 c5f2	16
+Slav Defense	b	ikMn0	2194	advantage long middlegame	r3k2r/1p2nppp/p2b1q2/3p1p2/3P4/PQP1PN1P/5PP1/R1B2RK1 w kq - 3 15	b3b7 a8b8 b7a7 e7c8 a7b8 d6b8	15
+Slav Defense	b	vpBlc	2207	advantage hangingPiece long middlegame	2r3k1/pQ3ppp/3Bp1b1/3pN3/PP1Pn3/4P3/2rq1PPP/R4RK1 w - - 1 19	a1d1 e4d6 b7c8 d6c8 d1d2 c2d2	19
+Slav Defense	b	nqcKI	2210	advantage hangingPiece middlegame short	2r1k2r/pp2bppp/1q2pn2/3p1b2/1n1P1B2/2N1PN2/PP1QBPPP/2R2RK1 w k - 2 12	c3d5 e6d5 c1c8 f5c8	12
+Slav Defense	b	G6n5c	2235	advantage long middlegame trappedPiece	r3k2r/5ppp/p7/qp2Bb2/1b1Pn3/1QN1P3/PP2BPPP/3RK2R w Kkq - 3 15	d4d5 e4c5 e5c7 c5b3 c7a5 b3a5	15
+Slav Defense	b	3A2OW	2262	advantage middlegame short	2r3k1/pp2bpp1/1q2pn1p/3pN3/b2P3B/Pn1BP3/1P2QPPP/1N3RK1 w - - 0 19	b1d2 b3c1 f1c1 c8c1	19
+Nimzo-Indian Defense	b	1biJ0	948	attackingF2F7 mate mateIn1 middlegame oneMove	r1b1k2r/ppnp1pBp/8/3P4/1P2n3/8/q4PPP/1R1QKBNR w Kkq - 1 15	g7h8 a2f2	15
+Nimzo-Indian Defense	b	MeDDo	999	crushing middlegame sacrifice short	4rr1k/p4p1p/bp3p2/2pp1N2/3P4/2P1PqPP/P1Q2P2/R3K1R1 w Q - 3 19	f5h4 e8e3 f2e3 f3e3	19
+Nimzo-Indian Defense	b	sewN3	1003	advantage fork middlegame short	r1b2rk1/pp6/n6p/4Npp1/2P5/q1PB2PP/P1Q3P1/2R1K2R w K - 1 19	e1g1 a3c5 g1h2 c5e5	19
+Nimzo-Indian Defense	b	4SAVW	1006	advantage discoveredAttack kingsideAttack long middlegame	rbb1r1k1/1pq2pp1/p6p/2Ppn3/1P1Nn3/P3BN1P/4BPP1/R1Q2RK1 w - - 2 19	e3f4 e5f3 g2f3 c7f4 c1f4 b8f4	19
+Nimzo-Indian Defense	b	cmRRc	1010	advantage fork middlegame short	r1bqk2r/pp3ppp/4pn2/3p4/2Pn4/B1P3P1/P3PPBP/R2QK2R w KQkq - 0 10	c3d4 d8a5 d1d2 a5a3	10
+Nimzo-Indian Defense	b	DCIjb	1038	mate mateIn1 middlegame oneMove pin smotheredMate	r3k2r/pp3ppp/5n2/q1P5/1n1p2b1/P4N2/1PQ1PPPP/R2NKB1R w KQkq - 0 12	c2d2 b4c2	12
+Nimzo-Indian Defense	b	vnWbC	1140	advantage capturingDefender master middlegame short	2kr2r1/pbpn1p1p/1p2pn2/8/2PP4/P1PB1N2/6PP/R1B2RK1 w - - 6 15	c1g5 b7f3 f1f3 g8g5	15
+Nimzo-Indian Defense	b	GUl4p	1168	crushing fork master middlegame short	r1b2rk1/pp2qppp/4pn2/n1b3B1/2Q1N3/P3PN2/1P3PPP/2KR1B1R w - - 3 14	c4c5 a5b3 c1b1 b3c5	14
+Nimzo-Indian Defense	b	0M3nZ	1169	crushing kingsideAttack middlegame short	r3r1k1/pp3pp1/1qpb1n1p/1N1p4/3P1P2/3B1PPb/PPQB3P/2R1R1K1 w - - 4 18	b5d6 b6d4 d2e3 e8e3	18
+Nimzo-Indian Defense	b	qtgrx	1176	advantage middlegame pin short	r2q1r2/p2nbpk1/1p1p3p/3P2p1/8/P2B1NP1/1PQ2PP1/2KR3R w - - 2 19	h1h2 a8c8 f3d4 c8c2	19
+Nimzo-Indian Defense	b	6FObZ	1183	crushing middlegame short	r4rk1/pp3ppp/n1p5/q2p1b2/3PnB2/P2BPN2/1PQ2PPP/R3K2R w KQ - 1 13	b2b4 a6b4 a3b4 a5a1	13
+Nimzo-Indian Defense	b	siKCt	1192	deflection kingsideAttack mate mateIn2 middlegame short	r4rk1/1p3ppp/p1nb4/3p4/6n1/P3PN1q/NP1BBP2/2RQR1K1 w - - 2 17	e2f1 d6h2 g1h1 g4f2	17
+Nimzo-Indian Defense	b	w7Oei	1241	advantage middlegame short	rn1q1rk1/pb3ppp/1p2pb2/3P4/4B3/1QN1PN2/PP3PPP/R3K2R w KQ - 1 13	d5e6 f6c3 b3c3 b7e4	13
+Nimzo-Indian Defense	b	qpFtM	1285	crushing fork master middlegame short	r2q1rk1/pbp1bpp1/1pn1p2p/3nN3/2BP4/2N1P1B1/PP3PPP/R2Q1RK1 w - - 6 13	f2f4 d5e3 e5c6 b7c6	13
+Nimzo-Indian Defense	b	99aUe	1292	mate mateIn2 middlegame short	r2qr1k1/ppp2pp1/4b2p/3pP3/1B2n1P1/P2BP2P/1P3P2/R2QK2R w KQ - 1 16	f2f4 d8h4 e1f1 h4f2	16
+Nimzo-Indian Defense	b	ZQcYX	1308	advantage middlegame pin short	3qk2r/p1pb4/2p5/3p1ppp/1r1P2P1/4PP2/PPQ3P1/2KR2NR w k - 1 18	g4f5 b4c4 c2c4 d5c4	18
+Nimzo-Indian Defense	b	pMSmK	1338	cornerMate intermezzo mate mateIn2 middlegame short	r2r2k1/pQ2n2p/4pp2/2p3p1/b1P1n3/P1q1PNB1/5PPP/2R1KB1R w K - 0 18	c1c3 d8d1 e1e2 e4c3	18
+Nimzo-Indian Defense	b	nO3X5	1343	crushing master middlegame short skewer	2rq1rk1/pb3ppp/1p3n2/4p3/1BP2Q2/P7/1P2BPPP/2R2RK1 w - - 0 18	f4e5 f8e8 e5g3 e8e2	18
+Nimzo-Indian Defense	b	XM8mj	1370	advantage middlegame short	1qr3k1/p2b1pp1/Bpn1p2p/3p4/3Pn3/P1P1PN1P/2Q2PP1/R4RK1 w - - 2 18	a3a4 c6b4 c2b2 b4a6	18
+Nimzo-Indian Defense	b	NopCG	1381	crushing deflection discoveredAttack discoveredCheck kingsideAttack long middlegame	r2q2k1/1bpn2pp/1p1pp1r1/p4pB1/P1PP4/2PBP3/3Q1PPP/R4RK1 w - - 3 16	g5d8 g6g2 g1h1 g2f2 h1g1 f2d2	16
+Nimzo-Indian Defense	b	2Om36	1390	crushing fork middlegame pin short trappedPiece	r1b2rk1/pp1p1pp1/4p2p/8/6q1/4P3/3Q1PPP/1R2KBNR w K - 1 16	g2g3 g4e4 f1d3 e4h1	16
+Nimzo-Indian Defense	b	MK5P7	1464	advantage middlegame short	B4k1r/p2n1p2/1ppb3p/3p4/3P3q/2N1pQ2/PP3P1P/4RR1K w - - 0 19	f3g2 h8g8 g2g8 f8g8	19
+Nimzo-Indian Defense	b	FKLcX	1467	crushing middlegame short trappedPiece	r1b2rk1/p3qpp1/1p1p3p/n1p5/Q1PPp3/P1P1P3/3NBPPP/3R1RK1 w - - 2 16	d2b3 c8d7 a4d7 e7d7	16
+Nimzo-Indian Defense	b	KIuYs	1470	crushing fork middlegame short skewer	r1b1kB2/pp1p1p1Q/8/8/8/2p5/P2KPPPP/q4BNR w q - 0 18	d2d3 a1b1 d3c3 b1h7	18
+Nimzo-Indian Defense	b	hhHJD	1505	advantage hangingPiece middlegame short	3q1rk1/2r2p1p/p1nb1np1/1p1p1BB1/3P4/P1N2Q1P/1P3PP1/3R1RK1 w - - 0 19	f5g6 f7g6 g5f6 f8f6	19
+Nimzo-Indian Defense	b	5eA6F	1519	crushing middlegame pin short	rn2k2r/pp1b1p1p/3ppp2/q1pP4/1bP5/1QN2N2/PP2PPPP/R3KB1R w KQkq - 2 9	e2e3 d7a4 b3a4 a5a4	9
+Nimzo-Indian Defense	b	gnIi0	1572	crushing discoveredAttack master middlegame short	r2q1rk1/5ppp/3p1n2/b2PnN2/1pp1P3/5P2/1P1BQ1PP/RN3RK1 w - - 0 19	d2g5 a5b6 g1h1 a8a1	19
+Nimzo-Indian Defense	b	0RuQr	1612	attraction crushing fork long middlegame	2r1r1k1/pp3pp1/2n5/3pN2p/3Pn3/PQ2P1P1/3BBPqP/R3KR2 w Q - 5 19	e2f3 g2f1 e1f1 e4d2 f1g2 d2b3	19
+Nimzo-Indian Defense	b	0czGS	1629	advantage middlegame short	r3q1k1/p2n1ppp/2Q2n2/3p2B1/3P2b1/2P2NP1/P3rPBP/R4RK1 w - - 1 14	f1e1 g4f3 e1e2 f3e2	14
+Nimzo-Indian Defense	b	YraZ9	1645	advantage middlegame short	r2q1rk1/5ppp/p2p1n2/2pPnQ2/1p6/3BP3/PP1B1PPP/R3K2R w KQ - 2 17	e1g1 g7g6 f5h3 e5d3	17
+Nimzo-Indian Defense	b	1EF8r	1651	crushing hangingPiece middlegame veryLong	r4r1k/pp3pp1/3p4/3q1bN1/2p4P/2PnP3/P1Q2PP1/1BR2K1R w - - 1 19	c2e2 d3c1 e2h5 h8g8 b1f5 d5f5 e3e4 f5g6 h5g6 f7g6	19
+Nimzo-Indian Defense	b	iPi4R	1683	advantage fork long middlegame	r1bq3r/p1n1bpk1/2p1p1p1/4P3/2p2P2/P1NB2R1/1PQ3PP/R1B3K1 w - - 0 18	d3c4 d8d4 c1e3 d4c4 b2b3 c4a6	18
+Nimzo-Indian Defense	b	zRjiy	1687	crushing discoveredAttack discoveredCheck middlegame short	r1b3k1/pp3ppp/8/2bR4/8/4rP2/PPB1N1PP/5RK1 w - - 0 18	d5d8 e3e8 g1h1 e8d8	18
+Nimzo-Indian Defense	b	c9TEv	1742	advantage master middlegame short	2r1r1k1/pb3ppp/1p2p1q1/8/PP1Pn3/1Q2PN1P/4BPP1/2R2RK1 w - - 3 19	a4a5 e4d2 c1c8 e8c8	19
+Nimzo-Indian Defense	b	VbSJR	1750	crushing discoveredAttack discoveredCheck intermezzo middlegame short	3rk1r1/pQ1b1p2/2p2p2/1B6/6q1/2P1P3/P4P1P/3RK2R w K - 0 19	b5c6 g4d1 e1d1 d7c6	19
+Nimzo-Indian Defense	b	o7xrk	1795	exposedKing kingsideAttack long mate mateIn3 middlegame sacrifice	rn4k1/pp3ppp/2p1r3/3p4/2PP4/P1P1PPPb/5q2/RBBQ2RK w - - 1 18	a1a2 h3g2 g1g2 e6h6 g2h2 h6h2	18
+Nimzo-Indian Defense	b	9EiOF	1820	advantage long middlegame	r3r1k1/ppp1qppp/2n1b3/8/2BPnB2/P3PN2/5PPP/2RQ1RK1 w - - 3 14	d1b3 c6a5 b3d3 e6c4 c1c4 a5c4	14
+Nimzo-Indian Defense	b	Z8mND	1821	advantage deflection master middlegame short	2r1r1k1/pp3p1p/1q3np1/nb1p4/3P4/P2BPPN1/6PP/2BQRR1K w - - 8 18	e3e4 c8c1 d1c1 b5d3	18
+Nimzo-Indian Defense	b	FP0dX	1863	advantage middlegame short trappedPiece	r2q1rk1/p2p1ppp/1p1Qpn2/n1PbN1B1/8/P1P1P3/5PPP/3RKB1R w K - 2 13	c3c4 a5b7 c4d5 b7d6	13
+Nimzo-Indian Defense	b	aMtZ9	1865	crushing fork middlegame short	5rk1/2p2rpp/p1b5/1pPn4/1P5q/P2B4/5PPP/R1BQ1RK1 w - - 1 19	f2f3 h4d4 g1h1 d4a1	19
+Nimzo-Indian Defense	b	zZsl3	1885	advantage long middlegame	rnbq1rk1/2pn1ppp/pp6/1B1pP3/Q2P4/2P2P2/P5PP/R1B1K1NR w KQ - 0 11	b5c6 b6b5 c6b5 d7b6 a4b3 a6b5	11
+Nimzo-Indian Defense	b	2ErZW	1922	attraction crushing kingsideAttack middlegame sacrifice short	r1b3k1/pp3pp1/2pp1n1p/6rq/2P5/P1PBP1B1/2Q2PPP/R4RK1 w - - 4 19	g3f4 g5g2 g1g2 c8h3	19
+Nimzo-Indian Defense	b	bMEur	1966	crushing middlegame short	r1b3k1/pp1q1pp1/4p2p/bN1r4/4N3/4P3/PP2QPPP/2RR2K1 w - - 2 19	e2g4 d5d1 c1d1 d7b5	19
+Nimzo-Indian Defense	b	txRal	1973	advantage long middlegame	r1b2rk1/pp3ppp/3Bp1n1/qN1P4/2P1Q3/p7/5PPP/R3KB1R w KQ - 0 18	e1e2 e6d5 a1a3 a5a3 d6a3 d5e4	18
+Nimzo-Indian Defense	b	XfgWL	2004	advantage middlegame veryLong	3r1rk1/pp2qpp1/4n2p/4Q3/6b1/2N1PN2/PPB2P2/R4RK1 w - - 3 19	e5e4 f7f5 e4e6 e7e6 c2b3 e6b3 a2b3 g4f3	19
+Nimzo-Indian Defense	b	riC2y	2025	crushing fork intermezzo long master middlegame	3r1rk1/ppp3pp/1n2p3/Q2n1p2/q1pP1P2/4P3/PP1BB1PP/2RR2K1 w - - 3 18	e2c4 a4a5 d2a5 b6c4 c1c4 d5e3	18
+Nimzo-Indian Defense	b	rfa8n	2042	advantage master middlegame short	r4rk1/pbqn1ppp/1p2pn2/8/2PB4/3BPN2/P1Q2PPP/R4RK1 w - - 2 16	a1c1 e6e5 f3e5 d7e5	16
+Nimzo-Indian Defense	b	pSQjZ	2061	crushing master middlegame short	3r1rk1/pppQ1ppp/2n2q2/2b5/8/P3PN2/1P1B1PPP/R3KB1R w KQ - 1 16	d7c7 f6b2 a1d1 c5d6	16
+Nimzo-Indian Defense	b	lgjuG	2129	advantage middlegame short	2rq1rk1/p4ppp/b3p3/p2nN3/Q1pP4/P3P3/4BPPP/R4RK1 w - - 0 17	e2c4 d5b6 a4a5 a6c4	17
+Nimzo-Indian Defense	b	liMZR	2131	crushing middlegame short	r2qr1k1/pp1b1pp1/3p1n1p/2pn4/4P3/2P1BPN1/P3B1PP/R2Q1RK1 w - - 0 15	e3h6 d5c3 d1d2 c3e2	15
+Nimzo-Indian Defense	b	zrsvt	2144	crushing deflection kingsideAttack middlegame quietMove sacrifice veryLong	r1b2rk1/p2n2pp/1p2p3/2pp1p2/P1PPn2q/B1PBP3/2QN1PPP/R3R1K1 w - - 2 14	f2f3 h4f2 g1h1 e4g3 h2g3 f8f6 d2f1 f6h6 f1h2 f2g3	14
+Nimzo-Indian Defense	b	kWbSr	2206	discoveredAttack discoveredCheck long mate mateIn3 middlegame	1r1Bk2r/p1pb1ppp/2Qpp3/8/1bP5/2n5/PP2PPPP/R3KBNR w KQk - 1 11	c6c7 c3a2 e1d1 d7a4 b2b3 a4b3	11
+Nimzo-Indian Defense	b	e0zFe	2245	advantage long middlegame	rnb1r1k1/1p3ppp/p2p4/2pP4/P1B1q3/2B5/1P4PP/R2Q1KNR w - - 0 14	d1d3 e4f4 g1f3 c8f5 d3d2 f4c4	14
+Nimzo-Indian Defense	b	DxhJX	2247	advantage middlegame short	r1q1r1k1/p4ppp/1p6/1B1pnb2/3Pn3/P3P2P/1B3PP1/R2Q1RK1 w - - 0 18	b5e8 e5c4 e8f7 g8f7	18
+Nimzo-Indian Defense	b	UEFk3	2279	crushing kingsideAttack long middlegame sacrifice	5rk1/ppp3pp/3p4/8/2PnN1bq/P7/3Q2BP/R1B3K1 w - - 0 19	e4g3 d4e2 g3e2 h4f2 g1h1 g4f3	19
+Nimzo-Indian Defense	b	ZXeYd	2286	advantage middlegame short	r4r2/pb1q1p1k/1p2p2p/5p2/3P2Q1/P2BP3/5PPP/R4RK1 w - - 0 18	f2f3 b7a6 f1d1 a6d3	18
+Nimzo-Indian Defense	b	4VGv0	2292	advantage defensiveMove intermezzo long middlegame	2r2rk1/p1qn1p1p/1p4p1/3np3/8/2BBPP2/PP2KP1P/1Q1R2R1 w - - 2 19	d3g6 d5c3 b2c3 f7g6 g1g6 g8h8	19
+Nimzo-Indian Defense	b	5d5Ux	2292	advantage discoveredCheck doubleCheck exposedKing long middlegame	r1b2k1r/p3qppp/2Q5/4b3/8/P4P2/1P4PP/R1B1K1NR w KQ - 1 15	c6a8 e5c3 e1d1 e7d8 d1c2 c8f5	15
+Nimzo-Indian Defense	b	PO5FF	2296	advancedPawn advantage collinearMove kingsideAttack middlegame sacrifice veryLong	r3r1k1/ppp2p1p/3p1pb1/3P4/2P1p1q1/PN2Pn2/1PQ1BPPP/3R1R1K w - - 0 18	g2f3 e4f3 f1g1 g4g2 g1g2 f3g2 h1g2 g6c2	18
+Nimzo-Indian Defense	b	CyMrM	2298	advantage master middlegame short	2rr2k1/p4pp1/1p1Qpq1p/8/2PP4/2b1PP2/P3BP1P/1R3RK1 w - - 1 17	d6a3 f6g6 g1h1 g6c2	17
+King's Indian Defense	b	nX9g8	983	crushing long middlegame	r1bq1rk1/p1pn1pbp/1p1p2p1/3Pp3/2P1P3/2N1BP2/PP1QN1PP/R3K2R w KQ - 2 12	e3h6 d8h4 g2g3 h4h6 d2h6 g7h6	12
+King's Indian Defense	b	5Ema5	983	advantage interference intermezzo master middlegame short	r4rk1/pp2qpbp/3pb1p1/1Np5/2P1PP2/1P4P1/P2Q2BP/3R1RK1 w - - 1 18	b5d6 g7d4 g1h1 e7d6	18
+King's Indian Defense	b	j4adX	990	advantage fork middlegame short	r3r1k1/1p1n1pbp/pq1p2p1/2pP1NB1/2P5/2n4P/PP2BPP1/R1Q1R1K1 w - - 0 16	f5g7 c3e2 e1e2 e8e2	16
+King's Indian Defense	b	320E6	1016	advantage middlegame short	r2q1rk1/pppn2bp/3p1np1/3Pp1B1/2P1B3/5NPP/PP3P2/R2QK2R w KQ - 3 16	d1d3 d7c5 d3c2 c5e4	16
+King's Indian Defense	b	Pg8RH	1016	mate mateIn1 middlegame oneMove smotheredMate	r1bq1rk1/pp2pp1p/3p2p1/2pPb3/2P1PnP1/2N4P/PP1B1P2/R2QKB1R w KQ - 1 12	c3e2 f4d3	12
+King's Indian Defense	b	QOG7V	1031	crushing middlegame short	r4rk1/p1p1n2p/1p1p2p1/3P1q1n/2Pbp3/2N1B2P/PP2BPK1/R1Q2R2 w - - 0 17	e3d4 h5f4 c1f4 f5f4	17
+King's Indian Defense	b	VkiRb	1105	crushing middlegame short	r1b1r1k1/pp3pb1/3p1npp/3Pp3/2q1N3/2N1B3/PP1Q1PPP/R4RK1 w - - 0 16	e3h6 f6e4 c3e4 c4e4	16
+King's Indian Defense	b	tJ1iW	1109	crushing discoveredAttack middlegame short	r4rk1/1pp2p1p/p2q2p1/5b2/N1Pn1P2/3B4/PP1Q2PP/R4RK1 w - - 0 19	d3f5 d4f3 f1f3 d6d2	19
+King's Indian Defense	b	LciXx	1143	advantage middlegame short	r2q1r2/1p3pbk/pn1pb1pp/2p4n/2P1PB2/1PN2N2/P2QBPPP/R4RK1 w - - 3 15	f4d6 g7c3 d2c3 d8d6	15
+King's Indian Defense	b	XXQI1	1153	advantage master middlegame short	r2q1rk1/ppp1n1b1/3p1n1p/2PPp3/1P2P1b1/2NB1p2/P1QB1PPN/R4RK1 w - - 0 19	h2g4 f6g4 g2f3 f8f3	19
+King's Indian Defense	b	SUhcb	1155	attraction kingsideAttack long mate mateIn3 middlegame pillsburysMate sacrifice	rn4k1/ppp4p/3p2p1/3P1r2/2Pb1p1q/2N2P2/PP1B2PP/R2Q1R1K w - - 4 15	d2e1 h4h2 h1h2 f5h5 e1h4 h5h4	15
+King's Indian Defense	b	nh5dd	1186	advantage fork middlegame short	r2q1rk1/ppp3bp/3p1np1/3Pp3/1PP1R3/3R1N2/PBQ2PPP/6K1 w - - 1 19	e4e1 e5e4 d3e3 e4f3	19
+King's Indian Defense	b	SRrPR	1204	mate mateIn2 middlegame short	r4rk1/pp1n4/1qpp1p1p/3PpPp1/2P1P2b/2N2P1B/PP2K3/R2Q2NR w - - 1 16	b2b3 b6f2 e2d3 d7c5	16
+King's Indian Defense	b	LQ0BM	1207	crushing fork middlegame short	2r2rk1/1p5p/4p1pb/p3P3/1nP2p1P/3B1N2/PP1R2P1/2K4R w - - 1 19	d3e4 c8c4 c1b1 c4e4	19
+King's Indian Defense	b	2XPd7	1261	advantage fork middlegame short	rnb2rk1/pp2pp1p/5npQ/3p2N1/1qPP4/2N5/PP3PPP/R3KB1R w KQ - 1 12	f1e2 b4b2 e1g1 b2c3	12
+King's Indian Defense	b	mXQAU	1273	advantage fork middlegame short	2r2rk1/3n1pbp/pn4p1/8/2P1p3/N3P2P/PP3PPB/R3KB1R w KQ - 0 17	f1e2 g7b2 a1b1 b2a3	17
+King's Indian Defense	b	TNelD	1308	advantage fork long middlegame	r7/pp3pk1/4b1pp/4p1b1/2PnP1B1/7P/PP1N1PP1/2R2RK1 w - - 4 19	f1d1 e6g4 h3g4 d4e2 g1f1 e2c1	19
+King's Indian Defense	b	hFRTC	1323	capturingDefender crushing middlegame short	2r1r1k1/4ppbp/3pbnp1/qp6/3BP3/1PN2P1P/P2QB1P1/2RR2K1 w - - 0 18	c3b5 a5d2 d1d2 c8c1	18
+King's Indian Defense	b	Wb4YO	1360	crushing fork middlegame short	r2qnrk1/ppp2pbp/6p1/4n3/2P1P3/2N1BN1P/PP2Q1P1/R3K2R w KQ - 0 13	e3c5 e5d3 e1f1 d3c5	13
+King's Indian Defense	b	GzyLQ	1389	advantage hangingPiece intermezzo middlegame short	r1bq1rk1/pp3pBp/2p3p1/8/2P5/2n5/PP2BPPP/R2Q1RK1 w - - 0 13	d1d8 c3e2 g1h1 f8d8	13
+King's Indian Defense	b	MZ6sR	1414	advantage fork middlegame sacrifice veryLong	r1b2rk1/pp5p/1n1p2pb/2pPp1q1/2P1P1P1/2NB2QP/PP3P1N/R3K2R w KQ - 8 19	h2f3 f8f3 g3f3 g5d2 e1f1 d2b2 f1g2 b2c3	19
+King's Indian Defense	b	Qutys	1448	crushing middlegame short	rnb2rk1/ppp3bp/3p1n1q/2PPp3/1PN1Pp2/P1NB2p1/5PPP/R1BQ1RK1 w - - 0 16	h2g3 f6g4 d1g4 c8g4	16
+King's Indian Defense	b	eJZMz	1458	advantage middlegame pin short	r1b3k1/1pp4p/6pb/p1pPp3/2P1N2q/1P1Q3P/P3NrP1/1K1R3R w - - 0 19	e4f2 c8f5 g2g3 f5d3	19
+King's Indian Defense	b	gQXfd	1497	advantage fork long middlegame	r2q2k1/pp3pbp/3prnp1/4p3/2P1b3/3BPN1P/PP1Q1PPB/R2R2K1 w - - 4 17	d2e2 e4d3 d1d3 e5e4 d3b3 e4f3	17
+King's Indian Defense	b	uQCYB	1504	advantage fork middlegame short	r4rk1/ppp2pbp/6p1/4p3/2BPP2q/3R4/P4PP1/R1BQK3 w Q - 0 13	d4d5 h4e4 c1e3 e4c4	13
+King's Indian Defense	b	dKl50	1535	crushing fork long middlegame	r1b1nk2/ppq2p1p/4p1p1/4b3/N1PQ4/8/PP2B1PP/R4RK1 w - - 0 17	d4c5 c7c5 a4c5 e5d4 g1h1 d4c5	17
+King's Indian Defense	b	2ZPmA	1550	capturingDefender crushing master middlegame pin short	r1b2rk1/ppp2p2/3p2pp/2n1b3/2P1P1Pq/2N1BPRP/PP1QN3/R3K3 w Q - 3 16	f3f4 e5c3 d2c3 c5e4	16
+King's Indian Defense	b	laOWO	1555	advantage middlegame short	r4rk1/ppp2pbp/2n3p1/3p4/3Pn1qP/2N1BNPb/PP2PP2/R2QR1KB w - - 8 14	c3d5 e4g3 g1h2 g3h1	14
+King's Indian Defense	b	kHiII	1586	advantage fork long middlegame	r6q/ppp3k1/2np2p1/4pb2/2PP2n1/2NQPN2/PPB2PP1/2KR4 w - - 4 18	e3e4 g4f2 d3d2 f2d1 e4f5 d1c3	18
+King's Indian Defense	b	VdjsU	1640	advantage long middlegame pin sacrifice	r6k/1pqnp2p/p3Qr2/2pP1Bpn/2Pb1P2/2N5/PP1B2PP/R4R1K w - - 3 18	e6d7 h5g3 h2g3 f6h6 f5h3 c7d7	18
+King's Indian Defense	b	Pnja1	1661	crushing middlegame pin short	rn3rk1/ppp4p/3p2p1/4Pp1n/2PPP2q/3B1P1P/PP2N3/2RQ1K1R w - f6 0 14	e5d6 f5e4 d3e4 h4e4	14
+King's Indian Defense	b	cMHuz	1690	advantage middlegame short	r4rk1/1pq1ppbp/p5p1/2BP1bNn/2P5/2N1Q3/PP4PP/R4RK1 w - - 3 17	e3e7 g7d4 g1h1 c7c5	17
+King's Indian Defense	b	D56JW	1692	crushing discoveredAttack master middlegame pin short superGM	r1b1r1k1/ppp2pBp/3p2p1/6q1/2P1Pn2/2N2P2/PP1QB1PP/R4RK1 w - - 1 14	f1f2 f4h3 g1f1 g5d2	14
+King's Indian Defense	b	R1ezs	1694	backRankMate long mate mateIn3 middlegame sacrifice	5rk1/ppp3bp/3p2p1/3Pp3/2P1P1bq/P1N5/1P1Qn1PP/R1BB2K1 w - - 7 19	d1e2 h4f2 g1h1 f2f1 e2f1 f8f1	19
+King's Indian Defense	b	6wDAR	1722	advantage long master masterVsMaster middlegame	r1b1r1k1/p1p1q1bp/2pp2p1/5P1n/2P5/2N1BP2/PP1QB1PP/R4RK1 w - - 1 14	e3g5 g7c3 b2c3 e7e2 d2e2 e8e2	14
+King's Indian Defense	b	uMKZi	1770	crushing kingsideAttack master middlegame short	r1b2rk1/pp2ppbp/2np2p1/7q/2P1PPn1/2NBBN2/PP2Q1PP/R4RK1 w - - 6 12	e3d2 c6d4 e2e1 d4f3	12
+King's Indian Defense	b	ucDKB	1800	crushing long middlegame quietMove	rn2r3/p4pkp/3p1n2/1pqP1p2/4p3/1PN1P3/P1BQ1PPP/R3K2R w KQ - 0 17	a2a3 e8c8 c3e2 c5c2 d2c2 c8c2	17
+King's Indian Defense	b	9r3Jf	1801	advantage master middlegame short	rn1qr1k1/p4pbp/b5p1/1NpPP3/1p3Bn1/5N2/PP2B1PP/R2Q1RK1 w - - 4 15	b5d6 a6e2 d1e2 d8d6	15
+King's Indian Defense	b	j6k2l	1808	crushing middlegame sacrifice short	r2q1r1k/pp1n2bp/3NQ1p1/2p3p1/2P5/3B1P2/PP3P1P/R3K2R w KQ - 4 17	d6f7 f8f7 e6f7 d7e5	17
+King's Indian Defense	b	p9Iup	1833	advantage intermezzo long middlegame	3r2k1/ppp2p1p/2n1b1p1/8/2P1n3/2P2N2/P3BPPP/R4RK1 w - - 0 16	f3d4 e4c3 d4c6 c3e2 g1h1 b7c6	16
+King's Indian Defense	b	r1eAS	1870	attraction crushing long middlegame	r1bqr1k1/ppp2pb1/3p1n1p/3Pp1p1/2P5/2NQPNP1/PPB2PP1/R3K2R w KQ - 1 14	c3e4 f6e4 d3e4 f7f5 e4d3 e5e4	14
+King's Indian Defense	b	ITOLS	1903	advantage fork long middlegame sacrifice	2r2rk1/4ppbp/pqpp2p1/3Bn3/2P5/1P2P1P1/PB1Q1P1P/R2R2K1 w - - 0 17	b2d4 c6d5 d4b6 e5f3 g1g2 f3d2	17
+King's Indian Defense	b	EKOOA	1966	capturingDefender crushing long middlegame	2r2r2/pp3pk1/3p1np1/1b1Pp2p/1q2n2P/2N2P2/P1BQN1P1/1R3RK1 w - - 0 19	f3e4 b4c5 g1h1 b5e2 d2e2 c5c3	19
+King's Indian Defense	b	CqHQk	1994	crushing master middlegame short	rn5k/ppp3bp/3p2q1/3PprN1/2P1Nn1P/4BP2/PPQ5/R3K2R w KQ - 4 19	e4g3 f5g5 c2g6 g5g6	19
+King's Indian Defense	b	Ei2MJ	2005	advantage long middlegame	r2q2k1/p1N3bp/1p3pp1/4n3/2P5/3B1Q2/PP3PPP/R5K1 w - - 0 19	f3d5 d8d5 c4d5 a8c8 d3b5 c8c7	19
+King's Indian Defense	b	OE2nW	2009	advantage middlegame quietMove short	2rqk2r/4ppbp/2np1np1/1N6/1PQ2B2/4P3/P4PPP/2R1K1NR w Kk - 1 15	b5d4 c6a7 c4c8 a7c8	15
+King's Indian Defense	b	xfR8L	2078	advantage intermezzo long master middlegame sacrifice	rn2r1k1/1p1q1pbp/p2p2p1/2pP1b2/P1P2B2/2nB1N1P/1PQ2PP1/R4RK1 w - - 0 15	d3f5 d7f5 c2f5 c3e2 g1h2 g6f5	15
+King's Indian Defense	b	rCc3p	2081	advantage fork long middlegame	r1b3k1/pp1nq1bp/3p2p1/2pP1pN1/2P5/3BPNnP/PP1Q2P1/R4RK1 w - - 2 16	f1e1 g3e4 g5e4 f5e4 d3e4 e7e4	16
+King's Indian Defense	b	fP33o	2162	crushing middlegame short	r1b2rk1/ppp4p/3p4/3Pn3/2PN3q/2N2Pp1/PP1B2B1/1R1QR1K1 w - - 2 18	e1e4 h4h2 g1f1 c8h3	18
+King's Indian Defense	b	Ul57i	2168	crushing long middlegame	r2q1r2/1pp3kp/3p2p1/p2Ppb2/2P1N1n1/3Q1N2/PP3PPP/R3K2R w KQ - 1 16	h2h3 g4f6 f3d2 f6e4 d2e4 d8h4	16
+King's Indian Defense	b	dOUzR	2172	attraction collinearMove discoveredCheck doubleCheck kingsideAttack long mate mateIn3 middlegame operaMate sacrifice	r4rk1/1ppn3p/p5p1/3Pbb2/P1q2B2/R1N5/1PBQ2PP/5RK1 w - - 0 19	f4e5 c4f1 g1f1 f5d3 f1e1 f8f1	19
+King's Indian Defense	b	cElJW	2205	crushing kingsideAttack long middlegame	r2qr3/pbp2pkp/1p3np1/4n3/8/2N2NP1/PP1QPPBP/R3R1K1 w - - 0 15	a1d1 e5f3 g2f3 d8d2 d1d2 b7f3	15
+King's Indian Defense	b	m5Sxv	2208	crushing middlegame short	r2qr1k1/pQp2pbp/3p1np1/4n3/2P2B2/2NBP2P/PP3PP1/R3K2R w KQ - 0 12	d3e4 a8b8 b7a7 f6e4	12
+King's Indian Defense	b	NajDC	2244	advantage fork middlegame short	2b1nrk1/5pbp/p1pp1qp1/3Pp3/2B1P3/2N1B2P/Pr2N3/R2QK2R w KQ - 0 17	d5c6 f6f3 h1f1 f3e3	17
+King's Indian Defense	b	NG5jq	2267	attraction crushing deflection fork long middlegame sacrifice	r1b2rk1/4pp1p/n2p2p1/3Pn3/1q2P3/2NB3P/PP2QPP1/R3K1NR w KQ - 3 18	g1f3 b4b2 e2b2 e5d3 e1e2 d3b2	18
+King's Indian Defense	b	295Tm	2272	advantage exposedKing long middlegame pin	r1b2rk1/pp3pbp/n5p1/q2Pp3/4PnP1/2N1BN1P/PP1Q4/R3KB1R w KQ - 1 14	c3e2 f4d3 e1d1 a5a4 b2b3 a4e4	14
+King's Indian Defense	b	5OKkd	2300	advantage fork middlegame veryLong	1r1q1k2/p2n1pbp/5np1/2p2b2/2P5/2N1PN2/PPQ2PPP/R3KB1R w KQ - 5 15	e3e4 f6e4 f1d3 b8b2 c2b2 g7c3 b2c3 e4c3	15

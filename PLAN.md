@@ -66,6 +66,6 @@ Adding an opening = run the export with its name, write its plans, run the tests
 - [x] 4. Home: Endgames tile, endgame puzzles by type.
 - [x] 5. Middlegame plans for the Scotch and the Pirc, in the trap viewer, engine-checked.
 - [x] 6. Essential endgames against the tablebase.
-- [ ] 7. Extend tactics and plans to the other main openings.
+- [ ] 7. Extend tactics and plans to the other main openings. Tactics done for all 13 (7 for the English, 45–60 for the rest); plans still only for the Scotch and Pirc.
 
 Each phase: tests, emulator check, commit, install.
