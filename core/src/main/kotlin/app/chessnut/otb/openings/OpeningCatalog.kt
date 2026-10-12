@@ -15,7 +15,11 @@ object OpeningCatalog {
     fun browse(query: String): List<CatalogSection> {
         val q = query.trim()
         if (q.isNotEmpty()) {
-            val names = OpeningBook.search(q).map { it.name }
+            // Openings whose name starts with the search come first, the main ones first of all,
+            // so "Sicilian" finds the Sicilian Defense before the Pterodactyl's Sicilian lines.
+            val names = OpeningBook.search(q).map { it.name }.sortedWith(
+                compareBy<String>({ it !in OPENINGS }, { !it.startsWith(q, ignoreCase = true) }),
+            )
             return if (names.isEmpty()) emptyList() else listOf(CatalogSection("", names))
         }
         return listOfNotNull(

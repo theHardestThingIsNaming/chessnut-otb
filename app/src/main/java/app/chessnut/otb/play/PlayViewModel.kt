@@ -187,6 +187,8 @@ data class PlayUi(
     val bookSans: List<String> = emptyList(),
     /** Past the book, [bookUcis] are the engine's top moves rather than theory. */
     val explainedByEngine: Boolean = false,
+    /** The first arrow is the drilled line's own move. */
+    val bookFirstIsLine: Boolean = false,
     /** Which line of the opening this game drills, such as "Line 3 of 12 · new". */
     val lineLabel: String? = null,
     /** The drilled line is over, so the next one can start. */
@@ -1713,7 +1715,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             drillBook && explain -> if (onLine) {
                 "End of this line. Turn off Explain to test yourself on it."
             } else {
-                "You've left the main line, which continues $expected."
+                "You've left this line, which continues $expected."
             }
             drillBook && name != null -> {
                 val review = app.lineProgress.grade(name, userWhite, line, clean, now)
@@ -2206,6 +2208,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         /** Explain shows only the strongest few book moves, best first. */
         const val MAX_BOOK_ARROWS = 3
 
+        /** Opening history shows for the first moves only: six each. */
+        const val HISTORY_PLIES = 12
+
         const val DUE_SECTION = "Due for review"
 
         /** How long each trap move stays on screen before the next. */
@@ -2269,8 +2274,12 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         refreshEval()
         val at = glance
         val (shownFen, shownLast) = shownPosition()
+        // On your turn the line's own move comes first, green: the book's favourite isn't always this line's.
+        val lineMove = if (userToMove() && punishTrap == null) drillMove() else null
         val explained = if (at == null && kind == PlayKind.Trainer && explain && finished == null && !retry) {
-            legalBookSteps().take(MAX_BOOK_ARROWS).ifEmpty { engineIdeas() }
+            val book = legalBookSteps().ifEmpty { engineIdeas() }
+            val line = lineMove?.let { uci -> book.firstOrNull { it.second == uci } ?: PlayPosition.after(fen, uci)?.first?.let { it to uci } }
+            (listOfNotNull(line) + book.filter { it.second != lineMove }).take(MAX_BOOK_ARROWS)
         } else {
             emptyList()
         }
@@ -2314,6 +2323,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 bookUcis = explained.map { it.second },
                 bookSans = explained.map { it.first },
                 explainedByEngine = explained.isNotEmpty() && legalBookSteps().isEmpty(),
+                bookFirstIsLine = lineMove != null && explained.firstOrNull()?.second == lineMove,
                 lineLabel = if (kind == PlayKind.Trainer) lineLabelShown else null,
                 lineDone = kind == PlayKind.Trainer && drillGraded,
                 lineClean = lineClean,
@@ -2357,7 +2367,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 trapSummary = trap?.takeIf { trapStep >= it.moves.size }?.summary,
                 trapUci = trap?.let { trapPosition(it).second },
                 trapMistake = trapStep == 1,
-                story = if (kind == PlayKind.Trainer && trap == null) story else null,
+                // History belongs to the opening moves; past them it only crowds the screen.
+                story = if (kind == PlayKind.Trainer && trap == null && sanMoves.size <= HISTORY_PLIES) story else null,
             )
         }
     }

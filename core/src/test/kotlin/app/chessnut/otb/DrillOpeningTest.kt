@@ -31,3 +31,12 @@ class DrillOpeningTest {
         assertEquals(c, Drill.opening(listOf(a, b, c), reviews, now))
     }
 }
+
+class OpeningSearchTest {
+    @Test
+    fun theMainOpeningComesFirst() {
+        val names = app.chessnut.otb.openings.OpeningCatalog.browse("Sicilian").single().names
+        assertEquals("Sicilian Defense", names.first())
+        kotlin.test.assertTrue(names.indexOfFirst { it.startsWith("Pterodactyl") } > names.indexOfFirst { it.startsWith("Sicilian Defense:") })
+    }
+}

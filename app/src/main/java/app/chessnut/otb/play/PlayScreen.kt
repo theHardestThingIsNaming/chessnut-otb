@@ -816,7 +816,7 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                     }
                 }
             }
-            if (ui.bookSans.isNotEmpty()) BookKey(ui.bookSans, ui.explainedByEngine)
+            if (ui.bookSans.isNotEmpty()) BookKey(ui.bookSans, ui.explainedByEngine, ui.bookFirstIsLine)
             if (!showingTrap) ui.depthRun?.let { DepthStrip(it, ui.depthBest, ui.depthOver) }
             if (ui.idea != null || ui.story != null) CoachCard(ui)
             ui.branchNote?.let { note ->
@@ -1048,8 +1048,12 @@ private fun BotGame(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
 
 /** Explain mode's arrow key: each book move with its colour, strongest first. */
 @Composable
-private fun BookKey(sans: List<String>, byEngine: Boolean) {
-    val ranks = if (byEngine) ENGINE_RANKS else BOOK_RANKS
+private fun BookKey(sans: List<String>, byEngine: Boolean, lineFirst: Boolean) {
+    val ranks = when {
+        lineFirst -> LINE_RANKS
+        byEngine -> ENGINE_RANKS
+        else -> BOOK_RANKS
+    }
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
         if (byEngine) Text("Engine", color = Palette.Accent, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyMedium)
         sans.forEachIndexed { rank, san ->
@@ -1068,6 +1072,7 @@ private fun BookKey(sans: List<String>, byEngine: Boolean) {
 }
 
 private val BOOK_RANKS = listOf("Main", "2nd", "3rd")
+private val LINE_RANKS = listOf("This line", "Also book", "Also book")
 private val ENGINE_RANKS = listOf("Best", "2nd", "3rd")
 
 private fun bookArrowColor(rank: Int) = when (rank) {
