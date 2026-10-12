@@ -54,14 +54,16 @@ import java.io.File
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlansScreen(opening: String, white: Boolean, onBack: () -> Unit, onTry: (fen: String, white: Boolean) -> Unit) {
+fun PlansScreen(opening: String, white: Boolean, firstPlan: String? = null, onBack: () -> Unit, onTry: (fen: String, white: Boolean) -> Unit) {
     val plans = remember(opening, white) { MiddlegamePlans.of(opening, white) }
-    var open by rememberSaveable { mutableStateOf<String?>(null) }
+    var open by rememberSaveable { mutableStateOf(firstPlan) }
     val marks = PlanMarks(LocalContext.current.filesDir)
     // Read again each time the list shows, so a plan just stepped through is marked.
     val done = remember(open) { marks.all() }
     val plan = plans.firstOrNull { it.name == open }
-    BackHandler { if (plan != null) open = null else onBack() }
+    // A plan opened from its line goes back to the line's page; one picked from the list goes back to the list.
+    val back = { if (plan != null && plan.name != firstPlan) open = null else onBack() }
+    BackHandler(onBack = back)
     Scaffold(
         containerColor = Color.Transparent,
         contentColor = Palette.Text,
@@ -69,7 +71,7 @@ fun PlansScreen(opening: String, white: Boolean, onBack: () -> Unit, onTry: (fen
             TopAppBar(
                 title = { Text(plan?.name ?: "Middlegame plans") },
                 colors = clubAppBarColors(),
-                navigationIcon = { BackButton { if (plan != null) open = null else onBack() } },
+                navigationIcon = { BackButton(back) },
             )
         },
     ) { padding ->

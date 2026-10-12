@@ -26,6 +26,7 @@ import app.chessnut.otb.engine.UciEngine
 import app.chessnut.otb.games.GameSource
 import app.chessnut.otb.games.SavedGame
 import app.chessnut.otb.live.TimeControl
+import app.chessnut.otb.openings.MiddlegamePlans
 import app.chessnut.otb.openings.OpeningBook
 import app.chessnut.otb.openings.OpeningLore
 import app.chessnut.otb.openings.MoveIdeas
@@ -145,6 +146,8 @@ data class LineView(
     val best: Int? = null,
     /** How often your colour wins from the line's end position on Lichess, once fetched. */
     val winRate: Int? = null,
+    /** Middlegame plans that start where this line ends. */
+    val plans: List<String> = emptyList(),
 )
 
 data class PlayUi(
@@ -275,6 +278,8 @@ data class PlayUi(
     val chessComUser: String = "",
     /** Logged in to Lichess, which the win rates and trap figures need. */
     val lichessLinked: Boolean = false,
+    /** Once a drilled line is done: the middlegame plans that start where it ends. */
+    val linePlans: List<String> = emptyList(),
     val chessComNote: String? = null,
     val chessComBusy: Boolean = false,
 )
@@ -626,6 +631,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                     next,
                     app.depthRecords.ofLine(name, white, line)?.best,
                     lineStatKey(line)?.let { openingStats.record(it) }?.winPercent(if (white) OpeningSide.White else OpeningSide.Black),
+                    plansAfter(name, white, line),
                 )
             }
             state.update { if (it.openingName == name && it.userWhite == white) it.copy(
@@ -1114,6 +1120,10 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun punishKey(name: String) = "Punish: $name"
+
+    /** The middlegame plans that start from [line]: each plan begins at the end of one of your lines. */
+    private fun plansAfter(name: String, white: Boolean, line: List<String>): List<String> =
+        MiddlegamePlans.of(name, white).filter { line.size >= it.before.size && line.take(it.before.size) == it.before }.map { it.name }
 
     /**
      * Punish mode: sets up one of the opening's common mistakes, just after
@@ -2434,6 +2444,13 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 lineLabel = if (kind == PlayKind.Trainer) lineLabelShown else null,
                 lineDone = kind == PlayKind.Trainer && drillGraded,
                 lichessLinked = vault.token() != null,
+                linePlans = if (kind == PlayKind.Trainer && drillGraded && punishTrap == null && !survival) {
+                    val line = drillLine
+                    val name = openingName
+                    if (line != null && name != null) plansAfter(name, userWhite, line) else emptyList()
+                } else {
+                    emptyList()
+                },
                 lineClean = lineClean,
                 survival = survival,
                 punish = punishTrap != null,

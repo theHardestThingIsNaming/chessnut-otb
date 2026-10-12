@@ -107,7 +107,7 @@ fun PlayScreen(
     mode: PlayKind = PlayKind.Bot,
     onAnalyse: (String) -> Unit = {},
     onPuzzles: (String) -> Unit = {},
-    onPlans: (opening: String, white: Boolean) -> Unit = { _, _ -> },
+    onPlans: (opening: String, white: Boolean, plan: String?) -> Unit = { _, _, _ -> },
 ) {
     KeepScreenOn()
     val ui by viewModel.ui.collectAsStateWithLifecycle()
@@ -154,7 +154,7 @@ fun PlayScreen(
             ui.kind == PlayKind.Bot -> BotGame(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp), onAnalyse)
             onPage -> OpeningPage(ui, ui.detail!!, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp), onPuzzles, onPlans)
             !ui.playing -> Setup(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp))
-            else -> Playing(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp), onAnalyse)
+            else -> Playing(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp), onAnalyse, onPlans)
         }
     }
 }
@@ -476,7 +476,7 @@ private fun OpeningPage(
     viewModel: PlayViewModel,
     modifier: Modifier,
     onPuzzles: (String) -> Unit,
-    onPlans: (opening: String, white: Boolean) -> Unit,
+    onPlans: (opening: String, white: Boolean, plan: String?) -> Unit,
 ) {
     Column(modifier.padding(bottom = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -548,7 +548,7 @@ private fun OpeningPage(
                 }
             }
             itemsIndexed(ui.lines, key = { index, _ -> "line-$index" }) { index, line ->
-                LineRow(index, line) { viewModel.trainLine(index) }
+                LineRow(index, line, onPlan = { plan -> onPlans(detail.name, ui.userWhite, plan) }) { viewModel.trainLine(index) }
             }
             item(key = "chess-com") { ChessComImport(ui, viewModel::importChessCom) }
             detail.story?.let { story ->
@@ -613,7 +613,7 @@ private fun Stat(value: String, label: String, modifier: Modifier, color: Color 
 
 /** One line of the opening: its variation, its moves past the opening, how you're doing and when it's next due. */
 @Composable
-private fun LineRow(index: Int, line: LineView, onClick: () -> Unit) {
+private fun LineRow(index: Int, line: LineView, onPlan: (String) -> Unit, onClick: () -> Unit) {
     val (label, tint) = when (line.status) {
         LineStatus.Learned -> "Learned" to Palette.Best
         LineStatus.Due -> "Due" to Palette.Gold
@@ -641,6 +641,16 @@ private fun LineRow(index: Int, line: LineView, onClick: () -> Unit) {
             line.winRate?.let { Text("Wins $it%", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium) }
             Box(Modifier.weight(1f))
             line.best?.let { Text("Survival $it", color = Palette.Survival, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium) }
+        }
+        // Where the line leads: the middlegame plans that start from its last move.
+        for (plan in line.plans) {
+            Text(
+                "Middlegame plan: $plan ›",
+                color = Palette.Accent,
+                fontWeight = FontWeight.SemiBold,
+                style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier.clip(RoundedCornerShape(4.dp)).clickable { onPlan(plan) }.padding(vertical = 4.dp),
+            )
         }
     }
 }
@@ -693,7 +703,13 @@ private fun CoachCard(ui: PlayUi) {
 }
 
 @Composable
-private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, onAnalyse: (String) -> Unit) {
+private fun Playing(
+    ui: PlayUi,
+    viewModel: PlayViewModel,
+    modifier: Modifier,
+    onAnalyse: (String) -> Unit,
+    onPlans: (opening: String, white: Boolean, plan: String?) -> Unit,
+) {
     // Weakest first, so the main line is drawn on top where arrows overlap.
     val bookArrows = ui.bookUcis.mapIndexedNotNull { index, uci ->
         Arrow.ofUci(uci, bookArrowColor(index))
@@ -790,6 +806,17 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
             // In Punish mode the eval would give the mistake away, so it waits until you've answered.
             if (!showingTrap && !(ui.punish && !ui.lineDone)) EvalBar(ui.evalScore, ui.evalTerminal, ui.fen)
             if (!showingTrap) ui.punishPass?.let { ResultMark(it, ui.punishMark.orEmpty()) }
+            // The line is done and a middlegame plan starts where it ends: carry on into it, first thing under the board.
+            val opening = ui.openingName
+            if (opening != null) {
+                for (plan in ui.linePlans) {
+                    OutlinedButton(
+                        onClick = { onPlans(opening, ui.userWhite, plan) },
+                        colors = clubOutlinedButtonColors(),
+                        modifier = Modifier.fillMaxWidth(),
+                    ) { Text("Continue with the plan: $plan", color = Palette.Accent) }
+                }
+            }
             ui.trapName?.let { TrapBanner(it, ui.trapStep, ui.trapLength, ui.trapSummary, ui.trapInfo) }
             if (!showingTrap) {
                 for (info in ui.traps) {
@@ -1226,7 +1253,7 @@ private fun FamilyLink(family: String, onOpen: () -> Unit) {
  * the opening has either.
  */
 @Composable
-private fun BeyondTheOpening(opening: String, white: Boolean, onPuzzles: (String) -> Unit, onPlans: (String, Boolean) -> Unit) {
+private fun BeyondTheOpening(opening: String, white: Boolean, onPuzzles: (String) -> Unit, onPlans: (String, Boolean, String?) -> Unit) {
     val key = PuzzleSets.middlegameKey(opening, white)
     val context = LocalContext.current
     // Read each time the page shows, so solving some updates the numbers.
@@ -1239,7 +1266,7 @@ private fun BeyondTheOpening(opening: String, white: Boolean, onPuzzles: (String
     ) {
         Text("Beyond the opening", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp))
         if (plans > 0) {
-            BeyondRow("Middlegame plans", "What to aim for once your lines end", "$plans", Palette.Accent) { onPlans(opening, white) }
+            BeyondRow("Middlegame plans", "What to aim for once your lines end", "$plans", Palette.Accent) { onPlans(opening, white, null) }
         }
         if (counts.total > 0 && (!counts.resting || showSolved)) {
             BeyondRow(

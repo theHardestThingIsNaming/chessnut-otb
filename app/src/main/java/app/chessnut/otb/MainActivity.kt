@@ -58,6 +58,8 @@ class MainActivity : ComponentActivity() {
                 var playMode by rememberSaveable { mutableStateOf("bot") }
                 /** Where a puzzle session returns to: an opening's page or the endgames list. */
                 var afterPuzzles by rememberSaveable { mutableStateOf("games") }
+                /** A plan to open straight away, when you came from its line. */
+                var firstPlan by rememberSaveable { mutableStateOf<String?>(null) }
                 val online = viewModel<OnlineViewModel>()
 
                 LaunchedEffect(oauthRedirect) {
@@ -121,7 +123,10 @@ class MainActivity : ComponentActivity() {
                             afterPuzzles = "play"
                             screen = "puzzles:$key"
                         },
-                        onPlans = { opening, white -> screen = "plans:$opening:${if (white) "w" else "b"}" },
+                        onPlans = { opening, white, plan ->
+                            firstPlan = plan
+                            screen = "plans:$opening:${if (white) "w" else "b"}"
+                        },
                     )
                     screen == "online" -> OnlineScreen(
                         online,
@@ -139,6 +144,7 @@ class MainActivity : ComponentActivity() {
                         PlansScreen(
                             opening = spec.substringBeforeLast(':'),
                             white = spec.endsWith(":w"),
+                            firstPlan = firstPlan,
                             onBack = { screen = "play" },
                             onTry = { fen, white -> playPosition(fen, white) },
                         )
