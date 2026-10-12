@@ -69,15 +69,30 @@ class BoardViewModel(application: Application) : AndroidViewModel(application) {
     private val state = MutableStateFlow(BoardUiState())
     val ui: StateFlow<BoardUiState> = state.asStateFlow()
 
-    private val logFile: File = File(application.filesDir, "logs").let {
-        it.mkdirs()
-        File(it, "board-${SimpleDateFormat("yyyyMMdd-HHmmss", Locale.ROOT).format(Date())}.txt")
+    private val logFile: File = File(application.filesDir, "logs").let { dir ->
+        dir.mkdirs()
+        // Keep only the newest sessions' logs, so they can't fill the phone over months.
+        runCatching {
+            dir.listFiles { f -> f.name.startsWith("board-") }.orEmpty()
+                .sortedByDescending { it.name }
+                .drop(KEEP_LOGS - 1)
+                .forEach { it.delete() }
+        }
+        File(dir, "board-${SimpleDateFormat("yyyyMMdd-HHmmss", Locale.ROOT).format(Date())}.txt")
     }
     private val clock = SimpleDateFormat("HH:mm:ss.SSS", Locale.ROOT)
     private val log = ByteLog { text ->
         val line = "${clock.format(Date())} $text"
         state.update { it.copy(log = (it.log + line).takeLast(MAX_LOG)) }
-        runCatching { logFile.appendText(line + "\n") }
+        runCatching {
+            // A long session rolls over: the older half is kept as .old, the rest starts afresh.
+            if (logFile.length() > MAX_LOG_BYTES) {
+                val old = File(logFile.path + ".old")
+                old.delete()
+                logFile.renameTo(old)
+            }
+            logFile.appendText(line + "\n")
+        }
     }
 
     private var link: GattLink? = null
@@ -507,6 +522,10 @@ class BoardViewModel(application: Application) : AndroidViewModel(application) {
 
     private companion object {
         const val MAX_LOG = 600
+        /** Board log files kept on the phone, this session's included. */
+        const val KEEP_LOGS = 5
+        /** A log rolls over past this size, so one session keeps at most about twice it. */
+        const val MAX_LOG_BYTES = 1_000_000L
         const val KEY_TIME = "time_control"
         const val KEY_BOARD_ADDRESS = "board_address"
         const val KEY_BOARD_NAME = "board_name"
