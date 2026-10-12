@@ -47,6 +47,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import app.chessnut.otb.chess.MoveInput
@@ -271,6 +273,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private val speech = MoveSpeaker(application)
     private val random = Random.Default
     private var engine: UciEngine? = null
+    private val engineLock = Mutex()
     private val vault = LichessVault(application)
     private val trapStats = TrapStatsCache(File(application.filesDir, "trap-stats.tsv"), LichessHttp { vault.token() })
     private var trapStatsJob: Job? = null
@@ -2065,14 +2068,15 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         publish()
     }
 
-    private suspend fun engine(): UciEngine {
-        engine?.let { return it }
+    /** The one engine, started on first use. The bot, the eval bar and the idea arrows can all ask at once. */
+    private suspend fun engine(): UciEngine = engineLock.withLock {
+        engine?.let { return@withLock it }
         val created = withContext(Dispatchers.IO) {
             UciEngine(StockfishProcess.start(getApplication()), threads = 2)
         }
         created.start()
         engine = created
-        return created
+        created
     }
 
     private fun launchPlay(block: suspend () -> Unit) {
