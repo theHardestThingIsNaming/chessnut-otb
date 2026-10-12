@@ -17,7 +17,7 @@ class MiddlegamePlansTest {
             val lines = OpeningTree.lines(plan.opening, plan.white)
             assertTrue(lines.any { it.take(plan.before.size) == plan.before }, "${plan.name} starts from a line you drill")
         }
-        assertEquals(4, MiddlegamePlans.of("Scotch Game", true).size)
+        assertEquals(10, MiddlegamePlans.of("Scotch Game", true).size)
         assertEquals(4, MiddlegamePlans.of("Italian Game", true).size)
         assertEquals(4, MiddlegamePlans.of("Ruy Lopez", true).size)
         assertEquals(2, MiddlegamePlans.of("Vienna Game", true).size)
@@ -31,5 +31,13 @@ class MiddlegamePlansTest {
         assertEquals(4, MiddlegamePlans.of("King's Indian Defense", false).size)
         assertEquals(4, MiddlegamePlans.of("Pirc Defense", false).size)
         assertEquals(4, MiddlegamePlans.of("Bishop's Opening", true).size)
+    }
+
+    @Test
+    fun everyScotchLineLeadsIntoAPlan() {
+        val plans = MiddlegamePlans.of("Scotch Game", true)
+        for (line in app.chessnut.otb.repertoire.OpeningTree.lines("Scotch Game", true)) {
+            assertTrue(plans.any { line.size >= it.before.size && line.take(it.before.size) == it.before }, "no plan after ${line.joinToString(" ")}")
+        }
     }
 }
