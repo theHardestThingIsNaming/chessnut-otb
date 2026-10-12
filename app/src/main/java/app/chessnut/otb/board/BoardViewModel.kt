@@ -165,57 +165,67 @@ class BoardViewModel(application: Application) : AndroidViewModel(application) {
         val current = link ?: return
         run("Connecting") {
             val opened = ChessnutSession(current, viewModelScope, log = log)
-            opened.open(board.address)
-            session = opened
-            app.attachBoard(opened)
-            state.update { it.copy(busy = "Importing games from the board") }
-            val imported = importStoredGames(opened)
-            state.update { it.copy(busy = "Connecting") }
-            tracker.reset()
-            spokenPlies = 0
-            state.update { it.copy(lastSavedGameId = null) }
-            liveJob = viewModelScope.launch {
-                opened.livePlacement.collect { p ->
-                    state.update { it.copy(livePlacement = p) }
-                    val placement = p ?: return@collect
-                    app.notePlacement(placement)
-                    if (app.playEngaged) return@collect
-                    // A slide reports every square the piece crosses. Wait until it stops.
-                    settleJob?.cancel()
-                    settleJob = viewModelScope.launch {
-                        delay(BOARD_SETTLE_MS)
-                        if (app.playEngaged) return@launch
-                        val now = System.currentTimeMillis()
-                        val event = tracker.onPlacement(placement, now)
-                        publishLive(now)
-                        cue(event)
-                        when (event) {
-                            is LiveEvent.Finished -> persistLive(event)
-                            is LiveEvent.Move -> log.line("live ${event.san}")
-                            is LiveEvent.Illegal -> log.line("live illegal")
-                            LiveEvent.Ignored -> Unit
-                        }
+            try {
+                openSession(opened, board)
+            } catch (e: Exception) {
+                // A half-open session would keep listening and stay attached while the screen says not connected.
+                if (session === opened) disconnect() else runCatching { opened.close() }
+                throw e
+            }
+        }
+    }
+
+    private suspend fun openSession(opened: ChessnutSession, board: FoundBoard) {
+        opened.open(board.address)
+        session = opened
+        app.attachBoard(opened)
+        state.update { it.copy(busy = "Importing games from the board") }
+        val imported = importStoredGames(opened)
+        state.update { it.copy(busy = "Connecting") }
+        tracker.reset()
+        spokenPlies = 0
+        state.update { it.copy(lastSavedGameId = null) }
+        liveJob = viewModelScope.launch {
+            opened.livePlacement.collect { p ->
+                state.update { it.copy(livePlacement = p) }
+                val placement = p ?: return@collect
+                app.notePlacement(placement)
+                if (app.playEngaged) return@collect
+                // A slide reports every square the piece crosses. Wait until it stops.
+                settleJob?.cancel()
+                settleJob = viewModelScope.launch {
+                    delay(BOARD_SETTLE_MS)
+                    if (app.playEngaged) return@launch
+                    val now = System.currentTimeMillis()
+                    val event = tracker.onPlacement(placement, now)
+                    publishLive(now)
+                    cue(event)
+                    when (event) {
+                        is LiveEvent.Finished -> persistLive(event)
+                        is LiveEvent.Move -> log.line("live ${event.san}")
+                        is LiveEvent.Illegal -> log.line("live illegal")
+                        LiveEvent.Ignored -> Unit
                     }
                 }
             }
-            startTicks()
-            opened.startLive()
-            opened.announceConnected(sound = app.boardSounds)
-            batteryJob = viewModelScope.launch {
-                opened.batteryPercent.collect { percent ->
-                    state.update { it.copy(batteryPercent = percent) }
-                }
-            }
-            batteryPoll = viewModelScope.launch {
-                while (isActive) {
-                    delay(60_000)
-                    runCatching { opened.requestBattery() }
-                }
-            }
-            runCatching { opened.requestBattery() }
-            remember(board)
-            state.update { it.copy(connected = board, message = imported, needsPermission = false) }
         }
+        startTicks()
+        opened.startLive()
+        opened.announceConnected(sound = app.boardSounds)
+        batteryJob = viewModelScope.launch {
+            opened.batteryPercent.collect { percent ->
+                state.update { it.copy(batteryPercent = percent) }
+            }
+        }
+        batteryPoll = viewModelScope.launch {
+            while (isActive) {
+                delay(60_000)
+                runCatching { opened.requestBattery() }
+            }
+        }
+        runCatching { opened.requestBattery() }
+        remember(board)
+        state.update { it.copy(connected = board, message = imported, needsPermission = false) }
     }
 
     private fun remember(board: FoundBoard) {
