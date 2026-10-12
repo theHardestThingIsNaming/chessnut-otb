@@ -60,11 +60,7 @@ fun MasterGameScreen(model: MasterGameViewModel, onBack: () -> Unit, onAnalyse: 
         Column(Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Row {
                 Text(ui.status, color = if (ui.done) Palette.Accent else Palette.Text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                val score = when {
-                    ui.guessed > 0 -> "${ui.matched}/${ui.guessed}"
-                    ui.lineGuessed > 0 -> "${ui.lineMatched}/${ui.lineGuessed}"
-                    else -> null
-                }
+                val score = if (ui.guessed > 0) "${ui.matched}/${ui.guessed}" else null
                 score?.let { Text(it, color = Palette.Accent, style = MaterialTheme.typography.titleMedium) }
             }
             // The players, as on a scoresheet: the opponent above the board, the master you guess below.

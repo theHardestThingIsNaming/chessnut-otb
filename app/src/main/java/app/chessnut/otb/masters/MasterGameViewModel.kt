@@ -53,9 +53,6 @@ data class MasterGameUi(
     val matched: Int = 0,
     val good: Int = 0,
     val guessed: Int = 0,
-    /** Your moves in the line itself, before the master's own moves begin. */
-    val lineMatched: Int = 0,
-    val lineGuessed: Int = 0,
     val done: Boolean = false,
     val busy: Boolean = true,
     /** Playing out the rest of the game after your guesses. */
@@ -258,6 +255,8 @@ class MasterGameViewModel(application: Application, private val id: String) : An
                 // In your line, the green arrow shows its move.
                 val guide = if (ply < g.start) r.uci[ply] else null
                 state.update { it.copy(busy = false, status = ask, guideUci = guide) }
+                // A spoken prompt when it's your guess, so you can keep your eyes on the board.
+                if (ply >= g.start && app.phoneSounds) speech.narrate("Your move.")
             }
         }
     }
@@ -265,7 +264,10 @@ class MasterGameViewModel(application: Application, private val id: String) : An
     /** Marks where the line ends and the master's own moves begin. */
     private fun lineEnds() {
         val g = game ?: return
-        state.update { it.copy(intro = "Your line ends here. From now on, guess ${g.master}'s moves.") }
+        val words = "Your line ends here. From now on, guess ${g.master}'s moves."
+        if (state.value.intro == words) return
+        state.update { it.copy(intro = words) }
+        if (app.phoneSounds) speech.narrate(words)
     }
 
     fun tap(square: Int) {
@@ -287,8 +289,10 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         val verdict = if (hints > 0) Guess.Miss else MasterGames.judge(g, ply, uci, master)
         if (app.phoneSounds) if (verdict == Guess.Miss) sounds.illegal()
         val inLine = ply < g.start
+        // In your line the arrow shows the move, so playing it isn't a guess: no mark, no score.
+        val lineMove = inLine && uci.equals(master, true)
         val words = when {
-            inLine && verdict == Guess.Match -> "Yes: $san, your line's move."
+            lineMove -> "$san"
             inLine -> "Your line plays $san."
             verdict == Guess.Match -> "Yes, ${g.master} played $san."
             verdict == Guess.Good -> "Good too: the engine likes your move. ${g.master} played $san."
@@ -297,18 +301,18 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         state.update {
             it.copy(
                 busy = true, fen = r.fens[ply + 1], lastUci = master, selected = null, targets = emptySet(),
-                masterUci = master, threatUci = null, wrongUci = if (verdict == Guess.Miss && !uci.equals(master, true)) uci else null,
-                pass = verdict != Guess.Miss, mark = words, status = words, intro = null, theirNote = null, guideUci = null,
+                threatUci = null, wrongUci = if (verdict == Guess.Miss && !uci.equals(master, true)) uci else null,
+                pass = if (lineMove) null else verdict != Guess.Miss, mark = if (lineMove) null else words,
+                status = if (lineMove) it.status else words, intro = null, theirNote = null, guideUci = null,
+                masterUci = if (lineMove) null else master,
                 yourNote = noteAt(ply),
-                lineGuessed = it.lineGuessed + if (inLine) 1 else 0,
-                lineMatched = it.lineMatched + if (inLine && verdict == Guess.Match) 1 else 0,
                 guessed = it.guessed + if (inLine) 0 else 1,
                 matched = it.matched + if (!inLine && verdict == Guess.Match) 1 else 0,
                 good = it.good + if (!inLine && verdict == Guess.Good) 1 else 0,
             )
         }
         if (app.phoneSounds) {
-            speech.narrate(words)
+            if (lineMove) speech.say(san) else speech.narrate(words)
             noteText(ply)?.let(speech::narrate)
         }
         val after = r.fens[ply + 1]
@@ -414,7 +418,7 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         state.update {
             it.copy(
                 busy = false, done = true, threatUci = null,
-                status = "Your line: ${it.lineMatched} of ${it.lineGuessed}. ${g.master}'s moves: ${it.matched} of ${it.guessed}" +
+                status = "${g.master}'s moves: you found ${it.matched} of ${it.guessed}" +
                     (if (it.good > 0) ", and ${it.good} more as good." else "."),
                 theirNote = "The game went on for ${(rest + 1) / 2} more moves. Play it out to see how it ended.",
             )
