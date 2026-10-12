@@ -22,6 +22,8 @@ import kotlin.test.Test
  *
  * Writes `core/src/main/resources/puzzles-middlegame.tsv` and `puzzles-endgame.tsv`.
  * Run: EXPORT_OPENINGS="Scotch Game|w,Pirc Defense|b" ./gradlew :core:test --tests '*PuzzleExportTest*' --rerun-tasks
+ * EXPORT_CAP raises how many of the most-played puzzles are checked (default 1500).
+ * EXPORT_ENDGAMES=skip leaves the endgame file alone.
  */
 class PuzzleExportTest {
     private val root = generateSequence(File("").absoluteFile) { it.parentFile }.first { File(it, "settings.gradle.kts").exists() || File(it, "settings.gradle").exists() }
@@ -70,7 +72,8 @@ class PuzzleExportTest {
         for ((key, rows) in middle) {
             val (opening, white) = key
             val lines = OpeningTree.lines(opening, white)
-            val candidates = rows.sortedByDescending { it.plays }.take(1500)
+            val cap = System.getenv("EXPORT_CAP")?.toIntOrNull() ?: 1500
+            val candidates = rows.sortedByDescending { it.plays }.take(cap)
             val games = games(candidates.mapNotNull { gameId(it.gameUrl) })
             val kept = candidates.mapNotNull { row ->
                 val moves = games[gameId(row.gameUrl)] ?: return@mapNotNull null
@@ -79,7 +82,10 @@ class PuzzleExportTest {
                 val before = moves.take(ply)
                 val replay = runCatching { ChessLines.replay(before) }.getOrNull() ?: return@mapNotNull null
                 if (replay.fens.last().split(' ')[0] != row.fen.split(' ')[0]) return@mapNotNull null
-                if (!OpeningTraps.fits(before, lines, white, reach = Int.MAX_VALUE, minShared = 6)) return@mapNotNull null
+                // The Bishop's model lines run on to move 8, and puzzle games leave before that.
+                // Matching the first three moves of each side is enough: the game began in the line.
+                val fitLines = if (opening == "Bishop's Opening") lines.map { it.take(6) } else lines
+                if (!OpeningTraps.fits(before, fitLines, white, reach = Int.MAX_VALUE, minShared = 6)) return@mapNotNull null
                 row to ply
             }
             val picked = spread(kept.map { it.first }, PER_OPENING)
@@ -96,7 +102,7 @@ class PuzzleExportTest {
             println("$type: ${rows.size} candidates, ${picked.size} kept")
             for (row in picked) end.append(listOf(type, row.id, row.rating, row.themes, row.fen, row.moves).joinToString("\t")).append('\n')
         }
-        File(resources, "puzzles-endgame.tsv").writeText(end.toString())
+        if (System.getenv("EXPORT_ENDGAMES") != "skip") File(resources, "puzzles-endgame.tsv").writeText(end.toString())
     }
 
     /** Up to [count] puzzles spread evenly over the ratings, the most played in each band. */

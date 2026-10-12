@@ -4,19 +4,18 @@ One list for the next session. The older "common mistakes and Punish" notes are 
 What is already on the phone is under Done. What is worth doing next is under Next.
 
 The app teaches an opening, then three things past move 15: middlegame plans, middlegame tactics,
-and endgames. Built the same way for the main openings. The Bishop's Opening is the newest:
-its lines and punishes are in, and it does not have middlegame plans or tactics yet.
+and endgames. Built the same way for the main openings, including the Bishop's Opening.
 
 ## Done
 
 - [x] Puzzle pipeline and puzzle trainer. A clean solve comes back once, after 3 days, then the puzzle is done. A miss comes back tomorrow. Opening lines still use 1, 3, 7, 14, 30 days.
-- [x] Middlegame tactics on every main opening's page. Lichess puzzles whose games started in your lines: Scotch 60, Italian 60, Nimzo-Indian 60, Pirc 58, King's Indian 57, Caro-Kann 57, Ruy Lopez 55, Slav 55, French 53, Vienna 52, Sicilian 49, London 45, English 7. Commit `479b919`.
+- [x] Middlegame tactics on every main opening's page, including the Bishop's Opening. Lichess puzzles whose games started in your lines: Scotch 60, Italian 60, Nimzo-Indian 60, Pirc 58, King's Indian 57, Caro-Kann 57, Ruy Lopez 55, Slav 55, French 53, Vienna 52, Bishop's Opening 52, Sicilian 49, London 45, English 7.
 - [x] Endgames on the home screen: 79 puzzles in six types, rating 1800 and up, long races left out. Pawn 11, rook 14, knight 15, bishop 14, queen 11, queen and rook 14.
 - [x] Eight Essential endgames against the Lichess tablebase (the ladder, queen and rook mates, the square of the pawn, taking and holding the opposition, Lucena, Philidor). A move that lets the result slip is turned back. A mastered essential is hidden on the Endgames page until you tap "Show mastered".
 - [x] A puzzle section with nothing left due (an endgame type, or an opening's middlegame tactics) is hidden the same way, with "Show solved". It comes back on its own when a puzzle is due again.
 - [x] Middlegame plans for all 13. Four each, except the English (3), the Vienna (2) and the London (2), which have fewer distinct structures in the lines you drill. Each plan starts from a line you drill, has a note per move, and no move of the planning side gives away more than about 60 centipawns at Stockfish depth 18.
 - [x] Common mistakes and Punish mode, traps for the main openings, and the book audit that keeps your own blunders out of the lines.
-- [x] Bishop's Opening for White. The four replies players rated 1400–2000 actually play (Nf6, Nc6, Bc5, d6), and in each the white move that keeps the advantage. Punishes after 3.Nf3 against ...Bc5: ...Qg5 loses the queen, ...f5 loses e5 and opens the king, ...d5 loses a pawn. No middlegame plans or tactics for it yet.
+- [x] Bishop's Opening for White. The four replies players rated 1400–2000 actually play (Nf6, Nc6, Bc5, d6), and in each the white move that keeps the advantage. Punishes after 3.Nf3 against ...Bc5: ...Qg5 loses the queen, ...f5 loses e5 and opens the king, ...d5 loses a pawn. Four middlegame plans, one per line (knight to g5, knight to g3, bishop to b5 then d4, queen in the centre). 52 middlegame tactics. A written note on every move of the four lines.
 
 ## Next
 
@@ -54,7 +53,9 @@ Needs `data-cache/puzzles.csv` (decompress `puzzles.csv.zst`, or download `https
 EXPORT_OPENINGS="Scotch Game|w,Pirc Defense|b" ./gradlew :core:test --tests '*PuzzleExportTest*' --rerun-tasks
 ```
 
-Side is `w` or `b`. Output is `core/src/main/resources/puzzles-middlegame.tsv`.
+Side is `w` or `b`. This replaces `puzzles-middlegame.tsv` with only the openings you named, and it also rewrites `puzzles-endgame.tsv`. Copy both files aside first. `EXPORT_ENDGAMES=skip` leaves the endgame file alone. `EXPORT_CAP` (default 1500) is how many of the most-played puzzles get their games checked.
+
+The Bishop's Opening is special in that test: puzzle games do not follow the model lines past move 3, so a game counts when its first three moves of each side match a drilled line.
 
 ## How to work
 

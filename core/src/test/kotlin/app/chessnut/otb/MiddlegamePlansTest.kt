@@ -30,5 +30,6 @@ class MiddlegamePlansTest {
         assertEquals(4, MiddlegamePlans.of("Nimzo-Indian Defense", false).size)
         assertEquals(4, MiddlegamePlans.of("King's Indian Defense", false).size)
         assertEquals(4, MiddlegamePlans.of("Pirc Defense", false).size)
+        assertEquals(4, MiddlegamePlans.of("Bishop's Opening", true).size)
     }
 }

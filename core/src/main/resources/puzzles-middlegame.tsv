@@ -666,3 +666,55 @@ King's Indian Defense	b	NajDC	2244	advantage fork middlegame short	2b1nrk1/5pbp/
 King's Indian Defense	b	NG5jq	2267	attraction crushing deflection fork long middlegame sacrifice	r1b2rk1/4pp1p/n2p2p1/3Pn3/1q2P3/2NB3P/PP2QPP1/R3K1NR w KQ - 3 18	g1f3 b4b2 e2b2 e5d3 e1e2 d3b2	18
 King's Indian Defense	b	295Tm	2272	advantage exposedKing long middlegame pin	r1b2rk1/pp3pbp/n5p1/q2Pp3/4PnP1/2N1BN1P/PP1Q4/R3KB1R w KQ - 1 14	c3e2 f4d3 e1d1 a5a4 b2b3 a4e4	14
 King's Indian Defense	b	5OKkd	2300	advantage fork middlegame veryLong	1r1q1k2/p2n1pbp/5np1/2p2b2/2P5/2N1PN2/PPQ2PPP/R3KB1R w KQ - 5 15	e3e4 f6e4 f1d3 b8b2 c2b2 g7c3 b2c3 e4c3	15
+Bishop's Opening	w	UMl75	926	advantage fork middlegame short	r1b2rk1/ppp2pp1/3p2qp/1BbNp3/4P3/3P2QP/PPnK1PP1/R5NR b - - 1 12	c2a1 d5e7 g8h7 e7g6	12
+Bishop's Opening	w	rznWf	966	crushing interference intermezzo middlegame short	r4rk1/ppp2ppp/4qn2/2p5/2P1PPN1/2P5/PP2Q1P1/R1B2RK1 b - - 0 15	f6g4 f4f5 e6e7 e2g4	15
+Bishop's Opening	w	vl7xn	992	mate mateIn2 middlegame short	r2qk2r/1ppb1p2/p1np3p/2bBp1p1/4P3/3P1QBP/PPP2PP1/R3K1NR b KQkq - 2 11	f7f6 f3h5 e8e7 h5f7	11
+Bishop's Opening	w	oLou3	1004	crushing hangingPiece middlegame short	r2q1rk1/b4pp1/p2p3p/1p3b2/1P1NnB2/2P2N2/1P4PP/R2Q1R1K b - - 1 19	d8b6 d4f5 e4f2 f1f2	19
+Bishop's Opening	w	clIaY	1008	hangingPiece kingsideAttack master mate mateIn1 middlegame oneMove	r2q1rnk/1p2Np1p/1ppp1P2/4p1Q1/2P5/2P5/PP3PPP/R4RK1 b - - 0 19	g8f6 g5f6	19
+Bishop's Opening	w	WyRoL	1042	mate mateIn2 middlegame pillsburysMate short	r2q1r1k/1ppb1BpQ/p2p4/3np3/4P1P1/3PPR2/PPP4P/5RK1 b - - 0 18	h8h7 f3h3 d8h4 h3h4	18
+Bishop's Opening	w	OQkBK	1079	discoveredAttack discoveredCheck kingsideAttack mate mateIn1 middlegame oneMove	r4q1k/1ppn1rpp/2np1pQ1/4pP1N/p3P3/1PPPB2R/2P3PP/R5K1 b - - 1 18	h7g6 h5f6	18
+Bishop's Opening	w	NesnC	1146	kingsideAttack mate mateIn2 middlegame short	r2q2k1/1bp1rp1p/pn4pQ/1p1pp3/4P1N1/1P1P4/1PP1NPPP/R4RK1 b - - 1 18	d8f8 g4f6 g8h8 h6h7	18
+Bishop's Opening	w	ZvTcs	1170	advantage discoveredAttack middlegame short	r2qk2r/ppp2Bpp/3p4/2b1p3/3nPPb1/2NP1N2/PPP5/R1BQKR2 b Qkq - 0 11	e8f7 f3g5 f7g8 d1g4	11
+Bishop's Opening	w	qF3me	1177	crushing middlegame short	r1b2r1k/5ppp/p7/1Bq1p3/3PP3/2P4P/1P2Q1P1/R4RK1 b - - 0 19	c5b5 e2b5 a6b5 a1a8	19
+Bishop's Opening	w	hS9NP	1179	crushing fork long middlegame	N1bk3r/pp1p1pp1/7p/1q6/2NbP3/P2P2P1/2P1Q1KP/5R2 b - - 3 19	f7f6 c4d6 b5c6 d6f7 d8e7 f7h8	19
+Bishop's Opening	w	pGDJH	1198	advantage kingsideAttack long middlegame	r2qr1k1/ppp2p1p/2n3p1/8/2B3Q1/3P1N2/PbP3PP/1R3RK1 b - - 1 15	b2d4 f3d4 d8d4 g4d4 c6d4 c4f7	15
+Bishop's Opening	w	jPjek	1219	crushing kingsideAttack middlegame short	4rrk1/1pp3pp/1nn2q2/p3pp1Q/P2P4/2P3N1/2PB1PPP/R3R1K1 b - - 0 17	e5d4 e1e8 f8e8 h5e8	17
+Bishop's Opening	w	qA0md	1242	crushing middlegame short	2r2b1r/1Qpk2p1/1p1ppq1p/1P6/3pP3/3P4/1PP2PPP/R4RK1 b - - 3 17	f8e7 b7c6 d7d8 a1a8	17
+Bishop's Opening	w	UgHAN	1245	kingsideAttack mate mateIn2 middlegame short	r4r1k/1ppn4/pbnpNq2/4p3/1P2P1QN/P2P3P/2P2PP1/R4RK1 b - - 0 18	f8g8 g4h5 f6h6 h5h6	18
+Bishop's Opening	w	tOuNP	1270	crushing discoveredAttack middlegame short	2kr3r/ppp2ppp/1q6/8/8/1B6/PQ2N1PP/5R1K b - - 0 18	b6b4 b3e6 f7e6 b2b4	18
+Bishop's Opening	w	O4t8b	1310	crushing discoveredAttack discoveredCheck middlegame short	r4rk1/ppp4p/4Rpnq/3B4/3N2p1/3P4/PPPN1PPP/R5K1 b - - 1 18	h6d2 e6e2 g8h8 e2d2	18
+Bishop's Opening	w	yNTep	1346	mate mateIn2 middlegame short	r2qk2r/bppb4/p2p1p1p/nP1Bp1p1/P3P3/2PP1QBP/4NPP1/R3K2R b KQkq - 1 16	c7c6 f3h5 e8e7 h5f7	16
+Bishop's Opening	w	pgp3e	1379	attackingF2F7 mate mateIn2 middlegame short	r1bq3r/ppp1kp2/2np4/2b1p1Q1/2B1P3/3P1N2/PPP2PPP/R3K2R b KQ - 4 14	e7d7 g5f5 d7e8 f5f7	14
+Bishop's Opening	w	Ip9It	1424	advantage intermezzo middlegame short	2kr1r2/ppp1q3/2npp2Q/4p2p/4P1nB/P1NP4/1PP3P1/2KR2NR b - - 1 17	e7h4 h6e6 c8b8 h1h4	17
+Bishop's Opening	w	qRQQc	1425	advantage kingsideAttack middlegame pin short	r3k2r/ppp2p2/3p1npp/4p3/P1B1P3/2NPq3/1PP5/1K1Q2R1 b kq - 1 19	e8g8 g1g6 g8h7 g6f6	19
+Bishop's Opening	w	0thOt	1441	advantage capturingDefender middlegame short	r4r1k/pp3pp1/2pp2qp/8/1PBpPPb1/P2P2Q1/2P3PP/R4RK1 b - - 0 16	g4e6 g3g6 f7g6 c4e6	16
+Bishop's Opening	w	TDMOd	1451	attraction kingsideAttack mate mateIn2 middlegame pillsburysMate sacrifice short	r2q1r1k/pbp3pp/1pn2p2/4pPBQ/P1B5/2PP1R2/2P3PP/R5K1 b - - 1 17	f6g5 h5h7 h8h7 f3h3	17
+Bishop's Opening	w	Qytog	1470	crushing fork long master middlegame	r4rk1/ppp2ppp/5n2/3PNq2/1b3B2/7P/PPP1Q1P1/2KR1R2 b - - 2 16	f5e4 e2e4 f6e4 d1d4 b4d6 d4e4	16
+Bishop's Opening	w	aUg3m	1508	advantage middlegame short	3rqr2/1pp3pk/p1nbpn1p/4p3/P2PP3/3P1NNP/1P1B1PP1/R2QR1K1 b - - 0 17	c6d4 f3d4 e5d4 e4e5	17
+Bishop's Opening	w	C1Hz0	1509	attraction kingsideAttack mate mateIn2 middlegame sacrifice short	r2q2k1/pbp2pBp/1p3Pp1/2b4r/2Bp2Q1/3P4/PPP3PP/4RR1K b - - 7 18	c5d6 c4f7 g8f7 g4e6	18
+Bishop's Opening	w	wnKjy	1558	crushing deflection kingsideAttack middlegame short	r1bq1rk1/ppppnp1p/5Q2/2b1p3/2B1P3/3P3N/PPP2PPP/R3K2R b KQ - 0 11	e7g6 c4f7 f8f7 f6d8	11
+Bishop's Opening	w	8HCPr	1563	advantage attraction fork long middlegame sacrifice	r1b1k2r/ppp2p2/2np3p/4p3/2B1N2q/3P4/PPP2PPP/R2QK2R b KQkq - 1 11	c8g4 d1g4 h4g4 e4f6 e8e7 f6g4	11
+Bishop's Opening	w	N3nLK	1564	crushing kingsideAttack long middlegame	r2n3k/pppbq1pp/3p4/3Bp1N1/4P3/2PP2QP/PP4P1/5NK1 b - - 0 19	c7c6 g3h4 h7h6 g5f7 e7f7 d5f7	19
+Bishop's Opening	w	l4P6I	1624	advantage attraction fork long middlegame sacrifice	r1b1k2r/ppp2p2/3p2qp/2b1p2N/2B1P1P1/2PP4/PP3PP1/R2Q1RK1 b kq - 0 15	c8g4 d1g4 g6g4 h5f6 e8e7 f6g4	15
+Bishop's Opening	w	aTBlA	1651	crushing kingsideAttack long middlegame	r1bq1rk1/2p1bp1n/p2p3Q/1p1N4/4P3/1P1P1N1P/1PP3P1/R4RK1 b - - 2 15	e7g5 f3g5 d8g5 d5f6 g5f6 f1f6	15
+Bishop's Opening	w	3ST2K	1663	crushing middlegame short	r2q1r2/ppp2pk1/3pb2p/2bBp1pQ/3nP2P/3P1NB1/PPP2PP1/2KR3R b - - 4 14	e6d5 h4g5 f8h8 g5h6	14
+Bishop's Opening	w	ItR0W	1674	crushing fork long middlegame sacrifice	2b2rk1/p1pq1p1n/3p4/5NbQ/1r2P3/1P1P4/P1P3PP/RN3RK1 b - - 2 18	d7c6 h5g5 h7g5 f5e7 g8g7 e7c6	18
+Bishop's Opening	w	5MWME	1724	crushing long middlegame	r3k2r/1p2qpp1/p1pp1n1p/8/2B1P2B/3P1Q2/PPP3PP/R5K1 b kq - 1 14	b7b5 e4e5 e8g8 e5f6 e7a7 h4f2	14
+Bishop's Opening	w	j6RQM	1757	advantage deflection kingsideAttack long middlegame pin	r2qrbk1/2pb1pp1/p2pn2p/1p1NpN2/4P3/P1PP2QP/BP3PP1/R4RK1 b - - 6 17	c7c6 f5h6 g8h7 h6f7 c6d5 f7d8	17
+Bishop's Opening	w	NC2mC	1787	discoveredCheck doubleCheck kingsideAttack mate mateIn2 middlegame short	r1bq1rk1/ppp2p1n/3p2QP/2bNpP2/2BnP2P/3P4/PPP5/R1B1K1NR b KQ - 0 13	f7g6 d5e7 g8h8 e7g6	13
+Bishop's Opening	w	KvnsI	1835	crushing kingsideAttack middlegame short	r2q1rk1/bpp2p1n/p2pb2Q/3Nn3/4P3/1BNP3P/PPP3P1/R4R1K b - - 0 15	d8g5 d5f6 g5f6 f1f6	15
+Bishop's Opening	w	b19Zf	1849	advantage middlegame short	r2qk2r/ppp2ppp/2np1b2/3Bp3/4P2P/3P4/PPP2PP1/R2QK1NR b KQkq - 0 9	f6h4 d1h5 h4f2 e1f2	9
+Bishop's Opening	w	kgavb	1859	advantage long middlegame	r1b5/ppN2kpp/3p4/4pPq1/3nP3/2PPb3/PP4PP/R2QK2R b KQ - 0 14	g5g2 d1h5 g7g6 h5h7 f7f8 h7h8	14
+Bishop's Opening	w	EUxbI	1859	crushing kingsideAttack long middlegame pin sacrifice	r1bq1rk1/pppp1pp1/2n5/4pQb1/2B1P3/2NP4/PPP3P1/R3K1NR b KQ - 1 11	g5h6 h1h6 g7h6 f5g6 g8h8 g6h6	11
+Bishop's Opening	w	kG8eU	1898	advantage middlegame short	r4rk1/ppp3pp/2n1p3/8/3q1BQ1/P2P4/2P3PP/R4R1K b - - 3 18	f8f4 g4f4 d4f4 f1f4	18
+Bishop's Opening	w	A59k3	1911	advantage fork middlegame sacrifice veryLong	2k2b1r/ppp1nppp/8/3P1P2/2r5/P1P2N1P/1P3K2/R1B1R3 b - - 0 19	e7f5 e1e8 c8d7 e8f8 h8f8 f3e5 d7d6 e5c4	19
+Bishop's Opening	w	ePOm0	1969	crushing long master middlegame	r2qk2r/ppp2p2/2np1n1p/4p1p1/1bB1P1bP/2NP1PB1/PPP3P1/R2QK1NR b KQkq - 0 9	f6h5 f3g4 h5g3 d1f3 h8f8 f3g3	9
+Bishop's Opening	w	hrQNj	1969	advantage defensiveMove middlegame short	r1bq1rk1/pp3ppp/2pb4/4N3/4PN2/1QP2P2/PP4PP/2KR3R b - - 0 15	d6e5 d1d8 e5f4 d8d2	15
+Bishop's Opening	w	pUbej	1971	crushing fork long middlegame	3r1rk1/2p2ppp/p7/1pbqp3/6Q1/PnPP2NP/1P3PP1/1RB2RK1 b - - 4 16	b3c1 g3h5 g7g6 h5f6 g8g7 f6d5	16
+Bishop's Opening	w	DAzGy	1973	backRankMate long mate mateIn3 middlegame sacrifice	r1bq3k/ppp2Qpp/8/8/1P1bpB2/8/P1P3PP/RN3R1K b - - 1 18	d4a1 f4e5 a1e5 f7f8 d8f8 f1f8	18
+Bishop's Opening	w	y8Okl	1997	crushing fork long middlegame sacrifice	r1bqr1k1/2p1bppp/p2p4/1p1P3N/1P2Np2/P2P4/1BP3PP/R2Q3K b - - 1 17	e7f8 h5f6 g7f6 e4f6 d8f6 b2f6	17
+Bishop's Opening	w	nQLMz	2061	advantage middlegame short	r1b4r/ppp2kpp/5b2/8/4Q3/P2P4/1qPN2PP/R4RK1 b - - 3 15	b2c2 a1c1 c2c1 f1c1	15
+Bishop's Opening	w	uL6QQ	2102	crushing long middlegame	r1b2rk1/pppp1p1p/8/2b1p3/2B1P2B/6PN/PP1K1PP1/n6R b - - 0 16	c5d4 h4f6 d7d5 h3g5 c8f5 e4f5	16
+Bishop's Opening	w	lxMhO	2177	crushing middlegame short	r3k3/ppp2p2/3pq3/4p3/4P3/P2P4/1PPQNbrP/2K2R1R b q - 1 17	f2h4 e2f4 g2d2 f4e6	17
+Bishop's Opening	w	WSoe2	2260	advantage intermezzo long master middlegame	r4rk1/pppq1ppp/3p1n2/2b1p3/3nP1b1/1B1P2NP/PPP1NPP1/R1BQ1RK1 b - - 0 12	g4h3 e2d4 c5d4 g2h3 d7h3 d1f3	12
+Bishop's Opening	w	Vyc6q	2279	advantage attraction long middlegame pin sacrifice	r2q3k/pppn1Qpp/2np4/4p3/2P1P2b/P1N1P3/1PPK2P1/R6R b - - 1 16	h4f6 h1h7 h8h7 a1h1 f6h4 g2g3	16

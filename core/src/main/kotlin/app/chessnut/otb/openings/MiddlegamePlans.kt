@@ -40,6 +40,7 @@ object MiddlegamePlans {
     private const val SLAV = "Slav Defense"
     private const val NIMZO = "Nimzo-Indian Defense"
     private const val KID = "King's Indian Defense"
+    private const val BISHOP = "Bishop's Opening"
 
     private val ALL = listOf(
         MiddlegamePlan(
@@ -836,6 +837,66 @@ object MiddlegamePlans {
                 "...b5 breaks open the queenside. The knight on a5 and the rook on b8 are already in place.",
             ),
             "In the fianchetto King's Indian, the knight goes to a5 to eye c4. Then ...c5, ...Rb8 and ...b5: the queenside opens while White's king sits behind the bishop on g2.",
+        ),
+        MiddlegamePlan(
+            "The knight on g5",
+            BISHOP, true,
+            san("e4 e5 Bc4 Nf6 Nc3 Nc6 Nf3 Nxe4 Nxe4 d5 Bd3 dxe4 Bxe4 Bd6 d4"),
+            san("exd4 O-O c5 Re1 O-O Ng5"),
+            listOf(
+                "Black takes on d4 and the centre opens.",
+                "White castles first. The king leaves before the open file matters.",
+                "...c5 gains space and fights for the centre.",
+                "The rook comes to the open e-file, with the bishop already on e4.",
+                "Black castles.",
+                "The knight jumps to g5, eyeing f7. The bishop, the rook and the knight are all pointing at the king.",
+            ),
+            "Once ...d5 has opened the centre, castle before you do anything clever. Then the rook belongs on e1 and the knight on g5, where it eyes f7 beside the bishop on e4.",
+        ),
+        MiddlegamePlan(
+            "The knight walks to g3",
+            BISHOP, true,
+            san("e4 e5 Bc4 Nc6 d3 Nf6 Nf3 Bc5 c3 a5 O-O d6 Nbd2 O-O h3"),
+            san("h6 Re1 Re8 Nf1 Be6 Ng3"),
+            listOf(
+                "...h6 gives the king air and stops a knight landing on g5.",
+                "The rook stands behind the e-pawn, ready for when the centre opens.",
+                "Black puts a rook on the same file.",
+                "The knight steps to f1. This is the start of the walk.",
+                "Black develops the light bishop.",
+                "The knight arrives on g3, eyeing f5 and h5. The break with d4 comes next.",
+            ),
+            "In the quiet ...Nc6 line the centre can wait. Put a rook on e1 and walk the knight from d2 to f1 to g3. Then d4 opens the position with your pieces already in place.",
+        ),
+        MiddlegamePlan(
+            "The bishop on b5",
+            BISHOP, true,
+            san("e4 e5 Bc4 Bc5 Nf3 Nc6 c3 Nf6 d3 a5 O-O d6 Re1 O-O h3"),
+            san("h6 Bb5 Ne7 d4 exd4 cxd4"),
+            listOf(
+                "...h6 stops Ng5.",
+                "The bishop goes to b5 and attacks the knight on c6.",
+                "The knight steps to e7, off the pin, and supports the centre.",
+                "d4 breaks. The whole setup was built for this move.",
+                "Black takes.",
+                "The c-pawn recaptures, so a pawn stays on d4. Recapturing with the knight would not.",
+            ),
+            "Against ...Bc5, once both sides have castled, Bb5 and then d4. When Black takes, recapture with the c-pawn and keep a pawn on d4, with the rook already on e1.",
+        ),
+        MiddlegamePlan(
+            "The queen in the centre",
+            BISHOP, true,
+            san("e4 e5 Bc4 d6 Nf3 Nf6 Nc3 Be7 d4 exd4 Nxd4 Nc6 O-O O-O a4"),
+            san("Nxd4 Qxd4 Be6 Be3 Re8 Rad1"),
+            listOf(
+                "Black trades off the central knight.",
+                "The queen recaptures and sits in the middle, defending the bishop on c4.",
+                "The light bishop develops and looks at c4.",
+                "Be3 develops the dark bishop. The queen is quite safe in the centre.",
+                "Black puts a rook on the open e-file.",
+                "The queen's rook comes to d1, eyeing the d6 pawn. The other rook can follow to e1.",
+            ),
+            "After the early d4 break, let Black trade knights and recapture with the queen. The queen holds the centre, the dark bishop comes to e3, and a rook on d1 presses the pawn on d6.",
         ),
     )
 }

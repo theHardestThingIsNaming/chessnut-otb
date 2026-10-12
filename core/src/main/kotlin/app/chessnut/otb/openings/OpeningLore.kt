@@ -23,7 +23,11 @@ object OpeningLore {
         "Vienna Game" to
             "The Vienna Game was a favourite of the Viennese masters of the nineteenth century. White develops the queen's knight first, keeping the f-pawn free to advance.",
         "Bishop's Opening" to
-            "The Bishop's Opening is one of the oldest replies to 1...e5. Ruy López wrote about the bishop on c4 in 1561, aimed at f7. The lines here are the four replies players rated 1400 to 2000 actually play, and in each one White's move is the one that keeps the advantage.",
+            "The Bishop's Opening is one of the oldest replies to 1...e5. Ruy López wrote about the bishop on c4 in 1561, aimed at f7, the weakest square in Black's camp. You play it before the knight, and you wait to see which of four replies comes back. " +
+            "Against ...Nf6, the move you will meet most, 3.Nc3 defends e4 and keeps a small plus. Black often takes the pawn, you take back, and ...d5 opens the centre with your bishop landing on e4. Then d4, castle, and use the open lines. " +
+            "Against ...Nc6, play d3 rather than Nf3. Nf3 is the Italian, which you already drill on its own. This stays a Bishop's Opening: c3, castle, knight to d2, and later the knight walks to g3 before you break with d4. " +
+            "Against ...Bc5, 3.Nf3 attacks e5. This is where Black's early queen, the rushing f-pawn, and an early ...d5 all lose. If Black defends properly, you play the same quiet plan: c3, d3, a rook on e1, and a trade of the dark bishops when you want it. " +
+            "Against ...d6, break at once with d4. The knight recaptures in the centre, you castle, and a4 stops ...b5 from harassing the bishop. The lines here are the four replies players rated 1400 to 2000 actually play, and in each one White's move is the one that keeps the advantage.",
         "Sicilian Defense" to
             "The Sicilian was already described by Giulio Polerio in 1594. Today it is the most popular reply to e4 among strong players. Bobby Fischer and Garry Kasparov both built their careers on it.",
         "French Defense" to

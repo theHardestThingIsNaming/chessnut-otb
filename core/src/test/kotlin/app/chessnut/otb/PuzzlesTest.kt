@@ -36,7 +36,7 @@ class PuzzlesTest {
             PuzzleSets.ENDGAMES.keys.map(PuzzleSets::endgameKey)
         for (key in keys) {
             val set = PuzzleSets.of(key)
-            // An opening with no tactic export yet, such as the Bishop's Opening, is skipped.
+            // An opening with no tactic export yet is skipped.
             // The English has few games that start in your lines; the rest have dozens.
             if (set.isEmpty()) continue
             assertTrue(set.size >= 5, "$key has ${set.size}")

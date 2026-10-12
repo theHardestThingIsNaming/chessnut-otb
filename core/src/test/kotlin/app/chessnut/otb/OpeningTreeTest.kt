@@ -110,5 +110,7 @@ class OpeningTreeTest {
         assertEquals("Nc3", lines.first { it[3] == "Nf6" }[4])
         assertEquals("d3", lines.first { it[3] == "Nc6" }[4])
         assertEquals("Nf3", lines.first { it[3] == "Bc5" }[4])
+        val plies = lines.flatMap { line -> line.indices.map { line.take(it + 1).joinToString(" ") } }.toSet()
+        assertEquals(emptyList(), plies.filter { it !in app.chessnut.otb.openings.MoveIdeas.noted })
     }
 }
