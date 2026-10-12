@@ -13,7 +13,11 @@ class AnalysisWorker(context: Context, params: WorkerParameters) : CoroutineWork
     override suspend fun doWork(): Result {
         val app = applicationContext as OtbApp
         val id = inputData.getString(KEY_GAME_ID) ?: return Result.failure()
-        val game = app.store.load(id) ?: return Result.failure()
+        // A game deleted before its turn: clear the progress analyse() set, or it shows as analysing for good.
+        val game = app.store.load(id) ?: run {
+            app.reportProgress(id, null)
+            return Result.failure()
+        }
         if (app.store.loadAnalysis(id) != null) {
             app.reportProgress(id, null)
             return Result.success()
