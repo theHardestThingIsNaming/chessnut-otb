@@ -65,7 +65,7 @@ Adding an opening = run the export with its name, write its plans, run the tests
 - [x] 3. Opening page: "Beyond the opening" card with Middlegame tactics.
 - [x] 4. Home: Endgames tile, endgame puzzles by type.
 - [x] 5. Middlegame plans for the Scotch and the Pirc, in the trap viewer, engine-checked.
-- [ ] 6. Essential endgames against the tablebase.
+- [x] 6. Essential endgames against the tablebase.
 - [ ] 7. Extend tactics and plans to the other main openings.
 
 Each phase: tests, emulator check, commit, install.

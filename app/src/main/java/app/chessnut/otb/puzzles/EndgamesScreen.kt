@@ -36,7 +36,7 @@ import app.chessnut.otb.ui.clubAppBarColors
 /** Endgame puzzles by type, each with how far you've got. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EndgamesScreen(onBack: () -> Unit, onOpen: (String) -> Unit) {
+fun EndgamesScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onEssential: (String) -> Unit) {
     BackHandler(onBack = onBack)
     val context = LocalContext.current
     val lifecycle = LocalLifecycleOwner.current.lifecycle.currentState
@@ -44,6 +44,10 @@ fun EndgamesScreen(onBack: () -> Unit, onOpen: (String) -> Unit) {
         val progress = PuzzleProgress(context.filesDir)
         val now = System.currentTimeMillis()
         PuzzleSets.ENDGAMES.map { (type, name) -> Triple(type, name, progress.counts(PuzzleSets.endgameKey(type), now)) }
+    }
+    val mastered = remember(lifecycle) {
+        val progress = PuzzleProgress(context.filesDir)
+        Essentials.ALL.filter { progress.mastered(EssentialViewModel.PROGRESS_PREFIX + it.id) }.map { it.id }.toSet()
     }
     Scaffold(
         containerColor = Color.Transparent,
@@ -55,6 +59,28 @@ fun EndgamesScreen(onBack: () -> Unit, onOpen: (String) -> Unit) {
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             item {
+                Text("Essentials", color = Palette.Endgame, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                Text(
+                    "The endings every player needs, against perfect defence. Every move is checked by the tablebase.",
+                    color = Palette.TextMuted,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+            items(Essentials.ALL, key = { "essential-" + it.id }) { e ->
+                Row(
+                    Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface)
+                        .clickable { onEssential(e.id) }.padding(horizontal = 14.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column(Modifier.weight(1f)) {
+                        Text(e.name, color = Palette.Text, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleSmall)
+                        Text(if (e.goal == Goal.Win) "Win it" else "Hold the draw", color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
+                    }
+                    Text(if (e.id in mastered) "✓ Mastered" else "", color = Palette.Endgame, fontWeight = FontWeight.Bold)
+                }
+            }
+            item {
+                Text("Puzzles", color = Palette.Endgame, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp))
                 Text(
                     "Real endings from Lichess games, easiest first. Solved ones come back after 1, 3, 7, 14 and 30 days.",
                     color = Palette.TextMuted,

@@ -12,6 +12,11 @@ class PuzzleProgress(filesDir: File) {
 
     fun grade(id: String, clean: Boolean, now: Long): LineReview = reviews.grade(id, clean, now)
 
+    /** Played through without a slip: done for good. */
+    fun master(id: String) = reviews.retire(id)
+
+    fun mastered(id: String): Boolean = all()[id]?.dueAt == Long.MAX_VALUE
+
     /** A set's numbers for its tile: how many puzzles, solved at least once, and due now. */
     fun counts(key: String, now: Long): Counts {
         val set = PuzzleSets.of(key)

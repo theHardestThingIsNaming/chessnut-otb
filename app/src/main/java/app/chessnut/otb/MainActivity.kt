@@ -26,6 +26,8 @@ import app.chessnut.otb.play.PlayKind
 import app.chessnut.otb.play.PlayScreen
 import app.chessnut.otb.play.PlayViewModel
 import app.chessnut.otb.puzzles.EndgamesScreen
+import app.chessnut.otb.puzzles.EssentialScreen
+import app.chessnut.otb.puzzles.EssentialViewModel
 import app.chessnut.otb.puzzles.PlansScreen
 import app.chessnut.otb.puzzles.PuzzleScreen
 import app.chessnut.otb.puzzles.PuzzleViewModel
@@ -87,6 +89,8 @@ class MainActivity : ComponentActivity() {
                         screen = afterPuzzles
                     } else if (screen.startsWith("plans:")) {
                         screen = "play"
+                    } else if (screen.startsWith("essential:")) {
+                        screen = "endgames"
                     } else if (screen.startsWith("review:")) {
                         screen = afterReview
                         afterReview = "games"
@@ -145,7 +149,15 @@ class MainActivity : ComponentActivity() {
                             afterPuzzles = "endgames"
                             screen = "puzzles:$key"
                         },
+                        onEssential = { id -> screen = "essential:$id" },
                     )
+                    screen.startsWith("essential:") -> {
+                        val id = screen.removePrefix("essential:")
+                        EssentialScreen(
+                            viewModel<EssentialViewModel>(key = screen, factory = EssentialViewModel.Factory(id)),
+                            onBack = { screen = "endgames" },
+                        )
+                    }
                     screen.startsWith("puzzles:") -> {
                         val key = screen.removePrefix("puzzles:")
                         PuzzleScreen(
