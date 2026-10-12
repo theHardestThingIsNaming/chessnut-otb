@@ -6,7 +6,7 @@ What is already on the phone is under Done. What is worth doing next is under Ne
 The app teaches an opening, then three things past move 15: middlegame plans, middlegame tactics,
 and endgames. Built the same way for the main openings, including the Bishop's Opening.
 
-Last shipped: the fourteen French plans, on `main`. Every French line now has a plan. The phone was away, so this build is on the emulator; install it when the phone is back.
+Last shipped: the fourteen French plans, on `main`, and installed on the phone. Every French line now has a plan. The emulator shows all eighteen Plan buttons; "The bishop takes on b4" opens.
 
 ## Done
 
