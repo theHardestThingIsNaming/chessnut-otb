@@ -95,7 +95,8 @@ class MistakesViewModel(application: Application, private val gameId: String?) :
             val games = app.store.all().filter { gameId == null || it.id == gameId }
             val live = games.flatMap { game ->
                 val analysis = app.store.loadAnalysis(game.id) ?: return@flatMap emptyList()
-                MistakeDeck.collect(game, analysis, app.myNames)
+                // One game opened on purpose shows all its mistakes; the whole deck only yours.
+                MistakeDeck.collect(game, analysis, app.myNames, anySide = gameId != null)
             }
             // Positions from games the list has since let go.
             val kept = app.digests.all().filter { gameId == null || it.gameId == gameId }.flatMap { it.mistakes }

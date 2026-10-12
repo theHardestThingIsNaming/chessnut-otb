@@ -59,6 +59,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import app.chessnut.otb.mistakes.MistakeDeck
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -192,6 +193,7 @@ fun ReviewScreen(
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             if (!ui.position) AccuracyRow(ui, onAnalyse = model::reanalyse)
+            if (ui.report != null && model.asksForSide()) PractiseCard(ui.game?.practise.orEmpty(), model::setPractise)
             Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 ReviewPlayer(game.black, white = false, ui, Modifier, show = !ui.flipped)
                 ReviewPlayer(game.white, white = true, ui, Modifier, show = ui.flipped)
@@ -703,3 +705,37 @@ private fun EditInfoDialog(
 /** Engine lines shown at once, and each one's height, so the panel never changes size. */
 private const val ENGINE_SLOTS = 3
 private val ENGINE_ROW = 30.dp
+
+/**
+ * For a game that doesn't say which side you were, such as one on the board:
+ * its mistakes join your practice only once you say whose to keep.
+ */
+@Composable
+private fun PractiseCard(practise: String, onChoose: (String) -> Unit) {
+    Column(
+        Modifier.fillMaxWidth().clubPanel().padding(12.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Text(
+            when (practise) {
+                MistakeDeck.PRACTISE_WHITE -> "White's mistakes are in your practice."
+                MistakeDeck.PRACTISE_BLACK -> "Black's mistakes are in your practice."
+                MistakeDeck.PRACTISE_BOTH -> "Both sides' mistakes are in your practice."
+                else -> "Add this game's mistakes for later review?"
+            },
+            color = Palette.Text,
+            fontWeight = FontWeight.SemiBold,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            for ((side, label) in listOf(MistakeDeck.PRACTISE_WHITE to "I was White", MistakeDeck.PRACTISE_BLACK to "I was Black", MistakeDeck.PRACTISE_BOTH to "Both")) {
+                FilterChip(
+                    selected = practise == side,
+                    onClick = { onChoose(if (practise == side) "" else side) },
+                    label = { Text(label) },
+                    colors = clubChipColors(),
+                )
+            }
+        }
+    }
+}

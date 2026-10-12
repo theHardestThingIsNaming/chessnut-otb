@@ -26,6 +26,11 @@ data class SavedGame(
     val folder: String = "",
     /** Shown instead of "White vs Black" when set. */
     val label: String = "",
+    /**
+     * Whose mistakes to practise when the names don't say which side you
+     * were, as on the board: "white", "black", "both", or empty for none yet.
+     */
+    val practise: String = "",
 ) {
     val title: String
         get() = label.ifBlank { "${white.ifBlank { "White" }} vs ${black.ifBlank { "Black" }}" }

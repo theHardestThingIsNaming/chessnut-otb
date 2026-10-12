@@ -29,18 +29,29 @@ data class Mistake(
 
 object MistakeDeck {
     /**
-     * Mistakes and blunders from one analysed game. When one of [myNames] (the
-     * name set in the app, the Lichess username) is a player, only that side's
-     * moves count; otherwise both sides' do.
+     * Mistakes and blunders from one analysed game: your side's, when one of
+     * [myNames] (the name set in the app, the Lichess username) is a player,
+     * else the side the game's [SavedGame.practise] names. A game that says
+     * neither, such as one played on the board, adds none, so an opponent's
+     * mistakes never land in your practice; [anySide] takes both sides, for
+     * when you open one game's mistakes yourself.
      */
-    fun collect(game: SavedGame, analysis: GameAnalysis, myNames: List<String>): List<Mistake> {
+    fun collect(game: SavedGame, analysis: GameAnalysis, myNames: List<String>, anySide: Boolean = false): List<Mistake> {
         if (game.sanMoves.isEmpty()) return emptyList()
+        val sides: Set<Boolean> = when (val mine = mySide(game, myNames)) {
+            null -> when {
+                game.practise == PRACTISE_WHITE -> setOf(true)
+                game.practise == PRACTISE_BLACK -> setOf(false)
+                game.practise == PRACTISE_BOTH || anySide -> setOf(true, false)
+                else -> return emptyList()
+            }
+            else -> setOf(mine)
+        }
         val replay = runCatching { ChessLines.replay(game.sanMoves) }.getOrNull() ?: return emptyList()
         val report = AccuracyCalculator.report(game.sanMoves, replay.uci, analysis)
-        val side = mySide(game, myNames)
         return report.moves.mapNotNull { move ->
             if (move.classification != MoveClass.Mistake && move.classification != MoveClass.Blunder) return@mapNotNull null
-            if (side != null && move.whiteMoved != side) return@mapNotNull null
+            if (move.whiteMoved !in sides) return@mapNotNull null
             val fen = replay.fens.getOrNull(move.ply) ?: return@mapNotNull null
             Mistake(
                 game.id, move.ply, fen, move.san, move.bestUci, move.classification, move.whiteMoved, game.title,
@@ -88,6 +99,10 @@ object MistakeDeck {
 
     /** The engine lines a follow-up may come from. */
     const val FOLLOW_UP_CHOICES = 3
+
+    const val PRACTISE_WHITE = "white"
+    const val PRACTISE_BLACK = "black"
+    const val PRACTISE_BOTH = "both"
 
     /** Win-percentage points an answer may give away against the engine's best and still count. */
     const val TOLERANCE = 5.0

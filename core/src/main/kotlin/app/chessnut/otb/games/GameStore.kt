@@ -51,6 +51,7 @@ class GameStore(private val root: File) {
             setProperty("date", game.date)
             setProperty("result", game.result)
             setProperty("label", game.label)
+            setProperty("practise", game.practise)
         }
         val text = java.io.StringWriter().also { props.store(it, null) }.toString()
         writeAtomically(File(dir, GAME), text)
@@ -79,6 +80,7 @@ class GameStore(private val root: File) {
             result = props.getProperty("result", "*"),
             placements = placements,
             label = props.getProperty("label", ""),
+            practise = props.getProperty("practise", ""),
         )
         if (storedMoves.isEmpty() && placements.isNotEmpty()) {
             val rebuilt = StoredGameReconstructor.reconstruct(placements)

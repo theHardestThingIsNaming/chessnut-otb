@@ -28,12 +28,12 @@ class MistakeDeckTest {
         },
     )
 
-    private fun game(white: String, black: String) =
-        SavedGame("g1", 0, GameSource.Board, moves, true, null, white = white, black = black)
+    private fun game(white: String, black: String, practise: String = "") =
+        SavedGame("g1", 0, GameSource.Board, moves, true, null, white = white, black = black, practise = practise)
 
     @Test
     fun collectsTheBlunderWithTheEnginesMove() {
-        val found = MistakeDeck.collect(game("", ""), analysis, emptyList())
+        val found = MistakeDeck.collect(game("", ""), analysis, emptyList(), anySide = true)
         val blunder = found.single { it.playedSan == "Nf6" }
         assertEquals(MoveClass.Blunder, blunder.classification)
         assertEquals("g7g6", blunder.bestUci)
@@ -49,6 +49,14 @@ class MistakeDeckTest {
         // An online game names the Lichess account, not the app's name.
         val online = MistakeDeck.collect(game("JoseRobertoGomes", "CaptainTimeout"), analysis, listOf("Ciaran", "CaptainTimeout"))
         assertTrue(online.isNotEmpty() && online.all { !it.whiteToMove })
+    }
+
+    @Test
+    fun aBoardGameAddsNothingUntilYouSayWhichSideYouWere() {
+        assertTrue(MistakeDeck.collect(game("", ""), analysis, listOf("Ciaran")).isEmpty())
+        assertTrue(MistakeDeck.collect(game("", "", practise = MistakeDeck.PRACTISE_WHITE), analysis, emptyList()).none { !it.whiteToMove })
+        assertTrue(MistakeDeck.collect(game("", "", practise = MistakeDeck.PRACTISE_BLACK), analysis, emptyList()).any { it.playedSan == "Nf6" })
+        assertTrue(MistakeDeck.collect(game("", "", practise = MistakeDeck.PRACTISE_BOTH), analysis, emptyList()).any { it.playedSan == "Nf6" })
     }
 
     @Test

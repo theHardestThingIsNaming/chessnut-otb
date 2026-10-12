@@ -17,6 +17,7 @@ import app.chessnut.otb.analysis.Score
 import app.chessnut.otb.analysis.Terminal
 import app.chessnut.otb.engine.EngineHolder
 import app.chessnut.otb.games.SavedGame
+import app.chessnut.otb.mistakes.MistakeDeck
 import com.github.bhlangonijr.chesslib.Board
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -234,6 +235,21 @@ class ReviewViewModel(application: Application, private val gameId: String) : An
     }
 
     fun reanalyse() = app.analyse(gameId, replace = true)
+
+    /** The names don't say which side you were, so the game asks before its mistakes join your practice. */
+    fun asksForSide(): Boolean {
+        val game = state.value.game ?: return false
+        return !state.value.position && MistakeDeck.mySide(game, app.myNames) == null
+    }
+
+    /** Adds this game's mistakes to your practice: White's, Black's or both ("white", "black", "both"). */
+    fun setPractise(side: String) {
+        val game = state.value.game ?: return
+        val updated = game.copy(practise = side)
+        app.store.save(updated)
+        app.refreshGames()
+        state.update { it.copy(game = updated) }
+    }
 
     fun delete() {
         app.store.delete(gameId)
