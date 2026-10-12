@@ -90,6 +90,7 @@ import app.chessnut.otb.ui.EvalBar
 import app.chessnut.otb.repertoire.OpeningMedal
 import app.chessnut.otb.ui.MedalMark
 import app.chessnut.otb.ui.BoltMark
+import app.chessnut.otb.ui.TargetMark
 import app.chessnut.otb.ui.BookMark
 import app.chessnut.otb.ui.PieceIcon
 import androidx.compose.ui.semantics.semantics
@@ -496,28 +497,7 @@ private fun OpeningPage(
                     }
                 }
             }
-            item(key = "scores") {
-                // Everything you know of the opening in one card: the lines on top, Survival and Punish below.
-                Column(
-                    Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface).padding(vertical = 10.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                ) {
-                    Row(Modifier.fillMaxWidth()) {
-                        Stat("${detail.learned}/${detail.total}", "learned", Modifier.weight(1f), if (detail.total > 0 && detail.learned == detail.total) Palette.Gold else Palette.Text)
-                        Stat(detail.due.toString(), "due", Modifier.weight(1f), if (detail.due > 0) Palette.Gold else Palette.Text)
-                        MedalStat(detail.medal, Modifier.weight(1f))
-                        Stat(detail.winRate?.let { "$it%" } ?: "–", if (detail.winRate == null && !ui.lichessLinked) "Log in to Lichess" else "Lichess wins", Modifier.weight(1f))
-                    }
-                    Box(Modifier.fillMaxWidth().padding(horizontal = 14.dp).height(1.dp).background(Palette.SurfaceHigh))
-                    Row(Modifier.fillMaxWidth()) {
-                        Stat(detail.depthBest?.toString() ?: "–", "Survival best", Modifier.weight(1f), Palette.Survival)
-                        Stat(detail.depthLast?.toString() ?: "–", "last run", Modifier.weight(1f))
-                        if (detail.punishable > 0) {
-                            Stat("${detail.punished}/${detail.punishable}", "punished", Modifier.weight(1f), Palette.Mistake)
-                        }
-                    }
-                }
-            }
+            item(key = "scores") { PageStats(ui, detail) }
             item(key = "beyond") {
                 // A variation's page has its own lines; the plans, tactics and Punish live on the main opening's page.
                 val family = OpeningCatalog.family(detail.name)
@@ -563,19 +543,6 @@ private fun OpeningPage(
                 }
             }
         }
-        // Train's options sit with the Train button, pinned under the list.
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-            FilterChip(selected = ui.explain, onClick = { viewModel.setExplain(!ui.explain) }, label = { Text("Explain") }, colors = clubChipColors())
-            FilterChip(selected = ui.ideas, onClick = { viewModel.setIdeas(!ui.ideas) }, label = { Text("Ideas") }, colors = clubChipColors())
-            FilterChip(selected = ui.history, onClick = { viewModel.setHistory(!ui.history) }, label = { Text("History") }, colors = clubChipColors())
-        }
-        Text(
-            if (ui.explain) "Explain: arrows and board lights show the line. Not scored." else "From memory, scored. Reviews in 1, 3, 7, 14, 30 days.",
-            color = Palette.TextMuted,
-            style = MaterialTheme.typography.bodySmall,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
         Row(Modifier.fillMaxWidth().height(52.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             // Train, then Punish, then Survival: from learning the lines to testing them.
             PrimaryAction(
@@ -591,6 +558,61 @@ private fun OpeningPage(
                 PrimaryAction("Survival", Modifier.weight(1f).fillMaxHeight(), color = Palette.Survival, onClick = viewModel::startSurvival)
             }
         }
+    }
+}
+
+/**
+ * What you know of the opening, in one row of icons: lines learned, due, medal, Lichess wins,
+ * Survival best and mistakes punished. The ⓘ opens a legend that says what each one is.
+ */
+@Composable
+private fun PageStats(ui: PlayUi, detail: OpeningDetail) {
+    var legend by rememberSaveable { mutableStateOf(false) }
+    Column(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface).clickable { legend = !legend }
+            .padding(horizontal = 12.dp, vertical = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        val allLearned = detail.total > 0 && detail.learned == detail.total
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+            IconStat("${detail.learned}/${detail.total}", if (allLearned) Palette.Gold else Palette.Text) {
+                BookMark(if (allLearned) Palette.Gold else Palette.TextMuted, Modifier.size(15.dp))
+            }
+            IconStat("${detail.due}", if (detail.due > 0) Palette.Gold else Palette.Text) { ClockMark(if (detail.due > 0) Palette.Gold else Palette.TextMuted, Modifier.size(15.dp)) }
+            detail.medal?.let { MedalMark(medalColor(it), Modifier.size(22.dp)) }
+            IconStat(detail.winRate?.let { "$it" } ?: "–", Palette.Text) {
+                Text("%", color = Palette.TextMuted, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+            }
+            IconStat(detail.depthBest?.toString() ?: "–", Palette.Survival) { BoltMark(Palette.Survival, Modifier.size(15.dp)) }
+            if (detail.punishable > 0) {
+                IconStat("${detail.punished}/${detail.punishable}", Palette.Mistake) { TargetMark(Palette.Mistake, Modifier.size(15.dp)) }
+            }
+            Text("ⓘ", color = if (legend) Palette.Accent else Palette.TextMuted, fontSize = 16.sp)
+        }
+        if (legend) {
+            LegendLine({ BookMark(Palette.TextMuted, Modifier.size(14.dp)) }, "Lines learned, of the opening's lines")
+            LegendLine({ ClockMark(Palette.Gold, Modifier.size(14.dp)) }, "Lines due for review today")
+            LegendLine({ MedalMark(medalColor(detail.medal ?: OpeningMedal.Bronze), Modifier.size(16.dp)) }, "Medal: bronze for a line, silver for half and a Survival run of ${OpeningMedal.SILVER_RUN}, gold for all and a run of 5")
+            LegendLine({ Text("%", color = Palette.TextMuted, fontWeight = FontWeight.Bold) }, if (detail.winRate == null && !ui.lichessLinked) "Lichess win rate for your side (log in to Lichess to see it)" else "How often your side wins on Lichess, club players")
+            LegendLine({ BoltMark(Palette.Survival, Modifier.size(14.dp)) }, "Survival best" + (detail.depthLast?.let { ", last run $it" } ?: ""))
+            if (detail.punishable > 0) LegendLine({ TargetMark(Palette.Mistake, Modifier.size(14.dp)) }, "Common mistakes you punished without help")
+        }
+    }
+}
+
+@Composable
+private fun IconStat(value: String, color: Color, icon: @Composable () -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+        icon()
+        Text(value, color = color, fontWeight = FontWeight.Bold, fontSize = 16.sp, maxLines = 1)
+    }
+}
+
+@Composable
+private fun LegendLine(icon: @Composable () -> Unit, text: String) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        Box(Modifier.width(22.dp), contentAlignment = Alignment.Center) { icon() }
+        Text(text, color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
     }
 }
 
@@ -644,13 +666,19 @@ private fun LineRow(index: Int, line: LineView, onPlan: (String) -> Unit, onClic
         }
         // Where the line leads: the middlegame plans that start from its last move.
         for (plan in line.plans) {
-            Text(
-                "Middlegame plan: $plan ›",
-                color = Palette.Accent,
-                fontWeight = FontWeight.SemiBold,
-                style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.clip(RoundedCornerShape(4.dp)).clickable { onPlan(plan) }.padding(vertical = 4.dp),
-            )
+            Row(
+                Modifier
+                    .padding(top = 6.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .border(1.dp, Palette.Accent, RoundedCornerShape(8.dp))
+                    .clickable { onPlan(plan) }
+                    .padding(horizontal = 10.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                Text("Middlegame plan", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
+                Text("$plan ›", color = Palette.Accent, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.labelMedium)
+            }
         }
     }
 }
