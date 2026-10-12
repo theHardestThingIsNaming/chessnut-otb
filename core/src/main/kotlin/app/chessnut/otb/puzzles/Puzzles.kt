@@ -16,7 +16,7 @@ data class Puzzle(
     val moves: List<String>,
     val rating: Int,
     val themes: List<String>,
-    /** Where it's from, such as "From a Scotch game, move 18" or "Rook ending". */
+    /** Where it's from, such as "From a Scotch game" or "Rook ending". */
     val origin: String,
 ) {
     /** You solve for this side: the one not making the first move. */
@@ -124,7 +124,7 @@ object PuzzleSets {
             if (f.size < 8) return@mapNotNull null
             val opening = f[0]
             val family = opening.substringBefore(' ')
-            (opening to (f[1] == "w")) to Puzzle(f[2], f[5], f[6].split(' '), f[3].toInt(), f[4].split(' '), "From a $family game, move ${f[7]}")
+            (opening to (f[1] == "w")) to Puzzle(f[2], f[5], f[6].split(' '), f[3].toInt(), f[4].split(' '), "From a $family game")
         }
     }
 

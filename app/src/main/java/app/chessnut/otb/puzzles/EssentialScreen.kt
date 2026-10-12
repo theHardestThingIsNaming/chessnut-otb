@@ -67,7 +67,7 @@ fun EssentialScreen(model: EssentialViewModel, onBack: () -> Unit) {
             )
             ui.pass?.let { ResultMark(it, ui.mark.orEmpty()) }
             Text(
-                "Perfect defence from the Lichess tablebase. Your moves: ${ui.yourMoves}",
+                "Your moves: ${ui.yourMoves}",
                 color = Palette.TextMuted,
                 style = MaterialTheme.typography.bodySmall,
             )

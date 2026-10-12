@@ -146,7 +146,7 @@ private fun Lobby(ui: OnlineUi, viewModel: OnlineViewModel, modifier: Modifier) 
         Text(ui.status, color = Palette.Text, style = MaterialTheme.typography.titleMedium)
         if (ui.username == null) {
             Text(
-                "Lichess opens over this screen. Approve it once, and the next game starts without asking.",
+                "Lichess opens over this screen. Approve once, and this phone stays logged in.",
                 color = Palette.TextMuted,
                 style = MaterialTheme.typography.bodyMedium,
             )
@@ -155,7 +155,7 @@ private fun Lobby(ui: OnlineUi, viewModel: OnlineViewModel, modifier: Modifier) 
                 enabled = !ui.thinking,
                 colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent, contentColor = Palette.OnAccent),
                 modifier = Modifier.fillMaxWidth(),
-            ) { Text(if (ui.thinking) "Signing in…" else "Continue with Lichess") }
+            ) { Text(if (ui.thinking) "Signing in…" else "Log in") }
         } else {
             Text("10 minutes and longer.", color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {

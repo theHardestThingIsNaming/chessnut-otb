@@ -64,7 +64,7 @@ fun PuzzleScreen(model: PuzzleViewModel, onBack: () -> Unit) {
             }
             val puzzle = ui.puzzle ?: return@Column
             SessionBar(ui.index, ui.total, tone)
-            Text("${ui.index + 1} of ${ui.total} · ${puzzle.origin}", color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
+            Text(if (model.endgame) "${ui.index + 1} of ${ui.total}" else "${ui.index + 1} of ${ui.total} · ${puzzle.origin}", color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
             Text(ui.status, color = if (ui.solved) tone else Palette.Text, style = MaterialTheme.typography.titleMedium)
             ChessBoard(
                 fen = ui.fen,

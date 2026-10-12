@@ -208,15 +208,17 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
                 // The side you play: the stats and medals below are for it.
                 SideToggle(ui.userWhite, viewModel::setUserWhite)
             }
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                item { FilterChip(selected = ui.gambitsOnly, onClick = { viewModel.setGambitsOnly(!ui.gambitsOnly) }, label = { Text("Gambits") }, colors = clubChipColors()) }
-                item { FilterChip(selected = ui.memesOnly, onClick = { viewModel.setMemesOnly(!ui.memesOnly) }, label = { Text("Memes") }, colors = clubChipColors()) }
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilterChip(selected = ui.gambitsOnly, onClick = { viewModel.setGambitsOnly(!ui.gambitsOnly) }, label = { Text("Gambits") }, colors = clubChipColors())
+                FilterChip(selected = ui.memesOnly, onClick = { viewModel.setMemesOnly(!ui.memesOnly) }, label = { Text("Memes") }, colors = clubChipColors())
+                Box(Modifier.weight(1f))
+                // What the icons and medals mean, behind a tap.
+                Legend()
             }
             LazyColumn(Modifier.weight(1f)) {
                 if (ui.sections.isEmpty()) {
                     item { Text("No openings match.", color = Palette.TextMuted, modifier = Modifier.padding(vertical = 8.dp)) }
                 }
-                item(key = "legend") { Legend() }
                 ui.sections.forEach { section ->
                     if (section.title.isNotEmpty()) {
                         item(key = "head-${section.title}") {
@@ -274,9 +276,13 @@ private fun Legend() {
     if (open) {
         AlertDialog(
             onDismissRequest = { open = false },
-            title = { Text("Medals") },
+            title = { Text("Icons and medals") },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    LegendLine({ BookMark(Palette.TextMuted, Modifier.size(14.dp)) }, "Lines learned, of the opening's lines")
+                    LegendLine({ ClockMark(Palette.Gold, Modifier.size(14.dp)) }, "Lines due for review")
+                    LegendLine({ BoltMark(Palette.Survival, Modifier.size(14.dp)) }, "Survival best")
+                    LegendLine({ Text("%", color = Palette.TextMuted, fontWeight = FontWeight.Bold) }, "How often your side wins on Lichess, club players")
                     MedalLine(OpeningMedal.Gold, "Every line learned, and a Survival run of ${OpeningMedal.GOLD_RUN} or more.")
                     MedalLine(OpeningMedal.Silver, "Half the lines learned, and a Survival run of ${OpeningMedal.SILVER_RUN} or more.")
                     MedalLine(OpeningMedal.Bronze, "A line learned.")
@@ -286,20 +292,13 @@ private fun Legend() {
             confirmButton = { TextButton(onClick = { open = false }, colors = clubTextButtonColors()) { Text("OK", color = Palette.Accent) } },
         )
     }
-    Row(
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp)).clickable { open = true }.padding(vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
-        BookMark(Palette.TextMuted, Modifier.size(14.dp))
-        Text("learned", color = Palette.TextMuted, style = MaterialTheme.typography.labelSmall)
-        BoltMark(Palette.Survival)
-        Text("survival", color = Palette.TextMuted, style = MaterialTheme.typography.labelSmall)
-        Text("%", color = Palette.TextMuted, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelSmall)
-        Text("Lichess wins", color = Palette.TextMuted, style = MaterialTheme.typography.labelSmall, modifier = Modifier.weight(1f))
-        MedalMark(medalColor(OpeningMedal.Gold), Modifier.size(16.dp))
-        Text("medals ⓘ", color = Palette.Accent, style = MaterialTheme.typography.labelSmall)
-    }
+    Text(
+        "ⓘ",
+        color = Palette.TextMuted,
+        fontSize = 18.sp,
+        modifier = Modifier.clip(RoundedCornerShape(8.dp)).clickable { open = true }.padding(8.dp)
+            .semantics { contentDescription = "What the icons and medals mean" },
+    )
 }
 
 @Composable
@@ -379,7 +378,7 @@ private fun ProgressCard(ui: PlayUi, onReview: () -> Unit) {
             )
             Text(
                 "${ui.openingsStarted} ${if (ui.openingsStarted == 1) "opening" else "openings"} started" +
-                    if (ui.dueTotal > 0) " · ${ui.dueTotal} due today" else " · nothing due",
+                    if (ui.dueTotal > 0) "" else " · nothing due",
                 color = if (ui.dueTotal > 0) Palette.Gold else Palette.TextMuted,
                 style = MaterialTheme.typography.bodySmall,
             )
@@ -509,7 +508,6 @@ private fun OpeningPage(
             item(key = "lines-head") {
                 Row(Modifier.padding(top = 4.dp), verticalAlignment = Alignment.Bottom) {
                     Text("Lines", color = Palette.Text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                    Text(if (ui.userWhite) "as White" else "as Black", color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
                 }
             }
             if (detail.choices.isNotEmpty()) {
@@ -655,13 +653,19 @@ private fun LineRow(index: Int, line: LineView, onPlan: (String) -> Unit, onClic
         // Everything else about the line on one row: status and next review, Lichess result, Survival best.
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(
-                line.next?.let { "$label · ${it.replaceFirstChar { c -> c.lowercase() }}" } ?: label,
+                // "Due · review now" said due twice.
+                if (line.status == LineStatus.Due) "Due now" else line.next?.let { "$label · ${it.replaceFirstChar { c -> c.lowercase() }}" } ?: label,
                 color = tint,
                 style = MaterialTheme.typography.labelMedium,
             )
             line.winRate?.let { Text("Wins $it%", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium) }
             Box(Modifier.weight(1f))
-            line.best?.let { Text("Survival $it", color = Palette.Survival, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium) }
+            line.best?.let {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+                    BoltMark(Palette.Survival, Modifier.size(12.dp))
+                    Text("$it", color = Palette.Survival, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
+                }
+            }
         }
         // Where the line leads: the middlegame plans that start from its last move.
         for (plan in line.plans) {
@@ -675,7 +679,7 @@ private fun LineRow(index: Int, line: LineView, onPlan: (String) -> Unit, onClic
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp),
             ) {
-                Text("Middlegame plan", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
+                Text("Plan", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
                 Text("$plan ›", color = Palette.Accent, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.labelMedium)
             }
         }
@@ -1287,13 +1291,11 @@ private fun BeyondTheOpening(opening: String, white: Boolean, onPuzzles: (String
     var showSolved by remember(key) { mutableStateOf(false) }
     if (counts.total == 0) return
     Column(
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface).padding(vertical = 6.dp),
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface),
     ) {
-        Text("Beyond the opening", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp))
         if (counts.total > 0 && (!counts.resting || showSolved)) {
             BeyondRow(
                 "Middlegame tactics",
-                "${counts.total} puzzles from games that began in your lines",
                 if (counts.due > 0) "${counts.due} due" else "${counts.solved}/${counts.total}",
                 if (counts.due > 0) Palette.Gold else Palette.Accent,
             ) { onPuzzles(key) }
@@ -1307,12 +1309,9 @@ private fun BeyondTheOpening(opening: String, white: Boolean, onPuzzles: (String
 }
 
 @Composable
-private fun BeyondRow(title: String, detail: String, badge: String, badgeColor: Color, onClick: () -> Unit) {
-    Row(Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 14.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-        Column(Modifier.weight(1f)) {
-            Text(title, color = Palette.Text, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-            Text(detail, color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
-        }
-        Text(badge, color = badgeColor, fontWeight = FontWeight.Bold)
+private fun BeyondRow(title: String, badge: String, badgeColor: Color, onClick: () -> Unit) {
+    Row(Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 14.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(title, color = Palette.Text, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
+        Text("$badge ›", color = badgeColor, fontWeight = FontWeight.Bold)
     }
 }

@@ -76,7 +76,7 @@ fun EndgamesScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onEssential: (S
             item {
                 Text("Essentials", color = Palette.Endgame, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
                 Text(
-                    "The endings every player needs, against perfect defence. Every move is checked by the tablebase.",
+                    "Against perfect defence from the Lichess tablebase.",
                     color = Palette.TextMuted,
                     style = MaterialTheme.typography.bodyMedium,
                 )
@@ -112,7 +112,7 @@ fun EndgamesScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onEssential: (S
             item {
                 Text("Puzzles", color = Palette.Endgame, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp))
                 Text(
-                    "Shorter endings from 1800 up, easiest of those first. A clean solve comes back once, after 3 days, then it's done. A section stays hidden until one is due again.",
+                    "From real games, rated 1800 and up. A clean solve comes back once, after 3 days.",
                     color = Palette.TextMuted,
                     style = MaterialTheme.typography.bodyMedium,
                 )

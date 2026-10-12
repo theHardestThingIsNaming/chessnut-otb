@@ -51,7 +51,7 @@ data class OnlineUi(
     val seeking: Boolean = false,
     val playing: Boolean = false,
     val fen: String = Board().fen,
-    val status: String = "Log in with Lichess. This phone keeps the login.",
+    val status: String = "Log in to play online.",
     val opponent: String = "Opponent",
     /** Ratings beside the names, "1688?" when provisional. */
     val opponentRating: String? = null,
@@ -108,7 +108,7 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
     private var stakes: RatingStakes? = null
     private var stakesFor: String? = null
     private var fen = Board().fen
-    private var status = if (username == null) "Log in with Lichess. This phone keeps the login." else "Signed in as $username"
+    private var status = if (username == null) "Log in to play online." else "Signed in as $username"
     private var prompt: String? = null
     private var lastUci: String? = null
     private var selected: Int? = null
@@ -258,7 +258,7 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
         seeking = false
         table = null
         finished = null
-        status = "Log in with Lichess. This phone keeps the login."
+        status = "Log in to play online."
         publish()
     }
 
