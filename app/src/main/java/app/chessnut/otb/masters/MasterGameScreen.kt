@@ -76,6 +76,7 @@ fun MasterGameScreen(model: MasterGameViewModel, onBack: () -> Unit) {
             )
             // Your last guess and why the master played what he did, then the reply and its threat.
             Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                ui.boardNote?.let { Text(it, color = Palette.Gold, style = MaterialTheme.typography.bodyMedium) }
                 ui.intro?.let { NoteCard(it, Palette.TextMuted) }
                 ui.pass?.let { ResultMark(it, ui.mark.orEmpty()) }
                 ui.yourNote?.let { NoteCard(it, Palette.Text) }

@@ -1526,7 +1526,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             lastPlacement = placement
             note("board ${placement.take(48)} playing=$playing physical=$physical awaiting=$awaitingBoard busy=$busy prompt=$prompt")
         }
-        if (!playing || !physical) return
+        if (!playing || !physical || app.boardBorrowed) return
         // A slide reports every square the piece crosses. Wait until it stops.
         settleJob?.cancel()
         settleJob = viewModelScope.launch {

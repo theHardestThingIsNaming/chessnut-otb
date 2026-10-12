@@ -14,6 +14,10 @@ import app.chessnut.otb.chess.squareIndex
 import app.chessnut.otb.openings.Guess
 import app.chessnut.otb.openings.MasterGame
 import app.chessnut.otb.openings.MasterGames
+import app.chessnut.otb.play.BOARD_SETTLE_MS
+import app.chessnut.otb.play.PlayPosition
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,6 +56,10 @@ data class MasterGameUi(
     val watching: Boolean = false,
     /** The whole game has been shown. */
     val over: Boolean = false,
+    /** Played on the connected board: moves are lit and read from it. */
+    val onBoard: Boolean = false,
+    /** Why the game is on the screen with a board connected, or what the board is waiting for. */
+    val boardNote: String? = null,
 )
 
 /**
@@ -72,9 +80,64 @@ class MasterGameViewModel(application: Application, private val id: String) : An
     private var hints = 0
     private var job: Job? = null
 
+    /** On the board: the position it has to show before play goes on, and who's waiting for it. */
+    private var physical = false
+    private var boardWaiter: CompletableDeferred<Unit>? = null
+    private var boardTarget: String? = null
+    private var settleJob: Job? = null
+
     init {
         restart()
+        viewModelScope.launch {
+            app.placements.collect { placement ->
+                settleJob?.cancel()
+                // A slide reports every square the piece crosses. Wait until it stops.
+                settleJob = launch {
+                    delay(BOARD_SETTLE_MS)
+                    onSettled(placement)
+                }
+            }
+        }
     }
+
+    private fun onSettled(placement: String) {
+        if (!physical) return
+        val target = boardTarget
+        if (target != null) {
+            if (PlayPosition.matches(target, placement)) {
+                boardTarget = null
+                light(emptyList())
+                boardWaiter?.complete(Unit)
+            } else {
+                // Light what still has to change, when it's a move's worth.
+                val wrong = PlayPosition.differences(target, placement)
+                if (wrong.size <= 4) light(wrong)
+            }
+            return
+        }
+        val s = state.value
+        if (s.busy || s.done) return
+        PlayPosition.uciMatching(s.fen, placement)?.let { guess(it) }
+    }
+
+    /** Waits until the board shows [fen], lighting the squares that differ. */
+    private suspend fun awaitBoard(fen: String, lit: List<String>) {
+        if (!physical) return
+        val placement = app.latestPlacement
+        if (placement != null && PlayPosition.matches(fen, placement)) return
+        val waiter = CompletableDeferred<Unit>()
+        boardWaiter = waiter
+        boardTarget = fen
+        light(lit)
+        waiter.await()
+    }
+
+    private fun light(squares: List<String>) {
+        val session = app.boardSession ?: return
+        viewModelScope.launch(Dispatchers.IO) { runCatching { session.setLeds(squares) } }
+    }
+
+    private fun squaresOf(uci: String): List<String> = listOf(uci.substring(0, 2), uci.substring(2, 4))
 
     fun restart() {
         val g = game ?: return
@@ -82,9 +145,17 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         job?.cancel()
         ply = g.start
         hints = 0
+        // The game starts mid-way, so the board is used only when it already shows the start,
+        // as it does straight after the line in Train. Otherwise it's played on the screen.
+        val session = app.boardSession != null
+        physical = session && app.latestPlacement?.let { PlayPosition.matches(r.fens[ply], it) } == true
+        app.boardBorrowed = physical
+        boardTarget = null
+        boardWaiter?.cancel()
         state.value = MasterGameUi(
             game = g, fen = r.fens[ply], lastUci = r.uci.getOrNull(ply - 1), busy = true,
-            status = "The game reached your line here.", intro = g.intro,
+            status = "The game reached your line here.", intro = g.intro, onBoard = physical,
+            boardNote = if (session && !physical) "The board isn't in this position, so this game is on the screen." else null,
         )
         advance()
     }
@@ -105,6 +176,8 @@ class MasterGameViewModel(application: Application, private val id: String) : An
                         theirNote = g.notes[ply]?.let { n -> "${moveLabel(ply)}$san  $n" },
                     )
                 }
+                // On the board, you play the opponent's move: it's lit until the board shows it.
+                awaitBoard(r.fens[ply + 1], squaresOf(r.uci[ply]))
                 ply++
             }
             if (ply >= g.end) {
@@ -118,7 +191,8 @@ class MasterGameViewModel(application: Application, private val id: String) : An
 
     fun tap(square: Int) {
         val s = state.value
-        if (s.busy || s.done) return
+        // On the board, the guess comes from the pieces.
+        if (s.busy || s.done || physical) return
         when (val tap = MoveInput.tap(s.fen, s.selected, square)) {
             is MoveInput.Tap.Play -> guess(tap.uci)
             is MoveInput.Tap.Select -> state.update { it.copy(selected = tap.square, targets = MoveInput.targets(s.fen, tap.square)) }
@@ -149,8 +223,15 @@ class MasterGameViewModel(application: Application, private val id: String) : An
                 good = it.good + if (verdict == Guess.Good) 1 else 0,
             )
         }
+        val after = r.fens[ply + 1]
         ply++
         job = viewModelScope.launch {
+            // On the board, a different guess has to be put right: the changed squares are lit.
+            if (physical && !uci.equals(master, true)) {
+                state.update { it.copy(boardNote = "Put the board right: play ${g.master}'s move instead.") }
+                awaitBoard(after, (squaresOf(uci) + squaresOf(master)).distinct())
+                state.update { it.copy(boardNote = null) }
+            }
             delay(AFTER_GUESS_MS)
             advance()
         }
@@ -183,8 +264,10 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         if (hints == 1) {
             val from = squareIndex(master.substring(0, 2))
             state.update { it.copy(selected = from, targets = MoveInput.targets(s.fen, from), status = "This piece moves.") }
+            light(listOf(master.substring(0, 2)))
         } else {
             state.update { it.copy(masterUci = master, status = "The arrow shows ${game?.master}'s move.") }
+            light(squaresOf(master))
         }
     }
 
@@ -214,6 +297,10 @@ class MasterGameViewModel(application: Application, private val id: String) : An
     private fun moveLabel(at: Int): String = "${at / 2 + 1}${if (at % 2 == 0) ". " else "… "}"
 
     override fun onCleared() {
+        if (physical) {
+            app.boardBorrowed = false
+            light(emptyList())
+        }
         sounds.release()
         speech.release()
     }

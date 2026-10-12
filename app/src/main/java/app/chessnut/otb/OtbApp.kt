@@ -228,6 +228,9 @@ class OtbApp : Application() {
 
     @Volatile var boardSession: ChessnutSession? = null
 
+    /** Another screen, such as a master game, is reading the board, so Play leaves its moves alone. */
+    @Volatile var boardBorrowed: Boolean = false
+
     @Volatile var latestPlacement: String? = null
 
     private val placementFlow = MutableSharedFlow<String>(replay = 1, extraBufferCapacity = 8)

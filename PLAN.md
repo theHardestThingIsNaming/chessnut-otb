@@ -137,6 +137,6 @@ How to add master games for an opening (no phone needed):
 
 Next for master games:
 - [ ] Review the Scotch set with the user, then spread to the other openings (PGN Mentor has files for all of them).
-- [ ] Board play: on a connected board, light the opponent's move and take your guess from the board.
+- [x] Board play: with the board connected and already showing the game's start (as it does straight after the line in Train), the opponent's moves are lit for you to play, your guess is read from the board, and a different guess lights the squares to put right. Hints light the piece, then the move. Otherwise the game is on the screen, with a note saying why. Play leaves the board alone meanwhile (`OtbApp.boardBorrowed`). Untested on a real board: check it next time the board is on.
 - [ ] Re-derive later plan moves from master practice where data is dense (from about move 10 of each plan).
 
