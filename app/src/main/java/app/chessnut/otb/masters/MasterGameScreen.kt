@@ -108,7 +108,7 @@ fun MasterGameScreen(model: MasterGameViewModel, onBack: () -> Unit, onAnalyse: 
                 if (ui.review != null) {
                     PrimaryAction("Continue", Modifier.weight(1.4f).fillMaxHeight(), onClick = model::continueOn)
                 } else if (ui.done && !ui.over) {
-                    PrimaryAction(if (ui.watching) "Playing out…" else "Play out the game", Modifier.weight(1.4f).fillMaxHeight(), enabled = !ui.watching, onClick = model::watchRest)
+                    PrimaryAction(if (ui.watching) (if (ui.onBoard) "Play the lit moves" else "Playing out…") else "Play out the game", Modifier.weight(1.4f).fillMaxHeight(), enabled = !ui.watching, onClick = model::watchRest)
                 } else if (ui.done) {
                     // The whole game, with the engine, from your games' Master games folder.
                     GameAction("Analyse", light = false, onClick = { model.saveForAnalysis()?.let(onAnalyse) }, modifier = Modifier.weight(1f).fillMaxHeight())

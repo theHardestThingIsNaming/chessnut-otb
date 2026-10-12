@@ -353,8 +353,18 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         job?.cancel()
         state.update { it.copy(watching = true, masterUci = null, wrongUci = null, threatUci = null, pass = null, mark = null, yourNote = null) }
         job = viewModelScope.launch {
+            // On the board you play the rest yourself, both sides, at your own pace: each move is lit.
+            if (physical) {
+                val placement = app.latestPlacement
+                if (placement != null && !PlayPosition.matches(r.fens[ply], placement)) {
+                    state.update { it.copy(boardNote = "Set the board to match the screen first.") }
+                    val wrong = PlayPosition.differences(r.fens[ply], placement)
+                    awaitBoard(r.fens[ply], if (wrong.size <= MAX_LIT) wrong else emptyList())
+                    state.update { it.copy(boardNote = null) }
+                }
+            }
             while (ply < g.moves.size) {
-                delay(WATCH_MS)
+                if (!physical) delay(WATCH_MS)
                 state.update {
                     it.copy(fen = r.fens[ply + 1], lastUci = r.uci[ply], theirNote = noteAt(ply) ?: "${moveLabel(ply)}${g.moves[ply]}")
                 }
@@ -362,6 +372,7 @@ class MasterGameViewModel(application: Application, private val id: String) : An
                     speech.say(g.moves[ply])
                     noteText(ply)?.let(speech::narrate)
                 }
+                awaitBoard(r.fens[ply + 1], squaresOf(r.uci[ply]))
                 pauseAt(ply)
                 ply++
             }
