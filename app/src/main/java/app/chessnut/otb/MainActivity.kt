@@ -1,5 +1,7 @@
 package app.chessnut.otb
 
+import app.chessnut.otb.masters.MasterGameScreen
+import app.chessnut.otb.masters.MasterGameViewModel
 import app.chessnut.otb.mistakes.MistakesViewModel
 import app.chessnut.otb.mistakes.MistakesScreen
 import android.content.Intent
@@ -89,7 +91,7 @@ class MainActivity : ComponentActivity() {
                 BackHandler(enabled = screen != "games" && screen != "online") {
                     if (screen.startsWith("puzzles:")) {
                         screen = afterPuzzles
-                    } else if (screen.startsWith("plans:")) {
+                    } else if (screen.startsWith("plans:") || screen.startsWith("master:")) {
                         screen = "play"
                     } else if (screen.startsWith("essential:")) {
                         screen = "endgames"
@@ -123,6 +125,7 @@ class MainActivity : ComponentActivity() {
                             afterPuzzles = "play"
                             screen = "puzzles:$key"
                         },
+                        onMaster = { id -> screen = "master:$id" },
                         onPlans = { opening, white, plan ->
                             firstPlan = plan
                             screen = "plans:$opening:${if (white) "w" else "b"}"
@@ -139,6 +142,13 @@ class MainActivity : ComponentActivity() {
                         onOAuthHandled = { oauthRedirect = null },
                     )
                     screen == "about" -> AboutScreen(onBack = { screen = "games" })
+                    screen.startsWith("master:") -> {
+                        val id = screen.removePrefix("master:")
+                        MasterGameScreen(
+                            viewModel<MasterGameViewModel>(key = screen, factory = MasterGameViewModel.Factory(id)),
+                            onBack = { screen = "play" },
+                        )
+                    }
                     screen.startsWith("plans:") -> {
                         val spec = screen.removePrefix("plans:")
                         PlansScreen(

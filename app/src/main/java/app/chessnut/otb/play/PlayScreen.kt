@@ -108,6 +108,7 @@ fun PlayScreen(
     onAnalyse: (String) -> Unit = {},
     onPuzzles: (String) -> Unit = {},
     onPlans: (opening: String, white: Boolean, plan: String?) -> Unit = { _, _, _ -> },
+    onMaster: (id: String) -> Unit = {},
 ) {
     KeepScreenOn()
     val ui by viewModel.ui.collectAsStateWithLifecycle()
@@ -152,9 +153,9 @@ fun PlayScreen(
     ) { padding ->
         when {
             ui.kind == PlayKind.Bot -> BotGame(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp), onAnalyse)
-            onPage -> OpeningPage(ui, ui.detail!!, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp), onPuzzles, onPlans)
+            onPage -> OpeningPage(ui, ui.detail!!, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp), onPuzzles, onPlans, onMaster)
             !ui.playing -> Setup(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp))
-            else -> Playing(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp), onAnalyse, onPlans)
+            else -> Playing(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp), onAnalyse, onPlans, onMaster)
         }
     }
 }
@@ -476,6 +477,7 @@ private fun OpeningPage(
     modifier: Modifier,
     onPuzzles: (String) -> Unit,
     onPlans: (opening: String, white: Boolean, plan: String?) -> Unit,
+    onMaster: (id: String) -> Unit,
 ) {
     Column(modifier.padding(bottom = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -525,7 +527,7 @@ private fun OpeningPage(
                 }
             }
             itemsIndexed(ui.lines, key = { index, _ -> "line-$index" }) { index, line ->
-                LineRow(index, line, onPlan = { plan -> onPlans(detail.name, ui.userWhite, plan) }) { viewModel.trainLine(index) }
+                LineRow(index, line, onPlan = { plan -> onPlans(detail.name, ui.userWhite, plan) }, onMaster = onMaster) { viewModel.trainLine(index) }
             }
             item(key = "chess-com") { ChessComImport(ui, viewModel::importChessCom) }
             detail.story?.let { story ->
@@ -631,8 +633,9 @@ private fun Stat(value: String, label: String, modifier: Modifier, color: Color 
 }
 
 /** One line of the opening: its variation, its moves past the opening, how you're doing and when it's next due. */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun LineRow(index: Int, line: LineView, onPlan: (String) -> Unit, onClick: () -> Unit) {
+private fun LineRow(index: Int, line: LineView, onPlan: (String) -> Unit, onMaster: (String) -> Unit, onClick: () -> Unit) {
     val (label, tint) = when (line.status) {
         LineStatus.Learned -> "Learned" to Palette.Best
         LineStatus.Due -> "Due" to Palette.Gold
@@ -667,20 +670,37 @@ private fun LineRow(index: Int, line: LineView, onPlan: (String) -> Unit, onClic
                 }
             }
         }
-        // Where the line leads: the middlegame plans that start from its last move.
-        for (plan in line.plans) {
-            Row(
-                Modifier
-                    .padding(top = 6.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .border(1.dp, Palette.Accent, RoundedCornerShape(8.dp))
-                    .clickable { onPlan(plan) }
-                    .padding(horizontal = 10.dp, vertical = 6.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-            ) {
-                Text("Plan", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
-                Text("$plan ›", color = Palette.Accent, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.labelMedium)
+        // Where the line leads: its middlegame plans and a master game, side by side when they fit.
+        if (line.plans.isNotEmpty() || line.master != null) {
+            FlowRow(Modifier.padding(top = 6.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            for (plan in line.plans) {
+                Row(
+                    Modifier
+                                                .clip(RoundedCornerShape(8.dp))
+                        .border(1.dp, Palette.Accent, RoundedCornerShape(8.dp))
+                        .clickable { onPlan(plan) }
+                        .padding(horizontal = 10.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    Text("Plan", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
+                    Text("$plan ›", color = Palette.Accent, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.labelMedium)
+                }
+            }
+                line.master?.let { (id, title) ->
+                Row(
+                    Modifier
+                                                .clip(RoundedCornerShape(8.dp))
+                        .border(1.dp, Palette.Gold, RoundedCornerShape(8.dp))
+                        .clickable { onMaster(id) }
+                        .padding(horizontal = 10.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    Text("Master game", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
+                    Text("$title ›", color = Palette.Gold, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.labelMedium)
+                }
+            }
             }
         }
     }
@@ -740,6 +760,7 @@ private fun Playing(
     modifier: Modifier,
     onAnalyse: (String) -> Unit,
     onPlans: (opening: String, white: Boolean, plan: String?) -> Unit,
+    onMaster: (id: String) -> Unit,
 ) {
     // Weakest first, so the main line is drawn on top where arrows overlap.
     val bookArrows = ui.bookUcis.mapIndexedNotNull { index, uci ->
@@ -846,6 +867,13 @@ private fun Playing(
                         colors = clubOutlinedButtonColors(),
                         modifier = Modifier.fillMaxWidth(),
                     ) { Text("Continue with the plan: $plan", color = Palette.Accent) }
+                }
+                ui.lineMaster?.let { (id, title) ->
+                    OutlinedButton(
+                        onClick = { onMaster(id) },
+                        colors = clubOutlinedButtonColors(),
+                        modifier = Modifier.fillMaxWidth(),
+                    ) { Text("Master game: $title", color = Palette.Gold) }
                 }
             }
             ui.trapName?.let { TrapBanner(it, ui.trapStep, ui.trapLength, ui.trapSummary, ui.trapInfo) }

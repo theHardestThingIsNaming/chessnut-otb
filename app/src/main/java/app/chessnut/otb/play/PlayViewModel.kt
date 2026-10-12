@@ -26,6 +26,7 @@ import app.chessnut.otb.engine.UciEngine
 import app.chessnut.otb.games.GameSource
 import app.chessnut.otb.games.SavedGame
 import app.chessnut.otb.live.TimeControl
+import app.chessnut.otb.openings.MasterGames
 import app.chessnut.otb.openings.MiddlegamePlans
 import app.chessnut.otb.openings.OpeningBook
 import app.chessnut.otb.openings.OpeningLore
@@ -148,6 +149,8 @@ data class LineView(
     val winRate: Int? = null,
     /** Middlegame plans that start where this line ends. */
     val plans: List<String> = emptyList(),
+    /** A master game that reached this line's end: its id and title. */
+    val master: Pair<String, String>? = null,
 )
 
 data class PlayUi(
@@ -280,6 +283,8 @@ data class PlayUi(
     val lichessLinked: Boolean = false,
     /** Once a drilled line is done: the middlegame plans that start where it ends. */
     val linePlans: List<String> = emptyList(),
+    /** Once a drilled line is done: a master game that went on from its end, id and title. */
+    val lineMaster: Pair<String, String>? = null,
     val chessComNote: String? = null,
     val chessComBusy: Boolean = false,
 )
@@ -632,6 +637,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                     app.depthRecords.ofLine(name, white, line)?.best,
                     lineStatKey(line)?.let { openingStats.record(it) }?.winPercent(if (white) OpeningSide.White else OpeningSide.Black),
                     plansAfter(name, white, line),
+                    MasterGames.forLine(name, white, line)?.let { it.id to it.title },
                 )
             }
             state.update { if (it.openingName == name && it.userWhite == white) it.copy(
@@ -2454,6 +2460,13 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 lineLabel = if (kind == PlayKind.Trainer) lineLabelShown else null,
                 lineDone = kind == PlayKind.Trainer && drillGraded,
                 lichessLinked = vault.token() != null,
+                lineMaster = if (kind == PlayKind.Trainer && drillGraded && punishTrap == null && !survival) {
+                    val line = drillLine
+                    val name = openingName
+                    if (line != null && name != null) MasterGames.forLine(name, userWhite, line)?.let { it.id to it.title } else null
+                } else {
+                    null
+                },
                 linePlans = if (kind == PlayKind.Trainer && drillGraded && punishTrap == null && !survival) {
                     val line = drillLine
                     val name = openingName
