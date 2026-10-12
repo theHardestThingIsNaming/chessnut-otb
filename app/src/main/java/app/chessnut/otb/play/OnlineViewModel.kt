@@ -21,6 +21,8 @@ import app.chessnut.otb.lichess.OnlineControl
 import app.chessnut.otb.lichess.OnlineTable
 import app.chessnut.otb.lichess.OngoingGame
 import app.chessnut.otb.lichess.RatingStakes
+import app.chessnut.otb.live.LowTime
+import app.chessnut.otb.openings.OpeningBook
 import com.github.bhlangonijr.chesslib.Board
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -53,6 +55,12 @@ data class OnlineUi(
     /** Ratings beside the names, "1688?" when provisional. */
     val opponentRating: String? = null,
     val userRating: String? = null,
+    /** The opening being played, from the book. */
+    val openingName: String? = null,
+    /** Clocks turn red at or below this. */
+    val lowMillis: Long? = null,
+    /** The last game can be offered again to the same opponent. */
+    val canRematch: Boolean = false,
     /** A rated game's stakes for you, such as "Rated rapid · Win +6 · Draw −1 · Loss −8". */
     val stakes: String? = null,
     val userWhite: Boolean = true,
@@ -336,6 +344,61 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
                     status = "No opponent found"
                     publish()
                 }
+            }
+        }
+    }
+
+    /**
+     * Offers the opponent of the game just finished another, colours swapped,
+     * as a Lichess challenge. Waits like a seek until they answer.
+     */
+    fun rematch() {
+        val last = table ?: return
+        val form = LichessPlay.rematchForm(last) ?: return
+        val opponent = last.opponent
+        val opponentId = last.opponentId.ifBlank { return }
+        again()
+        seeking = true
+        paired = false
+        status = "Rematch offered to $opponent…"
+        publish()
+        seekJob = viewModelScope.launch(Dispatchers.IO) {
+            val events = http.Pipe()
+            eventPipe = events
+            eventJob = viewModelScope.launch(Dispatchers.IO) {
+                try {
+                    events.lines("GET", "/api/stream/event", null) { line -> if (isActive) onEvent(line) }
+                } catch (e: Exception) {
+                    Log.w(TAG, "event stream", e)
+                }
+            }
+            delay(400)
+            if (!isActive || !seeking) return@launch
+            val challenge = http.Pipe()
+            seekPipe = challenge
+            try {
+                challenge.lines("POST", "/api/challenge/$opponentId", form) { }
+            } catch (e: Exception) {
+                Log.w(TAG, "rematch", e)
+                withContext(Dispatchers.Main) {
+                    if (!seeking || paired) return@withContext
+                    seeking = false
+                    status = if ((e as? LichessHttpException)?.status == 403) {
+                        "Rematches need a new permission: log out of Lichess and back in once."
+                    } else {
+                        "Couldn't offer a rematch"
+                    }
+                    publish()
+                }
+                return@launch
+            }
+            // The challenge stream ends when they answer; a game start follows if they accepted.
+            delay(2_500)
+            withContext(Dispatchers.Main) {
+                if (paired || !seeking) return@withContext
+                seeking = false
+                status = "$opponent didn't take the rematch"
+                publish()
             }
         }
     }
@@ -901,6 +964,10 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
             fen = fen,
             status = status,
             opponent = current?.opponent ?: "Opponent",
+            // Seeks and rematches always start from the usual position.
+            openingName = current?.let { game -> OpeningBook.view(LichessPlay.position("startpos", game.moves).second).name },
+            lowMillis = current?.initialMillis?.let(LowTime::threshold),
+            canRematch = finished != null && current != null && LichessPlay.rematchForm(current) != null,
             opponentRating = current?.opponentRating?.let { "$it" + if (current.opponentProvisional) "?" else "" },
             userRating = current?.userRating?.let { "$it" + if (current.userProvisional) "?" else "" },
             stakes = current?.takeIf { it.rated && it.id == stakesFor }?.let { game ->

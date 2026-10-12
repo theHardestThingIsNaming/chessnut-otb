@@ -31,9 +31,13 @@ fun ClockFace(
     modifier: Modifier = Modifier,
     flagged: Boolean = false,
     fontSize: TextUnit = 20.sp,
+    /** Nearly out of time: the clock turns red. */
+    low: Boolean = false,
 ) {
     val (fill, ink) = when {
         flagged -> Palette.Blunder to Color.White
+        low && running -> Palette.Blunder to Color.White
+        low -> Palette.Blunder.copy(alpha = 0.55f) to Color.White
         white && running -> Color.White to Color(0xFF312E2B)
         white -> Color(0xFF989795) to Color(0xFF4B4847)
         running -> Color(0xFF1C1A18) to Color.White

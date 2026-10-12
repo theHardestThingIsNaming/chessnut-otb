@@ -14,7 +14,7 @@ object LichessOAuth {
     const val CLIENT_ID = "chessnut-otb"
     const val REDIRECT = "app.chessnut.otb://oauth"
     /** Board play, and reading private studies for the repertoire drill. */
-    const val SCOPE = "board:play study:read"
+    const val SCOPE = "board:play study:read challenge:write"
     private const val ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~"
 
     fun verifier(random: Random = Random.Default): String =

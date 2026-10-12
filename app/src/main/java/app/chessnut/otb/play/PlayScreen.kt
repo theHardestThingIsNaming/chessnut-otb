@@ -4,6 +4,7 @@ package app.chessnut.otb.play
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import app.chessnut.otb.live.LowTime
 import app.chessnut.otb.openings.OpeningCatalog
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -987,7 +988,8 @@ private fun BotGame(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
         }
         // Before the game starts, show where it will begin.
         val shown = if (!ui.playing) ui.startFen ?: ui.fen else ui.fen
-        PlayerBar("Bot ${ui.elo}", opponentWhite, shown, topMillis.takeIf { ui.timed }, topRunning, flagged = topFlagged)
+        val lowMillis = LowTime.threshold(TimeControl.fromLabel(ui.controlLabel).initialMillis)
+        PlayerBar("Bot ${ui.elo}", opponentWhite, shown, topMillis.takeIf { ui.timed }, topRunning, flagged = topFlagged, lowMillis = lowMillis)
         ChessBoard(
             fen = shown,
             flipped = !ui.userWhite,
@@ -1001,7 +1003,7 @@ private fun BotGame(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
             highlights = moveSquares(ui.hintUci) + moveSquares(ui.promptUci),
             onSquare = viewModel::tap,
         )
-        PlayerBar("You", ui.userWhite, shown, bottomMillis.takeIf { ui.timed }, bottomRunning, flagged = bottomFlagged)
+        PlayerBar("You", ui.userWhite, shown, bottomMillis.takeIf { ui.timed }, bottomRunning, flagged = bottomFlagged, lowMillis = lowMillis)
         if (ui.playing && ui.finished == null) {
             Row(Modifier.fillMaxWidth().height(48.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 GameAction("Draw", ui.userWhite, viewModel::offerDraw, Modifier.weight(1f).fillMaxHeight()) {

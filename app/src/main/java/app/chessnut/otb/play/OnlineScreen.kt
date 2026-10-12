@@ -224,7 +224,8 @@ private fun Table(ui: OnlineUi, viewModel: OnlineViewModel, modifier: Modifier, 
                 CircularProgressIndicator(Modifier.size(22.dp), color = Palette.Accent, strokeWidth = 2.dp)
             }
         }
-        PlayerBar(ui.opponent + (ui.opponentRating?.let { " · $it" } ?: ""), opponentLight, ui.fen, topMillis, topRunning)
+        ui.openingName?.let { Text(it, color = Palette.Gold, style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+        PlayerBar(ui.opponent + (ui.opponentRating?.let { " · $it" } ?: ""), opponentLight, ui.fen, topMillis, topRunning, lowMillis = ui.lowMillis)
         ChessBoard(
             fen = ui.fen,
             flipped = !ui.userWhite,
@@ -235,7 +236,7 @@ private fun Table(ui: OnlineUi, viewModel: OnlineViewModel, modifier: Modifier, 
             highlights = moveSquares(ui.promptUci),
             onSquare = viewModel::tap,
         )
-        PlayerBar((ui.username ?: "You") + (ui.userRating?.let { " · $it" } ?: ""), ui.userWhite, ui.fen, bottomMillis, bottomRunning)
+        PlayerBar((ui.username ?: "You") + (ui.userRating?.let { " · $it" } ?: ""), ui.userWhite, ui.fen, bottomMillis, bottomRunning, lowMillis = ui.lowMillis)
         // What's at stake in a rated game, so you know before you play on.
         ui.stakes?.let { Text(it, color = Palette.Gold, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold) }
         if (ui.finished == null) {
@@ -255,6 +256,13 @@ private fun Table(ui: OnlineUi, viewModel: OnlineViewModel, modifier: Modifier, 
                 ) { FlagMark(it, Modifier.size(16.dp)) }
             }
         } else {
+            if (ui.canRematch) {
+                Button(
+                    onClick = viewModel::rematch,
+                    colors = ButtonDefaults.buttonColors(containerColor = Palette.Gold, contentColor = Palette.Ink),
+                    modifier = Modifier.fillMaxWidth(),
+                ) { Text("Rematch ${ui.opponent}") }
+            }
             Button(
                 onClick = viewModel::again,
                 colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent, contentColor = Palette.OnAccent),

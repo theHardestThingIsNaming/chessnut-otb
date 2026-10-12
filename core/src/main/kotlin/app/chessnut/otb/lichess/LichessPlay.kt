@@ -44,6 +44,8 @@ data class OnlineTable(
     val rated: Boolean = false,
     /** "rapid" or "classical": which of your ratings the game counts for. */
     val speed: String? = null,
+    /** Each side's starting time. */
+    val initialMillis: Long? = null,
 ) {
     val opponent: String get() = if (userWhite) black else white
     val opponentId: String get() = if (userWhite) blackId else whiteId
@@ -99,6 +101,16 @@ sealed class LichessEvent {
 }
 
 object LichessPlay {
+    /**
+     * A rematch: a challenge to the same opponent with the same clock and
+     * rating, colours swapped. The request stays open until they answer.
+     */
+    fun rematchForm(game: OnlineTable): String? {
+        val initial = game.initialMillis ?: return null
+        val colour = if (game.userWhite) "black" else "white"
+        return "rated=${game.rated}&clock.limit=${initial / 1000}&clock.increment=${game.incrementMillis / 1000}&color=$colour&keepAliveStream=true"
+    }
+
     fun seekForm(control: OnlineControl, rated: Boolean): String =
         "rated=$rated&time=${control.minutes}&increment=${control.increment}&variant=standard"
 
@@ -196,6 +208,7 @@ object LichessPlay {
                 blackProvisional = black?.bool("provisional") == true,
                 rated = root.bool("rated"),
                 speed = root.str("speed"),
+                initialMillis = root.obj("clock")?.long("initial"),
             ),
         )
     }

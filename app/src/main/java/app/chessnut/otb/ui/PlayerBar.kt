@@ -42,6 +42,8 @@ fun PlayerBar(
     flagged: Boolean = false,
     /** Shown where the clock goes when there is no clock, such as the side's accuracy in a review. */
     badge: String? = null,
+    /** The clock turns red at or below this. */
+    lowMillis: Long? = null,
 ) {
     val (byWhite, byBlack) = remember(fen) { fen?.let(Material::captured) ?: ("" to "") }
     val taken = if (white) byWhite else byBlack
@@ -93,7 +95,14 @@ fun PlayerBar(
             }
         }
         when {
-            millis != null -> ClockFace(millis, white, running, Modifier.width(116.dp), flagged = flagged)
+            millis != null -> ClockFace(
+                millis,
+                white,
+                running,
+                Modifier.width(116.dp),
+                flagged = flagged,
+                low = lowMillis != null && millis <= lowMillis,
+            )
             badge != null -> Text(
                 badge,
                 color = if (white) Palette.Ink else Palette.Text,
