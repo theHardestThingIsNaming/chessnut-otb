@@ -24,7 +24,7 @@ class MiddlegamePlansTest {
         assertEquals(3, MiddlegamePlans.of("English Opening", true).size)
         assertEquals(3, MiddlegamePlans.of("London System", true).size)
         assertEquals(4, MiddlegamePlans.of("Sicilian Defense", false).size)
-        assertEquals(4, MiddlegamePlans.of("French Defense", false).size)
+        assertEquals(18, MiddlegamePlans.of("French Defense", false).size)
         assertEquals(4, MiddlegamePlans.of("Caro-Kann Defense", false).size)
         assertEquals(13, MiddlegamePlans.of("Slav Defense", false).size)
         assertEquals(10, MiddlegamePlans.of("Nimzo-Indian Defense", false).size)
@@ -38,6 +38,7 @@ class MiddlegamePlansTest {
         for ((opening, white) in listOf(
             "Scotch Game" to true,
             "Italian Game" to true,
+            "French Defense" to false,
             "Vienna Game" to true,
             "London System" to true,
             "Nimzo-Indian Defense" to false,

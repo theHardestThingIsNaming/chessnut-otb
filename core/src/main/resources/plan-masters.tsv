@@ -45,14 +45,148 @@ French Defense	b	Clamp with ...c4	7	1	5
 French Defense	b	The queen on a5	0	363	588
 French Defense	b	The queen on a5	1	564	703
 French Defense	b	The queen on a5	2	225	797
-French Defense	b	The queen on a5	3	0	242
-French Defense	b	The queen on a5	5	2	2
+French Defense	b	The queen on a5	3	130	242
+French Defense	b	The queen on a5	4	42	130
+French Defense	b	The queen on a5	5	42	42
+French Defense	b	The queen on a5	6	27	42
+French Defense	b	The queen on a5	7	27	27
+French Defense	b	The queen on a5	8	23	27
+French Defense	b	The queen on a5	9	21	23
+French Defense	b	The queen on a5	10	21	21
+French Defense	b	The queen on a5	11	21	21
 French Defense	b	Active pieces, isolated pawn	0	1703	1766
 French Defense	b	Active pieces, isolated pawn	1	1332	1704
 French Defense	b	Active pieces, isolated pawn	2	141	1510
 French Defense	b	Active pieces, isolated pawn	3	277	286
 French Defense	b	Active pieces, isolated pawn	4	52	278
 French Defense	b	Active pieces, isolated pawn	5	43	55
+French Defense	b	Queens off on h8	0	431	436
+French Defense	b	Queens off on h8	1	358	431
+French Defense	b	Queens off on h8	2	345	358
+French Defense	b	Queens off on h8	3	345	345
+French Defense	b	Queens off on h8	4	326	345
+French Defense	b	Queens off on h8	5	163	327
+French Defense	b	Queens off on h8	6	94	163
+French Defense	b	Queens off on h8	7	91	94
+French Defense	b	Queens off on h8	8	83	91
+French Defense	b	Queens off on h8	9	34	83
+French Defense	b	Queens off on h8	10	63	63
+French Defense	b	Queens off on h8	11	57	63
+French Defense	b	Queens off on h8	12	57	57
+French Defense	b	Queens off on h8	13	57	57
+French Defense	b	The knight on a5	0	2299	2300
+French Defense	b	The knight on a5	1	2273	2300
+French Defense	b	The knight on a5	2	2394	2721
+French Defense	b	The knight on a5	3	2006	2395
+French Defense	b	The knight on a5	4	1967	2026
+French Defense	b	The knight on a5	5	1168	1967
+French Defense	b	The knight on a5	6	1093	1177
+French Defense	b	The knight on a5	7	1085	1093
+French Defense	b	The knight on a5	8	554	1450
+French Defense	b	The knight on a5	9	466	554
+French Defense	b	The knight on a5	10	256	473
+French Defense	b	The knight on a5	11	127	256
+French Defense	b	The knight on a5	12	97	130
+French Defense	b	The knight on a5	13	73	97
+French Defense	b	The knight on e4	0	30	30
+French Defense	b	The knight on e4	1	9	30
+French Defense	b	The knight on e4	2	9	9
+French Defense	b	The knight on e4	3	8	9
+French Defense	b	The knight on e4	4	8	8
+French Defense	b	The knight on e4	5	8	8
+French Defense	b	The knight on e4	6	5	8
+French Defense	b	The knight on e4	7	5	5
+French Defense	b	The knight on e4	8	2	5
+French Defense	b	The knight on e4	9	2	2
+French Defense	b	The knight on e4	10	2	2
+French Defense	b	The knight on e4	11	0	2
+French Defense	b	The f5 break	0	314	590
+French Defense	b	The f5 break	1	257	380
+French Defense	b	The f5 break	2	33	260
+French Defense	b	The f5 break	3	8	38
+French Defense	b	The f5 break	4	5	8
+French Defense	b	The f5 break	5	3	5
+French Defense	b	The f5 break	6	3	3
+French Defense	b	The f5 break	7	3	3
+French Defense	b	The f5 break	8	2	3
+French Defense	b	The f5 break	9	1	2
+French Defense	b	The f5 break	10	1	1
+French Defense	b	The f5 break	11	1	1
+French Defense	b	The f5 break	12	1	1
+French Defense	b	The f5 break	13	1	1
+French Defense	b	Queens off on d2	0	576	960
+French Defense	b	Queens off on d2	1	535	576
+French Defense	b	Queens off on d2	2	67	535
+French Defense	b	Queens off on d2	3	63	68
+French Defense	b	Queens off on d2	4	49	63
+French Defense	b	Queens off on d2	5	14	49
+French Defense	b	Queens off on d2	6	10	14
+French Defense	b	Queens off on d2	7	7	9
+French Defense	b	Queens off on d2	8	7	7
+French Defense	b	Queens off on d2	9	7	7
+French Defense	b	Queens off on d2	10	6	7
+French Defense	b	Queens off on d2	11	5	6
+French Defense	b	Queens off on d2	12	5	5
+French Defense	b	Queens off on d2	13	1	6
+French Defense	b	Doubled e-pawns	0	0	1
+French Defense	b	Knights off on d4	0	1834	4196
+French Defense	b	Knights off on d4	1	1786	1846
+French Defense	b	Knights off on d4	2	7655	7727
+French Defense	b	Knights off on d4	3	5531	7658
+French Defense	b	Knights off on d4	4	5048	5534
+French Defense	b	Knights off on d4	5	4711	5048
+French Defense	b	Knights off on d4	6	4571	4743
+French Defense	b	Knights off on d4	7	4512	4572
+French Defense	b	Knights off on d4	8	4452	4703
+French Defense	b	Knights off on d4	9	4421	4452
+French Defense	b	Knights off on d4	10	3456	4421
+French Defense	b	Knights off on d4	11	2358	3517
+French Defense	b	Knights off on d4	12	1047	2362
+French Defense	b	Knights off on d4	13	835	1071
+French Defense	b	The bishop on b7	0	8	8
+French Defense	b	The bishop on b7	1	8	8
+French Defense	b	The bishop on b7	2	7	8
+French Defense	b	The bishop on b7	3	127	286
+French Defense	b	The bishop on b7	4	124	127
+French Defense	b	The bishop on b7	5	63	124
+French Defense	b	The bishop on b7	6	38	65
+French Defense	b	The bishop on b7	7	35	38
+French Defense	b	The bishop on b7	8	33	35
+French Defense	b	The bishop on b7	9	52	66
+French Defense	b	The bishop on b7	10	39	52
+French Defense	b	The bishop on b7	11	36	39
+French Defense	b	The queen takes on a2	0	11	35
+French Defense	b	The queen takes on a2	1	5	11
+French Defense	b	The queen takes on a2	2	0	5
+French Defense	b	Break with ...f6	0	12	14
+French Defense	b	Break with ...f6	1	0	12
+French Defense	b	The open centre	0	571	596
+French Defense	b	The open centre	1	532	571
+French Defense	b	The open centre	2	350	532
+French Defense	b	The open centre	3	135	350
+French Defense	b	The open centre	4	36	135
+French Defense	b	The open centre	5	25	36
+French Defense	b	The open centre	6	7	25
+French Defense	b	The open centre	7	7	7
+French Defense	b	The open centre	8	44	60
+French Defense	b	The open centre	9	44	44
+French Defense	b	The open centre	10	38	44
+French Defense	b	The open centre	11	32	37
+French Defense	b	The open centre	12	10	32
+French Defense	b	The open centre	13	8	10
+French Defense	b	The bishop takes on b4	0	660	981
+French Defense	b	The bishop takes on b4	1	333	661
+French Defense	b	The bishop takes on b4	2	309	334
+French Defense	b	The bishop takes on b4	3	286	309
+French Defense	b	The bishop takes on b4	4	285	286
+French Defense	b	The bishop takes on b4	5	212	285
+French Defense	b	The bishop takes on b4	6	210	212
+French Defense	b	The bishop takes on b4	7	69	210
+French Defense	b	The bishop takes on b4	8	70	82
+French Defense	b	The bishop takes on b4	9	48	70
+French Defense	b	The bishop takes on b4	10	43	48
+French Defense	b	The bishop takes on b4	11	25	43
+French Defense	b	The open e-file	0	0	4
 Italian Game	w	Open lines for the pawn	0	67	95
 Italian Game	w	Open lines for the pawn	1	57	74
 Italian Game	w	Open lines for the pawn	2	56	57
