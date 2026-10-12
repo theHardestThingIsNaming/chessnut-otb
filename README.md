@@ -52,7 +52,7 @@ Android app for the Chessnut Air smart board. Play over the board with clocks, v
 
 ### Review
 - Stockfish 18 analysis with accuracy for both sides (Lichess formulas), an eval bar, the top three lines, and live analysis of any side line you play.
-- Move ratings from brilliant to blunder, a colour-coded move table, material balance, the opening name, and toggleable arrows for the best move, better moves and threats.
+- Move ratings from brilliant to blunder, a move table that colours only the turning points (brilliant moves, mistakes and blunders) and marks inaccuracies with ?!, material balance, the opening name, and toggleable arrows for the best move, better moves and threats.
 - **Learn from mistakes**: practise every position where a mistake or blunder was played. Find a better move on the phone, get hints, and see positions come back on a schedule.
 - **Auto-upload**: club games from the board go to your Lichess account once saved, with an offline queue. Older games can be uploaded from the analysis menu. Turn it off in Settings.
 - **Share** any game as a Lichess link from the game list or the analysis screen. It is uploaded first if needed, without needing a login; the PGN is shared instead when Lichess can't be reached.

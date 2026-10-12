@@ -569,9 +569,17 @@ private fun classColor(c: MoveClass): Color = when (c) {
     MoveClass.Blunder -> Palette.Blunder
 }
 
+/**
+ * The move table colours only the moves that change the game: brilliant ones, mistakes and blunders.
+ * Good and slightly inexact moves stay plain, so the turning points stand out. Inaccuracies keep their "?!".
+ */
+private fun tableColor(c: MoveClass?): Color = when (c) {
+    MoveClass.Brilliant, MoveClass.Mistake, MoveClass.Blunder -> classColor(c)
+    else -> Palette.Text
+}
+
 private fun classSuffix(c: MoveClass?): String = when (c) {
     MoveClass.Brilliant -> "!!"
-    MoveClass.Excellent -> "!"
     MoveClass.Inaccuracy -> "?!"
     MoveClass.Mistake -> "?"
     MoveClass.Blunder -> "??"
@@ -650,7 +658,7 @@ private fun ScoreMove(san: String?, classification: MoveClass?, current: Boolean
     }
     Text(
         san + classSuffix(classification),
-        color = classification?.let(::classColor) ?: Palette.Text,
+        color = tableColor(classification),
         fontSize = 14.sp,
         fontWeight = if (current) FontWeight.Bold else FontWeight.Medium,
         modifier = modifier
