@@ -524,6 +524,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 if (!busy && finished == null) status = openingName ?: "Opening trainer"
             }
             publish()
+            // The board's prompt follows: lit with Explain on, dark with it off.
+            if (prompt == null && !awaitingBoard) light(null)
         } else {
             state.update { it.copy(explain = on) }
         }
@@ -627,9 +629,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                         learnedCount = learned?.count { key -> lines.any { Drill.key(it) == key } }
                             ?: views.count { it.status == LineStatus.Learned },
                     ).let { detail ->
-                        val yours = traps.filter { (it.before.size % 2 == 1) == white }
+                        // The same mistakes Punish mode sets up: the opponent's, in your lines.
                         val clean = app.lineProgress.learned(punishKey(name), white)
-                        detail.copy(punishable = yours.size, punished = yours.count { Drill.key(it.before + it.moves) in clean })
+                        detail.copy(punishable = traps.size, punished = traps.count { Drill.key(it.before + it.moves) in clean })
                     },
                 ) else it }
         }
@@ -1496,7 +1498,6 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             if (PlayPosition.matches(fen, placement)) {
                 note("board matches the start")
                 setupWrong = emptyList()
-                lightSquares(emptyList())
                 kickoff()
                 return
             }
@@ -1634,6 +1635,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             openingName?.let { tell(OpeningLore.of(it)) }
         }
         publish()
+        // Clears the setup lights, or lights your first move in Explain.
+        light(null)
         if (finished == null && !userToMove()) launchPlay { reply() }
     }
 
@@ -2048,8 +2051,20 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /** Lights the board without holding the turn. A stalled radio used to leave the spinner up. */
-    private fun light(uci: String?) =
-        lightSquares(if (uci == null || uci.length < 4) emptyList() else listOf(uci.substring(0, 2), uci.substring(2, 4)))
+    private fun light(uci: String?) {
+        val shown = uci ?: explainPrompt()
+        lightSquares(if (shown == null || shown.length < 4) emptyList() else listOf(shown.substring(0, 2), shown.substring(2, 4)))
+    }
+
+    /**
+     * In Explain, your move's prompt when nothing else is lit: the green arrow's move, so the board
+     * guides you through the line as the screen does. The line's own move, or the book's favourite past it.
+     */
+    private fun explainPrompt(): String? {
+        if (!physical || kind != PlayKind.Trainer || !explain || survival || punishTrap != null) return null
+        if (finished != null || retry || prompt != null || !userToMove()) return null
+        return drillMove() ?: legalBookSteps().firstOrNull()?.second
+    }
 
     /** Names the squares still wrong for the start, when there are few enough to be useful. */
     private fun setupStatus(wrong: List<String>): String = when {

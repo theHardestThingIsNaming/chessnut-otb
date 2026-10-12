@@ -6,7 +6,7 @@ What is already on the phone is under Done. What is worth doing next is under Ne
 The app teaches an opening, then three things past move 15: middlegame plans, middlegame tactics,
 and endgames. Built the same way for the main openings, including the Bishop's Opening.
 
-Last shipped, and on the phone: `e13c2cf` on `main`. Working tree was clean at that commit.
+Last shipped, and on the phone: the commit that adds Explain board lights, on `main`.
 
 ## Done
 
@@ -17,6 +17,8 @@ Last shipped, and on the phone: `e13c2cf` on `main`. Working tree was clean at t
 - [x] A puzzle section with nothing left due (an endgame type, or an opening's middlegame tactics) is hidden the same way, with "Show solved". It comes back on its own when a puzzle is due again.
 - [x] Middlegame plans for all 14 openings. Four each, except the English (3), the Vienna (2) and the London (2), which have fewer distinct structures in the lines you drill. The Bishop's Opening has four, one per line. Each plan starts from a line you drill, has a note per move, and no move of the planning side gives away more than about 60 centipawns at Stockfish depth 18.
 - [x] A Punish card on each opening's page, in orange under the Survival card: how many of its common mistakes you have punished without help (for example 3/12).
+- [x] Explain lights your move on the board: on your turn in Train, the green arrow's move (the line's, or the book's favourite past its end) is lit, so the board guides you as the screen does. Switching Explain off clears it.
+- [x] Review of the day's work: every plan and trap rechecked with Stockfish (`PLAN_IN=all`, `TRAP_IN=all`). The Vienna's dark-squares plan now castles before Be3 (Be3 at once lost 65cp to ...Bg4). A missed puzzle no longer counts as solved.
 - [x] The branch note in Train keeps each move together ("4. Nxd4" no longer splits across lines).
 - [x] Loosened puzzle match rerun for the Scotch and the Pirc (187 matches, up from 19). Five new Punish mistakes, Stockfish-checked: the loose c5 bishop (...h6? Nxc6), the e-file pin (...Nxe5? and Re1), a smothered mate on d6, ...Qxf2# against an early dxc6, and the knight raid on e3. Candidates and games are in `data-cache/punish/`.
 - [x] Common mistakes and Punish mode, traps for the main openings, and the book audit that keeps your own blunders out of the lines.
@@ -43,7 +45,7 @@ PLAN_IN=/tmp/plan-in.txt PLAN_OUT=/tmp/plan-out.txt STOCKFISH=/opt/homebrew/bin/
   ./gradlew :core:test --tests '*PlanCheckTest*' --rerun-tasks
 ```
 
-The number after each move is the centipawns it gives away. Keep the planning side's under about 60. The first move of `moves` is the opponent's; then they alternate. `ILLEGAL` means the move does not parse. Gradle caches tests, so a changed input needs `--rerun-tasks`.
+`PLAN_IN=all` checks every shipped plan; `TRAP_IN=all` does the same for every trap with `TrapCheckTest`, adding what the punishing move gives back. The number after each move is the centipawns it gives away. Keep the planning side's under about 60. The first move of `moves` is the opponent's; then they alternate. `ILLEGAL` means the move does not parse. Gradle caches tests, so a changed input needs `--rerun-tasks`.
 
 `MiddlegamePlansTest` checks every plan is legal and starts from a drilled line.
 
