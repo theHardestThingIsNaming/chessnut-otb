@@ -92,6 +92,15 @@ PLAN_IN=/tmp/plan-in.txt PLAN_OUT=/tmp/plan-out.txt STOCKFISH=/opt/homebrew/bin/
 
 `MiddlegamePlansTest` checks every plan is legal and starts from a drilled line.
 
+After writing an opening's plans, refresh their master counts (classical master games from PGN Mentor, in `data-cache/pgnmentor/<opening>/`, git-ignored; folders: scotch, italian, ruy, vienna, bishop, english, london, french, pirc, slav, nimzo, kid, sicilian; there's none for the Caro-Kann):
+
+```
+STATS_PGN_DIR=$PWD/data-cache/pgnmentor/italian STATS_OPENING="Italian Game|w" STATS_OUT=/tmp/stats.txt \
+  STATS_TSV=/tmp/italian.tsv ./gradlew :core:test --tests '*MasterStatsTest.stats*' --rerun-tasks
+```
+
+Then replace that opening's rows in `core/src/main/resources/plan-masters.tsv` with the new file's. `/tmp/stats.txt` shows each plan move as `move(played/reached)`: where many master games reach a position (say 100+) and few play your side's move (under a third), masters prefer something else. `STATS_CONSENSUS=1 STATS_PLAN="<name>"` with `MasterStatsTest.consensus` prints what they play instead; following it, Stockfish-checked, made the better plans so far.
+
 ## Adding tactics for an opening
 
 Needs `data-cache/puzzles.csv` (decompress `puzzles.csv.zst`, or download `https://database.lichess.org/lichess_db_puzzle.csv.zst`). Games are cached in `data-cache/games.ndjson`, so a re-run resumes.
