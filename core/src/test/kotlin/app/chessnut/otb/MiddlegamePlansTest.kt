@@ -22,7 +22,7 @@ class MiddlegamePlansTest {
         assertEquals(4, MiddlegamePlans.of("Ruy Lopez", true).size)
         assertEquals(3, MiddlegamePlans.of("Vienna Game", true).size)
         assertEquals(3, MiddlegamePlans.of("English Opening", true).size)
-        assertEquals(2, MiddlegamePlans.of("London System", true).size)
+        assertEquals(3, MiddlegamePlans.of("London System", true).size)
         assertEquals(4, MiddlegamePlans.of("Sicilian Defense", false).size)
         assertEquals(4, MiddlegamePlans.of("French Defense", false).size)
         assertEquals(4, MiddlegamePlans.of("Caro-Kann Defense", false).size)
@@ -35,7 +35,7 @@ class MiddlegamePlansTest {
 
     @Test
     fun everyLineOfACoveredOpeningLeadsIntoAPlan() {
-        for ((opening, white) in listOf("Scotch Game" to true, "Vienna Game" to true)) {
+        for ((opening, white) in listOf("Scotch Game" to true, "Vienna Game" to true, "London System" to true)) {
             val plans = MiddlegamePlans.of(opening, white)
             for (line in OpeningTree.lines(opening, white)) {
                 assertTrue(

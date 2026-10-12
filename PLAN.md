@@ -6,7 +6,7 @@ What is already on the phone is under Done. What is worth doing next is under Ne
 The app teaches an opening, then three things past move 15: middlegame plans, middlegame tactics,
 and endgames. Built the same way for the main openings, including the Bishop's Opening.
 
-Last shipped, and on the phone: the Vienna fork on c7, on `main`. Every Vienna line now has a plan.
+Last shipped, and on the phone: the London e4 break, on `main`. Every London line now has a plan.
 
 ## Done
 
@@ -23,6 +23,7 @@ Last shipped, and on the phone: the Vienna fork on c7, on `main`. Every Vienna l
 - [x] Harder Scotch tactics: rated 1500 to 2300, at least three moves of yours (EXPORT_MIN_RATING=1500, EXPORT_MIN_PLIES=6), each ending in mate (8), a crushing (22) or a clear advantage (30). The other openings still have the 900–2300 sets; rerun them the same way if these suit.
 - [x] Every Scotch line now leads into a middlegame plan: six new ones (pressure on c7 in the Millennium, winning the piece back in the Sarratt, the b-file in the Cochrane, the e5–f4 pawn pair in the Scotch Gambit, the pawn on g7 in the Göring, broken pawns against ...d5), played on by Stockfish and checked (worst move of yours 24cp). A test keeps every Scotch line covered. The other openings could get the same.
 - [x] Every Vienna line now leads into a middlegame plan: one new one, the fork on c7 after the queen trade. You gave a knight for a pawn; trade queens, step the bishop back to e2, and Nb5. When Black's knight checks on f2 and the bishop takes the rook, Nxc7+ forks the king and the other rook. Played on by Stockfish and checked (worst move of yours 7cp). The game stays level. The same test now covers the Vienna with the Scotch.
+- [x] Every London line now leads into a middlegame plan: one new one, the e4 break against ...Qb6. The queen leaves b2, White takes on c5, plays h3 and Bd3, castles, and breaks with e4. Both bishops end in the centre. Played on by Stockfish and checked (worst move of yours 8cp). White keeps a small edge. The covered-openings test now includes the London.
 - [x] Slimmer opening page: the stats are one row of icons (learned, due, medal, Lichess wins, Survival best, punished) with an ⓘ legend; each line has a Middlegame plan button; Explain, Ideas and History are left to the Train screen.
 - [x] Plans are linked to their lines: each line on the opening's page names the plan that starts where it ends (tap to open it), and finishing that line in Train offers "Continue with the plan". Back from a plan opened this way returns to where you were.
 - [x] The opening's page has a clearer order: one stats card (lines learned, due, medal, Lichess wins; then Survival best, last run and punished), Beyond the opening, then the lines, with the Chess.com import at the end. Train's options (Explain, Ideas, History) are pinned just above the Train, Punish and Survival buttons.
@@ -39,8 +40,7 @@ Last shipped, and on the phone: the Vienna fork on c7, on `main`. Every Vienna l
 ## Next
 
 - [ ] Optional. Two more Essential endgames if they earn a place: the Vancura (rook against a rook's pawn) and queen against a pawn. The eight already cover the usual club endings.
-- [ ] A middlegame plan after every line, one opening at a time (the Scotch and the Vienna are done). Lines still without a plan: London 1, Nimzo-Indian 6, Slav 9, Pirc 10, Italian 12, French 14, King's Indian 16, Caro-Kann 17, Sicilian 18, Ruy Lopez 24, English 25. Tools: `LineDumpTest` lists an opening's lines and their plans; `PlanGenTest` plays Stockfish on from each line's end; `PlanCheckTest` checks the result.
-- [ ] Optional. A third London plan, if a sound one turns up. Against the London's ...Qb6 the engine wants Na4, which is not written up yet.
+- [ ] A middlegame plan after every line, one opening at a time (the Scotch, the Vienna and the London are done). Lines still without a plan: Nimzo-Indian 6, Slav 9, Pirc 10, Italian 12, French 14, King's Indian 16, Caro-Kann 17, Sicilian 18, Ruy Lopez 24, English 25. Tools: `LineDumpTest` lists an opening's lines and their plans; `PlanGenTest` plays Stockfish on from each line's end; `PlanCheckTest` checks the result.
 
 ### UX review, 2026-10-12
 
