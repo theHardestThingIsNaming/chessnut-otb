@@ -23,6 +23,8 @@ object Palette {
     val OnAccent = Color(0xFFFFFFFF)
     /** Survival mode: its button, scores and counter share this red, so they read as one thing. */
     val Survival = Color(0xFFE5484D)
+    /** Endgames: a calm blue, apart from the openings' green. */
+    val Endgame = Color(0xFF5B9BE6)
     /** Highlights only: scores, due counts, move ratings. */
     val Gold = Color(0xFFE2B656)
     val GoldDim = Color(0x66E2B656)

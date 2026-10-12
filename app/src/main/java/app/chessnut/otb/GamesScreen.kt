@@ -88,6 +88,7 @@ fun GamesScreen(
     onAbout: () -> Unit,
     onImport: (String) -> String?,
     onMistakes: () -> Unit = {},
+    onEndgames: () -> Unit = {},
     onPositionAnalyse: (fen: String) -> Unit = {},
     onPositionPlay: (fen: String, userWhite: Boolean) -> Unit = { _, _ -> },
 ) {
@@ -210,6 +211,7 @@ fun GamesScreen(
                             highlight = mistakesDue > 0,
                         ) { TargetMark(it) }
                     }
+                    HomeTile("Endgames", "Puzzles from real endings, by type", Modifier.fillMaxWidth(), onEndgames) { PawnMark(it) }
                 }
             }
             item(key = "header") {

@@ -3,7 +3,10 @@
 package app.chessnut.otb.play
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import app.chessnut.otb.live.LowTime
 import app.chessnut.otb.openings.OpeningCatalog
 import androidx.compose.foundation.rememberScrollState
@@ -56,6 +59,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.chessnut.otb.live.TimeControl
+import app.chessnut.otb.puzzles.PuzzleProgress
+import app.chessnut.otb.puzzles.PuzzleSets
 import app.chessnut.otb.ui.Arrow
 import app.chessnut.otb.ui.ChessBoard
 import app.chessnut.otb.ui.ClockMark
@@ -63,6 +68,7 @@ import app.chessnut.otb.ui.FlagMark
 import app.chessnut.otb.ui.HalfMark
 import app.chessnut.otb.ui.Palette
 import app.chessnut.otb.ui.PlayerBar
+import app.chessnut.otb.ui.ResultMark
 import app.chessnut.otb.ui.clubAppBarColors
 import app.chessnut.otb.ui.clubChipColors
 import app.chessnut.otb.ui.clubTextButtonColors
@@ -94,7 +100,13 @@ import androidx.compose.foundation.shape.CircleShape
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlayScreen(viewModel: PlayViewModel, onBack: () -> Unit, mode: PlayKind = PlayKind.Bot, onAnalyse: (String) -> Unit = {}) {
+fun PlayScreen(
+    viewModel: PlayViewModel,
+    onBack: () -> Unit,
+    mode: PlayKind = PlayKind.Bot,
+    onAnalyse: (String) -> Unit = {},
+    onPuzzles: (String) -> Unit = {},
+) {
     KeepScreenOn()
     val ui by viewModel.ui.collectAsStateWithLifecycle()
     LaunchedEffect(mode) { viewModel.setKind(mode) }
@@ -142,7 +154,7 @@ fun PlayScreen(viewModel: PlayViewModel, onBack: () -> Unit, mode: PlayKind = Pl
     ) { padding ->
         when {
             ui.kind == PlayKind.Bot -> BotGame(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp), onAnalyse)
-            onPage -> OpeningPage(ui, ui.detail!!, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp))
+            onPage -> OpeningPage(ui, ui.detail!!, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp), onPuzzles)
             !ui.playing -> Setup(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp))
             else -> Playing(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp), onAnalyse)
         }
@@ -183,9 +195,14 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
         } else {
             if (ui.openingsStarted > 0) ProgressCard(ui, viewModel::startReview)
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                // The field keeps its own text: fed back from the view model, fast typing lost letters.
+                var query by rememberSaveable { mutableStateOf(ui.openingQuery) }
                 OutlinedTextField(
-                    value = ui.openingQuery,
-                    onValueChange = viewModel::setQuery,
+                    value = query,
+                    onValueChange = {
+                        query = it
+                        viewModel.setQuery(it)
+                    },
                     placeholder = { Text("Search openings") },
                     singleLine = true,
                     modifier = Modifier.weight(1f),
@@ -404,22 +421,6 @@ private fun TrapBanner(name: String, step: Int, length: Int, summary: String?, i
     }
 }
 
-/** Punish mode's pass or fail, big enough to see at a glance with the sound off. */
-@Composable
-private fun PunishMark(pass: Boolean, words: String) {
-    val color = if (pass) Palette.Accent else Palette.Blunder
-    Row(
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.SurfaceHigh).border(1.dp, color, RoundedCornerShape(12.dp)).padding(10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        Box(Modifier.size(44.dp).clip(CircleShape).background(color), contentAlignment = Alignment.Center) {
-            Text(if (pass) "✓" else "✗", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 26.sp)
-        }
-        Text(words, color = color, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-    }
-}
-
 /** Common traps stand out; rare ones are muted, so you know which to expect. */
 private fun frequencyColor(frequency: TrapFrequency?): Color = when (frequency) {
     TrapFrequency.Common -> Palette.Mistake
@@ -499,7 +500,7 @@ private fun SurvivalCard(detail: OpeningDetail) {
 /** One opening from one side: what you know of it, its lines and its history, with training a tap away. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun OpeningPage(ui: PlayUi, detail: OpeningDetail, viewModel: PlayViewModel, modifier: Modifier) {
+private fun OpeningPage(ui: PlayUi, detail: OpeningDetail, viewModel: PlayViewModel, modifier: Modifier, onPuzzles: (String) -> Unit) {
     Column(modifier.padding(bottom = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             item(key = "head") {
@@ -566,6 +567,7 @@ private fun OpeningPage(ui: PlayUi, detail: OpeningDetail, viewModel: PlayViewMo
                     }
                 }
             }
+            item(key = "beyond") { BeyondTheOpening(detail.name, ui.userWhite, onPuzzles) }
             item(key = "chess-com") { ChessComImport(ui, viewModel::importChessCom) }
             item(key = "lines-head") {
                 Row(Modifier.padding(top = 4.dp), verticalAlignment = Alignment.Bottom) {
@@ -801,7 +803,7 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
             )
             // In Punish mode the eval would give the mistake away, so it waits until you've answered.
             if (!showingTrap && !(ui.punish && !ui.lineDone)) EvalBar(ui.evalScore, ui.evalTerminal, ui.fen)
-            if (!showingTrap) ui.punishPass?.let { PunishMark(it, ui.punishMark.orEmpty()) }
+            if (!showingTrap) ui.punishPass?.let { ResultMark(it, ui.punishMark.orEmpty()) }
             ui.trapName?.let { TrapBanner(it, ui.trapStep, ui.trapLength, ui.trapSummary, ui.trapInfo) }
             if (!showingTrap) {
                 for (info in ui.traps) {
@@ -1216,5 +1218,42 @@ private fun ChessComImport(ui: PlayUi, onImport: (String) -> Unit) {
             },
             dismissButton = { TextButton(onClick = { asking = false }, colors = clubTextButtonColors()) { Text("Cancel", color = Palette.TextMuted) } },
         )
+    }
+}
+
+/**
+ * Past the book: tactics from games that began in your lines, so they're the
+ * ones your structures produce. Shown when the opening has a set.
+ */
+@Composable
+private fun BeyondTheOpening(opening: String, white: Boolean, onPuzzles: (String) -> Unit) {
+    val key = PuzzleSets.middlegameKey(opening, white)
+    val context = LocalContext.current
+    // Read each time the page shows, so solving some updates the numbers.
+    val counts = remember(key, LocalLifecycleOwner.current.lifecycle.currentState) { PuzzleProgress(context.filesDir).counts(key, System.currentTimeMillis()) }
+    if (counts.total == 0) return
+    Column(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface).clickable { onPuzzles(key) }.padding(14.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Text("Beyond the opening", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text("Middlegame tactics", color = Palette.Text, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                Text(
+                    "${counts.total} puzzles from games that began in your lines",
+                    color = Palette.TextMuted,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+            Text(
+                when {
+                    counts.due > 0 -> "${counts.due} due"
+                    else -> "${counts.solved}/${counts.total}"
+                },
+                color = if (counts.due > 0) Palette.Gold else Palette.Accent,
+                fontWeight = FontWeight.Bold,
+            )
+        }
     }
 }

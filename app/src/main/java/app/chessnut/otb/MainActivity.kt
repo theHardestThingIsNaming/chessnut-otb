@@ -25,6 +25,9 @@ import app.chessnut.otb.play.OnlineViewModel
 import app.chessnut.otb.play.PlayKind
 import app.chessnut.otb.play.PlayScreen
 import app.chessnut.otb.play.PlayViewModel
+import app.chessnut.otb.puzzles.EndgamesScreen
+import app.chessnut.otb.puzzles.PuzzleScreen
+import app.chessnut.otb.puzzles.PuzzleViewModel
 import app.chessnut.otb.review.ReviewScreen
 import app.chessnut.otb.review.ReviewViewModel
 import app.chessnut.otb.ui.ClubAtmosphere
@@ -50,6 +53,8 @@ class MainActivity : ComponentActivity() {
                 var screen by rememberSaveable { mutableStateOf("games") }
                 var afterReview by rememberSaveable { mutableStateOf("games") }
                 var playMode by rememberSaveable { mutableStateOf("bot") }
+                /** Where a puzzle session returns to: an opening's page or the endgames list. */
+                var afterPuzzles by rememberSaveable { mutableStateOf("games") }
                 val online = viewModel<OnlineViewModel>()
 
                 LaunchedEffect(oauthRedirect) {
@@ -77,7 +82,9 @@ class MainActivity : ComponentActivity() {
                 }
 
                 BackHandler(enabled = screen != "games" && screen != "online") {
-                    if (screen.startsWith("review:")) {
+                    if (screen.startsWith("puzzles:")) {
+                        screen = afterPuzzles
+                    } else if (screen.startsWith("review:")) {
                         screen = afterReview
                         afterReview = "games"
                     } else {
@@ -103,6 +110,10 @@ class MainActivity : ComponentActivity() {
                             afterReview = "play"
                             screen = "review:$id"
                         },
+                        onPuzzles = { key ->
+                            afterPuzzles = "play"
+                            screen = "puzzles:$key"
+                        },
                     )
                     screen == "online" -> OnlineScreen(
                         online,
@@ -115,6 +126,20 @@ class MainActivity : ComponentActivity() {
                         onOAuthHandled = { oauthRedirect = null },
                     )
                     screen == "about" -> AboutScreen(onBack = { screen = "games" })
+                    screen == "endgames" -> EndgamesScreen(
+                        onBack = { screen = "games" },
+                        onOpen = { key ->
+                            afterPuzzles = "endgames"
+                            screen = "puzzles:$key"
+                        },
+                    )
+                    screen.startsWith("puzzles:") -> {
+                        val key = screen.removePrefix("puzzles:")
+                        PuzzleScreen(
+                            viewModel<PuzzleViewModel>(key = screen, factory = PuzzleViewModel.Factory(key)),
+                            onBack = { screen = afterPuzzles },
+                        )
+                    }
                     screen.startsWith("mistakes") -> {
                         val id = screen.removePrefix("mistakes").removePrefix(":").ifBlank { null }
                         MistakesScreen(
@@ -153,6 +178,7 @@ class MainActivity : ComponentActivity() {
                         onTrainer = { playMode = "trainer"; screen = "play" },
                         onAbout = { screen = "about" },
                         onMistakes = { screen = "mistakes" },
+                        onEndgames = { screen = "endgames" },
                         onPositionAnalyse = { analysePosition(it, "games") },
                         onPositionPlay = playPosition,
                         onImport = { text ->
