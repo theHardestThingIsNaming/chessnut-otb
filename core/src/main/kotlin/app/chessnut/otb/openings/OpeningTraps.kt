@@ -39,12 +39,19 @@ object OpeningTraps {
 
     /**
      * The game [before] comes up from your [lines] (you are White when [white]):
-     * it follows them for at least [MIN_SHARED] moves, leaves them only by the
-     * opponent's choice, and reaches the trap within [PAST_LINE] moves of that.
+     * it follows them for at least [minShared] moves, leaves them only by the
+     * opponent's choice, and reaches the trap within [reach] moves of that
+     * (a middlegame puzzle can be any distance on).
      */
-    fun fits(before: List<String>, lines: List<List<String>>, white: Boolean): Boolean {
+    fun fits(
+        before: List<String>,
+        lines: List<List<String>>,
+        white: Boolean,
+        reach: Int = PAST_LINE,
+        minShared: Int = MIN_SHARED,
+    ): Boolean {
         val shared = lines.maxOfOrNull { line -> line.zip(before).takeWhile { (a, b) -> a == b }.size } ?: return false
-        if (shared < MIN_SHARED || before.size - shared > PAST_LINE) return false
+        if (shared < minShared || before.size - shared > reach) return false
         if (shared == before.size) return true
         // Where the game left the lines: if your lines go on from there, it was your move that left them.
         val yourTurn = (shared % 2 == 0) == white
