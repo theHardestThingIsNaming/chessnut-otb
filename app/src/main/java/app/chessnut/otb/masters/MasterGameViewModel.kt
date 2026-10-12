@@ -15,6 +15,7 @@ import app.chessnut.otb.games.PgnImport
 import app.chessnut.otb.openings.Guess
 import app.chessnut.otb.openings.MasterGame
 import app.chessnut.otb.openings.MasterGames
+import app.chessnut.otb.openings.MasterReview
 import app.chessnut.otb.openings.MoveIdeas
 import app.chessnut.otb.play.BOARD_SETTLE_MS
 import app.chessnut.otb.play.PlayPosition
@@ -61,6 +62,10 @@ data class MasterGameUi(
     val watching: Boolean = false,
     /** The whole game has been shown. */
     val over: Boolean = false,
+    /** In your line, your line's next move as a green arrow, so you're not guessing the opening blind. */
+    val guideUci: String? = null,
+    /** A key moment the game has paused at, until you continue. */
+    val review: MasterReview? = null,
     /** Played on the connected board: moves are lit and read from it. */
     val onBoard: Boolean = false,
     /** Why the game is on the screen with a board connected, or what the board is waiting for. */
@@ -92,6 +97,8 @@ class MasterGameViewModel(application: Application, private val id: String) : An
     private var boardWaiter: CompletableDeferred<Unit>? = null
     private var boardTarget: String? = null
     private var settleJob: Job? = null
+    /** Released by Continue at a key moment. */
+    private var reviewWaiter: CompletableDeferred<Unit>? = null
 
     init {
         restart()
@@ -150,6 +157,7 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         val g = game ?: return
         val r = replay ?: return
         job?.cancel()
+        reviewWaiter?.cancel()
         // From move 1: your line first, then the master's own moves.
         ply = 0
         hints = 0
@@ -207,6 +215,7 @@ class MasterGameViewModel(application: Application, private val id: String) : An
                 }
                 // On the board, you play the opponent's move: it's lit until the board shows it.
                 awaitBoard(r.fens[ply + 1], squaresOf(r.uci[ply]))
+                pauseAt(ply)
                 ply++
             }
             if (ply >= g.end) {
@@ -215,7 +224,9 @@ class MasterGameViewModel(application: Application, private val id: String) : An
                 if (ply == g.start) lineEnds()
                 hints = 0
                 val ask = if (ply < g.start) "Your move: play your line." else "Your move: what did ${g.master} play?"
-                state.update { it.copy(busy = false, status = ask) }
+                // In your line, the green arrow shows its move.
+                val guide = if (ply < g.start) r.uci[ply] else null
+                state.update { it.copy(busy = false, status = ask, guideUci = guide) }
             }
         }
     }
@@ -256,7 +267,7 @@ class MasterGameViewModel(application: Application, private val id: String) : An
             it.copy(
                 busy = true, fen = r.fens[ply + 1], lastUci = master, selected = null, targets = emptySet(),
                 masterUci = master, threatUci = null, wrongUci = if (verdict == Guess.Miss && !uci.equals(master, true)) uci else null,
-                pass = verdict != Guess.Miss, mark = words, status = words, intro = null, theirNote = null,
+                pass = verdict != Guess.Miss, mark = words, status = words, intro = null, theirNote = null, guideUci = null,
                 yourNote = noteAt(ply),
                 lineGuessed = it.lineGuessed + if (inLine) 1 else 0,
                 lineMatched = it.lineMatched + if (inLine && verdict == Guess.Match) 1 else 0,
@@ -275,8 +286,24 @@ class MasterGameViewModel(application: Application, private val id: String) : An
                 state.update { it.copy(boardNote = null) }
             }
             delay(AFTER_GUESS_MS)
+            pauseAt(ply - 1)
             advance()
         }
+    }
+
+    /** Pauses at a key moment after the move at [at], until Continue. */
+    private suspend fun pauseAt(at: Int) {
+        val review = game?.reviews?.get(at) ?: return
+        val waiter = CompletableDeferred<Unit>()
+        reviewWaiter = waiter
+        state.update { it.copy(review = review, busy = true, threatUci = null, masterUci = null, wrongUci = null) }
+        if (app.phoneSounds) speech.narrate(review.text)
+        waiter.await()
+        state.update { it.copy(review = null) }
+    }
+
+    fun continueOn() {
+        reviewWaiter?.complete(Unit)
     }
 
     /** After your guesses: plays the rest of the game out on the board, one move a second. */
@@ -289,10 +316,13 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         job = viewModelScope.launch {
             while (ply < g.moves.size) {
                 delay(WATCH_MS)
-                state.update { it.copy(fen = r.fens[ply + 1], lastUci = r.uci[ply], theirNote = "${moveLabel(ply)}${g.moves[ply]}") }
+                state.update {
+                    it.copy(fen = r.fens[ply + 1], lastUci = r.uci[ply], theirNote = noteAt(ply) ?: "${moveLabel(ply)}${g.moves[ply]}")
+                }
+                pauseAt(ply)
                 ply++
             }
-            state.update { it.copy(watching = false, over = true, theirNote = outcome(g)) }
+            state.update { it.copy(watching = false, over = true, theirNote = g.outro ?: outcome(g)) }
         }
     }
 
@@ -384,7 +414,7 @@ class MasterGameViewModel(application: Application, private val id: String) : An
     companion object {
         private const val OPPONENT_DELAY_MS = 700L
         private const val AFTER_GUESS_MS = 1_600L
-        private const val WATCH_MS = 1_000L
+        private const val WATCH_MS = 1_800L
         const val MASTER_FOLDER = "Master games"
         /** Up to this many squares to put right are lit; more would only confuse. */
         private const val MAX_LIT = 8

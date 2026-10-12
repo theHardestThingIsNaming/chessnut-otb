@@ -2,6 +2,7 @@ package app.chessnut.otb.masters
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -78,13 +79,27 @@ fun MasterGameScreen(model: MasterGameViewModel, onBack: () -> Unit, onAnalyse: 
                     Arrow.ofUci(ui.threatUci, Palette.ArrowThreat),
                     Arrow.ofUci(ui.masterUci, Palette.ArrowBest),
                     Arrow.ofUci(ui.wrongUci, Palette.Blunder),
-                ),
+                    Arrow.ofUci(ui.guideUci, Palette.ArrowBest),
+                ) + ui.review?.arrows.orEmpty().mapNotNull { (uci, colour) ->
+                    Arrow.ofUci(uci, when (colour) { 'R' -> Palette.ArrowThreat; 'B' -> Palette.ArrowBetter; else -> Palette.ArrowBest })
+                },
                 onSquare = model::tap,
             )
             PlayerLine(game.player(game.userWhite))
             // Your last guess and why the master played what he did, then the reply and its threat.
             Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 ui.boardNote?.let { Text(it, color = Palette.Gold, style = MaterialTheme.typography.bodyMedium) }
+                // A key moment: the game waits here until you continue.
+                ui.review?.let { review ->
+                    Column(
+                        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface)
+                            .border(1.dp, Palette.Gold, RoundedCornerShape(12.dp)).padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        Text(review.title, color = Palette.Gold, style = MaterialTheme.typography.titleSmall)
+                        Text(review.text, color = Palette.Text, style = MaterialTheme.typography.bodyMedium)
+                    }
+                }
                 ui.intro?.let { NoteCard(it, Palette.TextMuted) }
                 ui.pass?.let { ResultMark(it, ui.mark.orEmpty()) }
                 ui.yourNote?.let { NoteCard(it, Palette.Text) }
@@ -94,7 +109,9 @@ fun MasterGameScreen(model: MasterGameViewModel, onBack: () -> Unit, onAnalyse: 
             Spacer(Modifier.height(0.dp))
             Row(Modifier.fillMaxWidth().height(52.dp).padding(bottom = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 GameAction("Restart", light = false, onClick = model::restart, modifier = Modifier.weight(1f).fillMaxHeight())
-                if (ui.done && !ui.over) {
+                if (ui.review != null) {
+                    PrimaryAction("Continue", Modifier.weight(1.4f).fillMaxHeight(), onClick = model::continueOn)
+                } else if (ui.done && !ui.over) {
                     PrimaryAction(if (ui.watching) "Playing out…" else "Play out the game", Modifier.weight(1.4f).fillMaxHeight(), enabled = !ui.watching, onClick = model::watchRest)
                 } else if (ui.done) {
                     // The whole game, with the engine, from your games' Master games folder.

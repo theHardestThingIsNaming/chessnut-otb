@@ -1,4 +1,4 @@
-# Master games for guess-the-move: GAME id opening side line white black year event result start end moves intro whiteElo blackElo; NOTE id ply note good:/threat:
+# Master games for guess-the-move: GAME id opening side line white black year event result start end moves intro whiteElo blackElo; NOTE id ply note good:/threat:; REVIEW id ply title text arrows (uci:G|B|R); OUTRO id text
 GAME	EaKbGYdG	Scotch Game	w	e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Bc5 Be3 Qf6 c3 Nge7 Qd2 d5 Nb5	David Smerdon	Stephen Solomon	2009	Oceania zt	1-0	15	27	e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Bc5 Be3 Qf6 c3 Nge7 Qd2 d5 Nb5 Bxe3 Qxe3 O-O Nd2 dxe4 Nxe4 Qe5 Nc5 Qxe3+ fxe3 Nd5 e4 Ne3 Nxc7 Rb8 Kf2 Nxf1 Rhxf1 b6 Nd3 Rd8 Rad1 Bg4 Rd2 f5 Ke3 Rd7 Nd5 Re8 Nf2 Ne5 Kf4 Ng6+ Kg3 Be2 Rxe2 Rxd5 exd5 Rxe2 Nd3 Rd2 Rf3 h5 d6 h4+ Kh3 Kf7 Nf4 Ne5 Re3 Ng4 Re7+ Kf6 Re2 Rxd6 c4 Rd4 g3 Rxc4 Nd5+ Kf7 Re7+ Kf8 Rxa7 Rc2 Kxh4 Rxb2 Kg5 Rxh2 Nxb6 Rg2 Kxf5 Rxg3 a4 Nf6 a5 Rb3 Nc4 Kg8 a6 Rc3 Rc7 Nd5 Rc8+ Kh7 a7 Ne7+ Kg5 Nxc8 a8=Q Rxc4 Qh1+ Kg8 Qd5+ Kf8 Qxc4 Ne7 Qe6 Ke8 Kf4 Kf8 Ke5 Ng8 Qc8+	Smerdon–Solomon, Oceania Zonal 2009. White's knight on b5 eyes c7, and Black has to untangle before it lands there.	2489	2455
 NOTE	EaKbGYdG	15	Black trades bishops, and the bishop on e3 now hits your queen.	threat:e3d2
 NOTE	EaKbGYdG	16	Take back with the queen. It keeps your pawns whole and eyes a7.	good:f2e3
@@ -116,7 +116,7 @@ NOTE	jyOcagdl	17	Black trades on c3.	threat:c3d2
 NOTE	jyOcagdl	18	Take back with the pawn. The pawns on c3 and d4 hold the centre.	good:
 NOTE	jyOcagdl	19	Black castles.	
 NOTE	jyOcagdl	20	Castle too. Your pieces are out and the centre is yours.	good:h2h3,d1c2
-GAME	KGMF0HWo	Scotch Game	w	e4 e5 Nf3 Nc6 d4 Nxd4 Nxd4 exd4 Qxd4	Artashes Minasian	Ashot Anastasian	1996	ARM-ch	1-0	9	21	e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Nxd4 Qxd4 Ne7 Bc4 Nc6 Qd5 Qf6 O-O Be7 Nc3 O-O Qd1 Bd8 Nd5 Qg6 Re1 Ne5 Be2 d6 f4 Bh3 Ne3 Bh4 Rf1 Qxe4 gxh3 Ng6 Bd3	Minasian–Anastasian, Armenian Championship 1996. After 3...Nxd4 the queens stay on: White develops fast and aims the queen and bishop at f7.	2580	2520
+GAME	KGMF0HWo	Scotch Game	w	e4 e5 Nf3 Nc6 d4 Nxd4 Nxd4 exd4 Qxd4	Artashes Minasian	Ashot Anastasian	1996	ARM-ch	1-0	9	27	e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Nxd4 Qxd4 Ne7 Bc4 Nc6 Qd5 Qf6 O-O Be7 Nc3 O-O Qd1 Bd8 Nd5 Qg6 Re1 Ne5 Be2 d6 f4 Bh3 Ne3 Bh4 Rf1 Qxe4 gxh3 Ng6 Bd3	Armenian Championship, 1996. Artashes Minasian, 29, had won the very last USSR Championship in 1991. Ashot Anastasian was already a seven-time Armenian champion, and the two had shared the national title in 1992. Here Anastasian meets your Scotch with 3...Nxd4. Play your line first, then try to find Minasian's moves.	2580	2520
 NOTE	KGMF0HWo	9	Black brings the knight round towards c6, to hit your queen.	
 NOTE	KGMF0HWo	10	Develop the bishop, aiming at f7. The engine prefers Nc3 or Bd2.	good:c1d2,b1c3,d4d3
 NOTE	KGMF0HWo	11	The knight hits the queen.	threat:c6d4
@@ -129,3 +129,22 @@ NOTE	KGMF0HWo	17	Black castles.
 NOTE	KGMF0HWo	18	The queen goes home before Black can gain time on it.	good:d5d2
 NOTE	KGMF0HWo	19	Black's bishop heads for b6, to aim at f2.	
 NOTE	KGMF0HWo	20	The knight jumps to d5, hitting the queen and c7.	good:c1e3,a2a4
+NOTE	KGMF0HWo	21	The queen leaves f6, where the knight was hitting it, and eyes your e4 pawn.	
+NOTE	KGMF0HWo	22	The rook guards e4.	good:c4d3,a2a4
+NOTE	KGMF0HWo	23	The knight hits your bishop on c4.	threat:e5c4
+NOTE	KGMF0HWo	24	The bishop steps back to e2, out of reach.	good:
+NOTE	KGMF0HWo	25	A natural move, but a mistake: the queen on g6 and the knight on e5 are both short of squares.	threat:g6e4
+NOTE	KGMF0HWo	26	It hits the knight, and f5 next will hunt the queen.	good:
+NOTE	KGMF0HWo	27	Anastasian strikes back: the bishop joins the queen against g2.	
+NOTE	KGMF0HWo	28	The knight drops back to guard g2, and f5 is still coming.	
+NOTE	KGMF0HWo	29	The other bishop hits the rook on e1.	
+NOTE	KGMF0HWo	30	The rook steps aside to f1.	
+NOTE	KGMF0HWo	31	The queen grabs e4 and escapes the trap, but the h3 bishop is now loose.	
+NOTE	KGMF0HWo	32	Take the bishop: White is a piece up.	
+NOTE	KGMF0HWo	33	The knight steps away from the f-pawn's attack.	
+NOTE	KGMF0HWo	34	The bishop hits the queen with gain of time, and Anastasian resigned.	
+REVIEW	KGMF0HWo	25	Key moment	13...d6 looks natural, but Black's queen and knight have run short of squares. Minasian found the move that shows it. Can you?	
+REVIEW	KGMF0HWo	26	The pawn storm	f4 hits the e5 knight, and f5 next will chase the queen: the d5 knight covers f6 and the e2 bishop covers h5. Black is already close to lost.	f4f5:G,d5f6:B,e2h5:B
+REVIEW	KGMF0HWo	27	Counter-attack	The bishop and queen both aim at g2: ...Qxg2 would be mate. Minasian needs a calm defensive move.	h3g2:R,g6g2:R
+REVIEW	KGMF0HWo	32	A piece up	Ne3 covered g2, Rf1 stepped aside, and gxh3 picked up the bishop. White is a piece up with the attack over.	
+OUTRO	KGMF0HWo	Anastasian resigned after 18.Bd3: a piece down, with his queen under attack again. One natural move, 13...d6, was enough against Minasian's f4 and f5. The 1996 title went to Vladimir Akopian. Minasian won it again in 2004 and 2006, the year he played in Armenia's Olympiad-winning team. Anastasian, who later coached Armenia's women's team, died in 2016, aged 52.

@@ -29,6 +29,10 @@ data class MasterGame(
     val good: Map<Int, Set<String>>,
     /** On the opponent's plies: the threat the move makes, in UCI. */
     val threats: Map<Int, String>,
+    /** Key moments, by the ply of the move just played: the game pauses there. */
+    val reviews: Map<Int, MasterReview> = emptyMap(),
+    /** How the game ended and what became of the players, shown at the end. */
+    val outro: String? = null,
 ) {
     /** "Carlsen–Aronian, Wijk aan Zee 2011": surnames, then where and when. */
     val title: String get() = "${surname(white)}–${surname(black)}, $year"
@@ -49,6 +53,9 @@ data class MasterGame(
         return elo?.let { "$name · $it" } ?: name
     }
 }
+
+/** A pause at a key moment: what's going on, with arrows to show it. Colours: 'G' your idea, 'B' support, 'R' danger. */
+data class MasterReview(val title: String, val text: String, val arrows: List<Pair<String, Char>>)
 
 /** How a guess compares with the master's move. */
 enum class Guess { Match, Good, Miss }
@@ -80,6 +87,8 @@ object MasterGames {
             .filter { it.isNotBlank() && !it.startsWith("#") }
             .map { it.split('\t') }
         val notes = rows.filter { it[0] == "NOTE" }.groupBy { it[1] }
+        val reviews = rows.filter { it[0] == "REVIEW" }.groupBy { it[1] }
+        val outros = rows.filter { it[0] == "OUTRO" }.associate { it[1] to it[2] }
         return rows.filter { it[0] == "GAME" }.map { g ->
             val id = g[1]
             val mine = notes[id].orEmpty()
@@ -102,6 +111,12 @@ object MasterGames {
                 notes = mine.associate { it[2].toInt() to it[3] },
                 good = mine.mapNotNull { n -> n.getOrNull(4)?.takeIf { it.startsWith("good:") }?.let { n[2].toInt() to it.removePrefix("good:").split(',').filter(String::isNotBlank).toSet() } }.toMap(),
                 threats = mine.mapNotNull { n -> n.getOrNull(4)?.takeIf { it.startsWith("threat:") }?.let { n[2].toInt() to it.removePrefix("threat:") } }.toMap(),
+                reviews = reviews[id].orEmpty().associate { r ->
+                    // REVIEW id ply title text arrows: "f4f5:G,d5f6:B".
+                    val arrows = r.getOrNull(5).orEmpty().split(',').filter { ':' in it }.map { a -> a.substringBefore(':') to a.substringAfter(':').first() }
+                    r[2].toInt() to MasterReview(r[3], r[4], arrows)
+                },
+                outro = outros[id],
             )
         }
     }
