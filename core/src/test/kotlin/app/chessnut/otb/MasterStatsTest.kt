@@ -56,18 +56,22 @@ class MasterStatsTest {
             }
         }
         val out = StringBuilder("$games master games read\n")
+        // STATS_TSV: rows of `opening \t side \t plan \t ply in the plan \t played \t reached`, for the app.
+        val tsv = StringBuilder()
         for (plan in plans) {
             val board = Board()
             plan.before.forEach { board.doMove(it) }
             out.append("${plan.name}:")
-            for (san in plan.moves) {
+            for ((i, san) in plan.moves.withIndex()) {
                 val k = key(board)
                 out.append(" $san(${played[k to san] ?: 0}/${reached[k] ?: 0})")
+                if ((reached[k] ?: 0) > 0) tsv.append("$opening\t$side\t${plan.name}\t$i\t${played[k to san] ?: 0}\t${reached[k]}\n")
                 board.doMove(san)
             }
             out.append("\n")
         }
         File(System.getenv("STATS_OUT")).writeText(out.toString())
+        System.getenv("STATS_TSV")?.let { File(it).writeText(tsv.toString()) }
     }
 
     /**

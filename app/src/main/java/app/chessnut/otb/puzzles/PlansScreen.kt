@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import app.chessnut.otb.analysis.ChessLines
 import app.chessnut.otb.openings.MiddlegamePlan
 import app.chessnut.otb.openings.MiddlegamePlans
+import app.chessnut.otb.openings.PlanMasters
 import app.chessnut.otb.ui.Arrow
 import app.chessnut.otb.ui.BackButton
 import app.chessnut.otb.ui.ChessBoard
@@ -142,7 +143,13 @@ private fun PlanViewer(plan: MiddlegamePlan, modifier: Modifier, marks: PlanMark
             modifier = Modifier.heightIn(min = 72.dp),
         )
         ChessBoard(fen = replay.fens[ply], flipped = !plan.white, lastUci = lastUci, arrows = listOfNotNull(arrow))
-        Text("Move ${step} of ${plan.moves.size}", color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
+        // How often masters played the move just shown, so you can tell practice from the engine's own ideas.
+        val masters = if (step > 0) PlanMasters.line(plan, step - 1) else null
+        Text(
+            "Move ${step} of ${plan.moves.size}" + (masters?.let { " · $it" } ?: ""),
+            color = Palette.TextMuted,
+            style = MaterialTheme.typography.bodySmall,
+        )
         Spacer(Modifier.weight(1f))
         Row(Modifier.fillMaxWidth().height(52.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             GameAction("|<", light = false, onClick = { playing = false; step = 0 }, modifier = Modifier.weight(1f).fillMaxHeight())
