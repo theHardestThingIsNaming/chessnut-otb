@@ -8,7 +8,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import app.chessnut.otb.live.LowTime
-import app.chessnut.otb.openings.MiddlegamePlans
 import app.chessnut.otb.openings.OpeningCatalog
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -504,7 +503,7 @@ private fun OpeningPage(
                 if (family != null) {
                     FamilyLink(family) { viewModel.openDetail(family) }
                 } else {
-                    BeyondTheOpening(detail.name, ui.userWhite, onPuzzles, onPlans)
+                    BeyondTheOpening(detail.name, ui.userWhite, onPuzzles)
                 }
             }
             item(key = "lines-head") {
@@ -1276,26 +1275,21 @@ private fun FamilyLink(family: String, onOpen: () -> Unit) {
 }
 
 /**
- * Past the book: the opening's middlegame plans, and tactics from games that
- * began in your lines, so they're the ones your structures produce. Shown when
- * the opening has either.
+ * Past the book: tactics from games that began in your lines, so they're the ones your structures produce.
+ * The middlegame plans hang off the lines they follow, so they aren't repeated here.
  */
 @Composable
-private fun BeyondTheOpening(opening: String, white: Boolean, onPuzzles: (String) -> Unit, onPlans: (String, Boolean, String?) -> Unit) {
+private fun BeyondTheOpening(opening: String, white: Boolean, onPuzzles: (String) -> Unit) {
     val key = PuzzleSets.middlegameKey(opening, white)
     val context = LocalContext.current
     // Read each time the page shows, so solving some updates the numbers.
     val counts = remember(key, LocalLifecycleOwner.current.lifecycle.currentState) { PuzzleProgress(context.filesDir).counts(key, System.currentTimeMillis()) }
-    val plans = remember(opening, white) { MiddlegamePlans.of(opening, white).size }
     var showSolved by remember(key) { mutableStateOf(false) }
-    if (counts.total == 0 && plans == 0) return
+    if (counts.total == 0) return
     Column(
         Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface).padding(vertical = 6.dp),
     ) {
         Text("Beyond the opening", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp))
-        if (plans > 0) {
-            BeyondRow("Middlegame plans", "What to aim for once your lines end", "$plans", Palette.Accent) { onPlans(opening, white, null) }
-        }
         if (counts.total > 0 && (!counts.resting || showSolved)) {
             BeyondRow(
                 "Middlegame tactics",
