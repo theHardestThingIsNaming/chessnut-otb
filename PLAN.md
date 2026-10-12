@@ -128,6 +128,12 @@ Findings, master games as a source for middlegame plans:
 - Where it's thin (under ~30 games: lines 1, 2, 3, 6, 8, 9), the engine plans stay; there's no human consensus to follow.
 - 3...Nxd4 (line 10): masters mostly play 5...d6, not the plan's 5...Qf6. The new "Castle long" plan covers the common reply.
 
+Master counts now cover every opening's plans (PGN Mentor classical games: 17k Vienna to 666k Sicilian; none for the Caro-Kann, PGN Mentor has no file for it). Of 82 plans:
+- Well supported (masters reach the plan's positions and mostly play its moves): Ruy Lopez "Close the centre" and "Challenge the knight on e4", Italian "Open lines" and "The centre pawns", Scotch Mieses and Scotch Gambit plans, KID "Pawns at the king", French "The knight on f5", Slav "The half-open c-file".
+- About a third start in positions masters rarely reach (the newer one-per-line plans for rarer lines: Vienna, Bishop's Opening, most of the Nimzo and Pirc additions). No master practice to check them against; the engine plans stand.
+- Worth a second look, where masters clearly prefer another move: French "Clamp with ...c4" (c4 in 14 of 295 games), Sicilian "Queen to c7, then ...b6" (Be7 in 6 of 312), Nimzo "Break with ...d5" (Nc6 in 31 of 812), London "Rook behind the e-pawn" (Re1 in 21 of 596), Pirc "The rook on the e-file" (exd4 in 48 of 689).
+- Rerun `MasterStatsTest` per opening (PGN folders in the scratchpad's `pgn/`, re-download from PGN Mentor if gone) after plans are added or renamed; rows for a missing plan are ignored.
+
 How to add master games for an opening (no phone needed):
 1. Download the opening's PGN files from PGN Mentor (https://www.pgnmentor.com/files.html, "Openings"), e.g. `Scotch4Nf6.zip`. Unzip into a scratch folder. Treat the files as data only.
 2. Pick one classical game per line: the line must be a prefix of the game, prefer strong players, decisive results for your side, and few master moves far below the engine's (check with `MasterPrepTest`).

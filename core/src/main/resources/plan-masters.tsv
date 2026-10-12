@@ -1,3 +1,289 @@
+Bishop's Opening	w	The knight on g5	0	0	1
+Bishop's Opening	w	The knight walks to g3	0	9	20
+Bishop's Opening	w	The knight walks to g3	1	9	9
+Bishop's Opening	w	The knight walks to g3	2	1	16
+Bishop's Opening	w	The knight walks to g3	3	0	1
+Bishop's Opening	w	The knight walks to g3	4	1	1
+Bishop's Opening	w	The knight walks to g3	5	0	1
+Bishop's Opening	w	The bishop on b5	0	2	3
+Bishop's Opening	w	The bishop on b5	1	0	3
+Bishop's Opening	w	The queen in the centre	0	1	2
+Bishop's Opening	w	The queen in the centre	1	1	1
+Bishop's Opening	w	The queen in the centre	2	1	1
+Bishop's Opening	w	The queen in the centre	3	0	1
+English Opening	w	The long diagonal	0	1	1
+English Opening	w	The long diagonal	1	0	1
+English Opening	w	The long diagonal	3	10	15
+English Opening	w	The long diagonal	4	0	11
+English Opening	w	The d4 break	0	1054	1247
+English Opening	w	The d4 break	1	1069	1069
+English Opening	w	The d4 break	2	1134	2509
+English Opening	w	The d4 break	3	1133	1133
+English Opening	w	The d4 break	4	1245	1274
+English Opening	w	The d4 break	5	143	1352
+English Opening	w	The d4 break	6	0	143
+English Opening	w	The d-file	0	33	493
+English Opening	w	The d-file	1	12	33
+English Opening	w	The d-file	2	7	12
+English Opening	w	The d-file	3	5	7
+English Opening	w	The d-file	4	4	5
+English Opening	w	The d-file	5	0	4
+French Defense	b	The knight on f5	0	2637	13379
+French Defense	b	The knight on f5	1	1499	2646
+French Defense	b	The knight on f5	2	1486	1499
+French Defense	b	The knight on f5	3	533	1502
+French Defense	b	The knight on f5	4	284	537
+French Defense	b	The knight on f5	5	307	329
+French Defense	b	Clamp with ...c4	0	22	37
+French Defense	b	Clamp with ...c4	1	14	295
+French Defense	b	Clamp with ...c4	2	14	14
+French Defense	b	Clamp with ...c4	3	4	15
+French Defense	b	Clamp with ...c4	4	5	6
+French Defense	b	Clamp with ...c4	5	20	29
+French Defense	b	Clamp with ...c4	6	0	32
+French Defense	b	Clamp with ...c4	7	1	5
+French Defense	b	The queen on a5	0	363	588
+French Defense	b	The queen on a5	1	564	703
+French Defense	b	The queen on a5	2	225	797
+French Defense	b	The queen on a5	3	0	242
+French Defense	b	The queen on a5	5	2	2
+French Defense	b	Active pieces, isolated pawn	0	1703	1766
+French Defense	b	Active pieces, isolated pawn	1	1332	1704
+French Defense	b	Active pieces, isolated pawn	2	141	1510
+French Defense	b	Active pieces, isolated pawn	3	277	286
+French Defense	b	Active pieces, isolated pawn	4	52	278
+French Defense	b	Active pieces, isolated pawn	5	43	55
+Italian Game	w	Open lines for the pawn	0	67	95
+Italian Game	w	Open lines for the pawn	1	57	74
+Italian Game	w	Open lines for the pawn	2	56	57
+Italian Game	w	Open lines for the pawn	3	55	56
+Italian Game	w	Open lines for the pawn	4	38	55
+Italian Game	w	Open lines for the pawn	5	17	38
+Italian Game	w	Open lines for the pawn	6	7	17
+Italian Game	w	Open lines for the pawn	7	3	7
+Italian Game	w	The centre pawns	0	192	194
+Italian Game	w	The centre pawns	1	104	302
+Italian Game	w	The centre pawns	2	40	106
+Italian Game	w	The centre pawns	3	20	40
+Italian Game	w	The centre pawns	4	16	20
+Italian Game	w	The centre pawns	5	1	17
+Italian Game	w	The centre pawns	6	1	1
+Italian Game	w	The centre pawns	7	0	1
+Italian Game	w	The knight on e5	0	1186	1256
+Italian Game	w	The knight on e5	1	873	1186
+Italian Game	w	The knight on e5	2	834	873
+Italian Game	w	The knight on e5	3	803	834
+Italian Game	w	The knight on e5	4	457	803
+Italian Game	w	The knight on e5	5	116	457
+Italian Game	w	The knight on e5	6	20	116
+Italian Game	w	The knight on e5	7	8	20
+King's Indian Defense	b	Pawns at the king	0	7750	19138
+King's Indian Defense	b	Pawns at the king	1	5889	7747
+King's Indian Defense	b	Pawns at the king	2	2406	5890
+King's Indian Defense	b	Pawns at the king	3	2405	2416
+King's Indian Defense	b	Pawns at the king	4	2402	2403
+King's Indian Defense	b	Pawns at the king	5	2334	2591
+King's Indian Defense	b	Pawns at the king	6	2334	2334
+King's Indian Defense	b	Pawns at the king	7	2176	2332
+King's Indian Defense	b	The knight on g4	0	9	4077
+King's Indian Defense	b	The knight on g4	1	3	12
+King's Indian Defense	b	The knight on g4	2	0	27
+King's Indian Defense	b	The knight on g4	5	1	3
+King's Indian Defense	b	Expand with ...b5	0	189	200
+King's Indian Defense	b	Expand with ...b5	1	38	192
+King's Indian Defense	b	Expand with ...b5	2	17	40
+King's Indian Defense	b	Expand with ...b5	3	242	315
+King's Indian Defense	b	Expand with ...b5	4	45	319
+King's Indian Defense	b	Expand with ...b5	5	11	45
+King's Indian Defense	b	Expand with ...b5	6	0	11
+King's Indian Defense	b	The knight on a5	0	583	831
+King's Indian Defense	b	The knight on a5	1	574	584
+King's Indian Defense	b	The knight on a5	2	422	574
+King's Indian Defense	b	The knight on a5	3	582	679
+King's Indian Defense	b	The knight on a5	4	512	599
+King's Indian Defense	b	The knight on a5	5	499	512
+London System	w	Rook behind the e-pawn	0	1043	3208
+London System	w	Rook behind the e-pawn	1	728	1043
+London System	w	Rook behind the e-pawn	2	63	860
+London System	w	Rook behind the e-pawn	3	53	72
+London System	w	Rook behind the e-pawn	4	171	245
+London System	w	Rook behind the e-pawn	5	106	180
+London System	w	Rook behind the e-pawn	6	167	167
+London System	w	Rook behind the e-pawn	7	21	596
+London System	w	Space with c4	0	1016	3208
+London System	w	Space with c4	1	904	1099
+London System	w	Space with c4	2	207	1030
+London System	w	Space with c4	3	27	207
+London System	w	Space with c4	4	9	34
+London System	w	Space with c4	5	14	14
+London System	w	Space with c4	6	3	35
+London System	w	Space with c4	7	2	9
+Nimzo-Indian Defense	b	The bishop on b7	0	94	95
+Nimzo-Indian Defense	b	The bishop on b7	1	60	530
+Nimzo-Indian Defense	b	The bishop on b7	2	28	109
+Nimzo-Indian Defense	b	The bishop on b7	3	59	71
+Nimzo-Indian Defense	b	The bishop on b7	4	5	60
+Nimzo-Indian Defense	b	The bishop on b7	5	7	23
+Nimzo-Indian Defense	b	The bishop on b7	6	9	10
+Nimzo-Indian Defense	b	The bishop on b7	7	9	9
+Nimzo-Indian Defense	b	The c-file and the long diagonal	0	2	13
+Nimzo-Indian Defense	b	The c-file and the long diagonal	1	30	47
+Nimzo-Indian Defense	b	The c-file and the long diagonal	2	0	31
+Nimzo-Indian Defense	b	The knight on e4	0	495	522
+Nimzo-Indian Defense	b	The knight on e4	1	483	496
+Nimzo-Indian Defense	b	The knight on e4	2	143	483
+Nimzo-Indian Defense	b	The knight on e4	3	141	147
+Nimzo-Indian Defense	b	The knight on e4	4	22	141
+Nimzo-Indian Defense	b	The knight on e4	5	17	23
+Nimzo-Indian Defense	b	Break with ...d5	0	259	259
+Nimzo-Indian Defense	b	Break with ...d5	1	31	812
+Nimzo-Indian Defense	b	Break with ...d5	2	54	54
+Nimzo-Indian Defense	b	Break with ...d5	3	10	62
+Nimzo-Indian Defense	b	Break with ...d5	4	10	10
+Nimzo-Indian Defense	b	Break with ...d5	5	3	15
+Nimzo-Indian Defense	b	The knight comes to e4	0	2	3
+Nimzo-Indian Defense	b	The knight comes to e4	1	0	5
+Nimzo-Indian Defense	b	The doubled c-pawns	0	44	44
+Nimzo-Indian Defense	b	The doubled c-pawns	1	45	98
+Nimzo-Indian Defense	b	The doubled c-pawns	2	3	45
+Nimzo-Indian Defense	b	The doubled c-pawns	3	2	3
+Nimzo-Indian Defense	b	The doubled c-pawns	4	0	2
+Nimzo-Indian Defense	b	The bishop on a6	0	5	14
+Nimzo-Indian Defense	b	The bishop on a6	1	5	5
+Nimzo-Indian Defense	b	The bishop on a6	2	4	5
+Nimzo-Indian Defense	b	The bishop on a6	3	1	4
+Nimzo-Indian Defense	b	The bishop on a6	4	0	1
+Nimzo-Indian Defense	b	Queens off on d1	0	4	9
+Nimzo-Indian Defense	b	Queens off on d1	1	4	4
+Nimzo-Indian Defense	b	Queens off on d1	2	4	4
+Nimzo-Indian Defense	b	Queens off on d1	3	4	4
+Nimzo-Indian Defense	b	Queens off on d1	4	2	4
+Nimzo-Indian Defense	b	Queens off on d1	5	0	2
+Nimzo-Indian Defense	b	The queen takes the rook	0	2	13
+Nimzo-Indian Defense	b	The queen takes the rook	1	0	2
+Nimzo-Indian Defense	b	The open f-file	0	4	10
+Nimzo-Indian Defense	b	The open f-file	1	4	4
+Nimzo-Indian Defense	b	The open f-file	2	3	4
+Nimzo-Indian Defense	b	The open f-file	3	1	3
+Nimzo-Indian Defense	b	The open f-file	4	0	1
+Pirc Defense	b	Strike with ...c5, then ...b5	0	1018	1243
+Pirc Defense	b	Strike with ...c5, then ...b5	1	1004	1018
+Pirc Defense	b	Strike with ...c5, then ...b5	2	894	1004
+Pirc Defense	b	Strike with ...c5, then ...b5	3	172	924
+Pirc Defense	b	Strike with ...c5, then ...b5	4	84	173
+Pirc Defense	b	Strike with ...c5, then ...b5	5	18	84
+Pirc Defense	b	Strike with ...c5, then ...b5	6	8	19
+Pirc Defense	b	Strike with ...c5, then ...b5	7	4	8
+Pirc Defense	b	Strike with ...c5, then ...b5	8	5	7
+Pirc Defense	b	Strike with ...c5, then ...b5	9	0	5
+Pirc Defense	b	Undermine d5 with ...c6	0	263	496
+Pirc Defense	b	Undermine d5 with ...c6	1	189	263
+Pirc Defense	b	Undermine d5 with ...c6	2	38	190
+Pirc Defense	b	Undermine d5 with ...c6	3	19	38
+Pirc Defense	b	Undermine d5 with ...c6	4	6	18
+Pirc Defense	b	Undermine d5 with ...c6	5	0	6
+Pirc Defense	b	Block the storm, then e5	0	235	582
+Pirc Defense	b	Block the storm, then e5	1	266	360
+Pirc Defense	b	Block the storm, then e5	2	104	269
+Pirc Defense	b	Block the storm, then e5	3	90	104
+Pirc Defense	b	Block the storm, then e5	4	96	97
+Pirc Defense	b	Block the storm, then e5	5	92	96
+Pirc Defense	b	Block the storm, then e5	6	38	92
+Pirc Defense	b	Block the storm, then e5	7	24	38
+Pirc Defense	b	Queenside pawns at the king	0	205	296
+Pirc Defense	b	Queenside pawns at the king	1	54	205
+Pirc Defense	b	Queenside pawns at the king	2	18	79
+Pirc Defense	b	Queenside pawns at the king	3	1	19
+Pirc Defense	b	Queenside pawns at the king	4	0	3
+Pirc Defense	b	The doubled h-pawns	0	23	176
+Pirc Defense	b	The doubled h-pawns	1	21	23
+Pirc Defense	b	The doubled h-pawns	2	19	21
+Pirc Defense	b	The doubled h-pawns	3	10	20
+Pirc Defense	b	The doubled h-pawns	4	1	10
+Pirc Defense	b	The doubled h-pawns	5	1	1
+Pirc Defense	b	The doubled h-pawns	6	1	1
+Pirc Defense	b	The doubled h-pawns	7	1	1
+Pirc Defense	b	The doubled h-pawns	8	0	1
+Pirc Defense	b	The bishop on a6	0	80	242
+Pirc Defense	b	The bishop on a6	1	59	80
+Pirc Defense	b	The bishop on a6	2	17	67
+Pirc Defense	b	The bishop on a6	3	11	20
+Pirc Defense	b	The bishop on a6	4	6	11
+Pirc Defense	b	The bishop on a6	5	0	6
+Pirc Defense	b	Queens off on d1	0	8	35
+Pirc Defense	b	Queens off on d1	1	3	8
+Pirc Defense	b	Queens off on d1	2	1	3
+Pirc Defense	b	Queens off on d1	3	1	1
+Pirc Defense	b	Queens off on d1	4	1	1
+Pirc Defense	b	Queens off on d1	5	0	1
+Pirc Defense	b	The knight on f5	0	250	347
+Pirc Defense	b	The knight on f5	1	56	249
+Pirc Defense	b	The knight on f5	2	8	79
+Pirc Defense	b	The knight on f5	3	7	8
+Pirc Defense	b	The knight on f5	4	1	7
+Pirc Defense	b	The knight on f5	5	1	1
+Pirc Defense	b	The knight on f5	6	0	1
+Pirc Defense	b	The queen on b6	0	49	72
+Pirc Defense	b	The queen on b6	1	22	70
+Pirc Defense	b	The queen on b6	2	20	29
+Pirc Defense	b	The queen on b6	3	6	20
+Pirc Defense	b	The queen on b6	4	6	6
+Pirc Defense	b	The queen on b6	5	6	6
+Pirc Defense	b	The queen on b6	6	6	6
+Pirc Defense	b	The queen on b6	7	4	6
+Pirc Defense	b	The queen on b6	8	0	4
+Pirc Defense	b	Block with ...h5	0	2	276
+Pirc Defense	b	Block with ...h5	1	2	2
+Pirc Defense	b	Block with ...h5	2	1	2
+Pirc Defense	b	Block with ...h5	3	0	1
+Pirc Defense	b	The pawn on g6	0	1	13
+Pirc Defense	b	The pawn on g6	1	0	1
+Pirc Defense	b	The pin on f3	1	1	3
+Pirc Defense	b	The pin on f3	2	1	1
+Pirc Defense	b	The pin on f3	3	1	1
+Pirc Defense	b	The pin on f3	4	0	1
+Pirc Defense	b	The rook on the e-file	0	653	1057
+Pirc Defense	b	The rook on the e-file	1	48	689
+Pirc Defense	b	The rook on the e-file	2	48	48
+Pirc Defense	b	The rook on the e-file	3	12	48
+Pirc Defense	b	The rook on the e-file	4	9	12
+Pirc Defense	b	The rook on the e-file	5	17	196
+Pirc Defense	b	The rook on the e-file	6	14	17
+Pirc Defense	b	The rook on the e-file	7	30	38
+Pirc Defense	b	The rook on the e-file	8	1	180
+Pirc Defense	b	The rook on the e-file	9	0	1
+Ruy Lopez	w	Close the centre	0	18801	18948
+Ruy Lopez	w	Close the centre	1	16306	21249
+Ruy Lopez	w	Close the centre	2	10546	17734
+Ruy Lopez	w	Close the centre	3	10546	10547
+Ruy Lopez	w	Close the centre	4	10557	10562
+Ruy Lopez	w	Close the centre	5	10551	10557
+Ruy Lopez	w	Close the centre	6	7262	10665
+Ruy Lopez	w	Close the centre	7	5830	7266
+Ruy Lopez	w	Close the centre	8	934	5827
+Ruy Lopez	w	Close the centre	9	626	945
+Ruy Lopez	w	Challenge the knight on e4	0	7313	7343
+Ruy Lopez	w	Challenge the knight on e4	1	2703	7313
+Ruy Lopez	w	Challenge the knight on e4	2	1360	2704
+Ruy Lopez	w	Challenge the knight on e4	3	891	1360
+Ruy Lopez	w	Challenge the knight on e4	4	892	927
+Ruy Lopez	w	Challenge the knight on e4	5	751	891
+Ruy Lopez	w	Challenge the knight on e4	6	32	788
+Ruy Lopez	w	Challenge the knight on e4	7	29	32
+Ruy Lopez	w	The king stays in the centre	0	4741	4741
+Ruy Lopez	w	The king stays in the centre	1	3161	4742
+Ruy Lopez	w	The king stays in the centre	2	1204	3161
+Ruy Lopez	w	The king stays in the centre	3	817	1204
+Ruy Lopez	w	The king stays in the centre	4	78	1080
+Ruy Lopez	w	The king stays in the centre	5	17	114
+Ruy Lopez	w	The king stays in the centre	6	11	24
+Ruy Lopez	w	The king stays in the centre	7	0	11
+Ruy Lopez	w	The open a-file	0	1	1
+Ruy Lopez	w	The open a-file	1	0	1
+Ruy Lopez	w	The open a-file	4	27	35
+Ruy Lopez	w	The open a-file	5	5	75
+Ruy Lopez	w	The open a-file	6	0	7
+Ruy Lopez	w	The open a-file	7	3	5
 Scotch Game	w	Space on the queenside	0	6286	6992
 Scotch Game	w	Space on the queenside	1	6286	6287
 Scotch Game	w	Space on the queenside	2	6273	6294
@@ -65,18 +351,34 @@ Scotch Game	w	The e5 and f4 pawn pair	10	755	756
 Scotch Game	w	The e5 and f4 pawn pair	11	227	755
 Scotch Game	w	The e5 and f4 pawn pair	12	20	227
 Scotch Game	w	The e5 and f4 pawn pair	13	5	20
-Scotch Game	w	The pawn on g7	0	2	4
-Scotch Game	w	The pawn on g7	1	1	2
-Scotch Game	w	The pawn on g7	2	1	1
-Scotch Game	w	The pawn on g7	3	1	1
-Scotch Game	w	The pawn on g7	4	1	1
-Scotch Game	w	The pawn on g7	5	1	1
-Scotch Game	w	The pawn on g7	6	1	1
-Scotch Game	w	The pawn on g7	7	1	1
-Scotch Game	w	The pawn on g7	8	1	1
-Scotch Game	w	The pawn on g7	9	1	1
-Scotch Game	w	The pawn on g7	10	0	1
-Scotch Game	w	The pawn on g7	13	1	1
+Scotch Game	w	The pawn on g7	0	34	50
+Scotch Game	w	The pawn on g7	1	32	34
+Scotch Game	w	The pawn on g7	2	31	32
+Scotch Game	w	The pawn on g7	3	27	31
+Scotch Game	w	The pawn on g7	4	25	26
+Scotch Game	w	The pawn on g7	5	25	25
+Scotch Game	w	The pawn on g7	6	21	25
+Scotch Game	w	The pawn on g7	7	20	21
+Scotch Game	w	The pawn on g7	8	5	20
+Scotch Game	w	The pawn on g7	9	5	5
+Scotch Game	w	The pawn on g7	10	6	9
+Scotch Game	w	The pawn on g7	11	6	6
+Scotch Game	w	The pawn on g7	12	1	17
+Scotch Game	w	The pawn on g7	13	1	2
+Scotch Game	w	Broken pawns for Black	0	730	730
+Scotch Game	w	Broken pawns for Black	1	704	730
+Scotch Game	w	Broken pawns for Black	2	491	704
+Scotch Game	w	Broken pawns for Black	3	421	491
+Scotch Game	w	Broken pawns for Black	4	13	422
+Scotch Game	w	Broken pawns for Black	5	13	13
+Scotch Game	w	Broken pawns for Black	6	1	13
+Scotch Game	w	Broken pawns for Black	7	1	1
+Scotch Game	w	Broken pawns for Black	8	243	247
+Scotch Game	w	Broken pawns for Black	9	123	243
+Scotch Game	w	Broken pawns for Black	10	92	122
+Scotch Game	w	Broken pawns for Black	11	89	92
+Scotch Game	w	Broken pawns for Black	12	89	89
+Scotch Game	w	Broken pawns for Black	13	89	89
 Scotch Game	w	f4 and Ba3 against ...g6	0	6286	6992
 Scotch Game	w	f4 and Ba3 against ...g6	1	6286	6287
 Scotch Game	w	f4 and Ba3 against ...g6	2	6273	6294
@@ -97,3 +399,98 @@ Scotch Game	w	Castle long against ...d6	4	89	91
 Scotch Game	w	Castle long against ...d6	5	55	95
 Scotch Game	w	Castle long against ...d6	6	35	55
 Scotch Game	w	Castle long against ...d6	7	15	36
+Sicilian Defense	b	Kick the bishop with ...g5	0	713	787
+Sicilian Defense	b	Kick the bishop with ...g5	1	337	1227
+Sicilian Defense	b	Kick the bishop with ...g5	2	330	365
+Sicilian Defense	b	Kick the bishop with ...g5	3	320	369
+Sicilian Defense	b	Kick the bishop with ...g5	4	324	980
+Sicilian Defense	b	Kick the bishop with ...g5	5	569	662
+Sicilian Defense	b	Strike with ...b5	0	134	185
+Sicilian Defense	b	Strike with ...b5	1	47	156
+Sicilian Defense	b	Strike with ...b5	2	29	55
+Sicilian Defense	b	Strike with ...b5	3	30	34
+Sicilian Defense	b	Strike with ...b5	4	18	30
+Sicilian Defense	b	Strike with ...b5	5	21	21
+Sicilian Defense	b	Queen to c7, then ...b6	0	312	451
+Sicilian Defense	b	Queen to c7, then ...b6	1	6	312
+Sicilian Defense	b	Queen to c7, then ...b6	2	31	76
+Sicilian Defense	b	Queen to c7, then ...b6	3	4	31
+Sicilian Defense	b	Queen to c7, then ...b6	4	4	19
+Sicilian Defense	b	Queen to c7, then ...b6	5	10	11
+Sicilian Defense	b	Queen to c7, then ...b6	6	8	49
+Sicilian Defense	b	Queen to c7, then ...b6	7	8	8
+Sicilian Defense	b	The knight on d4	0	147	286
+Sicilian Defense	b	The knight on d4	1	240	256
+Sicilian Defense	b	The knight on d4	2	131	267
+Sicilian Defense	b	The knight on d4	3	181	222
+Sicilian Defense	b	The knight on d4	4	153	208
+Sicilian Defense	b	The knight on d4	5	31	175
+Sicilian Defense	b	The knight on d4	6	17	44
+Sicilian Defense	b	The knight on d4	7	9	17
+Slav Defense	b	The ...e5 break	0	26	1729
+Slav Defense	b	The ...e5 break	1	16	26
+Slav Defense	b	The ...e5 break	2	0	16
+Slav Defense	b	Keep the light bishop	0	2244	3803
+Slav Defense	b	Keep the light bishop	1	837	2250
+Slav Defense	b	Keep the light bishop	2	0	1428
+Slav Defense	b	Keep the light bishop	3	16	180
+Slav Defense	b	Keep the light bishop	4	13	16
+Slav Defense	b	Keep the light bishop	5	9	13
+Slav Defense	b	Space with ...b4	0	871	917
+Slav Defense	b	Space with ...b4	1	758	871
+Slav Defense	b	Space with ...b4	2	434	759
+Slav Defense	b	Space with ...b4	3	360	434
+Slav Defense	b	Space with ...b4	4	361	361
+Slav Defense	b	Space with ...b4	5	103	361
+Slav Defense	b	Space with ...b4	6	83	103
+Slav Defense	b	Space with ...b4	7	74	83
+Slav Defense	b	The extra pawn on c4	0	83	160
+Slav Defense	b	The extra pawn on c4	1	74	83
+Slav Defense	b	The extra pawn on c4	2	18	74
+Slav Defense	b	The extra pawn on c4	3	12	18
+Slav Defense	b	The extra pawn on c4	4	13	14
+Slav Defense	b	The extra pawn on c4	5	10	13
+Slav Defense	b	The extra pawn on c4	6	5	10
+Slav Defense	b	The extra pawn on c4	7	5	5
+Slav Defense	b	The extra pawn on c4	8	5	5
+Slav Defense	b	The extra pawn on c4	9	1	5
+Slav Defense	b	The extra pawn on c4	10	1	1
+Slav Defense	b	The extra pawn on c4	11	1	1
+Slav Defense	b	The extra pawn on c4	12	1	1
+Slav Defense	b	The extra pawn on c4	13	0	1
+Slav Defense	b	The pawn on b3	0	31	928
+Slav Defense	b	The pawn on b3	1	0	31
+Slav Defense	b	The knight on b4	0	128	185
+Slav Defense	b	The knight on b4	1	124	128
+Slav Defense	b	The knight on b4	2	84	143
+Slav Defense	b	The knight on b4	3	0	84
+Slav Defense	b	The knight on b4	7	0	1
+Slav Defense	b	The half-open c-file	0	200	3092
+Slav Defense	b	The half-open c-file	1	169	205
+Slav Defense	b	The half-open c-file	2	161	168
+Slav Defense	b	The half-open c-file	3	151	159
+Slav Defense	b	The half-open c-file	4	130	151
+Slav Defense	b	The half-open c-file	5	71	134
+Slav Defense	b	The half-open c-file	6	69	74
+Slav Defense	b	The half-open c-file	7	50	69
+Slav Defense	b	The half-open c-file	8	71	76
+Slav Defense	b	The half-open c-file	9	23	71
+Slav Defense	b	The half-open c-file	10	24	24
+Slav Defense	b	The half-open c-file	11	13	24
+Slav Defense	b	The half-open c-file	12	2	13
+Slav Defense	b	The half-open c-file	13	0	2
+Slav Defense	b	Meet the e4 break	0	6	59
+Slav Defense	b	Meet the e4 break	1	2	6
+Slav Defense	b	Meet the e4 break	2	2	2
+Slav Defense	b	Meet the e4 break	3	1	2
+Slav Defense	b	Meet the e4 break	4	0	1
+Vienna Game	w	The e5 pawn wedge	0	1	3
+Vienna Game	w	The e5 pawn wedge	1	0	1
+Vienna Game	w	Dark squares after ...g6	0	0	3
+Vienna Game	w	Dark squares after ...g6	7	6	15
+Vienna Game	w	Dark squares after ...g6	8	3	6
+Vienna Game	w	Dark squares after ...g6	9	0	3
+Vienna Game	w	The fork on c7	0	2	2
+Vienna Game	w	The fork on c7	1	1	2
+Vienna Game	w	The fork on c7	2	1	1
+Vienna Game	w	The fork on c7	3	0	1
