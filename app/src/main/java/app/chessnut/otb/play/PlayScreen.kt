@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import app.chessnut.otb.live.LowTime
+import app.chessnut.otb.openings.MiddlegamePlans
 import app.chessnut.otb.openings.OpeningCatalog
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -106,6 +107,7 @@ fun PlayScreen(
     mode: PlayKind = PlayKind.Bot,
     onAnalyse: (String) -> Unit = {},
     onPuzzles: (String) -> Unit = {},
+    onPlans: (opening: String, white: Boolean) -> Unit = { _, _ -> },
 ) {
     KeepScreenOn()
     val ui by viewModel.ui.collectAsStateWithLifecycle()
@@ -154,7 +156,7 @@ fun PlayScreen(
     ) { padding ->
         when {
             ui.kind == PlayKind.Bot -> BotGame(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp), onAnalyse)
-            onPage -> OpeningPage(ui, ui.detail!!, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp), onPuzzles)
+            onPage -> OpeningPage(ui, ui.detail!!, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp), onPuzzles, onPlans)
             !ui.playing -> Setup(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp))
             else -> Playing(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp), onAnalyse)
         }
@@ -500,7 +502,14 @@ private fun SurvivalCard(detail: OpeningDetail) {
 /** One opening from one side: what you know of it, its lines and its history, with training a tap away. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun OpeningPage(ui: PlayUi, detail: OpeningDetail, viewModel: PlayViewModel, modifier: Modifier, onPuzzles: (String) -> Unit) {
+private fun OpeningPage(
+    ui: PlayUi,
+    detail: OpeningDetail,
+    viewModel: PlayViewModel,
+    modifier: Modifier,
+    onPuzzles: (String) -> Unit,
+    onPlans: (opening: String, white: Boolean) -> Unit,
+) {
     Column(modifier.padding(bottom = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             item(key = "head") {
@@ -567,7 +576,7 @@ private fun OpeningPage(ui: PlayUi, detail: OpeningDetail, viewModel: PlayViewMo
                     }
                 }
             }
-            item(key = "beyond") { BeyondTheOpening(detail.name, ui.userWhite, onPuzzles) }
+            item(key = "beyond") { BeyondTheOpening(detail.name, ui.userWhite, onPuzzles, onPlans) }
             item(key = "chess-com") { ChessComImport(ui, viewModel::importChessCom) }
             item(key = "lines-head") {
                 Row(Modifier.padding(top = 4.dp), verticalAlignment = Alignment.Bottom) {
@@ -1222,38 +1231,43 @@ private fun ChessComImport(ui: PlayUi, onImport: (String) -> Unit) {
 }
 
 /**
- * Past the book: tactics from games that began in your lines, so they're the
- * ones your structures produce. Shown when the opening has a set.
+ * Past the book: the opening's middlegame plans, and tactics from games that
+ * began in your lines, so they're the ones your structures produce. Shown when
+ * the opening has either.
  */
 @Composable
-private fun BeyondTheOpening(opening: String, white: Boolean, onPuzzles: (String) -> Unit) {
+private fun BeyondTheOpening(opening: String, white: Boolean, onPuzzles: (String) -> Unit, onPlans: (String, Boolean) -> Unit) {
     val key = PuzzleSets.middlegameKey(opening, white)
     val context = LocalContext.current
     // Read each time the page shows, so solving some updates the numbers.
     val counts = remember(key, LocalLifecycleOwner.current.lifecycle.currentState) { PuzzleProgress(context.filesDir).counts(key, System.currentTimeMillis()) }
-    if (counts.total == 0) return
+    val plans = remember(opening, white) { MiddlegamePlans.of(opening, white).size }
+    if (counts.total == 0 && plans == 0) return
     Column(
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface).clickable { onPuzzles(key) }.padding(14.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface).padding(vertical = 6.dp),
     ) {
-        Text("Beyond the opening", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Column(Modifier.weight(1f)) {
-                Text("Middlegame tactics", color = Palette.Text, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-                Text(
-                    "${counts.total} puzzles from games that began in your lines",
-                    color = Palette.TextMuted,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
-            Text(
-                when {
-                    counts.due > 0 -> "${counts.due} due"
-                    else -> "${counts.solved}/${counts.total}"
-                },
-                color = if (counts.due > 0) Palette.Gold else Palette.Accent,
-                fontWeight = FontWeight.Bold,
-            )
+        Text("Beyond the opening", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp))
+        if (plans > 0) {
+            BeyondRow("Middlegame plans", "What to aim for once your lines end", "$plans", Palette.Gold) { onPlans(opening, white) }
         }
+        if (counts.total > 0) {
+            BeyondRow(
+                "Middlegame tactics",
+                "${counts.total} puzzles from games that began in your lines",
+                if (counts.due > 0) "${counts.due} due" else "${counts.solved}/${counts.total}",
+                if (counts.due > 0) Palette.Gold else Palette.Accent,
+            ) { onPuzzles(key) }
+        }
+    }
+}
+
+@Composable
+private fun BeyondRow(title: String, detail: String, badge: String, badgeColor: Color, onClick: () -> Unit) {
+    Row(Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 14.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.weight(1f)) {
+            Text(title, color = Palette.Text, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+            Text(detail, color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
+        }
+        Text(badge, color = badgeColor, fontWeight = FontWeight.Bold)
     }
 }

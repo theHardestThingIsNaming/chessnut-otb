@@ -26,6 +26,7 @@ import app.chessnut.otb.play.PlayKind
 import app.chessnut.otb.play.PlayScreen
 import app.chessnut.otb.play.PlayViewModel
 import app.chessnut.otb.puzzles.EndgamesScreen
+import app.chessnut.otb.puzzles.PlansScreen
 import app.chessnut.otb.puzzles.PuzzleScreen
 import app.chessnut.otb.puzzles.PuzzleViewModel
 import app.chessnut.otb.review.ReviewScreen
@@ -84,6 +85,8 @@ class MainActivity : ComponentActivity() {
                 BackHandler(enabled = screen != "games" && screen != "online") {
                     if (screen.startsWith("puzzles:")) {
                         screen = afterPuzzles
+                    } else if (screen.startsWith("plans:")) {
+                        screen = "play"
                     } else if (screen.startsWith("review:")) {
                         screen = afterReview
                         afterReview = "games"
@@ -114,6 +117,7 @@ class MainActivity : ComponentActivity() {
                             afterPuzzles = "play"
                             screen = "puzzles:$key"
                         },
+                        onPlans = { opening, white -> screen = "plans:$opening:${if (white) "w" else "b"}" },
                     )
                     screen == "online" -> OnlineScreen(
                         online,
@@ -126,6 +130,15 @@ class MainActivity : ComponentActivity() {
                         onOAuthHandled = { oauthRedirect = null },
                     )
                     screen == "about" -> AboutScreen(onBack = { screen = "games" })
+                    screen.startsWith("plans:") -> {
+                        val spec = screen.removePrefix("plans:")
+                        PlansScreen(
+                            opening = spec.substringBeforeLast(':'),
+                            white = spec.endsWith(":w"),
+                            onBack = { screen = "play" },
+                            onTry = { fen, white -> playPosition(fen, white) },
+                        )
+                    }
                     screen == "endgames" -> EndgamesScreen(
                         onBack = { screen = "games" },
                         onOpen = { key ->
