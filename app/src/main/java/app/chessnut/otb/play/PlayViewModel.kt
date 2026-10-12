@@ -2352,7 +2352,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 hintUci = if (at == null) hint else null,
                 branchUci = if (at == null && hint == null) branch()?.let { PlayPosition.uciOfSan(fen, it.first) } else null,
                 branchNote = if (at == null) branch()?.let { (move, others) ->
-                    val number = moveNumber(sanMoves.size)
+                    // A no-break space keeps "4. Nxd4" on one line when the note wraps.
+                    val number = moveNumber(sanMoves.size).trimEnd() + "\u00A0"
                     "Your lines split here. This one plays $number$move (others: ${others.joinToString(", ") { number + it }})."
                 } else {
                     null
