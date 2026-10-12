@@ -127,6 +127,11 @@ internal object JsonLite {
                 i++
                 while (i < text.length && text[i].isDigit()) i++
             }
+            if (i < text.length && (text[i] == 'e' || text[i] == 'E')) {
+                i++
+                if (i < text.length && (text[i] == '+' || text[i] == '-')) i++
+                while (i < text.length && text[i].isDigit()) i++
+            }
             return Json.Num(text.substring(start, i))
         }
 

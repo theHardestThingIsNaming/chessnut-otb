@@ -41,3 +41,12 @@ class RatingStakesTest {
         assertEquals(47, RatingStakes.deviation("""{"id":"me","perfs":{"rapid":{"games":120,"rating":1612,"rd":47,"prog":3}}}""", "rapid"))
     }
 }
+
+class JsonNumbersTest {
+    @Test
+    fun exponentsParse() {
+        val parsed = app.chessnut.otb.lichess.JsonLite.parse("""{"a":1.5e3,"b":2}""") as app.chessnut.otb.lichess.Json.Obj
+        assertEquals("1.5e3", (parsed.fields["a"] as app.chessnut.otb.lichess.Json.Num).raw)
+        assertEquals(2L, parsed.long("b"))
+    }
+}

@@ -131,7 +131,9 @@ class LichessHttp(private val token: () -> String?) {
         onReady(connection)
         connection.requestMethod = method
         connection.connectTimeout = 20_000
-        connection.readTimeout = if (method == "GET" && path.contains("stream") || path.endsWith("/seek")) 0 else 20_000
+        // Streams, seeks and challenges stay open until something happens, so they never time out.
+        val waits = (method == "GET" && path.contains("stream")) || path.endsWith("/seek") || path.startsWith("/api/challenge/")
+        connection.readTimeout = if (waits) 0 else 20_000
         connection.setRequestProperty("Accept", accept ?: if (json) "application/json" else "application/x-ndjson")
         connection.setRequestProperty("User-Agent", "chessnut-otb")
         if (auth) {
