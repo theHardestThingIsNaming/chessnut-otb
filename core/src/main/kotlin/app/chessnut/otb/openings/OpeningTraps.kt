@@ -853,5 +853,63 @@ object OpeningTraps {
             "White is a pawn up, and the knight on g5 bears down on f7 while the black king is still in the centre.",
             mistake = true,
         ),
+
+        // Found by the loosened puzzle match for the Scotch and the Pirc.
+        Trap(
+            "The loose c5 bishop",
+            san("e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Bc5 Be3 Nf6 Nc3 O-O Bd3"),
+            san("h6 Nxc6 bxc6 Bxc5"),
+            listOf(
+                "A quiet move, leaving the c5 bishop unguarded. Only White's own knight on d4 stands between it and the e3 bishop.",
+                "The knight takes on c6 and gets out of the way: the e3 bishop now hits c5.",
+                "Black takes back.",
+                "And the bishop takes c5.",
+            ),
+            "White wins a whole bishop.",
+        ),
+        Trap(
+            "The pin on the e-file",
+            san("e4 e5 Nf3 Nc6 d4 exd4 Bc4 Qf6 O-O h6 e5"),
+            san("Nxe5 Nxe5 Qxe5 Re1"),
+            listOf(
+                "Black grabs the e5 pawn with the knight.",
+                "White takes the knight.",
+                "Taking back with the queen walks into a pin. (...Ne7 only loses the piece.)",
+                "The rook pins the queen to the king.",
+            ),
+            "White wins the queen for a rook.",
+        ),
+        Trap(
+            "Smothered on d6",
+            san("e4 e5 Nf3 Nc6 d4 exd4 Nxd4 Nge7 Bg5 Ne5 Nf5"),
+            san("c6 Nd6#"),
+            listOf(
+                "Black plays ...c6, missing the knight check on d6. The king is hemmed in by its own pieces.",
+                "The knight checks from d6, and the king's own pieces box it in: smothered mate.",
+            ),
+            "Checkmate.",
+        ),
+        Trap(
+            "Mate on f2 again",
+            san("e4 d6 d4 Nf6 Nf3 Nxe4 Bc4 c6 d5 Qb6"),
+            san("dxc6 Qxf2#"),
+            listOf(
+                "White takes on c6, missing that the queen and the e4 knight both hit f2.",
+                "The queen takes f2, backed by the knight: mate.",
+            ),
+            "Checkmate.",
+        ),
+        Trap(
+            "The knight raid on e3",
+            san("e4 d6 d4 Nf6 Nd2 g6 f4 Ng4"),
+            san("h3 Ne3 Qf3 Nxc2+"),
+            listOf(
+                "White kicks the knight, but it has a square on e3.",
+                "The knight hits the queen and the bishop.",
+                "The queen steps aside.",
+                "The knight takes c2 with check, forking the king and the rook.",
+            ),
+            "Black wins a pawn and the rook on a1.",
+        ),
     )
 }
