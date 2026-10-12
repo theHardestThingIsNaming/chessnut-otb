@@ -2,8 +2,10 @@ package app.chessnut.otb.mistakes
 
 import app.chessnut.otb.analysis.AccuracyCalculator
 import app.chessnut.otb.analysis.ChessLines
+import app.chessnut.otb.analysis.EngineLine
 import app.chessnut.otb.analysis.GameAnalysis
 import app.chessnut.otb.analysis.MoveClass
+import app.chessnut.otb.analysis.Score
 import app.chessnut.otb.games.SavedGame
 
 /** A position where a bad move was played, to be solved again. [fen] is before the move. */
@@ -68,6 +70,24 @@ object MistakeDeck {
         if (winBest == null || winAnswer == null) return false
         return winBest - winAnswer <= TOLERANCE
     }
+
+    /**
+     * The follow-up moves that count, from the engine's top [lines]: those
+     * within [TOLERANCE] of the best, so where only one move is good, only
+     * that one counts. [whiteMoves] is the side to move.
+     */
+    fun goodFollowUps(lines: List<EngineLine>, whiteMoves: Boolean): Set<String> {
+        fun mover(score: Score) = if (whiteMoves) score.whiteWinPercent else 100 - score.whiteWinPercent
+        val best = lines.firstOrNull() ?: return emptySet()
+        val top = mover(best.score)
+        return lines.take(FOLLOW_UP_CHOICES)
+            .filter { top - mover(it.score) <= TOLERANCE }
+            .mapNotNull { it.uci.firstOrNull()?.lowercase() }
+            .toSet()
+    }
+
+    /** The engine lines a follow-up may come from. */
+    const val FOLLOW_UP_CHOICES = 3
 
     /** Win-percentage points an answer may give away against the engine's best and still count. */
     const val TOLERANCE = 5.0

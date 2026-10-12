@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import app.chessnut.otb.OtbApp
 import app.chessnut.otb.analysis.ChessLines
+import app.chessnut.otb.analysis.EngineLine
 import app.chessnut.otb.analysis.MoveClass
 import app.chessnut.otb.analysis.Score
 import app.chessnut.otb.analysis.Terminal
@@ -84,6 +85,11 @@ class MistakesViewModel(application: Application, private val gameId: String?) :
     private var deck: List<Mistake> = emptyList()
     private val results = mutableMapOf<String, Outcome>()
     private var missed = false
+    /** The second step: the opponent has replied and you find the follow-up. */
+    private var followUp = false
+    /** Follow-up moves that count, and the engine's own, for a hint. */
+    private var followGood: Set<String> = emptySet()
+    private var followBest: String? = null
     private var engine: UciEngine? = null
     private val engineLock = Mutex()
 
@@ -148,6 +154,9 @@ class MistakesViewModel(application: Application, private val gameId: String?) :
     private fun show(index: Int) {
         val mistake = deck.getOrNull(index)
         missed = false
+        followUp = false
+        followGood = emptySet()
+        followBest = null
         if (mistake == null) {
             if (all.isEmpty()) {
                 state.update {
@@ -186,7 +195,8 @@ class MistakesViewModel(application: Application, private val gameId: String?) :
     fun hint() {
         val mistake = state.value.mistake ?: return
         missed = true
-        state.update { it.copy(bestUci = mistake.bestUci, status = "The arrow shows the engine's move. Play it, or find your own.") }
+        val shown = if (followUp) followBest else mistake.bestUci
+        state.update { it.copy(bestUci = shown, status = "The arrow shows the engine's move. Play it, or find your own.") }
     }
 
     fun tap(square: Int) {
@@ -205,52 +215,113 @@ class MistakesViewModel(application: Application, private val gameId: String?) :
 
     private fun answer(uci: String) {
         val mistake = state.value.mistake ?: return
+        if (followUp) {
+            answerFollowUp(mistake, uci)
+            return
+        }
         state.update { it.copy(checking = true, wrongUci = null, status = "Checking…") }
         viewModelScope.launch {
             val (winBest, winAnswer) = if (uci.equals(mistake.bestUci, ignoreCase = true)) null to null else evaluate(mistake.fen, uci)
-            val good = MistakeDeck.solved(uci, mistake.bestUci, winBest, winAnswer)
-            if (good) {
-                results[mistake.key] = if (missed) Outcome.Helped else Outcome.FirstTry
-                val review = reviews.grade(mistake.key, clean = !missed, now = System.currentTimeMillis())
-                val days = Drill.days(review, System.currentTimeMillis())
-                val after = PlayPosition.after(mistake.fen, uci)
-                val again = if (missed) {
-                    "You needed a hint or another try, so this position comes back tomorrow."
-                } else {
-                    "Solved first time. You'll see this position again in $days ${if (days == 1) "day" else "days"}."
-                }
-                val best = mistake.bestUci
-                val engineNote = if (best != null && !uci.equals(best, ignoreCase = true)) {
-                    " The engine's choice was ${ChessLines.sanOf(mistake.fen, listOf(best)).firstOrNull() ?: best}."
-                } else {
-                    ""
-                }
-                state.update {
-                    it.copy(
-                        fen = after?.second ?: it.fen,
-                        lastUci = uci,
-                        solved = true,
-                        checking = false,
-                        bestUci = mistake.bestUci,
-                        status = "Good: ${after?.first ?: uci}.$engineNote $again",
-                    )
-                }
-            } else {
+            if (!MistakeDeck.solved(uci, mistake.bestUci, winBest, winAnswer)) {
                 missed = true
                 val lost = if (winBest != null && winAnswer != null) " It gives away about ${Math.round(winBest - winAnswer)}% winning chances." else ""
                 state.update { it.copy(checking = false, wrongUci = uci, status = "Not quite.$lost Try again, or take a hint.") }
+                return@launch
+            }
+            val after = PlayPosition.after(mistake.fen, uci)
+            val best = mistake.bestUci
+            val engineNote = if (best != null && !uci.equals(best, ignoreCase = true)) {
+                " The engine's choice was ${ChessLines.sanOf(mistake.fen, listOf(best)).firstOrNull() ?: best}."
+            } else {
+                ""
+            }
+            val good = "Good: ${after?.first ?: uci}.$engineNote"
+            if (after == null || ChessLines.terminalOf(after.second) != null) {
+                complete(mistake, after?.second, uci, good)
+                return@launch
+            }
+            state.update { it.copy(fen = after.second, lastUci = uci, bestUci = null, status = "$good Your opponent is replying…") }
+            // The opponent answers with the engine's best, then you find the follow-up.
+            val reply = topLines(after.second, 1).firstOrNull()?.uci?.firstOrNull()
+            val replied = reply?.let { PlayPosition.after(after.second, it) }
+            if (replied == null || ChessLines.terminalOf(replied.second) != null) {
+                complete(mistake, replied?.second ?: after.second, reply ?: uci, good)
+                return@launch
+            }
+            val lines = topLines(replied.second, MistakeDeck.FOLLOW_UP_CHOICES)
+            followGood = MistakeDeck.goodFollowUps(lines, whiteMoves = replied.second.split(' ')[1] == "w")
+            followBest = lines.firstOrNull()?.uci?.firstOrNull()
+            if (followGood.isEmpty()) {
+                complete(mistake, replied.second, reply, good)
+                return@launch
+            }
+            followUp = true
+            state.update {
+                it.copy(
+                    fen = replied.second,
+                    lastUci = reply,
+                    checking = false,
+                    status = "$good They reply ${replied.first}. Now find the follow-up.",
+                )
             }
         }
+    }
+
+    /** The second step: a move close to the engine's best after the opponent's reply. */
+    private fun answerFollowUp(mistake: Mistake, uci: String) {
+        val fen = state.value.fen
+        if (uci.lowercase() !in followGood) {
+            missed = true
+            state.update { it.copy(wrongUci = uci, status = "Not the follow-up. Try again, or take a hint.") }
+            return
+        }
+        val after = PlayPosition.after(fen, uci)
+        complete(mistake, after?.second, uci, "Follow-up ${after?.first ?: uci}: well played.")
+    }
+
+    /**
+     * Both moves found: without help, the position is done and doesn't come
+     * back unless you practise them all; with a hint or a wrong try, it comes
+     * back tomorrow.
+     */
+    private fun complete(mistake: Mistake, fen: String?, lastUci: String, lead: String) {
+        followUp = false
+        results[mistake.key] = if (missed) Outcome.Helped else Outcome.FirstTry
+        val again = if (missed) {
+            reviews.grade(mistake.key, clean = false, now = System.currentTimeMillis())
+            "You needed a hint or another try, so this position comes back tomorrow."
+        } else {
+            reviews.retire(mistake.key)
+            "Solved without help, so it won't come back unless you practise all."
+        }
+        state.update {
+            it.copy(
+                fen = fen ?: it.fen,
+                lastUci = lastUci,
+                solved = true,
+                checking = false,
+                wrongUci = null,
+                bestUci = null,
+                status = "$lead $again",
+            )
+        }
+    }
+
+    /** The engine's top [count] lines for [fen]. */
+    private suspend fun topLines(fen: String, count: Int): List<EngineLine> = withContext(Dispatchers.IO) {
+        runCatching { engineLock.withLock { engine().analyseMillis(fen, 900, count) } }.getOrDefault(emptyList())
+    }
+
+    private suspend fun engine(): UciEngine = engine ?: UciEngine(StockfishProcess.start(getApplication()), threads = 2).also {
+        it.start()
+        engine = it
     }
 
     /** The mover's winning chances after the engine's best move and after [uci]. */
     private suspend fun evaluate(fen: String, uci: String): Pair<Double?, Double?> = withContext(Dispatchers.IO) {
         runCatching {
             engineLock.withLock {
-                val eng = engine ?: UciEngine(StockfishProcess.start(getApplication()), threads = 2).also {
-                    it.start()
-                    engine = it
-                }
+                val eng = engine()
                 val whiteMoves = fen.split(' ')[1] == "w"
                 val best = eng.analyseMillis(fen, 700, 1).firstOrNull()?.score ?: Score.Even
                 val after = PlayPosition.after(fen, uci)?.second ?: return@withLock null to null
@@ -292,12 +363,23 @@ class ReviewFile(private val file: File) {
     @Synchronized
     fun all(): Map<String, LineReview> = reviews.toMap()
 
+    /** Solved for good: kept out of practice unless you practise them all. */
+    @Synchronized
+    fun retire(key: String) {
+        reviews[key] = LineReview(Drill.INTERVAL_DAYS.lastIndex, Long.MAX_VALUE)
+        save()
+    }
+
     @Synchronized
     fun grade(key: String, clean: Boolean, now: Long): LineReview {
         val next = Drill.grade(reviews[key], clean, now)
         reviews[key] = next
+        save()
+        return next
+    }
+
+    private fun save() {
         file.parentFile?.mkdirs()
         file.writeText(reviews.entries.joinToString("") { (k, r) -> "$k\t${r.box}\t${r.dueAt}\n" })
-        return next
     }
 }
