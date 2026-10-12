@@ -195,11 +195,15 @@ class GameStore(private val root: File) {
         val clean = name.trim().replace(Regex("""[\\/]+"""), " ").replace(Regex("""\s+"""), " ")
         if (clean.isEmpty()) return null
         if (clean.length > 40) return null
+        // "." and ".." would point back at the folders or the games themselves.
+        if (clean.all { it == '.' }) return null
         return clean
     }
 
     private fun move(from: File, to: File) {
         if (!from.isDirectory) return
+        // Moving onto itself would delete the game below before the rename.
+        if (from.canonicalFile == to.canonicalFile) return
         to.parentFile.mkdirs()
         if (to.exists()) to.deleteRecursively()
         if (from.renameTo(to)) return
