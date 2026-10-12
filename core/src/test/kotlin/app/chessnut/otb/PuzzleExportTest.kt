@@ -24,6 +24,8 @@ import kotlin.test.Test
  * Run: EXPORT_OPENINGS="Scotch Game|w,Pirc Defense|b" ./gradlew :core:test --tests '*PuzzleExportTest*' --rerun-tasks
  * EXPORT_CAP raises how many of the most-played puzzles are checked (default 1500).
  * EXPORT_ENDGAMES=skip leaves the endgame file alone.
+ * EXPORT_MIN_RATING (default 900) and EXPORT_MIN_PLIES (default 2: the opponent's move and one of yours)
+ * narrow the middlegame tactics to harder, longer ones; EXPORT_MIN_PLIES=6 asks for three moves of yours.
  */
 class PuzzleExportTest {
     private val root = generateSequence(File("").absoluteFile) { it.parentFile }.first { File(it, "settings.gradle.kts").exists() || File(it, "settings.gradle").exists() }
@@ -55,7 +57,10 @@ class PuzzleExportTest {
                 val row = Row(line.split(','))
                 if (row.fields.size < 10) return@forEach
                 val themes = row.themes.split(' ')
-                if ("middlegame" in themes && row.popularity >= 80 && row.plays >= 300 && row.rating in 900..2300) {
+                val minRating = System.getenv("EXPORT_MIN_RATING")?.toIntOrNull() ?: 900
+                val minPlies = System.getenv("EXPORT_MIN_PLIES")?.toIntOrNull() ?: 2
+                val longEnough = row.moves.split(' ').size >= minPlies
+                if ("middlegame" in themes && row.popularity >= 80 && row.plays >= 300 && row.rating in minRating..2300 && longEnough) {
                     for ((opening, white) in openings) {
                         // Your opponent moves first in a puzzle: Black's move when you are White.
                         if (row.whiteToMove == white) continue

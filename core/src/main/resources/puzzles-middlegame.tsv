@@ -1,63 +1,63 @@
-Scotch Game	w	ojres	935	advantage fork middlegame short	r2q4/p2p2k1/bpp3n1/7p/4P3/2N3PB/PPP2K1P/3RR3 b - - 1 18	h5h4 d1d7 d8d7 h3d7	18
-Scotch Game	w	RRRzQ	966	advantage discoveredAttack middlegame short	r3kb1r/1pp2pp1/p2pbn2/6Bp/1P1qP3/P2B3P/2P2PP1/R2Q1RK1 b kq - 3 13	d6d5 d3b5 a6b5 d1d4	13
-Scotch Game	w	2Re08	978	kingsideAttack mate mateIn1 middlegame oneMove	r2q1rk1/pp4pp/1b1p4/3P4/2B2pQn/2B4P/PP3PP1/R4RK1 b - - 2 19	f4f3 g4g7	19
-Scotch Game	w	25C7P	999	crushing master middlegame pin short	2k1r3/pppn1Npp/4n3/q1b5/2Q5/2N1B3/PP3PPP/3R2K1 b - - 1 17	c5e3 f7d6 c8b8 d6e8	17
-Scotch Game	w	ReVkj	1000	mate mateIn2 middlegame queensideAttack short	2kr3r/p1ppqp2/1p5p/2bB2pn/4P3/3Q1PB1/PPP3PP/2KR3R b - - 0 15	h5g3 d3a6 c8b8 a6b7	15
-Scotch Game	w	aDSIL	1012	mate mateIn2 middlegame queensideAttack short	2kr2nr/p1ppq1pp/1p3p2/2bB4/4P3/3QBP2/PPP3PP/R3K2R b KQ - 2 12	c5e3 d3a6 c8b8 a6b7	12
-Scotch Game	w	cVJhU	1098	mate mateIn1 middlegame oneMove queensideAttack	2kr1q1r/pbpp2pp/1pn2P2/2bN2B1/2B5/6Q1/PPP2PPP/R4RK1 b - - 0 14	g7f6 g3c7	14
-Scotch Game	w	zxSZe	1111	backRankMate long mate mateIn3 middlegame	r1b2knr/p2p1ppp/1pp5/8/2B2q2/2P3P1/PP5P/RN1QR2K b - - 0 17	f4c4 d1d6 g8e7 d6e7 f8g8 e7d8	17
-Scotch Game	w	fVPoJ	1131	advancedPawn kingsideAttack long mate mateIn3 middlegame	r1b2k1r/ppp1q1p1/2n1P2p/2bp2NQ/8/2P5/P4PPP/RNB1R1K1 b - - 3 15	f8g8 h5f7 e7f7 e6f7 g8f8 e1e8	15
-Scotch Game	w	82sey	1137	attraction kingsideAttack long mate mateIn3 middlegame pillsburysMate sacrifice	r1b2r1k/p1pq2pp/1p1p1p2/4nP1Q/4PR2/1BP3P1/PP5P/R1B3K1 b - - 1 18	d7e8 h5h7 h8h7 f4h4 e8h5 h4h5	18
-Scotch Game	w	UJ9D5	1163	deflection kingsideAttack long mate mateIn3 middlegame sacrifice	2b2r1k/1pppQppp/1p6/3N4/4P3/2PR4/1q3PPP/r4RK1 b - - 3 18	h8g8 d5f6 g7f6 d3g3 g8h8 e7f8	18
-Scotch Game	w	oVzg9	1189	kingsideAttack mate mateIn2 middlegame short	r2r2k1/pppq2pp/2n1bn2/4p1N1/4N2Q/B1P5/P4PPP/3RR1K1 b - - 11 19	d7d1 e4f6 g7f6 h4h7	19
-Scotch Game	w	bgadE	1268	advantage discoveredAttack discoveredCheck middlegame short	r4rk1/1ppqb1p1/p2pN2p/8/4P3/1Q2n3/PP3PPP/3RR1K1 b - - 0 17	e3d1 e6c5 g8h8 c5d7	17
-Scotch Game	w	gCpBV	1285	crushing discoveredAttack kingsideAttack middlegame short	r4rk1/p1pqbpp1/1p1p1n1p/3NP3/3Q4/5P2/PPP3PP/R1B1R1K1 b - - 0 14	d6e5 d5f6 e7f6 d4d7	14
-Scotch Game	w	QKJIe	1291	crushing deflection kingsideAttack long middlegame sacrifice	r1b3k1/pp4pp/1bp5/3pr3/7q/2PB4/PPQN2PP/R4R1K b - - 3 19	h4h6 d3h7 h6h7 f1f8 g8f8 c2h7	19
-Scotch Game	w	6y0Dj	1292	advantage discoveredAttack kingsideAttack middlegame short	r3r1k1/pb3ppp/1p6/2bpP3/6Q1/3B4/PPP2qPP/3RR2K b - - 1 17	f2d4 d3h7 g8h7 d1d4	17
-Scotch Game	w	F9ned	1303	advantage middlegame pin short	r1bq1r2/ppp3pk/1b1p2np/5N1Q/4P2P/2P1PN2/PP4P1/R4RK1 b - - 0 17	c8e6 f3g5 d8g5 h4g5	17
-Scotch Game	w	Ho3WM	1324	attraction mate mateIn2 middlegame sacrifice short	r1b2rk1/p4ppp/3Q4/8/4q3/1P6/1PP2PPP/2KRR3 b - - 1 17	e4g6 d6f8 g8f8 d1d8	17
-Scotch Game	w	A1OLp	1404	advancedPawn kingsideAttack mate mateIn2 middlegame short xRayAttack	2rq1rk1/pp3p1p/6P1/3n1b2/3BQ3/3B4/PPP2PP1/2KR3R b - - 0 19	f5e4 g6h7 e4h7 d3h7	19
-Scotch Game	w	8vnsB	1407	advantage fork long middlegame	r1b2rk1/pp3ppp/3p4/2pN1n2/6B1/8/PPP2PPP/2KRR3 b - - 1 16	f8d8 g4f5 c8f5 d5e7 g8f8 e7f5	16
-Scotch Game	w	XMrk7	1416	crushing long middlegame	4r3/pp1k2pp/2pp2q1/2P1nr2/4P3/2P2P2/P2Q2PP/3RKB1R b K - 0 18	f5f3 d2d6 g6d6 d1d6 d7c8 g2f3	18
-Scotch Game	w	G2gwT	1449	crushing deflection middlegame short	r2q3r/ppp2kpp/2npbb2/3N4/4PQ2/5N2/PP3PPP/R1B2RK1 b - - 6 13	h8f8 f3g5 f7g8 g5e6	13
-Scotch Game	w	K6yyG	1475	advantage capturingDefender middlegame pin short	r1br4/pp2kppp/3b1n2/1Np1p3/2B5/4B3/PPP2PPP/R2R2K1 b - - 9 16	a7a6 b5d6 d8d6 e3c5	16
-Scotch Game	w	Fu5Lh	1495	attackingF2F7 crushing middlegame pin short	r3kb1r/pbp1qpp1/1pnB3p/3Q4/2B1P3/2N5/PPP2PPP/R3K2R b KQkq - 0 12	e7d6 d5f7 e8d8 a1d1	12
-Scotch Game	w	Me5FD	1515	advantage middlegame short	r3k2r/ppp2ppp/3p2q1/2b1n3/3N1P2/2P1B3/PP2Q1PP/R4RK1 b kq - 0 18	c5d4 e3d4 e8g8 f4e5	18
-Scotch Game	w	Vkolu	1525	crushing middlegame pin short	r3k1nr/ppp2pQp/3p4/8/4q1b1/8/PPPB1PPP/R1K4R b kq - 3 13	g4f5 h1e1 e8c8 e1e4	13
 Scotch Game	w	f2pYb	1526	crushing discoveredAttack long middlegame	r4rk1/p2b1pp1/1p1p3p/2pP3Q/2Pq1PP1/3B1R2/Pb1B3P/1R5K b - - 2 19	b2c3 d2c3 d4c3 d3h7 g8h7 f3c3	19
+Scotch Game	w	unruZ	1540	advantage long middlegame	r4rk1/ppp2ppp/4qb2/8/2N2R2/3p2Q1/PPbB1PPP/R5K1 b - - 3 18	f6e5 c4e5 e6e5 d2c3 e5c3 b2c3	18
 Scotch Game	w	bqVyl	1544	advantage defensiveMove long middlegame	r2qk2r/pp2bpQp/4b3/2pn4/2B5/8/PPP2PPP/R1B1K2R b KQkq - 0 12	d8a5 c1d2 e7f6 g7h8 f6h8 d2a5	12
-Scotch Game	w	eLx6f	1556	advantage middlegame pin short	r1b4r/pppp2pp/2n5/3kq3/3p2Q1/N7/PP1N1PPP/R4K1R b - - 1 15	d7d6 g4f3 d5e6 a1e1	15
-Scotch Game	w	fCi7n	1582	advantage interference middlegame short	r1b1k1nr/pp1p1ppp/2p2q2/8/4P3/2P1B3/P1P1QPPP/3R1RK1 b kq - 0 11	f6c3 e3d4 c3a3 d4g7	11
-Scotch Game	w	ZNIwH	1654	crushing master middlegame pin queensideAttack short	2kr3r/pppq2p1/2nppb1p/4P3/2B2P2/2N5/PPPQ2PP/2KR3R b - - 0 13	d6e5 d2d7 d8d7 c4e6	13
+Scotch Game	w	wfAQY	1549	advantage long middlegame	r1b2rk1/ppp1qpb1/5npp/4p3/4PP1B/1QPB4/PP1N2PP/R3R1K1 b - - 1 14	e5f4 e4e5 g6g5 e5f6 e7f6 h4f2	14
+Scotch Game	w	7BbDG	1554	kingsideAttack long mate mateIn3 middlegame sacrifice	r1b2rk1/ppp2ppp/7q/8/2Q5/2N5/PPP3PP/1K1R1R2 b - - 0 16	c7c6 c4f7 f8f7 d1d8 f7f8 f1f8	16
+Scotch Game	w	2Bk9b	1555	crushing discoveredAttack kingsideAttack long middlegame	r1bqr1k1/ppp2ppp/5n2/3P4/8/2PB4/P1P2PPP/R2QR1K1 b - - 0 12	d8d5 e1e8 f6e8 d3h7 g8h7 d1d5	12
+Scotch Game	w	iygET	1583	crushing long middlegame pin	r2qk2r/pb1p1ppp/1p6/2pBb3/4P3/4Q3/PPP2PPP/R1B1R1K1 b kq - 0 12	b7d5 e4d5 f7f6 f2f4 e8g8 f4e5	12
+Scotch Game	w	Lx2yI	1610	crushing fork middlegame veryLong	r2qkbnr/pp3ppp/2p5/4p2b/Q1BPP3/7P/PP3PP1/RNB2RK1 b kq - 0 10	b7b5 c4b5 c6b5 a4b5 d8d7 b5e5 f8e7 e5h5	10
+Scotch Game	w	5xOHX	1614	advantage fork long middlegame	1r3rk1/p1q3pp/1p2p1n1/2ppP1N1/8/6Q1/PPP2PPP/3RR1K1 b - - 3 19	b8e8 g3h3 h7h6 g5e6 c7f7 e6f8	19
+Scotch Game	w	zfKMa	1633	attackingF2F7 crushing deflection long middlegame sacrifice	r1b1k1nr/ppp2ppp/5q2/4p3/2B1P3/NQP5/P4PPP/R2R2K1 b kq - 0 13	g8e7 c4f7 f6f7 d1d8 e8d8 b3f7	13
+Scotch Game	w	s7lab	1650	mate mateIn4 middlegame veryLong	r2q1k1r/pp2b1p1/2ppbnQ1/6Np/4P3/1PN4P/1P3PP1/R1B1K2R b KQ - 2 15	e6b3 c3d5 b3d5 e4d5 d8e8 g5e6 f8g8 g6g7	15
+Scotch Game	w	BTREm	1655	attraction crushing middlegame pin veryLong	1r4k1/1bp3pp/p7/3q4/5r2/Q1P2R2/P1P3PP/5RK1 b - - 1 19	b8f8 a3f8 g8f8 f3f4 f8e7 f1e1 e7d6 f4d4 d6c5 d4d5	19
 Scotch Game	w	fcSP1	1657	anastasiaMate attraction kingsideAttack mate mateIn4 middlegame sacrifice veryLong	r4rk1/pp1n1ppp/3p4/3Nq3/3Q4/8/PPP2PP1/1K1R3R b - - 3 17	e5d4 d5e7 g8h8 h1h7 h8h7 d1h1 d4h4 h1h4	17
-Scotch Game	w	gfiAG	1715	capturingDefender crushing middlegame short	r1r3k1/p1B2ppp/1pbR1q2/8/1Q6/P4P2/2P3PP/bK3B1R b - - 6 18	f6c3 b4c3 a1c3 d6c6	18
-Scotch Game	w	T7wsI	1736	advantage middlegame quietMove short trappedPiece	r1b1k1nr/ppp3pp/2p2p2/8/4P3/2Q3P1/P1P1KP1P/RNq2B1R b kq - 0 11	c8d7 b1d2 c1a1 c3a1	11
-Scotch Game	w	rUtiT	1756	advantage fork middlegame short	r1bqk2r/ppp2ppp/3p1b2/3Q4/4P3/7P/PPP2PP1/RN2KB1R b KQkq - 1 9	f6b2 d5b5 c8d7 b5b2	9
-Scotch Game	w	5OZH1	1775	advantage discoveredCheck doubleCheck middlegame short	r2q1rk1/2p1npb1/2np2p1/1B1N2Bp/4P1bP/1Q6/P1P2PP1/1R2K2R b K - 2 16	f7f6 d5e7 g8h7 e7c6	16
-Scotch Game	w	yUpNd	1858	crushing middlegame short	r2q1rk1/pbp2ppp/1p6/8/1b2B3/6P1/PBP1QP1P/R4RK1 b - - 0 15	f8e8 e2g4 b4f8 e4b7	15
-Scotch Game	w	NO7Z0	1868	crushing kingsideAttack middlegame short	r1bqr1k1/1pp2p1p/1pnp2p1/3N1P2/2B1P3/8/PPP3PP/R2Q1RK1 b - - 0 15	e8e4 f5g6 h7g6 d5f6	15
-Scotch Game	w	aZ2qj	1877	crushing master middlegame short	r4rk1/p1p2ppp/b1p2q2/2b5/4BP2/2P5/PP4PP/R1BQR2K b - - 2 15	a8d8 d1h5 h7h6 h5c5	15
-Scotch Game	w	g1XMC	1878	mate mateIn2 middlegame short	r1b1kb1r/pp3pp1/3p1n1p/2pN2B1/2B1Q3/8/PPP2PPP/R3K2R b KQkq - 0 11	f6e4 c4b5 c8d7 d5c7	11
-Scotch Game	w	KrPys	1882	crushing middlegame short	r3r1k1/pppq1ppp/3p4/2b1p3/N1B1P1bP/5N2/PPP3Q1/2KR3R b - - 3 15	b7b5 a4c5 g4f3 g2f3	15
-Scotch Game	w	wbNfW	1887	crushing fork middlegame short	r1bq1rBk/ppp1npp1/8/2b1p1N1/8/2P5/PPQN1PPP/R3R1K1 b - - 1 15	e7g6 g5f7 f8f7 g8f7	15
+Scotch Game	w	z2zhg	1664	attraction crushing long middlegame skewer	r4b1r/pp3p2/4k2p/2p1n1p1/8/2N3B1/PPP3PP/4RRK1 b - - 1 18	f7f6 f1f6 e6f6 g3e5 f6g6 e5h8	18
+Scotch Game	w	owOBd	1705	crushing discoveredAttack long middlegame	r1b2rk1/ppp2ppp/2n3q1/8/8/1B2QN2/PPP2PPP/3R1RK1 b - - 3 16	c8h3 f3h4 g6g4 e3h3 g4h3 g2h3	16
+Scotch Game	w	6CulC	1708	advantage discoveredAttack kingsideAttack long middlegame	3rr1k1/pbp2ppp/1p6/3q4/4NB2/b2B1Q2/5PPP/1R2R1K1 b - - 1 18	d5d3 e4f6 g7f6 e1e8 d8e8 f3d3	18
+Scotch Game	w	r6MeP	1712	advantage defensiveMove fork middlegame veryLong	r6r/ppk1nppp/2npbq2/1N6/4P3/4P1Q1/PPP3PP/R3KB1R b KQ - 3 12	c7d7 g3d6 d7e8 b5c7 e8f8 c7a8 f6b2 a1d1	12
+Scotch Game	w	vUGDp	1716	advantage long middlegame trappedPiece	r1b1k1nr/ppp2ppp/2p5/8/4P2q/3BP1P1/P1PN3P/R2QKR2 b Qkq - 0 11	h4h2 d1f3 g8h6 f1h1 c8g4 h1h2	11
+Scotch Game	w	kOaSk	1738	advantage fork long middlegame	r2qr1k1/ppp2pp1/3p1b2/3N2p1/2Q5/8/PPP2PPP/R3R1K1 b - - 2 15	c7c6 e1e8 d8e8 d5c7 e8c8 c7a8	15
+Scotch Game	w	XclKg	1742	advantage long middlegame trappedPiece	1k1r2r1/pp1n1ppp/3q4/2p1p3/Q7/2N5/PPP2PPP/2KRR3 b - - 9 18	d6c7 c3b5 c7b6 d1d6 a7a6 d6b6	18
+Scotch Game	w	2uXe6	1810	crushing fork long middlegame	r2q1k1r/ppp2pp1/3b1Nbp/4R3/2B3P1/4B2P/PP3P2/R2Q2K1 b - - 0 18	d6e5 f6d7 f8g8 d7e5 d8d1 a1d1	18
+Scotch Game	w	XvMaU	1813	capturingDefender crushing long middlegame	r4rk1/pppn2pp/3p4/5b2/2P5/3B4/PBP2PPP/R3R1K1 b - - 1 15	d7c5 e1e7 f8f7 e7f7 g8f7 d3f5	15
+Scotch Game	w	QuOb4	1814	advantage capturingDefender long middlegame pin	r1b2rk1/5pb1/p2R1q1p/1pp5/4P2P/6Q1/PPP2P2/1K3BR1 b - - 0 18	c8e6 e4e5 f6g6 g3g6 f7g6 d6e6	18
+Scotch Game	w	yyFu8	1831	advantage fork middlegame veryLong	2kr3r/pbppbp1p/1p6/1N6/4PB2/3B4/PPP3PP/2KR4 b - - 4 15	e7d6 f4d6 c7d6 b5d6 c8c7 d6f7 h8f8 f7d8	15
+Scotch Game	w	NDB4k	1852	advantage deflection discoveredAttack middlegame sacrifice veryLong	4r2r/pppkq1pp/3pn3/3N4/8/8/PPP1QPPP/R3R1K1 b - - 5 18	e7g5 e2b5 d7c8 e1e6 e8e6 d5b6 a7b6 b5g5	18
+Scotch Game	w	Y8nUi	1871	crushing discoveredAttack kingsideAttack long middlegame	r1b2rk1/pppq1p2/1nn3pQ/6p1/8/3B4/PP1R1PPP/RN4K1 b - - 1 18	b6c4 d3g6 f7g6 d2d7 c8d7 h6g6	18
+Scotch Game	w	auszZ	1893	advantage fork long middlegame	r1b1k1nr/1ppp1ppp/8/p7/4P3/1BN1Q3/PqP2PPP/5RK1 b kq - 1 12	b2a3 c3b5 a3e7 b5c7 e8f8 c7a8	12
+Scotch Game	w	s8siD	1895	advantage long middlegame quietMove	r3k2r/p2pnpp1/1pp4p/2b5/2B4B/2N5/PPb1RPPP/5RK1 b kq - 1 14	c2g6 h4e7 c5e7 f1e1 e8d8 e2e7	14
+Scotch Game	w	dQfBt	1901	advantage discoveredAttack long middlegame sacrifice	r4rk1/pppb1ppp/3p1n2/8/1q6/P1NBQ2P/1PP2PP1/R4RK1 b - - 0 16	b4b2 f1b1 b2c3 d3h7 g8h7 e3c3	16
+Scotch Game	w	gPfD6	1916	advantage attackingF2F7 attraction exposedKing fork long middlegame sacrifice	r1b1k3/ppp2r2/2np2p1/4b3/4P2q/1QP2N2/PP3PPP/R1B2RK1 b q - 3 16	h4e4 b3f7 e8f7 f3g5 f7g8 g5e4	16
+Scotch Game	w	i9ZBf	1958	advantage long middlegame trappedPiece	3r1rk1/pppn1ppp/2p1b3/4b3/2P5/1P2N3/P1BB1PPP/3R1RK1 b - - 5 16	h7h6 f2f4 e5d4 f4f5 e6c4 b3c4	16
+Scotch Game	w	czNjN	1964	attraction backRankMate long mate mateIn3 middlegame sacrifice	5rk1/Rp3ppp/3Q4/4n3/4P3/4B3/1Pr1qPPP/3R2K1 b - - 3 19	c2b2 d6f8 g8f8 e3c5 f8g8 a7a8	19
 Scotch Game	w	gu8mS	1970	attraction discoveredCheck doubleCheck long mate mateIn3 middlegame operaMate sacrifice	r1b1kb1r/pp2nppp/2pQ4/8/2B1P3/2q5/P1PB1PPP/3RK2R b Kkq - 1 11	c3c4 d6d8 e8d8 d2a5 d8e8 d1d8	11
 Scotch Game	w	nj4xU	1995	advantage deflection long middlegame	r6r/2p3kp/p1np4/1p3QB1/3pP2q/8/PPP3PP/RN3bK1 b - - 3 19	h4h5 g5f6 g7h6 f6g7 h6g7 f5h5	19
-Scotch Game	w	2eAz3	2003	crushing middlegame short trappedPiece	r3k1r1/1p2np1p/p1pp1Bp1/2b5/2q1P3/P1N2PRP/1PQ2P2/R3K3 b Qq - 3 18	d6d5 b2b3 c4d4 f6d4	18
-Scotch Game	w	XbCaP	2012	crushing deflection fork middlegame short	4rrk1/pbp2pp1/1p3n2/2q3P1/2B2Q2/2N2P2/PPP5/2KRR3 b - - 0 19	f6h5 c4f7 f8f7 e1e8	19
-Scotch Game	w	et5gE	2022	attraction kingsideAttack mate mateIn2 middlegame sacrifice short	r1b3kr/pppp2pp/2n3P1/4q1NQ/8/PP1p4/2P3PP/RN3RK1 b - - 0 16	h7g6 h5h8 g8h8 f1f8	16
+Scotch Game	w	VeHAT	2012	crushing fork interference middlegame veryLong	2kr2r1/2p2ppp/1p1pb3/p3n3/P2BPP2/2PB3P/2P3P1/RR4K1 b - - 0 19	e5c6 d3a6 c8b8 d4b6 c7b6 b1b6 b8a7 b6c6 e6d7 c6d6	19
+Scotch Game	w	E8NCC	2016	crushing kingsideAttack middlegame pin veryLong	r1bqr1k1/pppp1pp1/5n1p/8/2B4B/3Q4/P1PN1PPP/R5K1 b - - 1 13	g7g5 d3g6 g8h8 g6h6 f6h7 c4d3 f7f5 d3f5 e8e7 h4g5	13
+Scotch Game	w	tGinN	2028	advancedPawn deflection kingsideAttack long mate mateIn3 middlegame pin promotion sacrifice	1r2r1k1/3bbp1p/3p1npP/1ppB2Q1/4P3/2B5/1PP2PP1/qNKR3R b - - 5 19	f6e4 g5g6 h7g6 h6h7 g8f8 h7h8q	19
+Scotch Game	w	SNlXY	2044	kingsideAttack long mate mateIn3 middlegame pin sacrifice	r1b2rk1/1pp1nppp/p2q4/8/2B1N3/2P1PQ2/PP4PP/2KR3R b - - 1 15	d6c6 f3f7 f8f7 d1d8 c6e8 d8e8	15
 Scotch Game	w	lhvgz	2047	deflection long mate mateIn3 middlegame	r4rk1/ppq2p2/2p2Q1p/8/3R1b2/2N5/PP3PP1/5R1K b - - 3 19	f4e5 d4g4 g8h7 g4g7 h7h8 f6h6	19
-Scotch Game	w	xA6Db	2108	crushing hangingPiece middlegame short	r1b2rk1/ppp1nppp/8/1Qb1n2q/3N4/2P1BN1P/PP2B1P1/R4RK1 b - - 5 17	a7a6 b5c5 e5f3 d4f3	17
+Scotch Game	w	hPYZl	2051	crushing fork long middlegame	5rk1/p1p1q2p/2Q1pbp1/3N4/8/8/PrP2PPP/R3R1K1 b - - 1 17	e7d6 d5f6 f8f6 c6c3 d6f4 c3b2	17
 Scotch Game	w	oBeOO	2118	advantage exposedKing long middlegame sacrifice skewer	r2qk1nr/ppp4p/2npp1p1/1N6/4PQ2/4P3/PPPK2PP/RN3R2 b kq - 1 13	d8e7 b5c7 e7c7 f4f8 e8d7 f8a8	13
+Scotch Game	w	M4F53	2125	advantage fork master middlegame veryLong	r3r1k1/ppp2ppp/1q1bbn2/4N3/1P3B2/P1N2Q2/5PPP/2R1R1K1 b - - 0 19	a7a5 f4e3 c7c5 b4c5 d6c5 c3a4 c5e3 a4b6	19
 Scotch Game	w	WUBYM	2128	advantage long middlegame	3r1rk1/ppq2ppp/2pp1b2/5P2/4PB2/6Q1/PPP3PP/R4RK1 b - - 4 16	f6e5 f4e5 d6e5 f5f6 g7g6 g3g5	16
-Scotch Game	w	WZZCe	2137	advantage middlegame short	r4r1k/ppp1NpRp/3p1n2/8/3QPq2/8/PPP5/1K1R4 b - - 1 19	h8g7 e7f5 f4f5 e4f5	19
-Scotch Game	w	H2lGD	2155	advantage master middlegame short	r2q4/ppp2k1p/2n3p1/2Q1P1B1/8/2N5/PP2K2P/R6b b - - 1 17	d8g5 e5e6 f7f6 a1f1	17
+Scotch Game	w	POaGX	2166	attraction crushing kingsideAttack long middlegame sacrifice	r2q1r1k/1b4pp/1pp5/p2p1n2/P7/2NB3R/1PP2PPP/R2Q2K1 b - - 1 16	d5d4 h3h7 h8h7 d1h5 h7g8 d3c4	16
 Scotch Game	w	ZaL3T	2176	advantage defensiveMove long middlegame	r1bq1rk1/p3bpp1/3p1P1p/2p5/5B2/2pBQP2/PPP3PP/2KR3R b - - 0 15	c3b2 c1b1 e7f6 e3e4 g7g6 e4a8	15
+Scotch Game	w	FEP0B	2177	capturingDefender clearance crushing long middlegame	r2q1rk1/pp1bbppp/3p1n2/2p3B1/4P3/2N5/PPP1BPPP/R2Q1RK1 b - - 5 11	d8b6 e4e5 d6e5 g5f6 e7f6 d1d7	11
+Scotch Game	w	uJNRq	2178	advantage attraction middlegame sacrifice veryLong	r2qk2r/2p1bppp/p1Q1b3/1p6/8/2N5/PPP2PPP/R3R1K1 b kq - 5 18	e6d7 e1e7 e8e7 c3d5 e7f8 c6c5 f8g8 d5e7 d8e7 c5e7	18
+Scotch Game	w	1EWie	2206	crushing kingsideAttack long middlegame pin sacrifice	r4rk1/pp1q1ppp/3p1b1B/2pP4/2n1NP2/6QP/PPP3P1/R3R1K1 b - - 2 18	f6b2 h6g7 b2g7 e4f6 g8h8 f6d7	18
+Scotch Game	w	aM91V	2234	crushing long middlegame	r1b1k2r/pppp1p2/1b3Q1p/8/2B1P3/8/P2q1PPP/1R3RK1 b kq - 0 15	e8g8 b1b3 d2d6 b3g3 d6g3 h2g3	15
+Scotch Game	w	bjD4s	2237	advantage discoveredAttack kingsideAttack long middlegame pin sacrifice	r3k2r/1b3q1p/p2b1p2/1ppN3p/4P3/1Q6/PPP2PPP/3R1R1K b kq - 1 19	e8g8 d5f6 g8g7 d1d6 f7b3 f6h5	19
 Scotch Game	w	tifyH	2252	advantage long middlegame	2kr3r/ppp3p1/3b3p/3R4/q2p1P2/1P6/P1P1QP1P/RN4K1 b - - 0 19	a4b4 d5b5 h8e8 e2g4 c8b8 b5b4	19
-Scotch Game	w	hPlbi	2255	advantage middlegame pin short	1r3rk1/p1p1bppp/2bpq2B/7Q/4P3/3B2R1/PpP2PPP/1R4K1 b - - 5 18	e7f6 e4e5 g7g6 e5f6	18
+Scotch Game	w	UE77E	2259	advantage long middlegame	r2q1rk1/ppp2ppp/1bnp4/3N3b/4PB1P/3Q4/PPP3R1/2K2B1R b - - 5 14	c6e5 f4e5 d6e5 d3g3 g7g6 g3e5	14
 Scotch Game	w	IvLqH	2264	advantage long middlegame	r1b2rk1/1ppq1pp1/p1n4p/2b1P3/3P3B/3B1N2/P1Q2PPP/R4RK1 b - - 0 15	c6d4 d3h7 g8h8 c2c5 d4f3 g2f3	15
+Scotch Game	w	rPNwU	2267	advantage long middlegame quietMove	4r1k1/ppp2ppp/2p2n2/2q4b/3rPQ2/3B4/PPP1NPPP/R3R1K1 b - - 15 15	d4e4 d3e4 e8e4 f4d2 h5e2 e1e2	15
+Scotch Game	w	Di9FG	2272	crushing long middlegame	r2q1rk1/1p3pbp/p2p1np1/2p1P1B1/2Q5/2N5/PPP2PPP/4RRK1 b - - 0 14	b7b5 c4h4 d6e5 c3e4 f6e4 g5d8	14
+Scotch Game	w	bGqX5	2280	advancedPawn advantage enPassant fork middlegame sacrifice veryLong	1rb1k2r/p2pqppp/1pp5/2b1P3/4Q1B1/2N1P1P1/PPP4P/2KR1R2 b k - 5 16	d7d5 e5d6 c5e3 c1b1 e7e4 d6d7 c8d7 g4d7 e8e7 c3e4	16
 Scotch Game	w	Hv6IE	2292	crushing deflection kingsideAttack long middlegame	1r1q1rk1/pb2Rpp1/1p5p/2p2N2/2Bp1b2/6PP/PPP2P2/R3Q1K1 b - - 0 19	f4g5 e1e5 g5f6 f5h6 g7h6 e5f6	19
 Scotch Game	w	AKR8i	2294	crushing discoveredAttack discoveredCheck kingsideAttack master middlegame veryLong	1r4k1/p1pbqppp/2pp4/5P1Q/4r2n/1BP1B3/P1P3PP/4RR1K b - - 2 18	g7g6 f5g6 h7g6 f1f7 g6h5 f7e7 b8b3 e7e4	18
-Scotch Game	w	FW9Bc	2298	advantage middlegame short	r4rk1/ppq2pp1/2pp1b1p/4P3/3Q1P2/1P2n2P/PBP1N1P1/3R1RK1 b - - 0 17	d6e5 d4e3 e5f4 e3c1	17
+Scotch Game	w	tKN7M	2297	advantage discoveredCheck doubleCheck interference intermezzo long middlegame sacrifice	r3k2r/p1ppqpbp/b1p3p1/3nP3/2P1N3/1P6/P3QPPP/R1B1KB1R b KQkq - 3 11	e7e5 c1b2 e5b2 e4f6 e8d8 e2b2	11
+Scotch Game	w	lJDiN	2299	crushing kingsideAttack middlegame veryLong	r3r1k1/1pp1nppp/8/p7/8/8/1PP1QPPP/qNKRR3 b - - 3 18	a5a4 d1d7 a4a3 b2a3 e7g6 e2e8 a8e8 e1e8	18
 Pirc Defense	b	tKhiH	926	kingsideAttack mate mateIn2 middlegame short	r5k1/pb5p/1p2prp1/2p1N3/3q4/3B4/PPP2PPP/R2QR1K1 w - - 0 18	c2c3 d4f2 g1h1 f2g2	18
 Pirc Defense	b	YFC2o	947	advantage middlegame pin short	r1bq2k1/pppn3p/3pp2b/6r1/3P3P/2NB2P1/PPPQ2P1/2KR3R w - - 0 18	h4g5 h6g5 c3e4 g5d2	18
 Pirc Defense	b	K4PTt	953	advantage fork middlegame short	r1br2k1/ppp2pbp/5np1/4p3/3nP3/P1NBBN1P/1PP2PP1/R3K2R w KQ - 1 11	f3d4 e5d4 e3d4 d8d4	11
