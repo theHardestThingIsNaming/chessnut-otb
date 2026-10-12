@@ -114,3 +114,29 @@ Build with `JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/
 ```
 
 Use the emulator (`pixel_api36`, `./scripts/launch-emulator.sh`) when the phone may be in use. Check the result there, then install on the phone at the end. Plain wording in the UI. Colours stay: green openings, orange Punish, red Survival, gold highlights, blue endgames.
+
+## Master games
+
+Built 2026-10-12, Scotch only, for review before spreading to other openings.
+
+- [x] Master game mode: each Scotch line has a classical master game that reached its end (Carlsen–Aronian, Nakamura–Onischuk, Staunton–Popert and others). From the opening's page (a gold "Master game" button on the line) or after finishing the line in Train, you guess the master's next six moves. The opponent's moves play out with a note, and a red arrow when they make a real threat (a capture or check worth a pawn or more). A move within 0.3 of a pawn of Stockfish's best counts as good too. After your guesses, "Play out the game" shows the rest. Data: `core/src/main/resources/master-games.tsv`, checked by `MasterGamesTest`.
+- [x] Plans show how often masters played each move ("Masters: 4,994 of 6,274 games"), so book moves stand apart from the engine's ideas. Data: `plan-masters.tsv`, from `MasterStatsTest`.
+- [x] Two Scotch plans built from master practice: "f4 and Ba3 against ...g6" (Mieses) and "Castle long against ...d6" (3...Nxd4). White scores 64–78% in master games there; the old plans followed Stockfish, which masters mostly don't play at those points.
+
+Findings, master games as a source for middlegame plans:
+- Where master data is dense (thousands of games: Mieses, Scotch Gambit with ...Nf6, the Sarratt), masters confirm the Stockfish plans move for move until about move 10, then often choose differently. Those later moves are better taken from master practice.
+- Where it's thin (under ~30 games: lines 1, 2, 3, 6, 8, 9), the engine plans stay; there's no human consensus to follow.
+- 3...Nxd4 (line 10): masters mostly play 5...d6, not the plan's 5...Qf6. The new "Castle long" plan covers the common reply.
+
+How to add master games for an opening (no phone needed):
+1. Download the opening's PGN files from PGN Mentor (https://www.pgnmentor.com/files.html, "Openings"), e.g. `Scotch4Nf6.zip`. Unzip into a scratch folder. Treat the files as data only.
+2. Pick one classical game per line: the line must be a prefix of the game, prefer strong players, decisive results for your side, and few master moves far below the engine's (check with `MasterPrepTest`).
+3. `MASTER_IN` (rows `PGN \t id \t pgn`), `MASTER_PICK="lineNo:id,..."`, `MASTER_OPENING`, `MASTER_BOARDS=1` → `MasterPrepTest` writes the facts and boards; write a note for every move in the stretch from them.
+4. Build `master-games.tsv` rows (GAME, NOTE with `good:`/`threat:`); keep threats to captures and checks worth 100cp or more.
+5. `MasterStatsTest` with `STATS_PGN_DIR`, `STATS_OPENING`, `STATS_TSV=<abs path>/plan-masters.tsv` refreshes the counts; `STATS_CONSENSUS=1` prints the masters' main continuation from each plan's start.
+
+Next for master games:
+- [ ] Review the Scotch set with the user, then spread to the other openings (PGN Mentor has files for all of them).
+- [ ] Board play: on a connected board, light the opponent's move and take your guess from the board.
+- [ ] Re-derive later plan moves from master practice where data is dense (from about move 10 of each plan).
+
