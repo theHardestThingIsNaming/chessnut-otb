@@ -6,7 +6,7 @@ What is already on the phone is under Done. What is worth doing next is under Ne
 The app teaches an opening, then three things past move 15: middlegame plans, middlegame tactics,
 and endgames. Built the same way for the main openings, including the Bishop's Opening.
 
-Last shipped, and on the phone: the commit that adds Explain board lights, on `main`.
+Last shipped, and on the phone: the commit that adds the twelve scanned mistakes, on `main`.
 
 ## Done
 
@@ -17,6 +17,7 @@ Last shipped, and on the phone: the commit that adds Explain board lights, on `m
 - [x] A puzzle section with nothing left due (an endgame type, or an opening's middlegame tactics) is hidden the same way, with "Show solved". It comes back on its own when a puzzle is due again.
 - [x] Middlegame plans for all 14 openings. Four each, except the English (3), the Vienna (2) and the London (2), which have fewer distinct structures in the lines you drill. The Bishop's Opening has four, one per line. Each plan starts from a line you drill, has a note per move, and no move of the planning side gives away more than about 60 centipawns at Stockfish depth 18.
 - [x] A Punish card on each opening's page, in orange under the Survival card: how many of its common mistakes you have punished without help (for example 3/12).
+- [x] Common-mistake scan of the other openings: 310 positions from the Lichess explorer (players rated 1400–2000), scored by Stockfish at depth 20. 67 moves lose 150cp or more; twelve of the most played are now Punish mistakes, each checked: the Fried Liver's ...Ke8, ...Qf6 and ...Kg8, ...Nxe4 against Ng5, the pinned c6 knight in the Ruy Lopez, ...Bxf2+ in the Bishop's Opening, three Vienna slips against f4, the English's ...Bc5, Nxf7 against the Caro-Kann, and Nxe5 into ...Qa5+ in the Sicilian. The full list is in `data-cache/scan/mistakes.tsv` for more.
 - [x] Explain lights your move on the board: on your turn in Train, the green arrow's move (the line's, or the book's favourite past its end) is lit, so the board guides you as the screen does. Switching Explain off clears it.
 - [x] Review of the day's work: every plan and trap rechecked with Stockfish (`PLAN_IN=all`, `TRAP_IN=all`). The Vienna's dark-squares plan now castles before Be3 (Be3 at once lost 65cp to ...Bg4). A missed puzzle no longer counts as solved.
 - [x] The branch note in Train keeps each move together ("4. Nxd4" no longer splits across lines).
@@ -26,7 +27,6 @@ Last shipped, and on the phone: the commit that adds Explain board lights, on `m
 
 ## Next
 
-- [ ] Common-mistake scan for the openings other than the Scotch and the Pirc. The explorer hook was removed after the Scotch/Pirc run; recreate it, scan, then `MistakeMineTest` at depth 20 and keep the moves that lose 150cp or more.
 - [ ] Optional. Two more Essential endgames if they earn a place: the Vancura (rook against a rook's pawn) and queen against a pawn. The eight already cover the usual club endings.
 - [ ] Optional. A third Vienna plan and a third London plan, if a sound one turns up. The Vienna with ...g5 is already a tactic (the queen trade on f6), not a plan. Against the London's ...Qb6 the engine wants Na4, which is not written up yet.
 
