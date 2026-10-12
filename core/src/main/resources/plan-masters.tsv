@@ -102,14 +102,16 @@ King's Indian Defense	b	The knight on a5	2	422	574
 King's Indian Defense	b	The knight on a5	3	582	679
 King's Indian Defense	b	The knight on a5	4	512	599
 King's Indian Defense	b	The knight on a5	5	499	512
-London System	w	Rook behind the e-pawn	0	1043	3208
-London System	w	Rook behind the e-pawn	1	728	1043
-London System	w	Rook behind the e-pawn	2	63	860
-London System	w	Rook behind the e-pawn	3	53	72
-London System	w	Rook behind the e-pawn	4	171	245
-London System	w	Rook behind the e-pawn	5	106	180
-London System	w	Rook behind the e-pawn	6	167	167
-London System	w	Rook behind the e-pawn	7	21	596
+London System	w	Queenside space with a4	0	1043	3208
+London System	w	Queenside space with a4	1	728	1043
+London System	w	Queenside space with a4	2	267	860
+London System	w	Queenside space with a4	3	227	281
+London System	w	Queenside space with a4	4	259	309
+London System	w	Queenside space with a4	5	229	356
+London System	w	Queenside space with a4	6	414	486
+London System	w	Queenside space with a4	7	299	596
+London System	w	Queenside space with a4	8	249	322
+London System	w	Queenside space with a4	9	197	372
 London System	w	Space with c4	0	1016	3208
 London System	w	Space with c4	1	904	1099
 London System	w	Space with c4	2	207	1030
@@ -136,11 +138,17 @@ Nimzo-Indian Defense	b	The knight on e4	3	141	147
 Nimzo-Indian Defense	b	The knight on e4	4	22	141
 Nimzo-Indian Defense	b	The knight on e4	5	17	23
 Nimzo-Indian Defense	b	Break with ...d5	0	259	259
-Nimzo-Indian Defense	b	Break with ...d5	1	31	812
-Nimzo-Indian Defense	b	Break with ...d5	2	54	54
-Nimzo-Indian Defense	b	Break with ...d5	3	10	62
-Nimzo-Indian Defense	b	Break with ...d5	4	10	10
-Nimzo-Indian Defense	b	Break with ...d5	5	3	15
+Nimzo-Indian Defense	b	Break with ...d5	1	768	812
+Nimzo-Indian Defense	b	Break with ...d5	2	473	768
+Nimzo-Indian Defense	b	Break with ...d5	3	487	489
+Nimzo-Indian Defense	b	Break with ...d5	4	290	487
+Nimzo-Indian Defense	b	Break with ...d5	5	101	291
+Nimzo-Indian Defense	b	Break with ...d5	6	101	101
+Nimzo-Indian Defense	b	Break with ...d5	7	101	101
+Nimzo-Indian Defense	b	Break with ...d5	8	99	102
+Nimzo-Indian Defense	b	Break with ...d5	9	46	99
+Nimzo-Indian Defense	b	Break with ...d5	10	41	46
+Nimzo-Indian Defense	b	Break with ...d5	11	96	100
 Nimzo-Indian Defense	b	The knight comes to e4	0	2	3
 Nimzo-Indian Defense	b	The knight comes to e4	1	0	5
 Nimzo-Indian Defense	b	The doubled c-pawns	0	44	44
@@ -411,14 +419,18 @@ Sicilian Defense	b	Strike with ...b5	2	29	55
 Sicilian Defense	b	Strike with ...b5	3	30	34
 Sicilian Defense	b	Strike with ...b5	4	18	30
 Sicilian Defense	b	Strike with ...b5	5	21	21
-Sicilian Defense	b	Queen to c7, then ...b6	0	312	451
-Sicilian Defense	b	Queen to c7, then ...b6	1	6	312
-Sicilian Defense	b	Queen to c7, then ...b6	2	31	76
-Sicilian Defense	b	Queen to c7, then ...b6	3	4	31
-Sicilian Defense	b	Queen to c7, then ...b6	4	4	19
-Sicilian Defense	b	Queen to c7, then ...b6	5	10	11
-Sicilian Defense	b	Queen to c7, then ...b6	6	8	49
-Sicilian Defense	b	Queen to c7, then ...b6	7	8	8
+Sicilian Defense	b	...b5 and ...Bb7 against e4	0	312	451
+Sicilian Defense	b	...b5 and ...Bb7 against e4	1	249	312
+Sicilian Defense	b	...b5 and ...Bb7 against e4	2	216	259
+Sicilian Defense	b	...b5 and ...Bb7 against e4	3	214	216
+Sicilian Defense	b	...b5 and ...Bb7 against e4	4	97	218
+Sicilian Defense	b	...b5 and ...Bb7 against e4	5	97	97
+Sicilian Defense	b	...b5 and ...Bb7 against e4	6	85	97
+Sicilian Defense	b	...b5 and ...Bb7 against e4	7	41	85
+Sicilian Defense	b	...b5 and ...Bb7 against e4	8	33	41
+Sicilian Defense	b	...b5 and ...Bb7 against e4	9	22	33
+Sicilian Defense	b	...b5 and ...Bb7 against e4	10	16	22
+Sicilian Defense	b	...b5 and ...Bb7 against e4	11	16	16
 Sicilian Defense	b	The knight on d4	0	147	286
 Sicilian Defense	b	The knight on d4	1	240	256
 Sicilian Defense	b	The knight on d4	2	131	267

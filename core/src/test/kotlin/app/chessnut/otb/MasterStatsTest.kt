@@ -85,7 +85,11 @@ class MasterStatsTest {
         val (opening, side) = System.getenv("STATS_OPENING").split('|')
         val min = System.getenv("STATS_MIN")?.toInt() ?: 20
         val skip = Regex("blitz|rapid|bullet|speed|titled|online|armageddon|blind", RegexOption.IGNORE_CASE)
-        // Every game as its list of (position, move, result).
+        val plans = MiddlegamePlans.of(opening, side == "w")
+            .filter { plan -> System.getenv("STATS_PLAN")?.let { it == plan.name } ?: true }
+        // Only games that reach one of the plans' starting positions are kept, to spare memory.
+        val starts = plans.map { plan -> Board().also { b -> plan.before.forEach { b.doMove(it) } }.let(::key) }.toSet()
+        // Every such game as its list of (position, move, result).
         val games = mutableListOf<Pair<List<Pair<String, String>>, String>>()
         for (file in File(dir).listFiles { f -> f.name.endsWith(".pgn") }.orEmpty()) {
             for (block in file.readText(Charsets.ISO_8859_1).split(Regex("\n(?=\\[Event )"))) {
@@ -102,11 +106,11 @@ class MasterStatsTest {
                     try { board.doMove(san) } catch (e: Exception) { break }
                     steps += k to san.trimEnd('!', '?')
                 }
-                games += steps to result
+                if (steps.any { it.first in starts }) games += steps to result
             }
         }
         val out = StringBuilder()
-        for (plan in MiddlegamePlans.of(opening, side == "w")) {
+        for (plan in plans) {
             val board = Board()
             plan.before.forEach { board.doMove(it) }
             var pool = games.mapNotNull { (steps, result) -> steps.indexOfFirst { it.first == key(board) }.takeIf { it >= 0 }?.let { Triple(steps, it, result) } }
