@@ -48,7 +48,7 @@ fun EssentialScreen(model: EssentialViewModel, onBack: () -> Unit) {
         topBar = { TopAppBar(title = { Text(essential.name) }, colors = clubAppBarColors(), navigationIcon = { BackButton(onBack) }) },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Text(ui.status, color = if (ui.done) Palette.Accent else Palette.Text, style = MaterialTheme.typography.titleMedium)
+            Text(ui.status, color = if (ui.done) Palette.Endgame else Palette.Text, style = MaterialTheme.typography.titleMedium)
             // The lesson stays up while you play: the technique in view, and the board doesn't jump.
             Text(
                 essential.lesson,
@@ -75,9 +75,9 @@ fun EssentialScreen(model: EssentialViewModel, onBack: () -> Unit) {
             Row(Modifier.fillMaxWidth().height(52.dp).padding(bottom = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 GameAction("Restart", light = false, onClick = model::restart, modifier = Modifier.weight(1f).fillMaxHeight())
                 if (ui.done) {
-                    PrimaryAction("Done", Modifier.weight(1.4f).fillMaxHeight(), onClick = onBack)
+                    PrimaryAction("Done", Modifier.weight(1.4f).fillMaxHeight(), color = Palette.Endgame, onClick = onBack)
                 } else {
-                    PrimaryAction("Hint", Modifier.weight(1.4f).fillMaxHeight(), enabled = !ui.busy && ui.hintUci == null, onClick = model::hint)
+                    PrimaryAction("Hint", Modifier.weight(1.4f).fillMaxHeight(), color = Palette.Endgame, enabled = !ui.busy && ui.hintUci == null, onClick = model::hint)
                 }
             }
         }

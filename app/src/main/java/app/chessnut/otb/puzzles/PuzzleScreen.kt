@@ -47,6 +47,7 @@ import app.chessnut.otb.ui.clubTextButtonColors
 fun PuzzleScreen(model: PuzzleViewModel, onBack: () -> Unit) {
     KeepScreenOn()
     val ui by model.ui.collectAsStateWithLifecycle()
+    val tone = if (model.endgame) Palette.Endgame else Palette.Accent
     BackHandler(onBack = onBack)
     Scaffold(
         containerColor = Color.Transparent,
@@ -58,13 +59,13 @@ fun PuzzleScreen(model: PuzzleViewModel, onBack: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             ui.summary?.let {
-                Summary(it, model, onBack)
+                Summary(it, model, tone, onBack)
                 return@Column
             }
             val puzzle = ui.puzzle ?: return@Column
-            SessionBar(ui.index, ui.total)
+            SessionBar(ui.index, ui.total, tone)
             Text("${ui.index + 1} of ${ui.total} · ${puzzle.origin}", color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
-            Text(ui.status, color = if (ui.solved) Palette.Accent else Palette.Text, style = MaterialTheme.typography.titleMedium)
+            Text(ui.status, color = if (ui.solved) tone else Palette.Text, style = MaterialTheme.typography.titleMedium)
             ChessBoard(
                 fen = ui.fen,
                 flipped = !puzzle.solverWhite,
@@ -78,10 +79,10 @@ fun PuzzleScreen(model: PuzzleViewModel, onBack: () -> Unit) {
             Spacer(Modifier.weight(1f))
             Row(Modifier.fillMaxWidth().height(52.dp).padding(bottom = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (ui.solved) {
-                    PrimaryAction("Next", Modifier.weight(1f).fillMaxHeight(), onClick = model::next)
+                    PrimaryAction("Next", Modifier.weight(1f).fillMaxHeight(), color = tone, onClick = model::next)
                 } else {
                     GameAction("Skip", light = false, onClick = model::next, modifier = Modifier.weight(1f).fillMaxHeight())
-                    PrimaryAction("Hint", Modifier.weight(1.4f).fillMaxHeight(), enabled = !ui.busy && ui.hintUci == null, onClick = model::hint)
+                    PrimaryAction("Hint", Modifier.weight(1.4f).fillMaxHeight(), color = tone, enabled = !ui.busy && ui.hintUci == null, onClick = model::hint)
                 }
             }
         }
@@ -89,9 +90,9 @@ fun PuzzleScreen(model: PuzzleViewModel, onBack: () -> Unit) {
 }
 
 @Composable
-private fun Summary(summary: PuzzleSummary, model: PuzzleViewModel, onDone: () -> Unit) {
+private fun Summary(summary: PuzzleSummary, model: PuzzleViewModel, tone: Color, onDone: () -> Unit) {
     Column(Modifier.fillMaxWidth().padding(top = 24.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        Text(if (summary.nothingDue) "Nothing due right now" else "Session complete", color = Palette.Accent, style = MaterialTheme.typography.headlineSmall)
+        Text(if (summary.nothingDue) "Nothing due right now" else "Session complete", color = tone, style = MaterialTheme.typography.headlineSmall)
         if (!summary.nothingDue) {
             Tally(summary.clean, "solved without help", Palette.Best)
             Tally(summary.helped, "solved with a hint or another try", Palette.Inaccuracy)
@@ -101,33 +102,33 @@ private fun Summary(summary: PuzzleSummary, model: PuzzleViewModel, onDone: () -
         if (missed > 0) {
             Button(
                 onClick = model::retryMissed,
-                colors = ButtonDefaults.buttonColors(containerColor = Palette.Accent, contentColor = Palette.OnAccent),
+                colors = ButtonDefaults.buttonColors(containerColor = tone, contentColor = Palette.OnAccent),
                 modifier = Modifier.fillMaxWidth(),
             ) { Text("Retry the $missed I missed") }
         }
         Button(
             onClick = model::practiseAll,
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (missed > 0) Palette.SurfaceHigh else Palette.Accent,
-                contentColor = if (missed > 0) Palette.Accent else Palette.OnAccent,
+                containerColor = if (missed > 0) Palette.SurfaceHigh else tone,
+                contentColor = if (missed > 0) tone else Palette.OnAccent,
             ),
             modifier = Modifier.fillMaxWidth(),
         ) { Text(if (summary.nothingDue) "Practise anyway" else "Keep going") }
         TextButton(onClick = onDone, colors = clubTextButtonColors(), modifier = Modifier.align(Alignment.CenterHorizontally)) {
-            Text("Done", color = Palette.Accent)
+            Text("Done", color = tone)
         }
     }
 }
 
 @Composable
-private fun SessionBar(index: Int, total: Int) {
+private fun SessionBar(index: Int, total: Int, tone: Color) {
     if (total <= 1) return
     Row(Modifier.fillMaxWidth().height(4.dp), horizontalArrangement = Arrangement.spacedBy(3.dp)) {
         repeat(total) { i ->
             Box(
                 Modifier.weight(1f).fillMaxHeight().clip(RoundedCornerShape(2.dp)).background(
                     when {
-                        i < index -> Palette.Accent
+                        i < index -> tone
                         i == index -> Palette.Gold
                         else -> Palette.SurfaceHigh
                     },

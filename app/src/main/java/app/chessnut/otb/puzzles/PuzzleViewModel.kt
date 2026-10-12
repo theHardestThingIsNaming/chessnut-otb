@@ -50,6 +50,8 @@ data class PuzzleSummary(val clean: Int, val helped: Int, val skipped: Int, val 
  * answer; a wrong move is turned back, a hint lights the piece, then the move.
  */
 class PuzzleViewModel(application: Application, private val key: String) : AndroidViewModel(application) {
+    /** Endgame sets wear the endgame blue; middlegame tactics the opening green. */
+    val endgame: Boolean = key.startsWith("eg:")
     private val app = application as OtbApp
     private val progress = PuzzleProgress(app.filesDir)
     private val sounds = BoardSounds()

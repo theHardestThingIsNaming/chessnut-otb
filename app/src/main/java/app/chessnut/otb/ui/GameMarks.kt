@@ -57,6 +57,26 @@ fun PawnMark(tint: Color, modifier: Modifier = Modifier.size(18.dp)) {
     }
 }
 
+/** A king: a cross over a crown on a base. */
+@Composable
+fun KingMark(tint: Color, modifier: Modifier = Modifier.size(18.dp)) {
+    Canvas(modifier) {
+        val w = size.width
+        val h = size.height
+        drawRect(tint, Offset(w * 0.45f, h * 0.04f), Size(w * 0.1f, h * 0.26f))
+        drawRect(tint, Offset(w * 0.36f, h * 0.11f), Size(w * 0.28f, h * 0.09f))
+        val crown = Path().apply {
+            moveTo(w * 0.2f, h * 0.36f)
+            lineTo(w * 0.8f, h * 0.36f)
+            lineTo(w * 0.68f, h * 0.76f)
+            lineTo(w * 0.32f, h * 0.76f)
+            close()
+        }
+        drawPath(crown, tint)
+        drawRect(tint, Offset(w * 0.24f, h * 0.82f), Size(w * 0.52f, h * 0.12f))
+    }
+}
+
 @Composable
 fun BookMark(tint: Color, modifier: Modifier = Modifier.size(18.dp)) {
     Canvas(modifier) {

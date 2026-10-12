@@ -112,16 +112,19 @@ fun PlayScreen(
     KeepScreenOn()
     val ui by viewModel.ui.collectAsStateWithLifecycle()
     LaunchedEffect(mode) { viewModel.setKind(mode) }
-    // Back closes an opening's page first, then leaves.
+    // Back steps out one level: from a line to the opening's page (or the list), from the page to the list, then leaves.
     val onPage = ui.kind == PlayKind.Trainer && !ui.playing && ui.showDetail && ui.detail != null
-    BackHandler {
-        if (onPage) {
-            viewModel.closeDetail()
-        } else {
-            viewModel.leave()
-            onBack()
+    val back = {
+        when {
+            ui.kind == PlayKind.Trainer && ui.playing -> viewModel.leave()
+            onPage -> viewModel.closeDetail()
+            else -> {
+                viewModel.leave()
+                onBack()
+            }
         }
     }
+    BackHandler(onBack = back)
     Scaffold(
         containerColor = androidx.compose.ui.graphics.Color.Transparent,
         contentColor = Palette.Text,
@@ -142,14 +145,7 @@ fun PlayScreen(
                 },
                 colors = clubAppBarColors(),
                 navigationIcon = {
-                    BackButton {
-                        if (onPage) {
-                            viewModel.closeDetail()
-                        } else {
-                            viewModel.leave()
-                            onBack()
-                        }
-                    }
+                    BackButton(back)
                 },
             )
         },
@@ -582,7 +578,7 @@ private fun OpeningPage(
             item(key = "mode") {
                 Text(
                     if (ui.explain) {
-                        "Learning: arrows show the book moves. Nothing is scored."
+                        "Learning: the green arrow is this line's move, and a connected board lights it. Nothing is scored."
                     } else {
                         "Testing from memory. Clean lines come back in 1, 3, 7, 14, then 30 days; a miss comes back tomorrow."
                     },
@@ -882,7 +878,7 @@ private fun Playing(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(12.dp))
                         .background(Palette.SurfaceHigh)
-                        .border(1.dp, Palette.Accent, RoundedCornerShape(12.dp))
+                        .border(1.dp, if (ui.punish) Palette.Mistake else if (ui.survival) Palette.Survival else Palette.Accent, RoundedCornerShape(12.dp))
                         .padding(12.dp),
                 )
             }

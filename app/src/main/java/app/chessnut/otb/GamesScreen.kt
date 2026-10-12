@@ -50,6 +50,7 @@ import app.chessnut.otb.ui.BookMark
 import app.chessnut.otb.ui.ChessBoard
 import app.chessnut.otb.ui.ClockMark
 import app.chessnut.otb.ui.Palette
+import app.chessnut.otb.ui.KingMark
 import app.chessnut.otb.ui.PawnMark
 import app.chessnut.otb.ui.ResultChip
 import app.chessnut.otb.ui.clubAppBarColors
@@ -211,7 +212,7 @@ fun GamesScreen(
                             highlight = mistakesDue > 0,
                         ) { TargetMark(it) }
                     }
-                    HomeTile("Endgames", "Puzzles from real endings, by type", Modifier.fillMaxWidth(), onEndgames) { PawnMark(it) }
+                    HomeTile("Endgames", "Essential endings, and puzzles from real ones", Modifier.fillMaxWidth(), onEndgames, tint = Palette.Endgame) { KingMark(it) }
                 }
             }
             item(key = "header") {
@@ -446,6 +447,7 @@ private fun HomeTile(
     modifier: Modifier,
     onClick: () -> Unit,
     highlight: Boolean = false,
+    tint: Color = Palette.Accent,
     icon: @Composable (Color) -> Unit,
 ) {
     Column(
@@ -453,7 +455,7 @@ private fun HomeTile(
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            icon(Palette.Accent)
+            icon(tint)
             Text(title, color = Palette.Text, fontWeight = FontWeight.Bold, fontSize = 15.sp, maxLines = 1)
         }
         Text(
