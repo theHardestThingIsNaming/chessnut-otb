@@ -153,11 +153,10 @@ class PuzzleViewModel(application: Application, private val key: String) : Andro
         results[puzzle.id] = clean
         val review = progress.grade(puzzle.id, clean, System.currentTimeMillis())
         val ideas = puzzle.ideas.take(3).joinToString(", ").ifEmpty { null }
-        val again = if (clean) {
-            val days = ((review.dueAt - System.currentTimeMillis()) / DAY_MS.toDouble()).let { Math.ceil(it).toInt() }.coerceAtLeast(1)
-            "Back in $days ${if (days == 1) "day" else "days"}."
-        } else {
-            "Back tomorrow."
+        val again = when {
+            !clean -> "Back tomorrow."
+            review.dueAt == Long.MAX_VALUE -> "You won't see this one again."
+            else -> "Back in ${PuzzleReview.CONFIRM_DAYS} days, one more time."
         }
         state.update {
             it.copy(
@@ -220,6 +219,5 @@ class PuzzleViewModel(application: Application, private val key: String) : Andro
     private companion object {
         const val OPPONENT_DELAY_MS = 700L
         const val REPLY_DELAY_MS = 600L
-        const val DAY_MS = 24L * 60 * 60 * 1000
     }
 }

@@ -4,13 +4,17 @@ import app.chessnut.otb.mistakes.ReviewFile
 import app.chessnut.otb.repertoire.LineReview
 import java.io.File
 
-/** When each puzzle comes round again, on the same 1, 3, 7, 14, 30 day steps as lines. */
+/** When each puzzle comes round again: once after three days, then it is finished. */
 class PuzzleProgress(filesDir: File) {
     private val reviews = ReviewFile(File(filesDir, "puzzles/reviews.tsv"))
 
     fun all(): Map<String, LineReview> = reviews.all()
 
-    fun grade(id: String, clean: Boolean, now: Long): LineReview = reviews.grade(id, clean, now)
+    fun grade(id: String, clean: Boolean, now: Long): LineReview {
+        val next = PuzzleReview.grade(reviews.all()[id], clean, now)
+        reviews.record(id, next)
+        return next
+    }
 
     /** Played through without a slip: done for good. */
     fun master(id: String) = reviews.retire(id)

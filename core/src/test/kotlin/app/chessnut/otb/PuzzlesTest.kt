@@ -5,12 +5,28 @@ import app.chessnut.otb.openings.OpeningBook
 import app.chessnut.otb.openings.OpeningCatalog
 import app.chessnut.otb.openings.OpeningSide
 import app.chessnut.otb.puzzles.Puzzle
+import app.chessnut.otb.puzzles.PuzzleReview
 import app.chessnut.otb.puzzles.PuzzleRun
 import app.chessnut.otb.puzzles.PuzzleSets
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
+
+class PuzzleReviewTest {
+    private val day = 24L * 60 * 60 * 1000
+
+    @Test
+    fun aCleanSolveComesBackOnceThenFinishes() {
+        val now = 1_000_000L
+        val first = PuzzleReview.grade(null, clean = true, now)
+        assertEquals(now + 3 * day, first.dueAt)
+        val done = PuzzleReview.grade(first, clean = true, now + 3 * day)
+        assertEquals(Long.MAX_VALUE, done.dueAt)
+        val missed = PuzzleReview.grade(first, clean = false, now + 3 * day)
+        assertEquals(now + 4 * day, missed.dueAt)
+    }
+}
 
 class PuzzlesTest {
     @Test
@@ -30,6 +46,12 @@ class PuzzlesTest {
                     assertIs<PuzzleRun.Answer.Right>(answer, "${puzzle.id} in $key")
                 }
             }
+        }
+        // Endgames are the shorter club-level ones: rating 1800 and up, no five-move races.
+        for (type in PuzzleSets.ENDGAMES.keys) {
+            val set = PuzzleSets.of(PuzzleSets.endgameKey(type))
+            assertTrue(set.size in 8..16, "$type has ${set.size}")
+            assertTrue(set.all { it.rating >= 1800 && "veryLong" !in it.themes }, type)
         }
         // Middlegame tactics are solved from your opening's side.
         assertTrue(PuzzleSets.of(PuzzleSets.middlegameKey("Scotch Game", true)).all { it.solverWhite })

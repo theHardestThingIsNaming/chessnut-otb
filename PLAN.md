@@ -8,11 +8,11 @@ and endgames. Built the same way for all 13 main openings.
 
 ## Done
 
-- [x] Puzzle pipeline, puzzle trainer, and spaced repetition (1, 3, 7, 14, 30 days).
+- [x] Puzzle pipeline and puzzle trainer. A clean solve comes back once, after 3 days, then the puzzle is done. A miss comes back tomorrow. Opening lines still use 1, 3, 7, 14, 30 days.
 - [x] Middlegame tactics on every main opening's page. Lichess puzzles whose games started in your lines: Scotch 60, Italian 60, Nimzo-Indian 60, Pirc 58, King's Indian 57, Caro-Kann 57, Ruy Lopez 55, Slav 55, French 53, Vienna 52, Sicilian 49, London 45, English 7. Commit `479b919`.
-- [x] Endgames on the home screen: 360 puzzles in six types, easiest first.
+- [x] Endgames on the home screen: 79 puzzles in six types, rating 1800 and up, long races left out. Pawn 11, rook 14, knight 15, bishop 14, queen 11, queen and rook 14.
 - [x] Eight Essential endgames against the Lichess tablebase (the ladder, queen and rook mates, the square of the pawn, taking and holding the opposition, Lucena, Philidor). A move that lets the result slip is turned back. A mastered essential is hidden on the Endgames page until you tap "Show mastered".
-- [x] A puzzle section with nothing left due (an endgame type, or an opening's middlegame tactics) is hidden the same way, with "Show solved". It comes back on its own when a puzzle is due again. The wait is still 1, 3, 7, 14, then 30 days; a miss comes back the next day.
+- [x] A puzzle section with nothing left due (an endgame type, or an opening's middlegame tactics) is hidden the same way, with "Show solved". It comes back on its own when a puzzle is due again.
 - [x] Middlegame plans for all 13. Four each, except the English (3), the Vienna (2) and the London (2), which have fewer distinct structures in the lines you drill. Each plan starts from a line you drill, has a note per move, and no move of the planning side gives away more than about 60 centipawns at Stockfish depth 18.
 - [x] Common mistakes and Punish mode, traps for all 13 main openings, and the book audit that keeps your own blunders out of the lines.
 

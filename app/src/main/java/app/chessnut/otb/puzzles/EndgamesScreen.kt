@@ -102,7 +102,7 @@ fun EndgamesScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onEssential: (S
             item {
                 Text("Puzzles", color = Palette.Endgame, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp))
                 Text(
-                    "Real endings from Lichess games, easiest first. A section stays hidden once everything in it is solved, until one is due again.",
+                    "Shorter endings from 1800 up, easiest of those first. A clean solve comes back once, after 3 days, then it's done. A section stays hidden until one is due again.",
                     color = Palette.TextMuted,
                     style = MaterialTheme.typography.bodyMedium,
                 )

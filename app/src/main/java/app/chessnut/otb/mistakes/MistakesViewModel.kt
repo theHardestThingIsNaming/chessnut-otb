@@ -374,6 +374,12 @@ class ReviewFile(private val file: File) {
         return next
     }
 
+    @Synchronized
+    fun record(key: String, review: LineReview) {
+        reviews[key] = review
+        save()
+    }
+
     private fun save() {
         file.parentFile?.mkdirs()
         file.writeText(reviews.entries.joinToString("") { (k, r) -> "$k\t${r.box}\t${r.dueAt}\n" })

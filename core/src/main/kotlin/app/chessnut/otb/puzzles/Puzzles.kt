@@ -1,6 +1,7 @@
 package app.chessnut.otb.puzzles
 
 import app.chessnut.otb.analysis.ChessLines
+import app.chessnut.otb.repertoire.LineReview
 import app.chessnut.otb.analysis.Terminal
 import app.chessnut.otb.play.PlayPosition
 
@@ -84,6 +85,22 @@ class PuzzleRun(val puzzle: Puzzle) {
         fen = PlayPosition.after(fen, reply)?.second ?: error("Bad puzzle ${puzzle.id}")
         step++
         return Answer.Right(reply, solved = solved)
+    }
+}
+
+/**
+ * How often a puzzle comes back. A clean solve returns once, after three days,
+ * and a second clean solve finishes it. A miss comes back tomorrow.
+ * Opening lines keep the longer 1, 3, 7, 14, 30 day steps.
+ */
+object PuzzleReview {
+    const val CONFIRM_DAYS = 3
+    private const val DAY_MS = 24L * 60 * 60 * 1000
+
+    fun grade(previous: LineReview?, clean: Boolean, now: Long): LineReview = when {
+        !clean -> LineReview(0, now + DAY_MS)
+        previous != null && previous.box >= 1 -> LineReview(previous.box, Long.MAX_VALUE)
+        else -> LineReview(1, now + CONFIRM_DAYS * DAY_MS)
     }
 }
 

@@ -61,7 +61,7 @@ class PuzzleExportTest {
                         middle.getValue(opening to white) += row
                     }
                 }
-                if ("endgame" in themes && row.popularity >= 85 && row.plays >= 1000 && row.rating in 700..2400) {
+                if ("endgame" in themes && "veryLong" !in themes && row.popularity >= 85 && row.plays >= 1000 && row.rating in 1800..2400) {
                     ENDGAME_TYPES.firstOrNull { it in themes }?.let { endgames.getValue(it) += row }
                 }
             }
@@ -157,6 +157,6 @@ class PuzzleExportTest {
     private companion object {
         val ENDGAME_TYPES = listOf("pawnEndgame", "rookEndgame", "knightEndgame", "bishopEndgame", "queenEndgame", "queenRookEndgame")
         const val PER_OPENING = 60
-        const val PER_ENDGAME = 60
+        const val PER_ENDGAME = 15
     }
 }
