@@ -87,6 +87,8 @@ class MasterGameViewModel(application: Application, private val id: String) : An
 
     /** On the board: the position it has to show before play goes on, and who's waiting for it. */
     private var physical = false
+    /** Whether Play had the board engaged before this game took it, to give it back as it was. */
+    private val engagedBefore = app.playEngaged
     private var boardWaiter: CompletableDeferred<Unit>? = null
     private var boardTarget: String? = null
     private var settleJob: Job? = null
@@ -153,6 +155,8 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         hints = 0
         physical = app.boardSession != null
         app.boardBorrowed = physical
+        // The board's own game recorder would speak and save these moves too.
+        if (physical) app.playEngaged = true
         boardTarget = null
         boardWaiter?.cancel()
         val start = r.fens[0]
@@ -362,6 +366,7 @@ class MasterGameViewModel(application: Application, private val id: String) : An
     override fun onCleared() {
         if (physical) {
             app.boardBorrowed = false
+            app.playEngaged = engagedBefore
             light(emptyList())
         }
         sounds.release()
