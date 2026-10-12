@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -68,9 +69,18 @@ fun PlayerBar(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-            Row(Modifier.height(18.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.height(24.dp), verticalAlignment = Alignment.CenterVertically) {
                 if (taken.isNotEmpty()) {
-                    CapturedPieces(taken, Modifier.height(18.dp).width((18 * capturedWidth(taken)).dp))
+                    // Black pieces vanish against the dark bar, so they sit on a light chip like a light square.
+                    val dark = taken.first().isLowerCase()
+                    Box(
+                        Modifier
+                            .clip(RoundedCornerShape(5.dp))
+                            .background(if (dark) Palette.LightSquare else Color.Transparent)
+                            .padding(horizontal = if (dark) 4.dp else 0.dp, vertical = 1.dp),
+                    ) {
+                        CapturedPieces(taken, Modifier.height(21.dp).width((21 * capturedWidth(taken)).dp))
+                    }
                 }
                 if (lead > 0) {
                     Text(
