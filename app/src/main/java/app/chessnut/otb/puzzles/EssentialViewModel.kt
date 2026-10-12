@@ -31,8 +31,6 @@ data class EssentialUi(
     val hintUci: String? = null,
     val wrongUci: String? = null,
     val status: String = "",
-    /** The lesson shows until the first move. */
-    val showLesson: Boolean = true,
     val pass: Boolean? = null,
     val mark: String? = null,
     val done: Boolean = false,
@@ -124,7 +122,7 @@ class EssentialViewModel(application: Application, private val id: String) : And
         if (app.phoneSounds) speech.say(step.first)
         val moves = state.value.yourMoves + 1
         state.update {
-            it.copy(fen = step.second, lastUci = uci, wrongUci = null, hintUci = null, pass = null, mark = null, showLesson = false, yourMoves = moves)
+            it.copy(fen = step.second, lastUci = uci, wrongUci = null, hintUci = null, pass = null, mark = null, yourMoves = moves)
         }
         finished(step.second, promoted = uci.length == 5, moves)?.let { success(it); return }
         // The defence answers with the tablebase's best.

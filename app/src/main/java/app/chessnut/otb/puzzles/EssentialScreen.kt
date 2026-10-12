@@ -50,14 +50,12 @@ fun EssentialScreen(model: EssentialViewModel, onBack: () -> Unit) {
         Column(Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text(ui.status, color = if (ui.done) Palette.Accent else Palette.Text, style = MaterialTheme.typography.titleMedium)
             // The lesson stays up while you play: the technique in view, and the board doesn't jump.
-            run {
-                Text(
-                    essential.lesson,
-                    color = Palette.Text,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface).padding(12.dp),
-                )
-            }
+            Text(
+                essential.lesson,
+                color = Palette.Text,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface).padding(12.dp),
+            )
             ChessBoard(
                 fen = ui.fen,
                 flipped = !essential.white,
