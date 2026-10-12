@@ -29,7 +29,7 @@ class MiddlegamePlansTest {
         assertEquals(13, MiddlegamePlans.of("Slav Defense", false).size)
         assertEquals(10, MiddlegamePlans.of("Nimzo-Indian Defense", false).size)
         assertEquals(4, MiddlegamePlans.of("King's Indian Defense", false).size)
-        assertEquals(4, MiddlegamePlans.of("Pirc Defense", false).size)
+        assertEquals(14, MiddlegamePlans.of("Pirc Defense", false).size)
         assertEquals(4, MiddlegamePlans.of("Bishop's Opening", true).size)
     }
 
@@ -41,6 +41,7 @@ class MiddlegamePlansTest {
             "London System" to true,
             "Nimzo-Indian Defense" to false,
             "Slav Defense" to false,
+            "Pirc Defense" to false,
         )) {
             val plans = MiddlegamePlans.of(opening, white)
             for (line in OpeningTree.lines(opening, white)) {
