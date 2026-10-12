@@ -20,7 +20,7 @@ class MiddlegamePlansTest {
         assertEquals(10, MiddlegamePlans.of("Scotch Game", true).size)
         assertEquals(4, MiddlegamePlans.of("Italian Game", true).size)
         assertEquals(4, MiddlegamePlans.of("Ruy Lopez", true).size)
-        assertEquals(2, MiddlegamePlans.of("Vienna Game", true).size)
+        assertEquals(3, MiddlegamePlans.of("Vienna Game", true).size)
         assertEquals(3, MiddlegamePlans.of("English Opening", true).size)
         assertEquals(2, MiddlegamePlans.of("London System", true).size)
         assertEquals(4, MiddlegamePlans.of("Sicilian Defense", false).size)
@@ -34,10 +34,15 @@ class MiddlegamePlansTest {
     }
 
     @Test
-    fun everyScotchLineLeadsIntoAPlan() {
-        val plans = MiddlegamePlans.of("Scotch Game", true)
-        for (line in app.chessnut.otb.repertoire.OpeningTree.lines("Scotch Game", true)) {
-            assertTrue(plans.any { line.size >= it.before.size && line.take(it.before.size) == it.before }, "no plan after ${line.joinToString(" ")}")
+    fun everyLineOfACoveredOpeningLeadsIntoAPlan() {
+        for ((opening, white) in listOf("Scotch Game" to true, "Vienna Game" to true)) {
+            val plans = MiddlegamePlans.of(opening, white)
+            for (line in OpeningTree.lines(opening, white)) {
+                assertTrue(
+                    plans.any { line.size >= it.before.size && line.take(it.before.size) == it.before },
+                    "$opening: no plan after ${line.joinToString(" ")}",
+                )
+            }
         }
     }
 }

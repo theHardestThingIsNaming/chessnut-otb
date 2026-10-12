@@ -1853,10 +1853,20 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     /** "5. " for White's move at [ply], "5… " for Black's. */
     private fun moveNumber(ply: Int): String = "${ply / 2 + 1}${if (ply % 2 == 0) ". " else "… "}"
 
+    /**
+     * The opening's lines, the ones club players reach most first. The order is fixed when the lines are first
+     * built, from the explorer counts already cached, so the list doesn't jump when fresh counts arrive; they
+     * take effect next time. Lines without a count keep the book's order, after the counted ones.
+     */
     private fun bookLines(name: String, white: Boolean): List<List<String>> =
         synchronized(treeCache) {
-            treeCache.getOrPut(name to white) { OpeningTree.lines(name, white, app.moveChoices.of(name, white)) }
+            treeCache.getOrPut(name to white) { byPopularity(OpeningTree.lines(name, white, app.moveChoices.of(name, white))) }
         }
+
+    private fun byPopularity(lines: List<List<String>>): List<List<String>> =
+        lines.withIndex()
+            .sortedWith(compareByDescending<IndexedValue<List<String>>> { line -> lineStatKey(line.value)?.let { openingStats.record(it)?.total } ?: -1L }.thenBy { it.index })
+            .map { it.value }
 
     /**
      * Takes the game back to where you left the line and lights the line's
