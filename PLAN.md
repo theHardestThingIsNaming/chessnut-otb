@@ -133,6 +133,10 @@ Every screen that plays on the board reads it the same way (`BoardRead`, core, t
 
 Online play checks the board when a game starts or resumes, and names a wrong board while an opponent's move is lit (comparing against the position before or after that move, whichever is closer). Before, a setup mistake (a rated game, 2026-10-13: Black's king and queen swapped) left the lit move pending forever with no message, and your own move was then set aside. Train, Survival and Punish already wait for a correct setup before the first move.
 
+## Speed
+
+The openings list took 10–15 seconds after a cold start on the phone (2026-10-13). Fixed: the opening book is indexed (replies by position, lines by name) and read as written instead of replayed (`OpeningBookTest` checks every line against the replay); lines are ranked by popularity with each line replayed once, not once per comparison; each game's accuracies are kept in `accuracy.tsv` until its analysis changes (`AccuracyCache`); a refresh that a newer one replaced stops early. Now about 5 seconds from a cold start of the debug build, starting at launch. A release build would be faster still (no debug JIT), but it's signed differently, so switching means reinstalling.
+
 ## Master games
 
 Built 2026-10-12, Scotch only, for review before spreading to other openings.

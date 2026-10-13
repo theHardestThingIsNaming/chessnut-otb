@@ -171,6 +171,9 @@ class GameStore(private val root: File) {
     }
 
     @Synchronized
+    /** When the game's analysis was last written, or null when it has none. */
+    fun analysisStamp(id: String): Long? = File(dir(id), ANALYSIS).takeIf { it.exists() }?.lastModified()
+
     fun loadAnalysis(id: String): GameAnalysis? {
         val file = File(dir(id), ANALYSIS)
         return if (file.exists()) runCatching { AnalysisFormat.read(file.readText()) }.getOrNull() else null

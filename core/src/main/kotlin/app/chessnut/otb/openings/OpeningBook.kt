@@ -21,13 +21,26 @@ object OpeningBook {
     /** Lines added while the app runs, such as an imported repertoire. Book names still win. */
     @Volatile private var extra: List<Opening> = emptyList()
     @Volatile private var sides: Map<String, OpeningSide> = emptyMap()
-    @Volatile private var merged: Pair<List<Opening>, Map<List<String>, Opening>>? = null
+    @Volatile private var merged: Index? = null
 
-    private val lines: List<Opening> get() = index().first
-    private val byPrefix: Map<List<String>, Opening> get() = index().second
+    /**
+     * The book, looked up three ways. The line builders ask for replies hundreds of times per opening,
+     * so they mustn't scan every line each time.
+     */
+    private class Index(val lines: List<Opening>) {
+        val byLine: Map<List<String>, Opening> = lines.associateBy { it.san }
+        /** Every line that runs on past a position, in book order. */
+        val through: Map<List<String>, List<Opening>> = HashMap<List<String>, MutableList<Opening>>().also { map ->
+            for (line in lines) for (n in 0 until line.san.size) map.getOrPut(line.san.subList(0, n)) { mutableListOf() } += line
+        }
+        /** The shortest line of each name, the first in book order when several tie. */
+        val shortestByName: Map<String, Opening> = lines.groupBy { it.name }.mapValues { (_, group) -> group.minBy { it.san.size } }
+    }
 
-    private fun index(): Pair<List<Opening>, Map<List<String>, Opening>> =
-        merged ?: (extra + base).let { all -> (all to all.associateBy { it.san }).also { merged = it } }
+    private val lines: List<Opening> get() = index().lines
+    private val byPrefix: Map<List<String>, Opening> get() = index().byLine
+
+    private fun index(): Index = merged ?: Index(extra + base).also { merged = it }
 
     /** Replaces the added lines. [side] says who plays each added opening, by name. */
     fun setExtra(openings: List<Opening>, side: Map<String, OpeningSide>) {
@@ -80,9 +93,7 @@ object OpeningBook {
      */
     fun rankedReplies(played: List<String>, family: String? = null): List<String> {
         val counts = linkedMapOf<String, Int>()
-        for (line in lines) {
-            if (line.san.size <= played.size) continue
-            if (line.san.take(played.size) != played) continue
+        for (line in index().through[played].orEmpty()) {
             if (family != null && !inFamily(line.name, family)) continue
             val move = line.san[played.size]
             counts[move] = (counts[move] ?: 0) + 1
@@ -114,8 +125,7 @@ object OpeningBook {
         return if (parent.isNotEmpty() && line(parent) != null) parent else name
     }
 
-    private fun shortest(name: String): Opening? =
-        lines.filter { it.name == name }.minByOrNull { it.san.size }
+    private fun shortest(name: String): Opening? = index().shortestByName[name]
 
     /** "King's Gambit Accepted: …" belongs to the King's Gambit, as "Sicilian Defense: Najdorf" does to the Sicilian. */
     private fun inFamily(name: String, family: String): Boolean =
@@ -132,12 +142,32 @@ object OpeningBook {
         return text.lineSequence().drop(1).mapNotNull { row ->
             val parts = row.split('\t')
             if (parts.size < 3) return@mapNotNull null
-            val san = sanOf(parts[2]) ?: return@mapNotNull null
+            val san = fastSanOf(parts[2]) ?: sanOf(parts[2]) ?: return@mapNotNull null
             Opening(parts[0], parts[1], san)
         }.toList()
     }
 
-    private fun sanOf(pgn: String): List<String>? {
+    /**
+     * The moves as the book writes them, without replaying them: replaying all four thousand lines
+     * took seconds on a phone. The book is already clean SAN (`OpeningBookTest` checks every line
+     * against [sanOf]); anything unusual, such as a comment, falls back to the replay.
+     */
+    private fun fastSanOf(pgn: String): List<String>? {
+        val moves = pgn.trim().split(' ').filter { it.isNotEmpty() && !it.endsWith('.') }
+        return moves.takeIf { m -> m.isNotEmpty() && m.all { SAN.matches(it) } }
+    }
+
+    private val SAN = Regex("""(?:[NBRQK][a-h]?[1-8]?x?[a-h][1-8]|[a-h](?:x[a-h])?[1-8](?:=[NBRQ])?|O-O(?:-O)?)[+#]?""")
+
+    /** Every book line, read both ways, for the test that keeps [fastSanOf] honest. */
+    internal fun bothReadings(): List<Triple<String, List<String>?, List<String>?>> =
+        listOf("/openings-custom.tsv", "/openings.tsv").flatMap { resource ->
+            OpeningBook::class.java.getResource(resource)?.readText().orEmpty().lineSequence().drop(1)
+                .mapNotNull { row -> row.split('\t').getOrNull(2) }
+                .map { pgn -> Triple(pgn, fastSanOf(pgn), sanOf(pgn)) }.toList()
+        }
+
+    internal fun sanOf(pgn: String): List<String>? {
         val list = MoveList()
         if (runCatching { list.loadFromSan(pgn) }.isFailure) return null
         val board = Board()

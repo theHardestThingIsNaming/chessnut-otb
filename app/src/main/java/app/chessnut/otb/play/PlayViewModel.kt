@@ -47,6 +47,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -432,9 +433,12 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     /** Squares that did not match the start at the last reading, while waiting for setup. */
     private var setupWrong: List<String> = emptyList()
 
+
     init {
         viewModelScope.launch {
-            app.analysisVersion.collect { refreshOpenings(state.value.openingQuery) }
+            app.analysisVersion.collect {
+                refreshOpenings(state.value.openingQuery)
+            }
         }
         viewModelScope.launch {
             app.placements.collect { onPhysical(it) }
@@ -696,16 +700,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /** The explorer cache key and UCI moves for [line]'s end position. */
-    private fun linePlay(line: List<String>): String? {
-        var position = Board().fen
-        val ucis = mutableListOf<String>()
-        for (san in line) {
-            val uci = PlayPosition.uciOfSan(position, san) ?: return null
-            ucis += uci
-            position = PlayPosition.after(position, uci)?.second ?: return null
-        }
-        return ucis.joinToString(",")
-    }
+    private fun linePlay(line: List<String>): String? =
+        runCatching { ChessLines.replay(line).uci.joinToString(",") }.getOrNull()
 
     private fun lineStatKey(line: List<String>): String? = linePlay(line)?.let { "line:$it" }
 
@@ -1908,10 +1904,11 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             treeCache.getOrPut(name to white) { byPopularity(OpeningTree.lines(name, white, app.moveChoices.of(name, white))) }
         }
 
-    private fun byPopularity(lines: List<List<String>>): List<List<String>> =
-        lines.withIndex()
-            .sortedWith(compareByDescending<IndexedValue<List<String>>> { line -> lineStatKey(line.value)?.let { openingStats.record(it)?.total } ?: -1L }.thenBy { it.index })
-            .map { it.value }
+    private fun byPopularity(lines: List<List<String>>): List<List<String>> {
+        // Each line's count once: worked out inside the sort, it was replayed for every comparison.
+        val played = lines.map { line -> lineStatKey(line)?.let { openingStats.record(it)?.total } ?: -1L }
+        return lines.indices.sortedWith(compareByDescending<Int> { played[it] }.thenBy { it }).map { lines[it] }
+    }
 
     /**
      * Takes the game back to where you left the line and lights the line's
@@ -2268,10 +2265,19 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         catalogJob = viewModelScope.launch(Dispatchers.Default) {
             val catalog = OpeningCatalog.browse(query)
             val names = catalog.flatMap { it.names }
-            val played = app.games.value.mapNotNull { game ->
-                val analysis = app.store.loadAnalysis(game.id) ?: return@mapNotNull null
-                ScoredGame.of(game, analysis)
+            // Scoring a game replays it, so each game's accuracies are kept until its analysis changes.
+            val games = app.games.value
+            val played = games.mapNotNull { game ->
+                val stamp = app.store.analysisStamp(game.id) ?: return@mapNotNull null
+                val entry = app.accuracies.get(game.id, stamp) ?: run {
+                    val scored = app.store.loadAnalysis(game.id)?.let { ScoredGame.of(game, it) }
+                    AccuracyCache.Entry(stamp, scored != null, scored?.whiteAccuracy, scored?.blackAccuracy).also { app.accuracies.put(game.id, it) }
+                }
+                if (entry.scored) ScoredGame(game.white, game.black, game.sanMoves, entry.white, entry.black) else null
             }
+            app.accuracies.save(games.map { it.id }.toSet())
+            // A newer refresh has started: it does the rest.
+            ensureActive()
             // Scores from trainer games the list has since let go.
             val kept = app.digests.all().mapNotNull { it.score }
             val scores = OpeningScores.bestOf(played + kept, names, app.myName)
@@ -2305,6 +2311,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                     }
                 if (rows.isEmpty()) null else OpeningSection(section.title, rows)
             }
+            ensureActive()
             // Book openings with reviews that have come due, first, so learned lines don't slip.
             val now = System.currentTimeMillis()
             val dueRows = if (query.isNotBlank()) emptyList() else started.filter { it.second == side }.mapNotNull { (name, white) ->

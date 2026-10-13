@@ -19,6 +19,7 @@ import app.chessnut.otb.play.CHESS_COM_FOLDER
 import app.chessnut.otb.lichess.LichessHttp
 import app.chessnut.otb.lichess.LichessVault
 import app.chessnut.otb.repertoire.DepthRecords
+import app.chessnut.otb.play.AccuracyCache
 import app.chessnut.otb.repertoire.Drill
 import app.chessnut.otb.repertoire.LineProgress
 import app.chessnut.otb.repertoire.OpeningTree
@@ -84,6 +85,7 @@ class OtbApp : Application() {
     val lineProgress: LineProgress by lazy { LineProgress(File(filesDir, "repertoire/book-lines.tsv")) }
 
     /** Your best run of engine-approved moves past the book, per opening and side. */
+    val accuracies: AccuracyCache by lazy { AccuracyCache(File(filesDir, "accuracy.tsv")) }
     val depthRecords: DepthRecords by lazy { DepthRecords(File(filesDir, "repertoire/depth.tsv")) }
 
     /** Moves you picked over the book's main move, which shape each opening's lines. */
