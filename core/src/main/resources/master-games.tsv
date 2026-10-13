@@ -549,3 +549,54 @@ REVIEW	1m46g5u	23	No castling	White's queen has gone pawn-hunting, and the king 
 REVIEW	1m46g5u	27	The pin	The bishop pins the c3 knight to the king on d2. White's queen is far away on a7, and the king can't get comfortable.	f8b4:G,b4d2:R
 REVIEW	1m46g5u	45	Queen trapped	The queen went to a7 to grab a pawn. Now it has no way back: ...Rc7 attacks it, and Qxa6 loses it to ...Qxa6. A queen far from home can be trapped.	c6c7:G,c7a7:R,c8a6:B
 OUTRO	1m46g5u	White resigned after 30...Qf1+, with Qd3 mate next. Huzman's queen took one pawn on a7 and never got home: ...Bd3 kept his king in the centre, ...Bb4 pinned it, and ...Rc7 trapped the queen. A lesson for the Exchange Slav, from either side: a queen that goes pawn-hunting while its king is uncastled is a target.
+GAME	1szhd96	London System	w	d4 Nf6 Nf3 g6 Bf4 Bg7 e3 O-O Be2 d6 h3	Boris Grachev	Artyom Timofeev	2008	Aeroflot Open, Moscow	1-0	11	55	d4 Nf6 Nf3 g6 Bf4 Bg7 e3 O-O Be2 d6 h3 c5 c3 b6 O-O Bb7 Nbd2 Nc6 Bh2 Rc8 a4 cxd4 exd4 Na5 Re1 Bh6 b4 Nc6 Qb3 e5 dxe5 Nxe5 Rad1 Qc7 Nxe5 dxe5 Bf3 Bxd2 Rxd2 Bxf3 gxf3 Rfe8 Re3 Re6 f4 exf4 Rxe6 fxe6 Qxe6+ Kg7 Rd6 Rf8 Bxf4 Qxc3 Be5 Qf3 Qg4	Aeroflot Open, Moscow, 2008, the last round. Two Russian grandmasters: Boris Grachev, rated 2601, against Artyom Timofeev, 2664. Black sets up a King's Indian against your London: ...g6, ...Bg7 and ...d6. The game stays level for a long time, then one natural move loses. Play your line, then find Grachev's moves.	2601	2664
+NOTE	1szhd96	11	...c5 hits d4 at once, the most direct answer to the London.	
+NOTE	1szhd96	12	c3 keeps d4 firm. Castling first was just as good.	good:e1g1,b1c3,b1d2
+NOTE	1szhd96	13	...b6 prepares ...Bb7 for the long diagonal.	
+NOTE	1szhd96	14	Castle.	good:b1d2,a2a4
+NOTE	1szhd96	15	The bishop goes to b7, aiming down the long diagonal at your king's side.	
+NOTE	1szhd96	16	Develop the last knight. On d2 it guards e4 and can go to c4.	good:f1e1,a2a4,f4h2
+NOTE	1szhd96	17	The knight comes to c6, adding to the pressure on d4.	
+NOTE	1szhd96	18	Bh2 tucks the bishop away from ...Nh5, keeping it on the h2–b8 diagonal.	good:f1e1,a2a4
+NOTE	1szhd96	19	The rook comes to c8 for the c-file.	
+NOTE	1szhd96	20	a4 gains space on the queen's side and stops ...b5.	good:f1e1,a2a3
+NOTE	1szhd96	21	Black takes on d4.	threat:d4c3
+NOTE	1szhd96	22	Take back with the e-pawn: the e-file opens for your rook, and the knight on d2 keeps an eye on e4.	good:f3d4
+NOTE	1szhd96	23	The knight goes to a5, towards c4 and b3.	
+NOTE	1szhd96	24	The rook comes to e1, onto the open e-file.	good:h2g3,e2d3
+NOTE	1szhd96	25	...Bh6 offers to trade the dark-squared bishops.	
+NOTE	1szhd96	26	b4 kicks the a5 knight and gains space.	good:e2b5,e2f1
+NOTE	1szhd96	27	The knight goes back to c6.	
+NOTE	1szhd96	28	Qb3 puts the queen on the a2–g8 diagonal, eyeing f7 and the king.	good:e2f1,e2d3
+NOTE	1szhd96	29	...e5 strikes at the centre.	
+NOTE	1szhd96	30	Take on e5.	good:d2c4
+NOTE	1szhd96	31	The knight takes back.	
+NOTE	1szhd96	32	Bring the last rook to d1, onto the d-file.	good:
+NOTE	1szhd96	33	The queen goes to c7, onto the c-file.	
+NOTE	1szhd96	34	Trade the strong e5 knight.	good:c3c4,f3d4
+NOTE	1szhd96	35	Black takes back with the pawn. The e5 pawn blocks your h2 bishop.	
+NOTE	1szhd96	36	Bf3 challenges the b7 bishop on the long diagonal.	good:c3c4,e2f1,d2f3
+NOTE	1szhd96	37	Black takes the d2 knight.	threat:d2e1
+NOTE	1szhd96	38	Take back with the rook.	good:h2e5
+NOTE	1szhd96	39	Black trades bishops on f3.	
+NOTE	1szhd96	40	Take back with the g-pawn. Your king looks a little open, but the f-pawn can now push to f4.	good:h2e5
+NOTE	1szhd96	41	The rook comes to e8, guarding e5.	
+NOTE	1szhd96	42	The rook comes to e3, ready to double or swing along the third rank.	good:c3c4,d2e2
+NOTE	1szhd96	43	...Re6 looks solid: it guards the sixth rank. But the rook stands on the same diagonal as your queen's line to the king, with only the f7 pawn to defend it.	
+NOTE	1szhd96	44	f4! A trap. If Black takes on f4, Rxe6 and Qxe6+ come with check.	good:c3c4
+NOTE	1szhd96	45	The mistake. ...exf4 hits your rook on e3, but it falls into the trap. ...Ne8 or ...Nh5 kept the game level.	threat:f4e3
+NOTE	1szhd96	46	Rxe6! Take the rook first.	good:
+NOTE	1szhd96	47	Black takes back with the f-pawn.	
+NOTE	1szhd96	48	Qxe6+ takes the pawn with check. The f6 knight now has a problem.	good:
+NOTE	1szhd96	49	The king steps to g7.	
+NOTE	1szhd96	50	Rd6 guards the queen and lines up behind it against the f6 knight.	good:
+NOTE	1szhd96	51	The rook comes to f8 to defend the knight.	
+NOTE	1szhd96	52	Take the f4 pawn: the bishop heads for e5, where it will pin the knight to the king.	good:
+NOTE	1szhd96	53	Black grabs the c3 pawn.	
+NOTE	1szhd96	54	Be5! The knight on f6 is pinned to the king on g7. It can't move, and the queen, bishop and rook behind keep piling up on it.	good:
+NOTE	1szhd96	55	The queen comes to f3, hoping for checks.	
+NOTE	1szhd96	56	Qg4 offers a queen trade. Black can't save the knight, and resigned.	
+REVIEW	1szhd96	44	The trap	Black's rook on e6 is guarded only by the f7 pawn, and your queen on b3 aims through e6 at the king on g8. f4 hits e5. If ...exf4, then Rxe6 fxe6 Qxe6+ comes with check, and the f6 knight is left loose.	f3f4:G,b3e6:B,e6g8:B
+REVIEW	1szhd96	48	A loose knight	With the f-pawn gone, the knight on f6 has lost a guard. Your queen hits it, the rook can back the queen up from d6, and the bishop can pin it from e5.	e6f6:R,d2d6:G,h2e5:G
+REVIEW	1szhd96	54	The pin	Be5 pins the knight to the king on g7. It can't move, and Black can't defend it enough times. Black resigned a move later.	e5f6:G,e6f6:B
+OUTRO	1szhd96	Timofeev resigned after 29.Qg4: the f6 knight is pinned and lost. After twenty-two quiet moves, one natural capture, 22...exf4, fell into a trap. A London lesson: when your opponent's piece is guarded by only one pawn, look for a pawn break that pulls that pawn away.
