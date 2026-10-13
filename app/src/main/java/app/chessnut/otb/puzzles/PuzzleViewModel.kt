@@ -10,7 +10,11 @@ import app.chessnut.otb.board.BoardSounds
 import app.chessnut.otb.board.MoveSpeaker
 import app.chessnut.otb.chess.MoveInput
 import app.chessnut.otb.chess.squareIndex
+import app.chessnut.otb.lichess.LichessHttp
+import app.chessnut.otb.play.OpeningStatsCache
 import app.chessnut.otb.play.PlayPosition
+import app.chessnut.otb.repertoire.OpeningTree
+import java.io.File
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -54,6 +58,14 @@ class PuzzleViewModel(application: Application, private val key: String) : Andro
     val endgame: Boolean = key.startsWith("eg:")
     private val app = application as OtbApp
     private val progress = PuzzleProgress(app.filesDir)
+
+    /** The opening's lines, the most played first, as the opening's page lists them; none for endgames. */
+    private val lineOrder: List<List<String>> = if (endgame) emptyList() else {
+        val name = key.removePrefix("mg:").substringBeforeLast(':')
+        val white = key.endsWith(":w")
+        val stats = OpeningStatsCache(File(app.filesDir, "opening-stats.tsv"), LichessHttp { null })
+        stats.byPlays(OpeningTree.lines(name, white, app.moveChoices.of(name, white)))
+    }
     private val sounds = BoardSounds()
     private val speech = MoveSpeaker(application)
     private val state = MutableStateFlow(PuzzleUi(title = PuzzleSets.title(key)))
@@ -67,7 +79,7 @@ class PuzzleViewModel(application: Application, private val key: String) : Andro
     private var moveJob: Job? = null
 
     init {
-        val due = progress.session(key, System.currentTimeMillis())
+        val due = progress.session(key, System.currentTimeMillis(), lineOrder = lineOrder)
         if (due.isEmpty()) finish(nothingDue = true) else begin(due)
     }
 
@@ -78,8 +90,8 @@ class PuzzleViewModel(application: Application, private val key: String) : Andro
         show(0)
     }
 
-    /** Every puzzle in the set, due or not, easiest first. */
-    fun practiseAll() = begin(PuzzleSets.of(key).take(PuzzleProgress.SESSION * 3))
+    /** Every puzzle in the set, due or not, the most played line's first, easiest first within each. */
+    fun practiseAll() = begin(PuzzleSets.of(key, lineOrder).take(PuzzleProgress.SESSION * 3))
 
     fun retryMissed() = begin(deck.filter { results[it.id] != true })
 

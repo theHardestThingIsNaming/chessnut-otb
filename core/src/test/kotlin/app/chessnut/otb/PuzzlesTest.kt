@@ -8,6 +8,7 @@ import app.chessnut.otb.puzzles.Puzzle
 import app.chessnut.otb.puzzles.PuzzleReview
 import app.chessnut.otb.puzzles.PuzzleRun
 import app.chessnut.otb.puzzles.PuzzleSets
+import app.chessnut.otb.repertoire.OpeningTree
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -46,7 +47,6 @@ class PuzzlesTest {
         for (key in keys) {
             val set = PuzzleSets.of(key)
             // An opening with no tactic export yet is skipped.
-            // The English has few games that start in your lines; the rest have dozens.
             if (set.isEmpty()) continue
             assertTrue(set.size >= 5, "$key has ${set.size}")
             for (puzzle in set) {
@@ -67,6 +67,23 @@ class PuzzlesTest {
         // Middlegame tactics are solved from your opening's side.
         assertTrue(PuzzleSets.of(PuzzleSets.middlegameKey("Scotch Game", true)).all { it.solverWhite })
         assertTrue(PuzzleSets.of(PuzzleSets.middlegameKey("Pirc Defense", false)).none { it.solverWhite })
+    }
+
+    @Test
+    fun tacticsComeLineByLineInTheOrderGiven() {
+        val key = PuzzleSets.middlegameKey("Ruy Lopez", true)
+        val lines = OpeningTree.lines("Ruy Lopez", true)
+        val set = PuzzleSets.of(key)
+        // Every tactic's line is one of the opening's lines, and most lines have tactics.
+        assertTrue(set.all { it.line.isEmpty() || it.line in lines })
+        assertTrue(lines.count { line -> set.any { it.line == line } } >= lines.size * 3 / 4)
+        // Asked for the last line first, its tactics lead, easiest first; tactics of no line come last.
+        val order = listOf(lines.last()) + lines.dropLast(1)
+        val ordered = PuzzleSets.of(key, order)
+        val firstLine = ordered.takeWhile { it.line == lines.last() }
+        assertEquals(set.count { it.line == lines.last() }, firstLine.size)
+        assertEquals(firstLine.sortedBy { it.rating }, firstLine)
+        assertEquals(order.flatMap { line -> set.filter { it.line == line } } + set.filter { it.line.isEmpty() }, ordered)
     }
 
     @Test

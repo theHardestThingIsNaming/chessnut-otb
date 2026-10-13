@@ -18,6 +18,8 @@ data class Puzzle(
     val themes: List<String>,
     /** Where it's from, such as "From a Scotch game" or "Rook ending". */
     val origin: String,
+    /** The opening line its game came from, for middlegame tactics; empty when none. */
+    val line: List<String> = emptyList(),
 ) {
     /** You solve for this side: the one not making the first move. */
     val solverWhite: Boolean get() = fen.split(' ')[1] == "b"
@@ -124,7 +126,8 @@ object PuzzleSets {
             if (f.size < 8) return@mapNotNull null
             val opening = f[0]
             val family = opening.substringBefore(' ')
-            (opening to (f[1] == "w")) to Puzzle(f[2], f[5], f[6].split(' '), f[3].toInt(), f[4].split(' '), "From a $family game")
+            val line = f.getOrNull(8).orEmpty().split(' ').filter { it.isNotBlank() }
+            (opening to (f[1] == "w")) to Puzzle(f[2], f[5], f[6].split(' '), f[3].toInt(), f[4].split(' '), "From a $family game", line)
         }
     }
 
@@ -140,8 +143,18 @@ object PuzzleSets {
 
     fun endgameKey(type: String) = "eg:$type"
 
-    /** The puzzles of a set, easiest first. */
-    fun of(key: String): List<Puzzle> = when {
+    /**
+     * The puzzles of a set, easiest first. With [lineOrder] (an opening's lines, the most played first),
+     * middlegame tactics come line by line in that order, easiest first within each; tactics of no listed line come last.
+     */
+    fun of(key: String, lineOrder: List<List<String>> = emptyList()): List<Puzzle> {
+        val set = all(key)
+        if (lineOrder.isEmpty()) return set
+        val rank = lineOrder.withIndex().associate { (i, line) -> line to i }
+        return set.sortedBy { rank[it.line] ?: lineOrder.size }
+    }
+
+    private fun all(key: String): List<Puzzle> = when {
         key.startsWith("mg:") -> {
             val opening = key.removePrefix("mg:").substringBeforeLast(':')
             val white = key.endsWith(":w")

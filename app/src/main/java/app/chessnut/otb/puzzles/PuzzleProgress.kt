@@ -34,10 +34,10 @@ class PuzzleProgress(filesDir: File) {
 
     /**
      * The next session: puzzles due again first, then ones not yet tried,
-     * easiest first, up to [size].
+     * the most played line's first ([lineOrder]) and easiest first, up to [size].
      */
-    fun session(key: String, now: Long, size: Int = SESSION): List<Puzzle> {
-        val set = PuzzleSets.of(key)
+    fun session(key: String, now: Long, size: Int = SESSION, lineOrder: List<List<String>> = emptyList()): List<Puzzle> {
+        val set = PuzzleSets.of(key, lineOrder)
         val known = all()
         val due = set.filter { known[it.id]?.let { r -> r.dueAt <= now } == true }.sortedBy { known.getValue(it.id).dueAt }
         val fresh = set.filter { it.id !in known }

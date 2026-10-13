@@ -26,6 +26,14 @@ import kotlin.test.Test
  * EXPORT_ENDGAMES=skip leaves the endgame file alone.
  * EXPORT_MIN_RATING (default 900) and EXPORT_MIN_PLIES (default 2: the opponent's move and one of yours)
  * narrow the middlegame tactics to harder, longer ones; EXPORT_MIN_PLIES=6 asks for three moves of yours.
+ * EXPORT_MIN_PLAYS (default 300) is how often a puzzle must have been played.
+ *
+ * EXPORT_PER_LINE=5 fills lines instead: every tactic already shipped is kept (and so is your
+ * progress on it), and each line with fewer than 5 gets new ones whose game reaches that line's
+ * position, by any move order, within EXPORT_LINE_SLACK plies (default 4) of its end, and goes
+ * deeper into it than into any other line. Every tactic of the opening gets its line in a ninth
+ * column (empty when it belongs to none), so the app can start with the most played line. Openings not
+ * in EXPORT_OPENINGS are left as they are. Use with EXPORT_ENDGAMES=skip.
  */
 class PuzzleExportTest {
     private val root = generateSequence(File("").absoluteFile) { it.parentFile }.first { File(it, "settings.gradle.kts").exists() || File(it, "settings.gradle").exists() }
@@ -52,15 +60,22 @@ class PuzzleExportTest {
         val tags = openings.associate { (name, _) -> name to tagOf(name) }
         val middle = openings.associateWith { mutableListOf<Row>() }
         val endgames = ENDGAME_TYPES.associateWith { mutableListOf<Row>() }
+        val perLine = System.getenv("EXPORT_PER_LINE")?.toIntOrNull()
+        val shippedFile = File(resources, "puzzles-middlegame.tsv")
+        val shipped = if (perLine != null) shippedFile.readLines().filter { it.isNotBlank() }.map { it.split('\t') } else emptyList()
+        val shippedIds = shipped.map { it[2] }.toSet()
+        val shippedRows = mutableMapOf<String, Row>()
+        val minPlays = System.getenv("EXPORT_MIN_PLAYS")?.toIntOrNull() ?: 300
         File(cache, "puzzles.csv").useLines { lines ->
             lines.drop(1).forEach { line ->
                 val row = Row(line.split(','))
                 if (row.fields.size < 10) return@forEach
                 val themes = row.themes.split(' ')
+                if (row.id in shippedIds) shippedRows[row.id] = row
                 val minRating = System.getenv("EXPORT_MIN_RATING")?.toIntOrNull() ?: 900
                 val minPlies = System.getenv("EXPORT_MIN_PLIES")?.toIntOrNull() ?: 2
                 val longEnough = row.moves.split(' ').size >= minPlies
-                if ("middlegame" in themes && row.popularity >= 80 && row.plays >= 300 && row.rating in minRating..2300 && longEnough) {
+                if ("middlegame" in themes && row.popularity >= 80 && row.plays >= minPlays && row.rating in minRating..2300 && longEnough) {
                     for ((opening, white) in openings) {
                         // Your opponent moves first in a puzzle: Black's move when you are White.
                         if (row.whiteToMove == white) continue
@@ -72,6 +87,10 @@ class PuzzleExportTest {
                     ENDGAME_TYPES.firstOrNull { it in themes }?.let { endgames.getValue(it) += row }
                 }
             }
+        }
+        if (perLine != null) {
+            fillLines(middle, shipped, shippedRows, perLine)
+            return
         }
         val out = StringBuilder()
         for ((key, rows) in middle) {
@@ -109,6 +128,59 @@ class PuzzleExportTest {
         }
         if (System.getenv("EXPORT_ENDGAMES") != "skip") File(resources, "puzzles-endgame.tsv").writeText(end.toString())
     }
+
+    /** Keeps the shipped tactics and tops each line up to [perLine]; see the class note. */
+    private fun fillLines(middle: Map<Pair<String, Boolean>, List<Row>>, shipped: List<List<String>>, shippedRows: Map<String, Row>, perLine: Int) {
+        val slack = System.getenv("EXPORT_LINE_SLACK")?.toIntOrNull() ?: 4
+        val cap = System.getenv("EXPORT_CAP")?.toIntOrNull() ?: 1500
+        val out = StringBuilder()
+        val done = middle.keys.map { it.first }.toSet()
+        shipped.filter { it[0] !in done }.forEach { out.append(it.joinToString("\t")).append('\n') }
+        for ((key, rows) in middle) {
+            val (opening, white) = key
+            val lines = OpeningTree.lines(opening, white)
+            val mine = shipped.filter { it[0] == opening }
+            val candidates = rows.filter { it.id !in shippedRows }.sortedByDescending { it.plays }.take(cap)
+            val old = mine.mapNotNull { shippedRows[it[2]] }
+            val games = games((candidates + old).mapNotNull { gameId(it.gameUrl) })
+            // Each line's positions (placement and side to move) from its sixth ply on, by depth.
+            val depthIn = lines.map { line ->
+                val fens = ChessLines.replay(line).fens
+                (6..line.size).associateBy { ply -> key(fens[ply]) }.entries.associate { (k, ply) -> k to ply }
+            }
+            val reachedCache = mutableMapOf<String, Int?>()
+            fun lineOf(row: Row): Int? = reachedCache.getOrPut(row.id) {
+                val moves = games[gameId(row.gameUrl)] ?: return@getOrPut null
+                val ply = plyOf(row.fen)
+                if (moves.size < ply) return@getOrPut null
+                val replay = runCatching { ChessLines.replay(moves.take(ply)) }.getOrNull() ?: return@getOrPut null
+                if (key(replay.fens.last()) != key(row.fen)) return@getOrPut null
+                val seen = replay.fens.map { key(it) }.toSet()
+                val deepest = depthIn.map { depths -> depths.filterKeys { it in seen }.values.maxOrNull() ?: 0 }
+                val best = deepest.max()
+                if (best == 0 || deepest.count { it == best } > 1) return@getOrPut null
+                val i = deepest.indexOf(best)
+                i.takeIf { best >= lines[i].size - slack }
+            }
+            val have = IntArray(lines.size)
+            old.forEach { row -> lineOf(row)?.let { have[it]++ } }
+            val byLine = candidates.mapNotNull { row -> lineOf(row)?.let { it to row } }.groupBy({ it.first }, { it.second })
+            val shippedFens = mine.map { it[5] }.toSet()
+            val added = lines.indices.flatMap { i ->
+                spread(byLine[i].orEmpty().filter { it.fen !in shippedFens }, maxOf(0, perLine - have[i]))
+            }
+            val after = lines.indices.map { i -> have[i] + added.count { row -> lineOf(row) == i } }
+            println("$opening: ${mine.size} shipped, ${added.size} added; per line before ${have.toList()} after $after; still none: ${after.withIndex().filter { it.value == 0 }.map { it.index + 1 }}")
+            fun lineText(row: Row?) = row?.let { lineOf(it) }?.let { lines[it].joinToString(" ") }.orEmpty()
+            val rows = mine.map { (it.take(8) + lineText(shippedRows[it[2]])).joinToString("\t") } + added.map { row ->
+                listOf(opening, if (white) "w" else "b", row.id, row.rating, row.themes, row.fen, row.moves, plyOf(row.fen) / 2 + 1, lineText(row)).joinToString("\t")
+            }
+            rows.sortedBy { it.split('\t')[3].toInt() }.forEach { out.append(it).append('\n') }
+        }
+        File(resources, "puzzles-middlegame.tsv").writeText(out.toString())
+    }
+
+    private fun key(fen: String) = fen.split(' ').take(2).joinToString(" ")
 
     /** Up to [count] puzzles spread evenly over the ratings, the most played in each band. */
     private fun spread(rows: List<Row>, count: Int): List<Row> {

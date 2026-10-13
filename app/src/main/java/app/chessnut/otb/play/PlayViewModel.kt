@@ -1922,11 +1922,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             treeCache.getOrPut(name to white) { byPopularity(OpeningTree.lines(name, white, app.moveChoices.of(name, white))) }
         }
 
-    private fun byPopularity(lines: List<List<String>>): List<List<String>> {
-        // Each line's count once: worked out inside the sort, it was replayed for every comparison.
-        val played = lines.map { line -> lineStatKey(line)?.let { openingStats.record(it)?.total } ?: -1L }
-        return lines.indices.sortedWith(compareByDescending<Int> { played[it] }.thenBy { it }).map { lines[it] }
-    }
+    private fun byPopularity(lines: List<List<String>>): List<List<String>> = openingStats.byPlays(lines)
 
     /**
      * Takes the game back to where you left the line and lights the line's

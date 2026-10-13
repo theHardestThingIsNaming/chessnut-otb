@@ -46,6 +46,7 @@ Last shipped: the sixteen King's Indian plans, on `main`, and installed on the p
 ## Next
 
 - [ ] Optional. Two more Essential endgames if they earn a place: the Vancura (rook against a rook's pawn) and queen against a pawn. The eight already cover the usual club endings.
+- [x] Middlegame tactics for every line, not just the opening (2026-10-13). Up to five per line, matched by position, so a club game that reaches your line by another move order counts; every tactic already shipped kept, with your progress. 1,444 in all (Ruy Lopez 145, King's Indian 138, Caro-Kann 134, Sicilian 134, French 128, English 111 up from 7, Pirc 110, Italian 100, Nimzo-Indian 98, Slav 98, Scotch 87, Bishop's Opening 57, Vienna 56, London 48). 189 of 211 lines have tactics; the 22 without are ones club games almost never reach. Each tactic carries its line, and a session starts with the most played line's, in the order the opening's lines are listed, easiest first within each.
 - [x] A middlegame plan after every line of every opening (2026-10-13 finished the Sicilian 22, Ruy Lopez 28, English 28 and Caro-Kann 21). Where master games are dense the plans follow them (opponent replies the most common master move, your moves where most masters agree); elsewhere Stockfish at depth 20, every move of yours within 60 centipawns. `MiddlegamePlansTest.everyLineOfEveryOpeningLeadsIntoAPlan` keeps it so. The Caro-Kann has no master counts (no PGN Mentor file). Tools: `LineDumpTest` lists lines and their plans; `PlanGenTest` plays Stockfish on; `MasterStatsTest.consensus` with `STATS_LINES_IN` shows master practice from any line; `PlanCheckTest` checks the result.
 
 ### UX review, 2026-10-12
@@ -111,7 +112,9 @@ Needs `data-cache/puzzles.csv` (decompress `puzzles.csv.zst`, or download `https
 EXPORT_OPENINGS="Scotch Game|w,Pirc Defense|b" ./gradlew :core:test --tests '*PuzzleExportTest*' --rerun-tasks
 ```
 
-Side is `w` or `b`. This replaces `puzzles-middlegame.tsv` with only the openings you named, and it also rewrites `puzzles-endgame.tsv`. Copy both files aside first. `EXPORT_ENDGAMES=skip` leaves the endgame file alone. `EXPORT_CAP` (default 1500) is how many of the most-played puzzles get their games checked.
+To top up lines instead (what the shipped set now uses), add `EXPORT_PER_LINE=5`: it keeps every shipped tactic, adds new ones to lines with fewer than five, writes each tactic's line in a ninth column, and leaves other openings alone. The shipped run used `EXPORT_CAP=20000 EXPORT_MIN_PLAYS=50 EXPORT_ENDGAMES=skip`, the Scotch with `EXPORT_MIN_RATING=1500 EXPORT_MIN_PLIES=6`, the Bishop's Opening with `EXPORT_LINE_SLACK=10` (its lines run deep). Twelve openings at once took 50 minutes, mostly fetching games.
+
+Side is `w` or `b`. Without `EXPORT_PER_LINE` the export replaces `puzzles-middlegame.tsv` with only the openings you named, and it also rewrites `puzzles-endgame.tsv`. Copy both files aside first. `EXPORT_ENDGAMES=skip` leaves the endgame file alone. `EXPORT_CAP` (default 1500) is how many of the most-played puzzles get their games checked.
 
 The Bishop's Opening is special in that test. Puzzle games do not follow the model lines past move 3, so `PuzzleExportTest` counts a game when its first three moves of each side match a drilled line (`lines.map { it.take(6) }`). That is how the 52 were found: 2663 tagged puzzles, 95 began in the lines, 52 kept. Checking the full 15-ply lines keeps zero. Leave that special case in place unless you have a replacement set.
 
