@@ -85,10 +85,14 @@ class MasterStatsTest {
         val (opening, side) = System.getenv("STATS_OPENING").split('|')
         val min = System.getenv("STATS_MIN")?.toInt() ?: 20
         val skip = Regex("blitz|rapid|bullet|speed|titled|online|armageddon|blind", RegexOption.IGNORE_CASE)
-        val plans = MiddlegamePlans.of(opening, side == "w")
+        // From each plan's start, or from each line in STATS_LINES_IN (`label|SAN moves`), for lines with no plan yet.
+        val targets: List<Pair<String, List<String>>> = System.getenv("STATS_LINES_IN")?.let { path ->
+            File(path).readLines().filter { '|' in it }.map { row -> row.substringBefore('|') to row.substringAfter('|').split(' ') }
+        } ?: MiddlegamePlans.of(opening, side == "w")
             .filter { plan -> System.getenv("STATS_PLAN")?.let { it == plan.name } ?: true }
-        // Only games that reach one of the plans' starting positions are kept, to spare memory.
-        val starts = plans.map { plan -> Board().also { b -> plan.before.forEach { b.doMove(it) } }.let(::key) }.toSet()
+            .map { it.name to it.before }
+        // Only games that reach one of the starting positions are kept, to spare memory.
+        val starts = targets.map { (_, before) -> Board().also { b -> before.forEach { b.doMove(it) } }.let(::key) }.toSet()
         // Every such game as its list of (position, move, result).
         val games = mutableListOf<Pair<List<Pair<String, String>>, String>>()
         for (file in File(dir).listFiles { f -> f.name.endsWith(".pgn") }.orEmpty()) {
@@ -110,11 +114,11 @@ class MasterStatsTest {
             }
         }
         val out = StringBuilder()
-        for (plan in plans) {
+        for ((name, before) in targets) {
             val board = Board()
-            plan.before.forEach { board.doMove(it) }
+            before.forEach { board.doMove(it) }
             var pool = games.mapNotNull { (steps, result) -> steps.indexOfFirst { it.first == key(board) }.takeIf { it >= 0 }?.let { Triple(steps, it, result) } }
-            out.append("${plan.name} (${pool.size} games):")
+            out.append("$name (${pool.size} games):")
             repeat(14) {
                 val counts = pool.mapNotNull { (steps, at, _) -> steps.getOrNull(at)?.second }.groupingBy { it }.eachCount()
                 val (move, n) = counts.maxByOrNull { it.value } ?: return@repeat

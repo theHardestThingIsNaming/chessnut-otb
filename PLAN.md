@@ -46,7 +46,7 @@ Last shipped: the sixteen King's Indian plans, on `main`, and installed on the p
 ## Next
 
 - [ ] Optional. Two more Essential endgames if they earn a place: the Vancura (rook against a rook's pawn) and queen against a pawn. The eight already cover the usual club endings.
-- [ ] A middlegame plan after every line, one opening at a time (the Scotch, the Vienna, the London, the Italian, the French, the Nimzo-Indian, the Slav, the Pirc and the King's Indian are done). Lines still without a plan: Caro-Kann 17, Sicilian 18, Ruy Lopez 24, English 25. Tools: `LineDumpTest` lists an opening's lines and their plans; `PlanGenTest` plays Stockfish on from each line's end; `PlanCheckTest` checks the result.
+- [ ] A middlegame plan after every line, one opening at a time (the Scotch, the Vienna, the London, the Italian, the French, the Nimzo-Indian, the Slav, the Pirc, the King's Indian and the Sicilian are done). Lines still without a plan: Caro-Kann 17, Ruy Lopez 24, English 25. Tools: `LineDumpTest` lists an opening's lines and their plans; `PlanGenTest` plays Stockfish on from each line's end; `PlanCheckTest` checks the result.
 
 ### UX review, 2026-10-12
 
