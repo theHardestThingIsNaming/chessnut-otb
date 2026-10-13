@@ -59,6 +59,7 @@ import app.chessnut.otb.chess.squareIndex
 import app.chessnut.otb.repertoire.OpeningTree
 import app.chessnut.otb.review.POSITION_PREFIX
 import app.chessnut.otb.repertoire.DepthRun
+import app.chessnut.otb.repertoire.MoveVerdict
 import app.chessnut.otb.play.BOARD_SETTLE_MS
 import app.chessnut.otb.openings.OpeningSide
 import app.chessnut.otb.repertoire.OpeningMedal
@@ -387,6 +388,12 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private var lineBest: Int? = null
     /** From the last judged move: the engine's top two and the winning chances it gave up. */
     private var lastTopTwo: List<String> = emptyList()
+    /** The last judged move against the engine: its top moves in order, and the scores with its best and with yours. */
+    private var lastRanked: List<String> = emptyList()
+    private var lastBestScore: Score? = null
+    private var lastAfterScore: Score? = null
+    private var lastJudgedUci: String? = null
+    private var depthVerdict: String? = null
     private var lastWinDrop = 0.0
     private var lastJudgedFen: String? = null
     /** What the engine would have played when the run ended, such as "8. c4 or 8. Nd2". */
@@ -1481,6 +1488,15 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         } else {
             depthRun = depthRun ?: 0
             val before = lastJudgedFen
+            // Where the move ranked and what it gave away, for the run's ending.
+            depthVerdict = before?.let { position ->
+                val played = ChessLines.sanOf(position, listOf(uci)).firstOrNull() ?: return@let null
+                val bestSan = lastRanked.firstOrNull()?.let { ChessLines.sanOf(position, listOf(it)).firstOrNull() }
+                val rank = lastRanked.indexOf(uci.lowercase()).takeIf { it >= 0 }?.plus(1)
+                val bestScore = lastBestScore ?: return@let null
+                val afterScore = lastAfterScore ?: return@let null
+                MoveVerdict.describe(SpokenMove.plain(played), bestSan?.let { SpokenMove.plain(it) }, rank, bestScore, afterScore, whiteToMove(position))
+            }
             depthMissed = before?.let { position ->
                 lastTopTwo.mapNotNull { ChessLines.sanOf(position, listOf(it)).firstOrNull() }
                     .distinct()
@@ -1513,8 +1529,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             record != null -> "Run over at $run. Your best is $record."
             else -> "Run over at $run."
         }
-        val words = listOfNotNull(result, depthMissed?.let { "The engine wanted $it." }).joinToString(" ")
+        val words = listOfNotNull(result, depthVerdict, depthMissed?.let { "The engine wanted $it." }).joinToString(" ")
         depthMissed = null
+        depthVerdict = null
         // In survival the result is the whole story; elsewhere it follows the line's own note.
         lineNote = if (survival) words else listOfNotNull(lineNote, words).joinToString(" ")
         if (app.phoneSounds && playing) speech.narrate(words)
@@ -1995,10 +2012,12 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         val eng = engine()
         eng.limitStrength(null)
         lastJudgedFen = fen
-        val top = eng.analyseMillis(fen, 400, 2)
+        val top = eng.analyseMillis(fen, 600, MoveVerdict.TOP)
         val before = top.firstOrNull()
-        // The engine can report the same first move on both lines, so keep each move once.
-        lastTopTwo = top.mapNotNull { it.uci.firstOrNull()?.lowercase() }.distinct()
+        // The engine can report the same first move on two lines, so keep each move once.
+        lastRanked = top.mapNotNull { it.uci.firstOrNull()?.lowercase() }.distinct()
+        lastTopTwo = lastRanked.take(2)
+        lastJudgedUci = uci.lowercase()
         val beforeScore = before?.score ?: Score.Even
         val after = PlayPosition.after(fen, uci) ?: return TrainerGate.judge(false, false, 100.0)
         val whiteMoved = whiteToMove(fen)
@@ -2009,6 +2028,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         }
         fun moverWin(score: Score) = if (whiteMoved) score.whiteWinPercent else 100.0 - score.whiteWinPercent
         lastWinDrop = moverWin(beforeScore) - moverWin(afterScore)
+        lastBestScore = beforeScore
+        lastAfterScore = afterScore
         return TrainerGate.judge(false, before?.uci?.firstOrNull() == uci, lastWinDrop)
     }
 
