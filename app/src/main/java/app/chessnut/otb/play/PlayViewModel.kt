@@ -319,6 +319,10 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private val clock = PlayClock()
     private var clockNoted: String? = null
     private var catalogJob: Job? = null
+    /** The search the running refresh is for, and whether another was asked for meanwhile. */
+    private var catalogQuery: String? = null
+    private var catalogAgain = false
+    private val catalogLock = Any()
     private var busy = false
 
     private var kind = PlayKind.Bot
@@ -1570,6 +1574,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun onSettled(placement: String) {
         mismatchJob?.cancel()
+        // The board has moved on: the same illegal move tried again later sounds again.
+        if (placement != illegalShown) illegalShown = null
         if (!playing || !physical || trap != null) return
         if (awaitingBoard) {
             if (PlayPosition.matches(fen, placement)) {
@@ -2272,8 +2278,16 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         launched.start()
     }
 
-    private fun refreshOpenings(query: String) {
+    private fun refreshOpenings(query: String): Unit = synchronized(catalogLock) {
+        // The same search while one is running: let it finish and run once more after, rather than
+        // cancel it. Stats arriving every few seconds would otherwise keep the list from ever filling.
+        if (catalogJob?.isActive == true && catalogQuery == query) {
+            catalogAgain = true
+            return
+        }
         catalogJob?.cancel()
+        catalogQuery = query
+        catalogAgain = false
         catalogJob = viewModelScope.launch(Dispatchers.Default) {
             val catalog = OpeningCatalog.browse(query)
             val names = catalog.flatMap { it.names }
@@ -2362,6 +2376,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 )
             }
             fetchOpeningStats()
+            // Asked for again while this ran: start afresh, no longer counting this one as running.
+            val again = synchronized(catalogLock) { catalogAgain.also { if (it) catalogQuery = null; catalogAgain = false } }
+            if (again) refreshOpenings(query)
         }
     }
 

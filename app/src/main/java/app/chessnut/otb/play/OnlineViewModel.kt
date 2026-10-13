@@ -779,6 +779,8 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
     private fun onSettled(placement: String) {
         if (!playing || !physical() || finished != null) return
         mismatchJob?.cancel()
+        // The board has moved on: the same illegal move tried again later sounds again.
+        if (placement != illegalShown) illegalShown = null
         if (PlayPosition.matches(fen, placement)) {
             if (prompt != null || rejected != null || mismatchShown) {
                 prompt = null

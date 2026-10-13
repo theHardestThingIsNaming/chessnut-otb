@@ -3,6 +3,8 @@ package app.chessnut.otb.board
 import app.chessnut.otb.OtbApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -20,7 +22,10 @@ class BoardLights(private val app: OtbApp, private val scope: CoroutineScope, pr
     fun show(squares: List<String>) {
         val session = app.boardSession ?: return
         val mine = synchronized(this) { ++seq }
-        scope.launch(Dispatchers.IO) {
+        // A screen turns the lights off as it closes, when its own scope has already stopped:
+        // that last request still has to reach the board.
+        val runner = if (scope.isActive) scope else LEFTOVER
+        runner.launch(Dispatchers.IO) {
             lock.withLock {
                 if (mine != synchronized(this@BoardLights) { seq }) return@withLock
                 log("leds ${squares.joinToString().ifEmpty { "off" }}")
@@ -36,4 +41,8 @@ class BoardLights(private val app: OtbApp, private val scope: CoroutineScope, pr
     fun move(uci: String?) = show(if (uci == null || uci.length < 4) emptyList() else listOf(uci.substring(0, 2), uci.substring(2, 4)))
 
     fun off() = show(emptyList())
+
+    private companion object {
+        val LEFTOVER = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    }
 }

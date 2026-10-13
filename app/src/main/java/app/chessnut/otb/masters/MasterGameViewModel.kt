@@ -99,7 +99,13 @@ class MasterGameViewModel(application: Application, private val id: String) : An
     private var settleJob: Job? = null
     /** Released by Continue at a key moment. */
     private var reviewWaiter: CompletableDeferred<Unit>? = null
+    /** Waits before calling a board wrong: a capture or castling passes through odd positions. */
+    private var mismatchJob: Job? = null
+    /** Shared with every screen that plays on the board: the newest request wins. */
+    private val boardLights by lazy { BoardLights(app, viewModelScope) }
 
+    // Declared after every property: restart() lights the board and reads it straight away,
+    // and Kotlin initialises properties in order, so any declared below would still be null here.
     init {
         restart()
         viewModelScope.launch {
@@ -113,9 +119,6 @@ class MasterGameViewModel(application: Application, private val id: String) : An
             }
         }
     }
-
-    /** Waits before calling a board wrong: a capture or castling passes through odd positions. */
-    private var mismatchJob: Job? = null
 
     private fun onSettled(placement: String) {
         mismatchJob?.cancel()
@@ -181,9 +184,6 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         light(lit)
         waiter.await()
     }
-
-    /** Shared with every screen that plays on the board: the newest request wins. */
-    private val boardLights by lazy { BoardLights(app, viewModelScope) }
 
     private fun light(squares: List<String>) = boardLights.show(squares)
 
@@ -313,7 +313,8 @@ class MasterGameViewModel(application: Application, private val id: String) : An
         val san = g.moves[ply]
         // A hint counts as help: the move is shown, not guessed.
         val verdict = if (hints > 0) Guess.Miss else MasterGames.judge(g, ply, uci, master)
-        if (app.phoneSounds) if (verdict == Guess.Miss) sounds.illegal()
+        // The buzz is for a different move; the right move after a hint isn't wrong, just not counted.
+        if (app.phoneSounds && verdict == Guess.Miss && !uci.equals(master, true)) sounds.illegal()
         // A move has been read: old lights and board notes go.
         mismatchJob?.cancel()
         if (physical) light(emptyList())
