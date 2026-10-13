@@ -37,7 +37,7 @@ class MasterPrepTest {
         val r = engine.inputStream.bufferedReader()
         fun send(s: String) { w.write(s + "\n"); w.flush() }
         send("uci"); while (r.readLine() != "uciok") {}
-        send("setoption name Threads value 2")
+        send("setoption name Threads value ${System.getenv("MASTER_THREADS") ?: "2"}")
         /** Top [multi] moves from [fen], each with its score for the side to move. */
         fun top(fen: String, multi: Int): List<Pair<String, Int>> {
             send("setoption name MultiPV value $multi"); send("position fen $fen"); send("go depth 18")
@@ -80,12 +80,22 @@ class MasterPrepTest {
                     val after = replay.fens[ply + 1]
                     send("setoption name MultiPV value 1"); send("position fen $after"); send("go depth 18")
                     var pv = emptyList<String>()
+                    var score = ""
                     while (true) {
                         val l = r.readLine() ?: error("closed")
-                        if (l.startsWith("info") && " pv " in l) pv = l.split(" ").let { t -> t.drop(t.indexOf("pv") + 1) }
+                        if (l.startsWith("info") && " pv " in l) {
+                            val t = l.split(" ")
+                            pv = t.drop(t.indexOf("pv") + 1)
+                            val i = t.indexOf("score")
+                            if (i >= 0) {
+                                // White's view: the engine scores for the side to move after the move.
+                                val sign = if (after.split(' ')[1] == "w") 1 else -1
+                                score = if (t[i + 1] == "mate") "mate ${sign * t[i + 2].toInt()}" else "${sign * t[i + 2].toInt()}"
+                            }
+                        }
                         if (l.startsWith("bestmove")) break
                     }
-                    out.append("PV\t$ply\t$san then ${runCatching { ChessLines.sanOf(after, pv.take(6)).joinToString(" ") }.getOrDefault("")}\n")
+                    out.append("PV\t$ply\t$san (eval $score, White's view) then ${runCatching { ChessLines.sanOf(after, pv.take(6)).joinToString(" ") }.getOrDefault("")}\n")
                 }
                 if (yours) {
                     val options = top(fen, 3)

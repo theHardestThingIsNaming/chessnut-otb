@@ -148,3 +148,119 @@ REVIEW	KGMF0HWo	26	The pawn storm	f4 hits the e5 knight, and f5 next will chase 
 REVIEW	KGMF0HWo	27	Counter-attack	The bishop and queen both aim at g2: ...Qxg2 would be mate. Minasian needs a calm defensive move.	h3g2:R,g6g2:R
 REVIEW	KGMF0HWo	32	A piece up	Ne3 covered g2, Rf1 stepped aside, and gxh3 picked up the bishop. White is a piece up with the attack over.	
 OUTRO	KGMF0HWo	Anastasian resigned after 18.Bd3: a piece down, with his queen under attack again. One natural move, 13...d6, was enough against Minasian's f4 and f5. The 1996 title went to Vladimir Akopian. Minasian won it again in 2004 and 2006, the year he played in Armenia's Olympiad-winning team. Anastasian, who later coached Armenia's women's team, died in 2016, aged 52.
+GAME	0leazbf	English Opening	w	c4 Nf6 Nf3 c5 Nc3 Nc6 g3 g6 Bg2 Bg7 O-O O-O d4	Bobby Fischer	Boris Spassky	1972	World Championship, Reykjavik	1-0	13	45	c4 Nf6 Nf3 c5 Nc3 Nc6 g3 g6 Bg2 Bg7 O-O O-O d4 cxd4 Nxd4 Nxd4 Qxd4 d6 Bg5 Be6 Qf4 Qa5 Rac1 Rab8 b3 Rfc8 Qd2 a6 Be3 b5 Ba7 bxc4 Bxb8 Rxb8 bxc4 Bxc4 Rfd1 Nd7 Nd5 Qxd2 Nxe7+ Kf8 Rxd2 Kxe7 Rxc4 Rb1+ Bf1 Nc5 Kg2 a5 e4 Ba1 f4 f6 Re2 Ke6 Rec2 Bb2 Be2 h5 Rd2 Ba3 f5+ gxf5 exf5+ Ke5 Rcd4 Kxf5 Rd5+ Ke6 Rxd6+ Ke7 Rc6	World Championship, Reykjavik, 1972, game 8. Bobby Fischer had lost the first game and forfeited the second by refusing to play, then won three of the next five. He leads 4–3. Fischer had opened 1.e4 almost all his life, but two games ago he switched to 1.c4 and beat Spassky with it. He plays it again here, and the game reaches your line. Play your line, then try to find Fischer's moves.	2785	2660
+NOTE	0leazbf	13	Spassky takes on d4. In the symmetrical English this swap is normal: Black opens the c-file for his rooks and the g7 bishop's diagonal.	threat:d4c3
+NOTE	0leazbf	14	Take back with the knight. The queen will follow it to d4, where she is strong in the centre.	good:
+NOTE	0leazbf	15	Black trades knights so your queen has to recapture and come out early.	
+NOTE	0leazbf	16	The queen takes back. She is centralised, but she faces the g7 bishop, so Black will try to gain time hitting her.	good:
+NOTE	0leazbf	17	...d6 frees the c8 bishop and keeps your pieces off e5. Black's set-up is solid but a little passive.	
+NOTE	0leazbf	18	Develop the bishop with a pin on the f6 knight. If the knight moves, the e7 pawn hangs; if Black plays ...h6, the bishop has to decide.	good:d4d3,d4e3,c1d2
+NOTE	0leazbf	19	Black develops the bishop to e6, where it eyes your c4 pawn, the weak point of the English set-up.	
+NOTE	0leazbf	20	The queen steps to f4, out of the bishop's line and adding to the pin on f6.	good:d4d3
+NOTE	0leazbf	21	The queen goes to a5. With the g7 bishop she presses on your c3 knight, and she eyes the a2 pawn.	
+NOTE	0leazbf	22	Bring the rook to c1, behind the c4 pawn and the knight. Every piece on the c-file now has a guard.	good:f4d2,f1c1
+NOTE	0leazbf	23	Black plans ...b5 to undermine c4. The rook on b8 supports the pawn.	
+NOTE	0leazbf	24	b3 makes c4 a solid point: the pawn now has a pawn behind it.	good:f1d1,f4d2
+NOTE	0leazbf	25	The other rook comes to c8, piling up against c3 and c4.	
+NOTE	0leazbf	26	The queen goes back to d2. She guards c3 and gets off f4, where ...Nh5 could hit her.	good:h2h3,f1d1
+NOTE	0leazbf	27	Black prepares ...b5 once more, now with a6 behind it.	
+NOTE	0leazbf	28	The bishop drops back to e3. It looks modest, but from e3 it watches the a7 square... which matters in a moment.	good:a2a4,e2e4
+NOTE	0leazbf	29	A mistake. ...b5 hits c4, but the pawn has left b7, and b7 was blocking your g2 bishop's long diagonal to a8. Now a7 and a8 are both dangerous squares for Black.	threat:b5c4
+NOTE	0leazbf	30	Ba7! attacks the rook on b8. ...Ra8 would drop the rook to Bxa8 along the open diagonal, so Spassky gives up the exchange, a rook for a bishop.	good:
+NOTE	0leazbf	31	Black takes on c4 first, so at least he wins a pawn for the exchange.	
+NOTE	0leazbf	32	Take the rook. White is the exchange up.	good:
+NOTE	0leazbf	33	Black recaptures and keeps his rook on the open b-file.	threat:c4b3
+NOTE	0leazbf	34	Take back the pawn. Your pawn structure is broken, but the extra exchange counts for more.	good:
+NOTE	0leazbf	35	Black wins the c4 pawn back with the bishop. Material: you have the exchange, Black has a pawn for it. Black's pieces are active, so Fischer must stay alert.	
+NOTE	0leazbf	36	The rook goes to the open d-file and lines up with your queen against d6.	good:c1c2
+NOTE	0leazbf	37	The real blunder. The knight leaves f6 to free the g7 bishop, but now nothing guards d5, and your queen on d2 sees all the way to the a5 queen once the c3 knight moves.	threat:g7c3
+NOTE	0leazbf	38	Nd5! The knight jumps away and uncovers the attack of your queen on Black's queen. It also hits e7 with a fork coming. Black must trade queens.	good:
+NOTE	0leazbf	39	Forced: Black trades queens, since his queen is attacked.	threat:d2e2
+NOTE	0leazbf	40	Take on e7 with check first, before taking the queen back. This in-between move wins a pawn.	good:
+NOTE	0leazbf	41	The king steps aside, the only sensible square.	threat:d2e2
+NOTE	0leazbf	42	Now take the queen back.	good:
+NOTE	0leazbf	43	Black takes the knight on e7. Material looks level for a moment: a knight for a pawn and Black's bishop on c4 is loose.	
+NOTE	0leazbf	44	Rxc4 picks up the loose bishop. You are back to the exchange up, and now with fewer pawns on the board the extra rook will tell.	good:
+NOTE	0leazbf	45	Black's rook checks along the first rank.	
+NOTE	0leazbf	46	Block with the bishop. It's passive on f1 for now, but it will come back to life on e2 and d3.	
+NOTE	0leazbf	47	The knight comes to c5, a good square where your rooks can't easily chase it.	
+NOTE	0leazbf	48	Unpin the bishop and bring the king closer to the centre.	
+NOTE	0leazbf	49	Black pushes the a-pawn to gain space and fix your a2 pawn.	
+NOTE	0leazbf	50	e4 takes the d5 square away from Black and starts your central pawns moving.	
+NOTE	0leazbf	51	The bishop goes to a1 to look for targets on the long diagonal.	
+NOTE	0leazbf	52	f4 joins the pawns: e4 and f4 will roll forward and open lines for your rooks.	
+NOTE	0leazbf	53	Black stops f5 for now and covers e5.	
+NOTE	0leazbf	54	The rook guards the e-pawn so it can't fall to ...Nxe4 later.	
+NOTE	0leazbf	55	The king comes forward to e6 to blockade the pawns.	
+NOTE	0leazbf	56	Both rooks back on the c-file, aiming at the c5 knight.	
+NOTE	0leazbf	57	The bishop goes to b2, looking at your knightless queenside.	
+NOTE	0leazbf	58	The bishop goes to e2, ready for Bc4+ or Bxh5 once the h-pawn moves.	
+NOTE	0leazbf	59	Black pushes the h-pawn, but it gives your bishop a new target on h5.	
+NOTE	0leazbf	60	The rook returns to d2 to line up on d6.	
+NOTE	0leazbf	61	The bishop goes to a3 to guard the knight on c5.	
+NOTE	0leazbf	62	f5+! Fischer opens the position with check. Your rooks need open files, and this pawn break gives them.	
+NOTE	0leazbf	63	Black takes the pawn. Stepping away would let the f-pawn go on to f6 or open the g-file anyway.	
+NOTE	0leazbf	64	Take back with check: the king is driven forward.	
+NOTE	0leazbf	65	The king steps to e5 to defend d6.	
+NOTE	0leazbf	66	Double the rooks on the d-file against d6.	
+NOTE	0leazbf	67	The king grabs the pawn on f5, but walks away from d6.	
+NOTE	0leazbf	68	Check on d5 drives the king back.	
+NOTE	0leazbf	69	The king retreats.	
+NOTE	0leazbf	70	Take the d6 pawn with check.	
+NOTE	0leazbf	71	The king steps back.	
+NOTE	0leazbf	72	Rc6 hits the knight on c5 and keeps your rooks deep in Black's camp, with the h5 pawn next. Spassky resigned.	
+REVIEW	0leazbf	30	Two bishops, one rook	Ba7 hits the rook on b8. Its natural escape, a8, is covered by your g2 bishop now that the b7 pawn has gone. The rook has no good square, and Black loses the exchange.	a7b8:G,g2a8:B
+REVIEW	0leazbf	38	Discovered attack	The c3 knight was blocking your queen's line to a5. Nd5 moves it with a threat of its own (Nxe7+), so Black can't save everything: he has to trade queens, and Nxe7+ comes with check.	c3d5:G,d2a5:R,d5e7:B
+REVIEW	0leazbf	44	The extra exchange	After the queen trade and Rxc4 you are the exchange up in an ending. Some say 15...b5 was a deliberate sacrifice that was fine for Black, and the real mistake was 19...Nd7 (19...Qh5 held). From here, a rook against a knight is enough: watch how Fischer opens lines with e4, f4 and f5 for his rooks.	
+REVIEW	0leazbf	62	Open lines for the rooks	Rooks need open files. Fischer's pawns on e4 and f4 were ready, and f5+ breaks Black's blockade so both rooks can get at d6.	f4f5:G,d2d6:B
+OUTRO	0leazbf	Spassky resigned after 37.Rc6. Fischer led 5–3, and on 1 September 1972 he won the match 12½–8½ to become the eleventh world champion, and the first born in America. He never played another serious game until a private rematch with Spassky in 1992, and he gave up the title to Anatoly Karpov in 1975 without playing. Fischer died in Reykjavik in 2008. Spassky died in 2025, aged 88.
+GAME	1k7rc95	Ruy Lopez	w	e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 O-O c3	Judit Polgar	Peter Svidler	2005	Corus, Wijk aan Zee	1-0	15	53	e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 O-O c3 d5 exd5 Nxd5 Nxe5 Nxe5 Rxe5 c6 g3 Bd6 Re1 Qd7 d3 Qh3 Re4 Nf6 Rh4 Qf5 Nd2 Re8 Ne4 Nxe4 Rxe4 Rxe4 dxe4 Qxe4 Bc2 Qe7 Bg5 f6 Be3 Be6 Qf3 Qd7 Rd1 Rd8 Be4 Bxa2 Bb6 Bb3 Rd4 c5 Bxc5 Qe6 c4	Corus, Wijk aan Zee, 2005. Judit Polgar, 28, became a grandmaster at 15, younger than Bobby Fischer had been, and she is the strongest woman who has ever played. Later that year she reached 2735, a record for a woman. Peter Svidler, several times Russian champion, answers your Closed Ruy Lopez with the Marshall Attack: he gives a pawn for a fast attack on your king. Play your line, then find Polgar's moves.	2728	2735
+NOTE	1k7rc95	15	The Marshall Attack. Black gives up the e5 pawn to open lines towards your king. Frank Marshall saved it for a game against Capablanca in 1918, and it has been a favourite weapon of strong players ever since.	threat:d5e4
+NOTE	1k7rc95	16	Take the pawn. Declining it is possible, but taking it is the honest test.	good:
+NOTE	1k7rc95	17	The knight takes back. Black is already pointing pieces at your king.	
+NOTE	1k7rc95	18	Take the e5 pawn as well: you are a pawn up.	good:
+NOTE	1k7rc95	19	Black trades knights so his pieces get to your king faster.	
+NOTE	1k7rc95	20	The rook takes back, right in the centre.	good:
+NOTE	1k7rc95	21	...c6 guards the d5 knight, so ...Bd6 can come without dropping it.	
+NOTE	1k7rc95	22	Polgar avoids the main line (12.d4) and plays g3 at once: it takes the h4 and f4 squares away from Black's pieces before they arrive.	good:e5e1,d2d3
+NOTE	1k7rc95	23	The bishop comes to d6, hitting your e5 rook and aiming at the king's side.	threat:d6e5
+NOTE	1k7rc95	24	The rook goes home to e1.	good:
+NOTE	1k7rc95	25	Black brings the queen towards the king: ...Qh3 is next.	
+NOTE	1k7rc95	26	d3 frees the c1 bishop, the last piece still at home.	good:d2d4
+NOTE	1k7rc95	27	The queen arrives on h3, next to your king. ...Bg4 could follow, hitting your queen and adding to the attack.	
+NOTE	1k7rc95	28	The rook comes to e4: it guards the fourth rank, hits h4 and gets ready to swing to h4 and push the queen back.	good:
+NOTE	1k7rc95	29	The knight leaves d5 for f6, hitting the rook on e4.	threat:f6e4
+NOTE	1k7rc95	30	Rh4! The rook steps away with a threat: it hits the queen on h3. Black must give up the attacking post.	good:
+NOTE	1k7rc95	31	The queen retreats to f5. Black's attack has stalled, and you are still a pawn up.	
+NOTE	1k7rc95	32	Bring the last knight into play, heading for e4.	good:d3d4,b3c2
+NOTE	1k7rc95	33	A small slip: the rook goes to e8, but it lets your knight reach e4 and swap off Black's best defender.	
+NOTE	1k7rc95	34	Ne4 offers to trade knights. The f6 knight was the piece holding Black's attack together.	good:
+NOTE	1k7rc95	35	Black takes on e4.	threat:f5f2
+NOTE	1k7rc95	36	The rook takes back. dxe4 was a touch stronger, but Polgar keeps it simple: more trades take the sting out of the Marshall.	good:d3e4
+NOTE	1k7rc95	37	Black trades rooks.	
+NOTE	1k7rc95	38	Take back with the pawn.	good:
+NOTE	1k7rc95	39	The queen takes the e4 pawn back, so material is level again.	
+NOTE	1k7rc95	40	Bc2 hits the queen on e4, and the bishop now points along the diagonal at h7, next to Black's king.	good:b3f7
+NOTE	1k7rc95	41	The queen steps back to e7, off the bishop's line.	
+NOTE	1k7rc95	42	Develop the last bishop with gain of time: it hits the queen.	good:c1e3,h2h4
+NOTE	1k7rc95	43	...f6 blocks the bishop, but it weakens Black's king, especially the light squares around g8.	threat:f6g5
+NOTE	1k7rc95	44	The bishop drops back to e3, where it aims at the queen's side and the b6 square.	good:
+NOTE	1k7rc95	45	Black develops the bishop to e6, guarding the light squares.	
+NOTE	1k7rc95	46	The queen comes to f3, eyeing the c6 pawn along the long diagonal.	good:
+NOTE	1k7rc95	47	The mistake. The queen goes to d7, right behind the d6 bishop. A rook on d1 will pin that bishop, and it can't hold.	
+NOTE	1k7rc95	48	Rd1! The rook pins the d6 bishop to the queen. Black can't keep it guarded for long.	good:
+NOTE	1k7rc95	49	Black adds the rook to defend d6.	
+NOTE	1k7rc95	50	Be4 hits the c6 pawn, which the queen guards. Bb6 at once was even stronger, but Be4 keeps Black tied up too.	good:e3b6
+NOTE	1k7rc95	51	Svidler grabs the a2 pawn. The bishop leaves e6, and the light squares around his king lose their guard.	
+NOTE	1k7rc95	52	Bb6 hits the rook on d8, the piece guarding the pinned bishop.	good:
+NOTE	1k7rc95	53	The bishop comes back to b3 to hit your rook on d1.	
+NOTE	1k7rc95	54	Rd4 steps away, still on the d-file and pressing on d6.	
+NOTE	1k7rc95	55	Black tries ...c5 to shift the rook, but the pawn can simply be taken.	
+NOTE	1k7rc95	56	Take the pawn: the bishop on c5 adds a second attacker on d6.	
+NOTE	1k7rc95	57	The queen goes to e6 to cover d5 and d6.	
+NOTE	1k7rc95	58	c4! shuts the b3 bishop out of the game, and Bxd6 and Bxh7+ are both threatened. Svidler resigned.	
+REVIEW	1k7rc95	30	Pushing the attack back	In the Marshall, Black's queen, knight and bishop all aim at your king. Rh4 hits the queen and makes it leave h3. Once the attack stalls, White's extra pawn begins to count.	e4h4:G,h4h3:R
+REVIEW	1k7rc95	34	Trade the attackers	The f6 knight was holding Black's attack together. Ne4 swaps it off. Every trade helps the side that is a pawn up and under attack.	d2e4:G,e4f6:B
+REVIEW	1k7rc95	48	The pin on the d-file	The queen on d7 stands right behind the bishop on d6. Rd1 pins the bishop, and your bishops and queen can join in against it and against h7.	a1d1:G,d1d6:R,c2h7:B
+REVIEW	1k7rc95	58	Shut in	c4 cuts the b3 bishop off from the rest of Black's pieces, and both Bxd6 and Bxh7+ are coming. Too many threats at once.	c3c4:G,e4h7:B,c5d6:B
+OUTRO	1k7rc95	Svidler resigned after 30.c4: he can't hold d6 and h7 at once. Polgar had taken the Marshall's pawn, survived the attack by pushing the queen back and trading pieces, and then won with a pin. Peter Leko won the tournament. That autumn Polgar became the first woman to play in a world championship tournament, in San Luis. She retired from competitive chess in 2014 and works to bring chess into schools.
