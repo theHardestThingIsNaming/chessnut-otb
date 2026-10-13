@@ -112,6 +112,8 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
     private var fen = Board().fen
     private var status = if (username == null) "Log in to play online." else "Signed in as $username"
     private var prompt: String? = null
+    /** The position before the lit move, which the board still shows until it's played. */
+    private var promptBefore: String? = null
     private var lastUci: String? = null
     private var selected: Int? = null
     private var finished: String? = null
@@ -675,6 +677,8 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
         playing = true
         lastUci = next.moves.lastOrNull()
         val terminal = !next.live
+        // A game just started or resumed: check the board once, as it may never move again unprompted.
+        if (previous == 0 && physical()) app.latestPlacement?.let { onPhysical(it) }
         val theirs = opponentJustMoved(next)
         if (next.moves.size > previous && next.moves.size > spokenMoves && theirs) {
             val uci = next.moves.last()
@@ -684,6 +688,7 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
             if (app.phoneSounds) speech.say(san, mate = mate)
             if (!terminal && physical()) {
                 prompt = uci
+                promptBefore = LichessPlay.position("startpos", next.moves.dropLast(1)).first
                 status = "Play $san on the board"
                 light(uci)
             }
@@ -787,12 +792,28 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
         }
         if (rejected != null) return
         if (prompt != null) {
+            val before = promptBefore
+            if (before != null && PlayPosition.matches(before, placement)) {
+                // Waiting for the lit move, and the board is right otherwise: put the prompt back if a mismatch was shown.
+                if (mismatchShown) {
+                    mismatchShown = false
+                    status = LichessPlay.position("startpos", table?.moves.orEmpty()).second.lastOrNull()?.let { "Play $it on the board" } ?: "Play the lit move"
+                    light(prompt)
+                    publish()
+                }
+                return
+            }
             if (placement != ignorePlacement && PlayPosition.uciMatching(fen, placement) != null) {
                 ignorePlacement = placement
                 status = "Play the lit move"
                 publish()
                 if (app.phoneSounds) sounds.illegal()
+                return
             }
+            // Neither the position before the lit move nor after it, such as a king and queen swapped
+            // in the setup: name the squares, against whichever position the board is closer to.
+            val against = listOfNotNull(before, fen).minBy { PlayPosition.differences(it, placement).size }
+            if (BoardRead.read(against, placement) is BoardReading.Unexpected) hintMismatch(placement, against)
             return
         }
         if (thinking) return
@@ -809,11 +830,13 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
      * The board shows neither the game nor a legal move. A piece held in the
      * hand looks the same for a moment, so wait before naming the squares.
      */
-    private fun hintMismatch(placement: String) {
+    private fun hintMismatch(placement: String, against: String = fen) {
+        val at = fen
         mismatchJob = viewModelScope.launch {
             delay(BoardRead.MISMATCH_MS)
-            if (!playing || finished != null || prompt != null) return@launch
-            val wrong = PlayPosition.differences(fen, placement)
+            // A move arrived meanwhile: the next reading decides.
+            if (!playing || finished != null || fen != at) return@launch
+            val wrong = PlayPosition.differences(against, placement)
             if (wrong.isEmpty() || wrong.size > BoardRead.MAX_LIT) return@launch
             mismatchShown = true
             status = "The board doesn't match the game. Check ${wrong.joinToString(", ")}."

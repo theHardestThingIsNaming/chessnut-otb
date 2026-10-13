@@ -131,6 +131,8 @@ Use the emulator (`pixel_api36`, `./scripts/launch-emulator.sh`) when the phone 
 
 Every screen that plays on the board reads it the same way (`BoardRead`, core, tested in `BoardReadTest`): a settled reading is the same position, a legal move, a piece in the hand (pieces lifted, nothing new put down: a move under way, never a mistake), or unexpected (castling half done, a piece on the wrong square). An unexpected board must stay that way for two seconds (`BoardRead.MISMATCH_MS`) before its squares are named and lit, at most eight (`MAX_LIT`). Lights go through `BoardLights`: the newest request wins and a stalled radio can't hold things up. Used by Train/Survival/Punish (`PlayViewModel`), online play (`OnlineViewModel`) and master games. The over-the-board recorder (`LiveGameTracker`) already had the same piece-in-the-hand rule and keeps its own lights. Train now also names a mismatched board, as online play did; it used to stay silent.
 
+Online play checks the board when a game starts or resumes, and names a wrong board while an opponent's move is lit (comparing against the position before or after that move, whichever is closer). Before, a setup mistake (a rated game, 2026-10-13: Black's king and queen swapped) left the lit move pending forever with no message, and your own move was then set aside. Train, Survival and Punish already wait for a correct setup before the first move.
+
 ## Master games
 
 Built 2026-10-12, Scotch only, for review before spreading to other openings.
