@@ -417,8 +417,8 @@ private fun statusLine(live: LiveSnapshot): String = when (live.end) {
     LiveEnd.WhiteFlag, LiveEnd.BlackFlag -> "Flag. ${live.result}"
     null -> when {
         live.ended -> "Game over ${live.result}"
-        live.started && live.sanMoves.isEmpty() -> "White to move"
-        live.started -> moveLine(live.sanMoves)
+        // Whose move, short, so the opening beside it has the room.
+        live.started -> if (live.toMoveWhite) "White to move" else "Black to move"
         else -> if (live.control.untimed) "Set up the starting position to start." else "Set up the starting position to start ${live.control.label}."
     }
 }
@@ -520,15 +520,6 @@ private fun PlayerStrip(
         }
     }
 }
-
-/** The last three moves, "12. Nf3 Nc6 13. Bb5", so the newest is always in view. */
-private fun moveLine(sans: List<String>): String = buildString {
-    val from = (sans.size - 6).coerceAtLeast(0).let { it - it % 2 }
-    for (i in from until sans.size) {
-        if (i % 2 == 0) append("${i / 2 + 1}. ")
-        append(sans[i]).append(' ')
-    }
-}.trim()
 
 @Composable
 private fun LogView(lines: List<String>, modifier: Modifier) {
