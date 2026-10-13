@@ -64,7 +64,7 @@ sealed class TrainerResult {
 object TrainerGate {
     /** A book move always stands. Anything else has to be good or best. */
     fun judge(book: Boolean, playedBest: Boolean, winDrop: Double): TrainerResult =
-        if (book) TrainerResult.Book else TrainerResult.Judged(AccuracyCalculator.classify(winDrop, playedBest))
+        if (book) TrainerResult.Book else TrainerResult.Judged(AccuracyCalculator.classify(winDrop, playedBest, steps = AccuracyCalculator.TRAINING))
 }
 
 /**

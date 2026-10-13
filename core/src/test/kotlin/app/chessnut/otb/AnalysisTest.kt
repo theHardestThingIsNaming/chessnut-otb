@@ -144,10 +144,26 @@ class AnalysisTest {
     fun soundSacrificesAreBrilliantAndCloseMovesAreExcellent() {
         assertEquals(MoveClass.Best, AccuracyCalculator.classify(0.0, playedBest = true))
         assertEquals(MoveClass.Brilliant, AccuracyCalculator.classify(0.0, playedBest = true, sacrifice = true))
-        assertEquals(MoveClass.Brilliant, AccuracyCalculator.classify(8.0, playedBest = false, sacrifice = true))
+        assertEquals(MoveClass.Brilliant, AccuracyCalculator.classify(1.5, playedBest = false, sacrifice = true))
+        // A sacrifice that costs more than a whisker is no longer brilliant.
+        assertEquals(MoveClass.Inaccuracy, AccuracyCalculator.classify(8.0, playedBest = false, sacrifice = true))
+        // Throwing a knight away in a lost position (Black at 19%, then 14%, 2026-10-13) is not brilliant.
+        assertEquals(MoveClass.Good, AccuracyCalculator.classify(4.6, playedBest = false, sacrifice = true, winBefore = 18.7, winAfter = 14.1))
+        assertEquals(MoveClass.Best, AccuracyCalculator.classify(0.0, playedBest = true, sacrifice = true, winBefore = 20.0, winAfter = 20.0))
+        // Nor a sacrifice from a position already won.
+        assertEquals(MoveClass.Best, AccuracyCalculator.classify(0.0, playedBest = true, sacrifice = true, winBefore = 97.0, winAfter = 97.0))
         assertEquals(MoveClass.Blunder, AccuracyCalculator.classify(40.0, playedBest = false, sacrifice = true))
         assertEquals(MoveClass.Excellent, AccuracyCalculator.classify(1.0, playedBest = false))
-        assertEquals(MoveClass.Good, AccuracyCalculator.classify(6.0, playedBest = false))
+        assertEquals(MoveClass.Good, AccuracyCalculator.classify(4.0, playedBest = false))
+        // Lichess's steps for games (0.1 / 0.2 / 0.3 of winning chances, so 5 / 10 / 15 per cent):
+        // 8.Nf3 in a game of 2026-10-13 dropped 17.9 and is a blunder.
+        assertEquals(MoveClass.Inaccuracy, AccuracyCalculator.classify(5.4, playedBest = false))
+        assertEquals(MoveClass.Mistake, AccuracyCalculator.classify(11.9, playedBest = false))
+        assertEquals(MoveClass.Blunder, AccuracyCalculator.classify(17.9, playedBest = false))
+        // Training stays twice as forgiving.
+        val training = AccuracyCalculator.TRAINING
+        assertEquals(MoveClass.Good, AccuracyCalculator.classify(6.0, playedBest = false, steps = training))
+        assertEquals(MoveClass.Inaccuracy, AccuracyCalculator.classify(17.9, playedBest = false, steps = training))
 
         val gambit = "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"
         assertTrue(AccuracyCalculator.isSacrifice(gambit, "f2f4"))

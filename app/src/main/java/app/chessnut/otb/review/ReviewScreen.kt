@@ -570,11 +570,11 @@ private fun classColor(c: MoveClass): Color = when (c) {
 }
 
 /**
- * The move table colours only the moves that change the game: brilliant ones, mistakes and blunders.
- * Good and slightly inexact moves stay plain, so the turning points stand out. Inaccuracies keep their "?!".
+ * The move table colours the engine's top moves, brilliant ones, mistakes and blunders. Excellent,
+ * good and slightly inexact moves stay plain, so the table stays calm. Inaccuracies keep their "?!".
  */
 private fun tableColor(c: MoveClass?): Color = when (c) {
-    MoveClass.Brilliant, MoveClass.Mistake, MoveClass.Blunder -> classColor(c)
+    MoveClass.Best, MoveClass.Brilliant, MoveClass.Mistake, MoveClass.Blunder -> classColor(c)
     else -> Palette.Text
 }
 

@@ -133,6 +133,15 @@ Every screen that plays on the board reads it the same way (`BoardRead`, core, t
 
 Online play checks the board when a game starts or resumes, and names a wrong board while an opponent's move is lit (comparing against the position before or after that move, whichever is closer). Before, a setup mistake (a rated game, 2026-10-13: Black's king and queen swapped) left the lit move pending forever with no message, and your own move was then set aside. Train, Survival and Punish already wait for a correct setup before the first move.
 
+## Move marks
+
+Fixed 2026-10-13, from a game where 17...gxf5 (dropping the h5 knight) was marked brilliant and the rest of the table was grey:
+- Inaccuracy / mistake / blunder now use Lichess's steps, 5 / 10 / 15 points of win percentage (Lichess's 0.1 / 0.2 / 0.3 are in winning chances, -1 to 1). The app had used 10 / 20 / 30, twice as forgiving, so real blunders showed as "?!". Train keeps the forgiving steps for passing a move (`AccuracyCalculator.TRAINING`). The mistakes deck takes mistakes and blunders from games, so it now finds more.
+- Brilliant needs a sacrifice that is the engine's move or within 2 of it, leaving the mover at 30% or better, from a position not already above 90%. Win chances flatten out in lost positions, so the old "drop under 10" let a piece thrown away there count.
+- The move table colours the engine's top moves green as well as brilliant moves, mistakes and blunders.
+
+An illegal move on the board sounds at once (phone and board beeper, per the sound settings) in online play and Train/Survival/Punish: `BoardRead.illegalMove`, which leaves out halves of legal moves (castling king first, en passant, a pawn on the last rank before promotion).
+
 ## Speed
 
 The openings list took 10–15 seconds after a cold start on the phone (2026-10-13). Fixed: the opening book is indexed (replies by position, lines by name) and read as written instead of replayed (`OpeningBookTest` checks every line against the replay); lines are ranked by popularity with each line replayed once, not once per comparison; each game's accuracies are kept in `accuracy.tsv` until its analysis changes (`AccuracyCache`); a refresh that a newer one replaced stops early. Now about 5 seconds from a cold start of the debug build, starting at launch. A release build would be faster still (no debug JIT), but it's signed differently, so switching means reinstalling.

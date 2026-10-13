@@ -54,4 +54,27 @@ class BoardReadTest {
         assertIs<BoardReading.Unexpected>(scrambled)
         assertEquals(emptyList(), BoardRead.lightsFor(scrambled))
     }
+
+    @Test
+    fun anIllegalMoveIsNamedButHalfMovesAreNot() {
+        val start = fenAfter("")
+        // A rook through its own pawn, a bishop through one, a pawn three squares.
+        assertEquals("e2e5", BoardRead.illegalMove(start, "rnbqkbnr/pppppppp/8/4P3/8/8/PPPP1PPP/RNBQKBNR"))
+        assertEquals("f1c4", BoardRead.illegalMove(start, "rnbqkbnr/pppppppp/8/8/2B5/8/PPPPPPPP/RNBQK1NR"))
+        // Legal, the same position, or the other side's piece: not an illegal move.
+        assertEquals(null, BoardRead.illegalMove(start, board(fenAfter("e4"))))
+        assertEquals(null, BoardRead.illegalMove(start, board(start)))
+        assertEquals(null, BoardRead.illegalMove(start, "rnbqkbnr/pppp1ppp/8/4p3/8/8/PPPPPPPP/RNBQKBNR"))
+        // A piece lifted, nothing put down: a move under way.
+        assertEquals(null, BoardRead.illegalMove(start, "rnbqkbnr/pppppppp/8/8/8/8/PPPP1PPP/RNBQKBNR"))
+        // Castling, king first: the king's step alone is not illegal.
+        val castle = fenAfter("e4 e5 Nf3 Nc6 Bc4 Bc5")
+        assertEquals(null, BoardRead.illegalMove(castle, "r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQ2KR"))
+        // En passant, the pawn moved before the captured pawn is lifted.
+        val ep = fenAfter("e4 a6 e5 d5")
+        assertEquals(null, BoardRead.illegalMove(ep, "rnbqkbnr/1pp1pppp/p2P4/3pP3/8/8/PPPP1PPP/RNBQKBNR".replace("3pP3", "3p4")))
+        // A pawn set on the last rank before it becomes a queen.
+        val promote = "8/4P3/8/8/8/8/k7/4K3 w - - 0 1"
+        assertEquals(null, BoardRead.illegalMove(promote, "4P3/8/8/8/8/8/k7/4K3"))
+    }
 }

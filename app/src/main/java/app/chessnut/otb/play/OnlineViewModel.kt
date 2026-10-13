@@ -819,11 +819,25 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
         if (thinking) return
         val uci = if (table?.userToMove == true) PlayPosition.uciMatching(fen, placement) else null
         if (uci == null) {
+            if (table?.userToMove == true) BoardRead.illegalMove(fen, placement)?.let { illegal(it, placement) }
             // A piece in the hand is a move under way, never a mistake.
             if (BoardRead.read(fen, placement) is BoardReading.Unexpected) hintMismatch(placement)
             return
         }
         send(uci)
+    }
+
+    /** The board reading that last sounded as illegal, so holding it there doesn't sound again. */
+    private var illegalShown: String? = null
+
+    /** An illegal move on the board: say so at once, on the phone and the board, as each allows. */
+    private fun illegal(uci: String, placement: String) {
+        if (placement == illegalShown) return
+        illegalShown = placement
+        status = "That move isn't legal. Put the piece back on ${uci.take(2)}."
+        publish()
+        if (app.phoneSounds) sounds.illegal()
+        if (app.boardSounds) viewModelScope.launch(Dispatchers.IO) { runCatching { app.boardSession?.beep(240, 220) } }
     }
 
     /**

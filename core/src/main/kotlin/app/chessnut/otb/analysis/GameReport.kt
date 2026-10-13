@@ -33,12 +33,20 @@ data class GameReport(val whiteAccuracy: Double?, val blackAccuracy: Double?, va
  * Lichess, not identical: depth and engine build differ.
  *
  * Classification uses the mover's win-percentage drop. A sound sacrifice
- * (the opponent can win material they could not win before, and the move is
- * still best, excellent, or good) is brilliant. Otherwise the engine's move
- * is best, a drop of 2 or less is excellent, then good, and 10 / 20 / 30
- * are an inaccuracy, a mistake, and a blunder.
+ * (the opponent can win material they could not win before, the move is best
+ * or within 2 of it, and the mover is neither losing after it nor already
+ * winning outright before it) is brilliant. Otherwise the engine's move
+ * is best, a drop of 2 or less is excellent, then good, and 5 / 10 / 15
+ * are an inaccuracy, a mistake, and a blunder: Lichess's 0.1 / 0.2 / 0.3 in
+ * winning chances, which run from -1 to 1, so twice the win percentage.
  */
 object AccuracyCalculator {
+    /** A brilliant move leaves the mover at least this likely to win (not lost)... */
+    const val BRILLIANT_MIN_AFTER = 30.0
+
+    /** ...and isn't played from a position already this won, where sacrifices come easy. */
+    const val BRILLIANT_MAX_BEFORE = 90.0
+
     fun moveAccuracy(winBefore: Double, winAfter: Double): Double {
         if (winAfter >= winBefore) return 100.0
         val drop = winBefore - winAfter
@@ -46,14 +54,25 @@ object AccuracyCalculator {
         return (raw + 1).coerceIn(0.0, 100.0)
     }
 
-    fun classify(winDrop: Double, playedBest: Boolean, sacrifice: Boolean = false): MoveClass {
-        val sound = playedBest || winDrop < 10
+    /** Win-percentage drops for an inaccuracy, a mistake and a blunder. */
+    data class Steps(val inaccuracy: Double, val mistake: Double, val blunder: Double)
+
+    /** Lichess's steps, for reviewing games. */
+    val LICHESS = Steps(5.0, 10.0, 15.0)
+
+    /** Twice as forgiving, for judging moves in training, where a fair move should pass. */
+    val TRAINING = Steps(10.0, 20.0, 30.0)
+
+    fun classify(winDrop: Double, playedBest: Boolean, sacrifice: Boolean = false, winBefore: Double = 50.0, winAfter: Double = 50.0, steps: Steps = LICHESS): MoveClass {
+        // Win chances flatten out in a lost position, so a piece thrown away there can cost only a few
+        // percent: a sacrifice must be all but the engine's choice, and must leave the mover in the game.
+        val sound = (playedBest || winDrop <= 2.0) && winAfter >= BRILLIANT_MIN_AFTER && winBefore <= BRILLIANT_MAX_BEFORE
         if (sacrifice && sound) return MoveClass.Brilliant
         if (playedBest) return MoveClass.Best
         return when {
-            winDrop >= 30.0 -> MoveClass.Blunder
-            winDrop >= 20.0 -> MoveClass.Mistake
-            winDrop >= 10.0 -> MoveClass.Inaccuracy
+            winDrop >= steps.blunder -> MoveClass.Blunder
+            winDrop >= steps.mistake -> MoveClass.Mistake
+            winDrop >= steps.inaccuracy -> MoveClass.Inaccuracy
             winDrop <= 2.0 -> MoveClass.Excellent
             else -> MoveClass.Good
         }
@@ -101,6 +120,8 @@ object AccuracyCalculator {
                     before - after,
                     best != null && best == played,
                     sacrifice = played != null && isSacrifice(positions[ply].fen, played),
+                    winBefore = before,
+                    winAfter = after,
                 ),
                 bestUci = best,
             )

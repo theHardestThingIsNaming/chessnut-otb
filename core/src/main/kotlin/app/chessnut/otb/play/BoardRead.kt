@@ -26,6 +26,46 @@ object BoardRead {
      */
     const val MISMATCH_MS = 2_000L
 
+    /**
+     * The board shows an illegal move by the side to move: one of its pieces gone from one square and
+     * on another (empty, or the opponent's), where no legal move puts it. Returned as "e2e5". Halves of
+     * legal moves don't count: the king's step in castling, a pawn's step in an en passant capture,
+     * and a pawn set on the last rank before it's swapped for the new piece.
+     */
+    fun illegalMove(fen: String, placement: String): String? {
+        if (PlayPosition.uciMatching(fen, placement) != null) return null
+        val want = squares(fen)
+        val have = squares(placement)
+        val changed = (0 until 64).filter { want[it] != have[it] }
+        if (changed.size != 2) return null
+        val white = fen.split(' ').getOrNull(1) != "b"
+        fun mine(c: Char) = c != '.' && c.isUpperCase() == white
+        val from = changed.firstOrNull { mine(want[it]) && have[it] == '.' } ?: return null
+        val to = changed.first { it != from }
+        val piece = want[from]
+        if (have[to] != piece || mine(want[to])) return null
+        val uci = name(from) + name(to)
+        val pawn = piece.lowercaseChar() == 'p'
+        val king = piece.lowercaseChar() == 'k'
+        if (king && from / 8 == to / 8 && kotlin.math.abs(from % 8 - to % 8) == 2) return null
+        if (pawn && name(to) == fen.split(' ').getOrNull(3)) return null
+        if (pawn && (to / 8 == 0 || to / 8 == 7)) return null
+        return uci
+    }
+
+    private fun name(i: Int) = "${'a' + i % 8}${8 - i / 8}"
+
+    private fun squares(fen: String): CharArray {
+        val out = CharArray(64) { '.' }
+        var i = 0
+        for (c in fen.substringBefore(' ')) when {
+            c == '/' -> continue
+            c.isDigit() -> i += c - '0'
+            i < 64 -> out[i++] = c
+        }
+        return out
+    }
+
     /** At most this many wrong squares are lit; more would only confuse. */
     const val MAX_LIT = 8
 

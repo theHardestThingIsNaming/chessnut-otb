@@ -1552,6 +1552,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     /** Names the squares when the board stays unlike the game, as online play does. */
     private var mismatchJob: Job? = null
     private var mismatchShown = false
+    /** The board reading that last sounded as an illegal move, so holding it there doesn't sound again. */
+    private var illegalShown: String? = null
 
     private fun hintMismatch(placement: String) {
         mismatchJob = viewModelScope.launch {
@@ -1647,6 +1649,16 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         val uci = PlayPosition.uciMatching(fen, placement)
         if (uci == null) {
             note("board frame is not a legal move")
+            BoardRead.illegalMove(fen, placement)?.let { illegal ->
+                if (placement != illegalShown) {
+                    illegalShown = placement
+                    note("board shows the illegal move $illegal")
+                    status = "That move isn't legal. Put the piece back on ${illegal.take(2)}."
+                    publish()
+                    if (app.phoneSounds) sounds.illegal()
+                    viewModelScope.launch { if (app.boardSounds) runCatching { app.boardSession?.beep(240, 220) } }
+                }
+            }
             // A piece in the hand is a move under way. Anything else, if it stays, gets its squares named.
             if (BoardRead.read(fen, placement) is BoardReading.Unexpected) hintMismatch(placement)
             return
