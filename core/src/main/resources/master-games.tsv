@@ -600,3 +600,58 @@ REVIEW	1szhd96	44	The trap	Black's rook on e6 is guarded only by the f7 pawn, an
 REVIEW	1szhd96	48	A loose knight	With the f-pawn gone, the knight on f6 has lost a guard. Your queen hits it, the rook can back the queen up from d6, and the bishop can pin it from e5.	e6f6:R,d2d6:G,h2e5:G
 REVIEW	1szhd96	54	The pin	Be5 pins the knight to the king on g7. It can't move, and Black can't defend it enough times. Black resigned a move later.	e5f6:G,e6f6:B
 OUTRO	1szhd96	Timofeev resigned after 29.Qg4: the f6 knight is pinned and lost. After twenty-two quiet moves, one natural capture, 22...exf4, fell into a trap. A London lesson: when your opponent's piece is guarded by only one pawn, look for a pawn break that pulls that pawn away.
+GAME	1twuys1	Vienna Game	w	e4 e5 Nc3 Nc6 f4 exf4 Nf3 g5 Bc4 g4 O-O gxf3 Qxf3 Ne5 Qxf4	Lu Shanglei	Urii Eliseev	2011	Dvorkovich Cup, Moscow	1-0	15	55	e4 e5 Nc3 Nc6 f4 exf4 Nf3 g5 Bc4 g4 O-O gxf3 Qxf3 Ne5 Qxf4 Qf6 Qg3 Qg7 Qxg7 Bxg7 Bb3 d6 Nb5 Kd8 d4 Nd7 Rxf7 Bh6 Rf3 Bxc1 Rxc1 Ne7 Rc3 Nf6 Re1 Bd7 Nxc7 Rc8 e5 Rxc7 exd6 Rxc3 dxe7+ Ke8 bxc3 Bc6 Re5 Nd7 Re2 Nf6 c4 b6 Re6 Bd7 Rxf6 Kxe7 Rf4 a5 a4 Rc8 Re4+ Kf6 Re5 Be6 c5	Dvorkovich Cup, Moscow, 2011, a tournament for the strongest young players. Lu Shanglei of China, 16, against Urii Eliseev of Russia, 15. Your line is the Hamppe–Muzio Gambit, one of the wildest in the Vienna: White gives a whole knight on f3 for a lead in development and the open f-file. Both players make mistakes in this game, which makes it a good one to learn from. Play your line, then find Lu's moves.	2473	2433
+NOTE	1twuys1	15	...Qf6 offers to trade queens. A piece up, Black is happy to take the attack's sting out.	threat:f6f4
+NOTE	1twuys1	16	Lu dodges the trade with Qg3, but it's a mistake: Black simply offers it again. Qxf6 at once was better.	good:f4f6
+NOTE	1twuys1	17	The queen comes to g7, offering the trade a second time.	threat:f8c5
+NOTE	1twuys1	18	Now the trade can't be avoided.	good:
+NOTE	1twuys1	19	The bishop takes back. Black is a piece up for two pawns, and with queens off, White's attack is gone.	threat:e5c4
+NOTE	1twuys1	20	The bishop drops back to b3, out of reach of ...Nxc4.	good:c3b5,c3d5
+NOTE	1twuys1	21	A mistake that gives the edge back. ...c5! was strong, with ...c4 to hunt your bishop. Now White gets time to bring every piece out.	
+NOTE	1twuys1	22	The knight jumps to b5, eyeing c7 and d6.	good:d2d4
+NOTE	1twuys1	23	The king steps to d8 to guard c7.	
+NOTE	1twuys1	24	d4 kicks the e5 knight and opens the c1 bishop.	good:
+NOTE	1twuys1	25	The knight drops back to d7.	
+NOTE	1twuys1	26	Rxf7! The rook takes the f7 pawn. You're winning back material, and the rook is on the seventh rank.	good:f1f3
+NOTE	1twuys1	27	...Bh6 offers to trade off your c1 bishop.	
+NOTE	1twuys1	28	The rook steps back to f3.	good:g2g4,b5c3,h2h3
+NOTE	1twuys1	29	Black trades bishops.	threat:c1b2
+NOTE	1twuys1	30	Take back with the rook: it comes to c1, ready for the c-file.	good:
+NOTE	1twuys1	31	The last knight comes out to e7.	
+NOTE	1twuys1	32	Rc3 brings the rook to the c-file, behind the c7 target.	good:f3f7
+NOTE	1twuys1	33	The knight comes to f6, hitting e4.	threat:f6e4
+NOTE	1twuys1	34	The rook comes to e1, guarding e4.	good:b5c7,e4e5
+NOTE	1twuys1	35	The bishop develops to d7, hitting your b5 knight.	threat:d7b5
+NOTE	1twuys1	36	Nxc7! The knight takes the c7 pawn. You now have three pawns for the knight, and your pieces are more active.	good:
+NOTE	1twuys1	37	The rook comes to c8, hitting the c7 knight.	threat:c8c7
+NOTE	1twuys1	38	e5! The pawn hits d6 and f6 and opens the e-file. White uses tactics to keep the extra pawns.	good:
+NOTE	1twuys1	39	Black takes the c7 knight.	threat:d6e5
+NOTE	1twuys1	40	Take on d6, hitting the rook and the knight.	good:
+NOTE	1twuys1	41	Black trades on c3.	
+NOTE	1twuys1	42	dxe7+ takes the knight with check.	good:
+NOTE	1twuys1	43	The king steps to e8.	threat:c3b3
+NOTE	1twuys1	44	Take back on c3. White has a passed pawn on e7, deep in Black's position.	good:
+NOTE	1twuys1	45	The bishop comes to c6.	
+NOTE	1twuys1	46	The rook comes to e5.	good:e1e6,b3c4
+NOTE	1twuys1	47	The knight goes to d7, hitting the rook.	threat:d7e5
+NOTE	1twuys1	48	The rook drops back to e2, still guarding e7.	good:e5e3,e5e6
+NOTE	1twuys1	49	The knight goes back to f6.	
+NOTE	1twuys1	50	c4 gains space and prepares d5.	good:b3c4,e2e6
+NOTE	1twuys1	51	The decisive mistake. ...b6 takes the b7 pawn off the c6 bishop's guard. Now the bishop and the f6 knight are both loose.	
+NOTE	1twuys1	52	Re6! The rook forks the c6 bishop and the f6 knight.	good:
+NOTE	1twuys1	53	The bishop runs to d7.	threat:d7e6
+NOTE	1twuys1	54	Rxf6 wins the knight. White is a piece up.	good:
+NOTE	1twuys1	55	The king takes the e7 pawn.	
+NOTE	1twuys1	56	The rook comes back to f4.	
+NOTE	1twuys1	57	...a5 stops b4 ideas and gains space.	
+NOTE	1twuys1	58	a4 fixes the a5 pawn.	
+NOTE	1twuys1	59	The rook comes to c8.	
+NOTE	1twuys1	60	Re4+ checks the king.	
+NOTE	1twuys1	61	The king steps to f6.	
+NOTE	1twuys1	62	The rook comes to e5, cutting off the king.	
+NOTE	1twuys1	63	The bishop comes to e6, offering a trade.	
+NOTE	1twuys1	64	c5 breaks up Black's queen's side pawns and opens lines for your extra piece. Black resigned.	
+REVIEW	1twuys1	21	The chance	Black is a piece up. ...c5 and ...c4 would hunt your b3 bishop, and White's game would be lost. Instead, ...d6 gives White time to bring the knight and rook into play.	c7c5:R
+REVIEW	1twuys1	26	Seventh rank	The rook takes f7 and lands on the seventh rank. With the queens off, an active rook is worth a lot.	f1f7:G
+REVIEW	1twuys1	52	The fork	...b6 left the c6 bishop without a guard. Re6 hits it and the f6 knight at once, and Black can only save one.	e2e6:G,e6c6:R,e6f6:R
+OUTRO	1twuys1	Black resigned after 33.c5: a piece down, with White's pawns running. Lu Shanglei became World Junior Champion in 2014. Urii Eliseev won the world under-16 title in 2012 and became a grandmaster at 17. He died in Moscow in 2016, aged 20, in a fall while climbing between balconies. Daniil Dubov, his friend, set up a memorial tournament in his name the following year.
