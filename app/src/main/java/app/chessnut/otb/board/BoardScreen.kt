@@ -1,5 +1,7 @@
 package app.chessnut.otb.board
 
+import androidx.compose.ui.text.style.TextAlign
+import app.chessnut.otb.openings.OpeningBook
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -355,15 +357,29 @@ private fun LiveGamePanel(
                     modifier = Modifier.size(boardSide).align(Alignment.CenterHorizontally),
                     lastUci = live.lastUci,
                 )
-                Text(
-                    statusLine(live),
-                    color = if (live.ended) Palette.Accent else Palette.TextMuted,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = if (live.ended) FontWeight.Bold else FontWeight.Normal,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = strips,
-                )
+                // The game so far on the left, the opening it's in on the right.
+                val opening = remember(live.sanMoves) { OpeningBook.view(live.sanMoves).name }
+                Row(strips.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        statusLine(live),
+                        color = if (live.ended) Palette.Accent else Palette.TextMuted,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = if (live.ended) FontWeight.Bold else FontWeight.Normal,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    opening?.let {
+                        Text(
+                            it,
+                            color = Palette.Accent,
+                            style = MaterialTheme.typography.bodyMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                }
                 PlayerStrip(
                     name = "White",
                     millis = live.whiteMillis.takeUnless { live.control.untimed },
@@ -467,15 +483,15 @@ private fun PlayerStrip(
 ) {
     BoxWithConstraints(modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
         // Slim rows: the clock stays big enough to read across the table, the buttons take no more than they need.
-        val rowHeight = maxHeight.coerceIn(MIN_STRIP, 100.dp)
+        val rowHeight = maxHeight.coerceIn(MIN_STRIP, 84.dp)
         val clockSize = with(LocalDensity.current) { (rowHeight * 0.42f).toSp() }
         Row(
             Modifier.fillMaxWidth().height(rowHeight).then(if (facingAway) Modifier.rotate(180f) else Modifier),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Column(Modifier.weight(1.6f).fillMaxHeight()) {
-                Text(name, color = Palette.TextMuted, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+            // No "White"/"Black" label: which clock is whose is plain from where it sits.
+            Column(Modifier.weight(1.6f).fillMaxHeight().semantics { contentDescription = "$name clock" }) {
                 if (millis != null) {
                     ClockFace(
                         millis,
@@ -505,12 +521,14 @@ private fun PlayerStrip(
     }
 }
 
+/** The last three moves, "12. Nf3 Nc6 13. Bb5", so the newest is always in view. */
 private fun moveLine(sans: List<String>): String = buildString {
-    sans.forEachIndexed { i, san ->
+    val from = (sans.size - 6).coerceAtLeast(0).let { it - it % 2 }
+    for (i in from until sans.size) {
         if (i % 2 == 0) append("${i / 2 + 1}. ")
-        append(san).append(' ')
+        append(sans[i]).append(' ')
     }
-}
+}.trim()
 
 @Composable
 private fun LogView(lines: List<String>, modifier: Modifier) {
