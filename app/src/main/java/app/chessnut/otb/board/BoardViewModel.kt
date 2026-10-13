@@ -1,5 +1,6 @@
 package app.chessnut.otb.board
 
+import app.chessnut.otb.play.BoardRead
 import android.app.Application
 import android.Manifest
 import android.content.pm.PackageManager
@@ -208,19 +209,29 @@ class BoardViewModel(application: Application) : AndroidViewModel(application) {
                 if (app.playEngaged) return@collect
                 // A slide reports every square the piece crosses. Wait until it stops.
                 settleJob?.cancel()
+                illegalJob?.cancel()
                 settleJob = viewModelScope.launch {
                     delay(BOARD_SETTLE_MS)
                     if (app.playEngaged) return@launch
                     val now = System.currentTimeMillis()
                     val event = tracker.onPlacement(placement, now)
                     publishLive(now)
-                    cue(event)
                     when (event) {
                         is LiveEvent.Finished -> persistLive(event)
                         is LiveEvent.Move -> log.line("live ${event.san}")
-                        is LiveEvent.Illegal -> log.line("live illegal")
+                        is LiveEvent.Illegal -> {
+                            // A capture passes through boards like this (the taken piece nudged aside
+                            // as the queen lands), so only a board that stays wrong gets the beep.
+                            illegalJob = viewModelScope.launch {
+                                delay(BoardRead.MISMATCH_MS)
+                                log.line("live illegal")
+                                cue(event)
+                            }
+                            return@launch
+                        }
                         LiveEvent.Ignored -> Unit
                     }
+                    cue(event)
                 }
             }
         }
@@ -396,6 +407,9 @@ class BoardViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+
+    /** A wrong board waiting to be named, cancelled by the next reading. */
+    private var illegalJob: Job? = null
 
     private fun cue(event: LiveEvent) {
         when (event) {
