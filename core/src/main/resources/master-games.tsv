@@ -264,3 +264,161 @@ REVIEW	1k7rc95	34	Trade the attackers	The f6 knight was holding Black's attack t
 REVIEW	1k7rc95	48	The pin on the d-file	The queen on d7 stands right behind the bishop on d6. Rd1 pins the bishop, and your bishops and queen can join in against it and against h7.	a1d1:G,d1d6:R,c2h7:B
 REVIEW	1k7rc95	58	Shut in	c4 cuts the b3 bishop off from the rest of Black's pieces, and both Bxd6 and Bxh7+ are coming. Too many threats at once.	c3c4:G,e4h7:B,c5d6:B
 OUTRO	1k7rc95	Svidler resigned after 30.c4: he can't hold d6 and h7 at once. Polgar had taken the Marshall's pawn, survived the attack by pushing the queen back and trading pieces, and then won with a pin. Peter Leko won the tournament. That autumn Polgar became the first woman to play in a world championship tournament, in San Luis. She retired from competitive chess in 2014 and works to bring chess into schools.
+GAME	0022h2o	Italian Game	w	e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 d5 exd5 Nxd5 Nxf7 Kxf7 Qf3+ Ke6 Nc3	Alexei Shirov	Sarunas Sulskis	2014	Olympiad, Tromsø	1-0	15	37	e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 d5 exd5 Nxd5 Nxf7 Kxf7 Qf3+ Ke6 Nc3 Nb4 a3 Nxc2+ Kd1 Nxa1 Nxd5 Kd6 d4 Be6 Re1 b5 Nb4 bxc4 Qc6+ Ke7 Bg5+ Kf7 Bxd8 Rxd8 Qxc7+ Rd7 Qxe5 Rd6 d5 Bd7 Qf4+ Kg8 Qxc4 a5 Nd3 a4 Nc5 h5 Nxd7 Rxd7 d6+ Kh7 Re6 g6 Rxg6	Chess Olympiad, Tromsø, 2014: Latvia against Lithuania, top board. Alexei Shirov, born in Riga, is famous for wild attacking chess; his best games are collected in a book called Fire on Board. In 1998 he beat Kramnik to earn a world title match with Kasparov, a match that was never played. Here, against Lithuania's Sarunas Sulskis, he goes for the Fried Liver, your line: a knight sacrificed on f7 to drag Black's king into the open. Play your line, then find Shirov's moves.	2709	2544
+NOTE	0022h2o	15	Black's knight jumps to b4. It threatens ...Nxc2+, forking your king and the rook on a1, and it can drop back to defend d5.	
+NOTE	0022h2o	16	a3!? Shirov invites the fork. The engine prefers to castle, keeping things simple, but a3 is the wild old line: if Black takes the rook, the knight ends up stranded in the corner and Black's king is still in the middle.	good:c4b3,e1g1
+NOTE	0022h2o	17	Black takes the bait: the knight checks and forks king and rook.	
+NOTE	0022h2o	18	The only move: the king steps to d1. Ke2 or Kf1 would be much worse.	good:
+NOTE	0022h2o	19	Black takes the rook. He is a rook and a knight up for a pawn, but the a1 knight is trapped and will take a long time to get out.	
+NOTE	0022h2o	20	Take the d5 knight. Your knight now stands between your c4 bishop and Black's king on e6: whenever it moves, the bishop gives check. It also hits c7 and f6.	good:
+NOTE	0022h2o	21	The losing move. The king steps to d6, but it stays in the centre where d4 will open lines at it. 11...Qh4! was the way to fight: it hits f2 and gives Black the better game.	
+NOTE	0022h2o	22	d4! opens the c1 bishop's diagonal and the e-file at once, all aimed at the king on d6.	good:
+NOTE	0022h2o	23	Black develops the bishop to e6 to block the a2–g8 diagonal.	
+NOTE	0022h2o	24	The rook comes to e1, onto the e-file where the king and the e5 pawn stand.	good:
+NOTE	0022h2o	25	Black hits your bishop, hoping to win time and to get rid of the attacker on c4.	threat:b5c4
+NOTE	0022h2o	26	Nb4! Shirov lets the bishop go. The knight steps off d5 so that Qc6+ can come, and from b4 it covers c6 and a6. Rxe5 was even stronger, but this wins Black's queen by force.	good:e1e5
+NOTE	0022h2o	27	Black takes the bishop.	
+NOTE	0022h2o	28	Qc6+! The queen checks from c6, guarded by the b4 knight.	good:
+NOTE	0022h2o	29	The king steps to e7. ...Ke7 is forced: d7 and the other squares are covered.	
+NOTE	0022h2o	30	Bg5+! A check that skewers: the king is on e7 and the queen on d8 stands on the same diagonal behind it.	good:
+NOTE	0022h2o	31	The king has to move, and the queen is lost.	threat:d8d4
+NOTE	0022h2o	32	Take the queen.	good:
+NOTE	0022h2o	33	Black takes back with the rook.	threat:d8d4
+NOTE	0022h2o	34	Qxc7+ picks up a pawn with check and hits the e5 pawn too.	good:
+NOTE	0022h2o	35	The rook blocks the check.	threat:d7c7
+NOTE	0022h2o	36	Take the e5 pawn as well. Your queen is now in the middle of Black's position.	good:
+NOTE	0022h2o	37	The rook steps to d6 to keep the queen out of the d-file.	
+NOTE	0022h2o	38	d5 hits the e6 bishop and gains space for the attack.	
+NOTE	0022h2o	39	The bishop drops back to d7.	
+NOTE	0022h2o	40	Qf4+ checks and, with Qxc4 to follow, picks up the c4 pawn.	
+NOTE	0022h2o	41	The king hides on g8.	
+NOTE	0022h2o	42	Take the c4 pawn. On paper Black has more pieces, but the a1 knight is out of the game, Black's rooks are disconnected, and your queen and d-pawn are far more active.	
+NOTE	0022h2o	43	Black pushes the a-pawn to chase your knight.	
+NOTE	0022h2o	44	The knight goes to d3, heading for c5 and e5.	
+NOTE	0022h2o	45	The a-pawn runs on to a4.	
+NOTE	0022h2o	46	Nc5 hits the d7 bishop, the piece holding Black's position together.	
+NOTE	0022h2o	47	Black makes air for the king with ...h5.	
+NOTE	0022h2o	48	Take the bishop: the knight trades itself for Black's best defender, and the d-pawn is ready to run.	
+NOTE	0022h2o	49	The rook takes back.	
+NOTE	0022h2o	50	d6+! The pawn pushes with a discovered check from the queen on c4.	
+NOTE	0022h2o	51	The king steps into the corner.	
+NOTE	0022h2o	52	The rook swings to e6, ready to join the attack on g6 and h6.	
+NOTE	0022h2o	53	Black blocks the e6 rook's way along the sixth rank with ...g6.	
+NOTE	0022h2o	54	Rxg6! The rook takes the pawn in front of the king. If ...Kxg6, Qe6+ forks the king and the d7 rook, and the d-pawn runs through. Sulskis resigned.	
+REVIEW	0022h2o	21	The king in the middle	Black is a rook up, but his king is on d6 with your knight on d5, bishop on c4 and queen on f3 around it. The king should have hidden: 11...Qh4 hits f2 and keeps Black on top. Now every pawn move that opens a line helps you. Which one?	d2d4:G,c1g5:B,h1e1:B
+REVIEW	0022h2o	22	Open the lines	d4 opens two lines at once: the c1 bishop's diagonal to g5 and h6, and the e-file for your rook. The material doesn't matter while Black's king stands in the centre.	d4e5:G,c1g5:B
+REVIEW	0022h2o	30	The skewer	Qc6+ drove the king to e7, on the same diagonal as the queen on d8. Bg5+ checks the king, and when it moves, the bishop takes the queen.	c1g5:G,g5d8:R
+OUTRO	0022h2o	Sulskis resigned after 28.Rxg6: ...Kxg6 loses the d7 rook to Qe6+, and anything else lets the attack go on. It was 9.a3 that made the game: Shirov gave a rook to keep Black's king in the middle, and one slip, 11...Kd6 instead of 11...Qh4, was enough. Shirov played on for Latvia and Spain for many years, and he still plays the sharpest openings he can find.
+GAME	0bgdbdk	French Defense	b	e4 e6 Nf3 d5 Nc3 d4	K. Guseinov	V. Filippov	2002	Aeroflot Open, Moscow	0-1	6	44	e4 e6 Nf3 d5 Nc3 d4 Ne2 c5 d3 Nc6 g3 Bd6 Bg2 Nge7 O-O O-O h4 e5 Nd2 Be6 f4 f5 exf5 Nxf5 Ne4 Ne3 Bxe3 dxe3 fxe5 Bxe5 Ng5 Qd6 Nc3 Rxf1+ Qxf1 Rf8 Qe2 Bxc3 Qh5 Bf5 bxc3 h6 Nf3 Qxg3 Rf1	Aeroflot Open, Moscow, 2002, round 4: one of the strongest open tournaments in the world, with hundreds of grandmasters and masters. Filippov, rated 2625, meets the quiet 2.Nf3 and 3.Nc3 with your ...d4, grabbing space at once. White answers with a King's Indian Attack set-up: d3, g3, Bg2 and a slow build-up on the king's side. Play your line, then find Filippov's moves.	2527	2625
+NOTE	0bgdbdk	6	The knight leaves c3 for e2. It will come to g3 or back to the centre, and it doesn't block the c-pawn.	threat:e2d4
+NOTE	0bgdbdk	7	...c5 backs up the d4 pawn, so it can't be undermined by c3 later. Black has a big space edge in the centre.	good:g8f6
+NOTE	0bgdbdk	8	d3 sets up a King's Indian Attack: a solid centre, then g3, Bg2 and pushes on the king's side.	
+NOTE	0bgdbdk	9	Develop the knight. From c6 it guards d4 and e5.	good:
+NOTE	0bgdbdk	10	White prepares Bg2.	
+NOTE	0bgdbdk	11	The bishop goes to d6, aiming at the king's side and ready to support ...e5.	good:e6e5,f7f6,f8e7
+NOTE	0bgdbdk	12	White's bishop goes to g2, behind the e4 pawn.	
+NOTE	0bgdbdk	13	The knight goes to e7, not f6: the f-pawn stays free to push to f5 later.	good:e6e5,d6c7,f7f6
+NOTE	0bgdbdk	14	White castles.	
+NOTE	0bgdbdk	15	Castle. Your king is safe, and the plan is ...e5 and ...f5.	good:e6e5,a7a5
+NOTE	0bgdbdk	16	h4 starts White's play on the king's side: h5 and Nh2–g4 can follow.	
+NOTE	0bgdbdk	17	...e5 claims more space. Now the d4, c5 and e5 pawns clamp the centre, and ...f5 is the next lever.	good:h7h6,g8h8
+NOTE	0bgdbdk	18	The knight drops back to d2, ready for f4 or Nc4.	
+NOTE	0bgdbdk	19	Develop the bishop, guarding c4 and the light squares.	good:h7h6,d6c7,f7f6
+NOTE	0bgdbdk	20	f4 hits e5, and f5 would trap your e6 bishop. You must act on the f-file first.	
+NOTE	0bgdbdk	21	...f5! meets f4 with f5. The f-file opens, and both your rooks and knights can use it.	good:e5f4,g7g6
+NOTE	0bgdbdk	22	White takes on f5.	threat:f5e6
+NOTE	0bgdbdk	23	The knight takes back, landing on a great square: it hits e3, g3 and h4.	good:e6f5
+NOTE	0bgdbdk	24	The knight jumps to e4, hitting your d6 bishop and the c5 pawn.	
+NOTE	0bgdbdk	25	...Ne3 jumps into e3, hitting the queen, the f1 rook and the g2 bishop at once, so White has to take it. The engine slightly prefers ...Bd5, but Filippov wants the pawn that will come to e3.	good:c5c4,e6d5,g8h8
+NOTE	0bgdbdk	26	White takes the knight with the bishop.	threat:f4e5
+NOTE	0bgdbdk	27	Take back with the d-pawn. The pawn on e3 is deep in White's camp: it cramps the queen and the rooks, and it may run to e2.	good:
+NOTE	0bgdbdk	28	White takes on e5.	threat:e5d6
+NOTE	0bgdbdk	29	Take back with the bishop. It now hits g3, the weak point after h4.	good:
+NOTE	0bgdbdk	30	The knight jumps to g5, hitting your e6 bishop and eyeing h7.	threat:g5e6
+NOTE	0bgdbdk	31	The queen comes to d6, guarding the e6 bishop and lining up behind the e5 bishop towards g3.	good:d8d7
+NOTE	0bgdbdk	32	Nc3 brings the last knight back into play, but it walks onto the long diagonal of your e5 bishop. ...Bd4 was even stronger, but Filippov trades rooks first.	
+NOTE	0bgdbdk	33	Trade the rooks on f1: the open f-file is yours once the other rook comes to f8.	good:e6f5,e5d4
+NOTE	0bgdbdk	34	White takes back with the queen.	
+NOTE	0bgdbdk	35	The second rook takes the f-file.	good:
+NOTE	0bgdbdk	36	The queen goes to e2, blocking the e3 pawn and getting ready to swing to h5.	threat:g5e6
+NOTE	0bgdbdk	37	Take the knight on c3. White should simply take back.	good:e6f5
+NOTE	0bgdbdk	38	The mistake. Instead of taking back on c3, Qh5 threatens Qxh7 mate with the g5 knight. It looks dangerous, but it gives Black a tempo.	threat:h5h7
+NOTE	0bgdbdk	39	...Bf5! The bishop covers h7 and the mate is stopped. White now takes back on c3, but the queen on h5 and knight on g5 are about to run into trouble.	good:
+NOTE	0bgdbdk	40	White takes the c3 bishop. Material is level.	
+NOTE	0bgdbdk	41	...h6! hits the knight. It has no good square: Rf1 and hxg5 costs a piece, and Nf3, as played, leaves g3 for your queen.	good:
+NOTE	0bgdbdk	42	The knight retreats to f3.	
+NOTE	0bgdbdk	43	Take the g3 pawn. Your queen is right next to White's king, with ...Qf2+ and ...e2 coming.	good:
+NOTE	0bgdbdk	44	White brings the rook to f1, but it is too late: Filippov's queen, bishop and e-pawn are all aimed at the king, and White resigned.	
+REVIEW	0bgdbdk	21	Answer the lever	White's f4 hit e5 and threatened f5, trapping your e6 bishop. ...f5 answers a lever with a lever: the f-file opens for your rooks, and your knight gets f5.	f7f5:G,f8f1:B
+REVIEW	0bgdbdk	27	A pawn in the throat	Your knight gave itself for White's bishop, and the d4 pawn took back on e3. That pawn cramps White's queen and rooks, and later it may become a passed pawn running to e2.	e3e2:G
+REVIEW	0bgdbdk	38	Mate threat or recapture?	White's queen and knight threaten Qxh7 mate, but White has left a piece on c3 to be taken. When your opponent makes a threat instead of taking back, look for a defence that comes with a gain of its own. Can you find it?	h5h7:R,g5h7:R
+REVIEW	0bgdbdk	39	Covered, with a follow-up	...Bf5 covers h7. White takes on c3, and then ...h6 hits the g5 knight, which has no safe square. White's attack has turned into a target.	e6f5:G,f5h7:B,h7h6:G
+OUTRO	0bgdbdk	White resigned after 23.Rf1: Black's queen on g3, the bishop on f5 and the pawn on e3 are all aimed at the king. Filippov's ...d4 gave him space in the centre, ...f5 opened the f-file, and when White chose a mate threat over a simple recapture, ...Bf5 and ...h6 turned White's attackers into targets. A good model for your ...d4 line: the d4 pawn gives you space, and ...e5 and ...f5 are the levers that follow.
+GAME	0c9nuaw	King's Indian Defense	b	d4 Nf6 c4 g6 Nc3 Bg7 e4 d6 Nf3 O-O Be2 e5 O-O Nc6 d5 Ne7	Wesley So	Hikaru Nakamura	2015	Sinquefield Cup, Saint Louis	0-1	16	52	d4 Nf6 c4 g6 Nc3 Bg7 e4 d6 Nf3 O-O Be2 e5 O-O Nc6 d5 Ne7 Ne1 Nd7 f3 f5 Be3 f4 Bf2 g5 Nd3 Ng6 c5 Nf6 Rc1 Rf7 Kh1 h5 cxd6 cxd6 Nb5 a6 Na3 b5 Rc6 g4 Qc2 Qf8 Rc1 Bd7 Rc7 Bh6 Be1 h4 fxg4 f3 gxf3 Nxe4 Rd1 Rxf3 Rxd7 Rf1+ Kg2 Be3 Bg3 hxg3 Rxf1 Nh4+ Kh3 Qh6 g5 Nxg5+ Kg4 Nhf3 Nf2 Qh4+ Kf5 Rf8+ Kg6 Rf6+ Kxf6 Ne4+ Kg6 Qg5+	Sinquefield Cup, Saint Louis, 2015, round 6. Hikaru Nakamura, rated 2814, is the world's leading King's Indian player at the top level, and he plays it against anyone. Wesley So, who had just switched from the Philippines to the US federation, goes for the main line, your line: White attacks on the queen's side, Black on the king's side, and it becomes a race. Play your line, then find Nakamura's moves.	2779	2814
+NOTE	0c9nuaw	16	Ne1 is White's main plan: the knight heads for d3, to support c5 and the queen's side attack.	
+NOTE	0c9nuaw	17	...Nd7 clears the way for the f-pawn. In this line Black's whole game is ...f5, ...f4 and a pawn storm at White's king.	good:b7b6,g8h8
+NOTE	0c9nuaw	18	f3 props up e4, so ...f5 won't be able to break it.	
+NOTE	0c9nuaw	19	...f5, the King's Indian lever. It hits e4 and starts the king's side play.	good:b7b6,g8h8
+NOTE	0c9nuaw	20	White develops the bishop to e3.	
+NOTE	0c9nuaw	21	...f4 gains time on the bishop and closes the centre. From now on Black attacks on the king's side and White on the queen's side.	good:b7b6
+NOTE	0c9nuaw	22	The bishop drops back to f2.	
+NOTE	0c9nuaw	23	...g5! The g-pawn follows: ...g4 is the plan, to break open the king's side.	good:
+NOTE	0c9nuaw	24	The knight comes to d3, supporting c5.	
+NOTE	0c9nuaw	25	The knight goes to g6, ready to join the attack via h4 or f4.	good:d7f6
+NOTE	0c9nuaw	26	c5: White's own lever, aimed at d6 and the c-file.	threat:c5d6
+NOTE	0c9nuaw	27	The knight goes back to f6, to back up ...g4 and keep an eye on e4.	good:
+NOTE	0c9nuaw	28	The rook comes to c1 for the c-file.	threat:c5d6
+NOTE	0c9nuaw	29	...Rf7 guards c7 and the seventh rank, and the rook can swing to g7 later to support the g-pawn.	good:
+NOTE	0c9nuaw	30	Kh1 takes the king off the g1–a7 diagonal before things open up.	
+NOTE	0c9nuaw	31	...h5 adds the h-pawn to the storm.	good:
+NOTE	0c9nuaw	32	White opens the c-file.	threat:d6c7
+NOTE	0c9nuaw	33	Take back with the pawn: c7 is covered by your rook on f7.	good:
+NOTE	0c9nuaw	34	The knight jumps to b5, eyeing c7 and a7.	
+NOTE	0c9nuaw	35	...a6 kicks the knight at once.	good:g5g4
+NOTE	0c9nuaw	36	A mistake: the knight goes to a3, a poor square at the edge. Nc3 was better. From here it takes a long time to get back into the game.	
+NOTE	0c9nuaw	37	...b5 takes the c4 square away from the a3 knight. Now it's stuck.	good:
+NOTE	0c9nuaw	38	The rook goes to c6, hitting d6 and a6.	
+NOTE	0c9nuaw	39	...g4! The storm arrives. If White takes on g4, the h-pawn and f-pawn come forward with even more force.	good:g7f8
+NOTE	0c9nuaw	40	The queen comes to c2, onto the c-file with the rooks.	
+NOTE	0c9nuaw	41	The queen goes to f8, to guard d6 and a6 and to join the king's side attack later.	good:g7f8
+NOTE	0c9nuaw	42	The other rook comes to c1.	threat:c6c8
+NOTE	0c9nuaw	43	...Bd7 develops the last piece and challenges the rook on c6. Black's queen's side holds, so the race is on the king's side.	good:
+NOTE	0c9nuaw	44	The rook goes to c7, onto the seventh rank.	
+NOTE	0c9nuaw	45	...Bh6 brings the bishop out of g7. The f4 pawn blocks it for now, but once the pawn moves, the bishop's road to e3 opens.	good:g4g3,h5h4
+NOTE	0c9nuaw	46	The bishop drops to e1.	
+NOTE	0c9nuaw	47	...h4. Black's pawns are on f4, g4 and h4, all at White's king.	good:
+NOTE	0c9nuaw	48	White takes on g4.	
+NOTE	0c9nuaw	49	...f3! A pawn sacrifice. If White takes, the f-file opens for your rook and the e4 pawn loses its guard.	good:
+NOTE	0c9nuaw	50	White takes the pawn with the g-pawn.	
+NOTE	0c9nuaw	51	...Nxe4! The knight takes the e4 pawn. If White takes it with the f-pawn, the f-file opens for your rook.	good:
+NOTE	0c9nuaw	52	The rook goes to d1, so that Rxd7 can come.	
+NOTE	0c9nuaw	53	Take the f3 pawn. The rook joins the attack on White's king.	
+NOTE	0c9nuaw	54	White takes your bishop on d7, but Black's attack is far faster.	
+NOTE	0c9nuaw	55	Rf1+! The rook checks on the back rank.	
+NOTE	0c9nuaw	56	The king steps to g2, attacking the rook.	
+NOTE	0c9nuaw	57	...Be3 guards the f2 square and adds another piece. 29...h3+ and ...Rf2!! was even faster, as Nakamura was shown after the game.	
+NOTE	0c9nuaw	58	White brings the bishop to g3, but the h-pawn simply takes it.	
+NOTE	0c9nuaw	59	Take on g3. The pawn now sits next to White's king.	
+NOTE	0c9nuaw	60	White takes the rook on f1.	
+NOTE	0c9nuaw	61	Nh4+! The knight checks, driving the king forward.	
+NOTE	0c9nuaw	62	The king steps to h3.	
+NOTE	0c9nuaw	63	...Qh6! The queen joins on the h-file. Black now has a forced mate.	
+NOTE	0c9nuaw	64	g5 hits the queen.	
+NOTE	0c9nuaw	65	Nxg5+! The knight takes the pawn with check.	
+NOTE	0c9nuaw	66	The king steps to g4, the only square.	
+NOTE	0c9nuaw	67	The other knight comes to f3, closing the net around the king.	
+NOTE	0c9nuaw	68	White blocks with the knight on f2.	
+NOTE	0c9nuaw	69	Qh4+ drives the king forward again.	
+NOTE	0c9nuaw	70	The king steps to f5.	
+NOTE	0c9nuaw	71	Rf8+! The rook joins with check.	
+NOTE	0c9nuaw	72	The king runs to g6.	
+NOTE	0c9nuaw	73	Rf6+! A rook sacrifice to bring the king out further.	
+NOTE	0c9nuaw	74	The king takes the rook.	
+NOTE	0c9nuaw	75	Ne4+ checks again, and the king has to go back.	
+NOTE	0c9nuaw	76	The king returns to g6.	
+NOTE	0c9nuaw	77	Qg5 mate. White's king has been driven from h1 all the way to g6.	
+REVIEW	0c9nuaw	36	Out of play	A knight on the edge is a knight out of play. The a3 knight is cut off from the centre and from the king's side, where the game will be decided. Black's next move takes c4 from it. Can you find it?	b5a3:R
+REVIEW	0c9nuaw	49	The pawn breaker	...f3 gives a pawn to open lines at White's king: the f-file for your rook, and the e4 pawn loses its guard.	f4f3:G,f7f3:B
+REVIEW	0c9nuaw	51	Knight in	...Nxe4 gives material back to get at the king. Taking it with the f-pawn opens the f-file to your rook. The attack is now worth more than any piece.	f6e4:G,f7f3:B
+REVIEW	0c9nuaw	63	A forced mate	After ...Qh6, Black has a forced mate. The king will be driven from h3 to g4, f5 and finally g6.	f8h6:G,h6h4:B
+OUTRO	0c9nuaw	The game ended in mate: 39...Qg5, with White's king on g6. So had spent the game on the queen's side, but the a3 knight was out of play when the King's Indian storm broke through with ...f3 and ...Nxe4. The win made Nakamura the live world number two. Levon Aronian won the tournament. So won the Sinquefield Cup himself the next year, and Nakamura went on to become the world's top blitz player and a hugely popular streamer.
