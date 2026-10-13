@@ -20,6 +20,9 @@ data class Mistake(
     val gameTitle: String,
     /** The opponent's move that led to this position, in UCI; null at the start of the game. */
     val lastUci: String? = null,
+    /** The mover's winning chances before the move, and how much the move gave away; null when not known. */
+    val winBefore: Double? = null,
+    val winDrop: Double? = null,
 ) {
     val key: String get() = "$gameId:$ply"
 
@@ -56,6 +59,8 @@ object MistakeDeck {
             Mistake(
                 game.id, move.ply, fen, move.san, move.bestUci, move.classification, move.whiteMoved, game.title,
                 lastUci = replay.uci.getOrNull(move.ply - 1),
+                winBefore = move.winBefore,
+                winDrop = move.winBefore - move.winAfter,
             )
         }
     }

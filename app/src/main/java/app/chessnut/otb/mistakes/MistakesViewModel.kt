@@ -103,7 +103,8 @@ class MistakesViewModel(application: Application, private val gameId: String?) :
             val found = (live + kept).distinctBy { it.key }
             val known = reviews.all()
             val sorted = found.sortedWith(compareBy<Mistake> { known[it.key]?.dueAt ?: 0L }.thenByDescending { it.classification == MoveClass.Blunder })
-            val due = sorted.filter { (known[it.key]?.dueAt ?: 0L) <= now }
+            // A few at a time, the worst first: one game opened on purpose shows all of its own.
+            val due = if (gameId != null) sorted.filter { (known[it.key]?.dueAt ?: 0L) <= now } else MistakeQueue.due(found, known, now)
             withContext(Dispatchers.Main) {
                 all = sorted
                 state.update { it.copy(loading = false) }

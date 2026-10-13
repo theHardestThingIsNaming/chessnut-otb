@@ -9,6 +9,7 @@ import androidx.work.workDataOf
 import app.chessnut.otb.analysis.AnalysisWorker
 import app.chessnut.otb.games.DigestStore
 import app.chessnut.otb.mistakes.MistakeDeck
+import app.chessnut.otb.mistakes.MistakeQueue
 import app.chessnut.otb.mistakes.ReviewFile
 import app.chessnut.otb.games.GameKeeper
 import app.chessnut.otb.games.GameStore
@@ -96,15 +97,15 @@ class OtbApp : Application() {
         Drill.overdue(OpeningTree.lines(name, white, moveChoices.of(name, white)), lineProgress.reviews(name, white), now)
     }
 
-    /** Mistake positions due for practice: never practised, or past their review date. */
+    /** Mistake positions to practise now: at most fifteen, as the practice session picks them ([MistakeQueue]). */
     fun mistakesDue(now: Long): Int {
         val live = store.all().flatMap { game ->
             val analysis = store.loadAnalysis(game.id) ?: return@flatMap emptyList()
             MistakeDeck.collect(game, analysis, myNames)
         }
-        val keys = (live + digests.all().flatMap { it.mistakes }).map { it.key }.toSet()
+        val all = (live + digests.all().flatMap { it.mistakes }).distinctBy { it.key }
         val reviews = ReviewFile(File(filesDir, "mistakes/reviews.tsv")).all()
-        return keys.count { (reviews[it]?.dueAt ?: 0L) <= now }
+        return MistakeQueue.due(all, reviews, now).size
     }
 
     /** Imported study chapters for the trainer, with their review dates. */

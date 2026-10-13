@@ -62,6 +62,8 @@ class DigestStore(private val root: File) {
             props["mistake.$i.whiteToMove"] = m.whiteToMove.toString()
             props["mistake.$i.title"] = m.gameTitle
             m.lastUci?.let { props["mistake.$i.last"] = it }
+            m.winBefore?.let { props["mistake.$i.winBefore"] = it.toString() }
+            m.winDrop?.let { props["mistake.$i.winDrop"] = it.toString() }
         }
         val target = File(root, "${digest.gameId}.properties")
         val temp = File(root, "${digest.gameId}.properties.tmp")
@@ -104,6 +106,8 @@ class DigestStore(private val root: File) {
                 whiteToMove = props.getProperty("mistake.$i.whiteToMove").toBoolean(),
                 gameTitle = props.getProperty("mistake.$i.title", ""),
                 lastUci = props.getProperty("mistake.$i.last"),
+                winBefore = props.getProperty("mistake.$i.winBefore")?.toDoubleOrNull(),
+                winDrop = props.getProperty("mistake.$i.winDrop")?.toDoubleOrNull(),
             )
         }
         return GameDigest(id, props.getProperty("createdAt").toLong(), score, mistakes)

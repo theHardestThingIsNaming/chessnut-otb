@@ -142,6 +142,10 @@ Fixed 2026-10-13, from a game where 17...gxf5 (dropping the h5 knight) was marke
 
 An illegal move on the board sounds at once (phone and board beeper, per the sound settings) in online play and Train/Survival/Punish: `BoardRead.illegalMove`, which leaves out halves of legal moves (castling king first, en passant, a pawn on the last rank before promotion).
 
+## Mistakes practice
+
+Capped 2026-10-13, when 73 were due (partly from the stricter Lichess steps): `MistakeQueue` picks at most 15 at a time. Mistakes already under way come first, on their review dates; new ones fill the rest, blunders first, then by how much the move gave away, then newest game, at most 3 new ones per game. Mistakes made from an already lost position (under 15% to win) are left out. The rest wait their turn; "Practise all" still has everything, and a game opened on its own shows all its mistakes. Home's count uses the same rule.
+
 ## Speed
 
 The openings list took 10–15 seconds after a cold start on the phone (2026-10-13). Fixed: the opening book is indexed (replies by position, lines by name) and read as written instead of replayed (`OpeningBookTest` checks every line against the replay); lines are ranked by popularity with each line replayed once, not once per comparison; each game's accuracies are kept in `accuracy.tsv` until its analysis changes (`AccuracyCache`); a refresh that a newer one replaced stops early. Now about 5 seconds from a cold start of the debug build, starting at launch. A release build would be faster still (no debug JIT), but it's signed differently, so switching means reinstalling.
