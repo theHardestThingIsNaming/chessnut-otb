@@ -245,7 +245,8 @@ fun BoardScreen(
                 colors = clubAppBarColors(),
                 navigationIcon = { BackButton(onBack) },
                 actions = {
-                    ui.livePlacement?.takeIf { ui.connected != null }?.let { placement ->
+                    // Only for a position set up by hand: from the normal start, there's nothing to start "from".
+                    ui.livePlacement?.takeIf { ui.connected != null && it.substringBefore(' ') != START_PLACEMENT }?.let { placement ->
                         TextButton(onClick = { position = placement }, colors = clubTextButtonColors()) { Text("From here", color = Palette.Accent) }
                     }
                     Box {
@@ -263,7 +264,8 @@ fun BoardScreen(
         },
     ) { padding ->
         Column(
-            Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp),
+            // During a game the board runs edge to edge; everything else keeps the usual margins.
+            Modifier.fillMaxSize().padding(padding).padding(horizontal = if (ui.connected == null) 16.dp else 0.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             if (ui.connected == null) {
@@ -287,8 +289,8 @@ fun BoardScreen(
                 )
             }
             if (ui.connected != null) {
-                ui.busy?.let { Text("$it…", color = Palette.Accent) }
-                ui.message?.let { Text(it, color = Palette.Text) }
+                ui.busy?.let { Text("$it…", color = Palette.Accent, modifier = Modifier.padding(horizontal = 16.dp)) }
+                ui.message?.let { Text(it, color = Palette.Text, modifier = Modifier.padding(horizontal = 16.dp)) }
             }
         }
     }
@@ -310,7 +312,7 @@ private fun LiveGamePanel(
     val playing = live.started && !live.ended
     val showActions = !live.ended
     Column(modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(
                 ui.connected!!.name.trim(),
                 style = MaterialTheme.typography.titleMedium,
@@ -332,6 +334,7 @@ private fun LiveGamePanel(
         BoxWithConstraints(Modifier.fillMaxWidth().weight(1f)) {
             // The board takes what it can while leaving each clock a usable strip; the strips share the rest.
             val boardSide = minOf(maxWidth, maxHeight - MIN_STRIP * 2 - 32.dp).coerceAtLeast(120.dp)
+            val strips = Modifier.padding(horizontal = 16.dp)
             Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 PlayerStrip(
                     name = "Black",
@@ -345,7 +348,7 @@ private fun LiveGamePanel(
                     drawLabel = drawLabel(offered = live.blackOfferedDraw, opponentOffered = live.whiteOfferedDraw),
                     onDraw = onDrawBlack,
                     onResign = onResignBlack,
-                    modifier = Modifier.weight(1f),
+                    modifier = strips.weight(1f),
                 )
                 ChessBoard(
                     fen = ui.livePlacement ?: "8/8/8/8/8/8/8/8",
@@ -359,6 +362,7 @@ private fun LiveGamePanel(
                     fontWeight = if (live.ended) FontWeight.Bold else FontWeight.Normal,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                    modifier = strips,
                 )
                 PlayerStrip(
                     name = "White",
@@ -372,12 +376,12 @@ private fun LiveGamePanel(
                     drawLabel = drawLabel(offered = live.whiteOfferedDraw, opponentOffered = live.blackOfferedDraw),
                     onDraw = onDrawWhite,
                     onResign = onResignWhite,
-                    modifier = Modifier.weight(1f),
+                    modifier = strips.weight(1f),
                 )
             }
         }
         if (live.ended && ui.lastSavedGameId != null) {
-            Button(onClick = onAnalyze, modifier = Modifier.fillMaxWidth()) { Text("Analyze this game") }
+            Button(onClick = onAnalyze, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) { Text("Analyze this game") }
         }
     }
 }
@@ -441,6 +445,8 @@ private fun TimeControlChip(current: TimeControl, enabled: Boolean, onSelect: (T
 
 private val MIN_STRIP = 76.dp
 
+private const val START_PLACEMENT = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
+
 /** One player's side of the table: a clock that grows with the room it has, and their draw and resign buttons. */
 @Composable
 private fun PlayerStrip(
@@ -460,14 +466,15 @@ private fun PlayerStrip(
     modifier: Modifier = Modifier,
 ) {
     BoxWithConstraints(modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-        val rowHeight = maxHeight.coerceIn(MIN_STRIP, 132.dp)
+        // Slim rows: the clock stays big enough to read across the table, the buttons take no more than they need.
+        val rowHeight = maxHeight.coerceIn(MIN_STRIP, 100.dp)
         val clockSize = with(LocalDensity.current) { (rowHeight * 0.42f).toSp() }
         Row(
             Modifier.fillMaxWidth().height(rowHeight).then(if (facingAway) Modifier.rotate(180f) else Modifier),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Column(Modifier.weight(1.3f).fillMaxHeight()) {
+            Column(Modifier.weight(1.6f).fillMaxHeight()) {
                 Text(name, color = Palette.TextMuted, fontSize = 12.sp, fontWeight = FontWeight.Medium)
                 if (millis != null) {
                     ClockFace(
@@ -488,11 +495,11 @@ private fun PlayerStrip(
                     drawLabel,
                     light,
                     onDraw,
-                    Modifier.weight(0.8f).fillMaxHeight(),
+                    Modifier.weight(0.6f).fillMaxHeight(),
                     tone = if (drawLabel != "Draw") ActionTone.Active else ActionTone.Plain,
                     icon = { HalfMark(it) },
                 )
-                GameAction("Resign", light, onResign, Modifier.weight(0.8f).fillMaxHeight(), tone = ActionTone.Danger, icon = { FlagMark(it) })
+                GameAction("Resign", light, onResign, Modifier.weight(0.6f).fillMaxHeight(), tone = ActionTone.Danger, icon = { FlagMark(it) })
             }
         }
     }
