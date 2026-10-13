@@ -21,7 +21,7 @@ class MiddlegamePlansTest {
         assertEquals(16, MiddlegamePlans.of("Italian Game", true).size)
         assertEquals(28, MiddlegamePlans.of("Ruy Lopez", true).size)
         assertEquals(3, MiddlegamePlans.of("Vienna Game", true).size)
-        assertEquals(3, MiddlegamePlans.of("English Opening", true).size)
+        assertEquals(28, MiddlegamePlans.of("English Opening", true).size)
         assertEquals(3, MiddlegamePlans.of("London System", true).size)
         assertEquals(22, MiddlegamePlans.of("Sicilian Defense", false).size)
         assertEquals(18, MiddlegamePlans.of("French Defense", false).size)
@@ -47,6 +47,7 @@ class MiddlegamePlansTest {
             "Pirc Defense" to false,
             "Sicilian Defense" to false,
             "Ruy Lopez" to true,
+            "English Opening" to true,
         )) {
             val plans = MiddlegamePlans.of(opening, white)
             for (line in OpeningTree.lines(opening, white)) {
