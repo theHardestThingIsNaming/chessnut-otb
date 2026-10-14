@@ -14,6 +14,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import app.chessnut.otb.ui.FlagControl
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -444,6 +445,12 @@ private fun NavigationRow(ui: ReviewState, model: ReviewViewModel) {
             NavKey("<", Modifier.weight(1f)) { model.step(-1) }
             NavKey(">", Modifier.weight(1f), enabled = !ui.exploring) { model.step(1) }
             NavKey(">|", Modifier.weight(1f)) { model.goTo(ui.fens.lastIndex) }
+            // The move just played (a game from the start, not a bare position): ask for a closer look at it.
+            if (!ui.position && (ui.cursor > 0 || ui.exploring)) {
+                val played = remember(ui.uci, ui.cursor, ui.side) { ui.uci.take(ui.cursor) + ui.side.map { it.uci } }
+                val game = ui.game
+                FlagControl(played, "analysis", game?.let { "${it.white} vs ${it.black}, ${it.date}" }.orEmpty(), "", Modifier.height(40.dp))
+            }
         }
         if (ui.exploring) {
             Row(verticalAlignment = Alignment.CenterVertically) {

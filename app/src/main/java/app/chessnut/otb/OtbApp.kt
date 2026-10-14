@@ -90,6 +90,9 @@ class OtbApp : Application() {
     val depthRecords: DepthRecords by lazy { DepthRecords(File(filesDir, "repertoire/depth.tsv")) }
 
     /** Moves you picked over the book's main move, which shape each opening's lines. */
+    /** Moves the user wants explained in more detail; handed over with adb and answered in move-insights.tsv. */
+    val flags: app.chessnut.otb.flags.FlagStore by lazy { app.chessnut.otb.flags.FlagStore(File(filesDir, "flags.tsv")) }
+
     val moveChoices: MoveChoices by lazy { MoveChoices(File(filesDir, "repertoire/choices.tsv")) }
 
     /** Book opening lines whose review has come due, across every opening you have drilled. */

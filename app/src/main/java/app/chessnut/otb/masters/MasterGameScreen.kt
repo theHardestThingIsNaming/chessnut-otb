@@ -1,6 +1,7 @@
 package app.chessnut.otb.masters
 
 import androidx.activity.compose.BackHandler
+import app.chessnut.otb.ui.FlagControl
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -62,6 +64,9 @@ fun MasterGameScreen(model: MasterGameViewModel, onBack: () -> Unit, onAnalyse: 
                 Text(ui.status, color = if (ui.done) Palette.Accent else Palette.Text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
                 val score = if (ui.guessed > 0) "${ui.matched}/${ui.guessed}" else null
                 score?.let { Text(it, color = Palette.Accent, style = MaterialTheme.typography.titleMedium) }
+                // The move just played: ask for a closer look at it.
+                val played = remember(ui.fen) { model.movesTo(ui.fen) }
+                FlagControl(played, "master", game.title, listOfNotNull(ui.yourNote, ui.theirNote).joinToString(" "), Modifier.height(28.dp))
             }
             // The players, as on a scoresheet: the opponent above the board, the master you guess below.
             PlayerLine(game.player(!game.userWhite))

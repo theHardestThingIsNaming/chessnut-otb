@@ -153,6 +153,12 @@ Capped 2026-10-13, when 73 were due (partly from the stricter Lichess steps): `M
 
 The openings list took 10–15 seconds after a cold start on the phone (2026-10-13). Fixed: the opening book is indexed (replies by position, lines by name) and read as written instead of replayed (`OpeningBookTest` checks every line against the replay); lines are ranked by popularity with each line replayed once, not once per comparison; each game's accuracies are kept in `accuracy.tsv` until its analysis changes (`AccuracyCache`); a refresh that a newer one replaced stops early. Now about 5 seconds from a cold start of the debug build, starting at launch. A release build would be faster still (no debug JIT), but it's signed differently, so switching means reinstalling.
 
+## Flagged moves
+
+- [x] A quiet hollow bookmark on the master game screen, in Train (beside the status line) and on the analysis screen, next to the navigation keys. Tap to flag the move just played, with an optional question; filled means flagged, tap again to edit the question or remove it. Flags are kept in `files/flags.tsv` on the phone (`MoveFlag`, `FlagStore`, core); the key is the position before the move plus the move (`FlagKey`), so a move reached by another order is the same flag.
+- [x] Answering them: plug the phone in and use the `explain-flagged-moves` skill. `scripts/flags/pull.sh` pulls the file, `scripts/flags/facts.py` prints the engine facts for each pending flag, and the explanations are appended to `core/src/main/resources/move-insights.tsv` as `key<TAB>text`. A move with an explanation shows an "i" beside the bookmark on any screen where that position and move come up.
+- [ ] Not yet flaggable: plan stepper, puzzles, Punish and Survival, online games.
+
 ## Master games
 
 Built 2026-10-12, Scotch only, for review before spreading to other openings.

@@ -275,3 +275,32 @@ fun MedalMark(fill: Color, modifier: Modifier = Modifier.size(26.dp)) {
         drawCircle(Color.White.copy(alpha = 0.35f), radius = w * 0.20f, center = center, style = Stroke(width = w * 0.05f))
     }
 }
+
+/** A bookmark: hollow, or filled once the move is flagged. */
+@Composable
+fun BookmarkMark(tint: Color, filled: Boolean, modifier: Modifier = Modifier.size(22.dp)) {
+    Canvas(modifier) {
+        val w = size.width
+        val h = size.height
+        val path = Path().apply {
+            moveTo(w * 0.26f, h * 0.14f)
+            lineTo(w * 0.74f, h * 0.14f)
+            lineTo(w * 0.74f, h * 0.86f)
+            lineTo(w * 0.50f, h * 0.66f)
+            lineTo(w * 0.26f, h * 0.86f)
+            close()
+        }
+        if (filled) drawPath(path, tint) else drawPath(path, tint, style = Stroke(width = size.minDimension * 0.09f))
+    }
+}
+
+/** A small "i" in a ring, for an explanation that has been written. */
+@Composable
+fun InfoMark(tint: Color, modifier: Modifier = Modifier.size(22.dp)) {
+    Canvas(modifier) {
+        val stroke = size.minDimension * 0.08f
+        drawCircle(tint, radius = size.minDimension * 0.40f, style = Stroke(width = stroke))
+        drawLine(tint, Offset(size.width * 0.5f, size.height * 0.46f), Offset(size.width * 0.5f, size.height * 0.70f), stroke, StrokeCap.Round)
+        drawCircle(tint, radius = stroke * 0.7f, center = Offset(size.width * 0.5f, size.height * 0.31f))
+    }
+}

@@ -16,6 +16,8 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import app.chessnut.otb.analysis.ChessLines
+import app.chessnut.otb.ui.FlagControl
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -802,6 +804,11 @@ private fun Playing(
                         color = Palette.Accent,
                         strokeWidth = 2.dp,
                     )
+                }
+                // The move just played: ask for a closer look at it.
+                if (ui.san.isNotEmpty()) {
+                    val played = remember(ui.san) { runCatching { ChessLines.replay(ui.san).uci }.getOrDefault(emptyList()) }
+                    FlagControl(played, "train", ui.openingName.orEmpty(), ui.idea ?: ui.status, Modifier.height(28.dp))
                 }
             }
             if (ui.kind == PlayKind.Trainer) {

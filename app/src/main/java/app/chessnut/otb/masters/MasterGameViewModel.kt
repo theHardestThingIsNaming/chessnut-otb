@@ -189,6 +189,13 @@ class MasterGameViewModel(application: Application, private val id: String) : An
 
     private fun squaresOf(uci: String): List<String> = listOf(uci.substring(0, 2), uci.substring(2, 4))
 
+    /** The UCI moves from the start to the position on the board (empty at the start), for flagging the last one. */
+    fun movesTo(fen: String): List<String> {
+        val r = replay ?: return emptyList()
+        val i = r.fens.indexOf(fen)
+        return if (i > 0) r.uci.take(i) else emptyList()
+    }
+
     fun restart() {
         val g = game ?: return
         val r = replay ?: return
