@@ -394,7 +394,7 @@ private fun ProgressCard(ui: PlayUi, onReview: () -> Unit) {
             }
         }
         if (ui.dueTotal > 0) {
-            PrimaryAction("Review", Modifier.height(44.dp).width(108.dp), subtext = "next line due", onClick = onReview)
+            PrimaryAction("Review", Modifier.height(40.dp).width(108.dp), onClick = onReview)
         }
     }
 }
