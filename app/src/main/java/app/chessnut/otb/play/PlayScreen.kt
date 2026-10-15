@@ -341,7 +341,6 @@ private fun OpeningListRow(row: OpeningRow, selected: Boolean, onClick: () -> Un
                 }
                 if (row.due != null && row.due > 0) {
                     ClockMark(Palette.Gold, Modifier.size(13.dp))
-                    Text("${row.due}", color = Palette.Gold, style = MaterialTheme.typography.labelMedium)
                     Box(Modifier.width(6.dp))
                 }
                 row.depthBest?.let {
@@ -395,7 +394,7 @@ private fun ProgressCard(ui: PlayUi, onReview: () -> Unit) {
             }
         }
         if (ui.dueTotal > 0) {
-            PrimaryAction("Review ${ui.dueTotal}", Modifier.height(40.dp).width(108.dp), onClick = onReview)
+            PrimaryAction("Next for review", Modifier.height(40.dp).width(150.dp), onClick = onReview)
         }
     }
 }
@@ -547,7 +546,7 @@ private fun OpeningPage(
         Row(Modifier.fillMaxWidth().height(52.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             // Train, then Punish, then Survival: from learning the lines to testing them.
             PrimaryAction(
-                if (detail.due > 0) "Review ${detail.due} due" else "Train",
+                if (detail.due > 0) "Next for review" else "Train",
                 Modifier.weight(1.3f).fillMaxHeight(),
                 onClick = viewModel::train,
             )

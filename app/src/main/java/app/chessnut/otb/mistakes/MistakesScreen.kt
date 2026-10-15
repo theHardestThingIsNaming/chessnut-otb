@@ -144,8 +144,7 @@ private fun Summary(summary: SessionSummary, model: MistakesViewModel, onDone: (
             }
         }
         val next = when {
-            summary.stillDue == 1 -> "1 position is still due."
-            summary.stillDue > 1 -> "${summary.stillDue} positions are still due."
+            summary.stillDue > 0 -> "Next for review: ready when you are."
             else -> summary.nextDueAt?.let { "Next position due ${whenDue(it)}." }
         }
         next?.let { Text(it, color = Palette.Text, style = MaterialTheme.typography.bodyLarge) }

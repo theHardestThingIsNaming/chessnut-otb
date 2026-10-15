@@ -199,14 +199,14 @@ fun GamesScreen(
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         HomeTile(
                             "Openings",
-                            if (linesDue > 0) "$linesDue ${if (linesDue == 1) "line" else "lines"} due" else "Learn lines by heart",
+                            if (linesDue > 0) "Next for review" else "Learn lines by heart",
                             Modifier.weight(1f),
                             onTrainer,
                             highlight = linesDue > 0,
                         ) { BookMark(it) }
                         HomeTile(
                             "Mistakes",
-                            if (mistakesDue > 0) "$mistakesDue to practise" else "Fix what went wrong",
+                            if (mistakesDue > 0) "Next for review" else "Fix what went wrong",
                             Modifier.weight(1f),
                             onMistakes,
                             highlight = mistakesDue > 0,

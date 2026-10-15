@@ -126,7 +126,7 @@ fun EndgamesScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onEssential: (S
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(name, color = Palette.Text, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
                         Text(
-                            if (counts.due > 0) "${counts.due} due" else "${counts.solved}/${counts.total}",
+                            if (counts.due > 0) "Next for review" else "${counts.solved}/${counts.total}",
                             color = if (counts.due > 0) Palette.Gold else Palette.Endgame,
                             fontWeight = FontWeight.Bold,
                         )
