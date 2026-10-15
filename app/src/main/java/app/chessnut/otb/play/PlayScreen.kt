@@ -831,6 +831,15 @@ private fun Playing(
                         label = { Text("History") },
                         colors = clubChipColors(),
                     )
+                    // The drilled line, played for you: spoken with the ideas on, otherwise a half second a move.
+                    if (ui.canAutoplay || ui.autoplay) {
+                        FilterChip(
+                            selected = ui.autoplay,
+                            onClick = viewModel::toggleAutoplay,
+                            label = { Text(if (ui.autoplay) "Stop" else "Play line") },
+                            colors = clubChipColors(),
+                        )
+                    }
                     // Out of theory takes the line label's place, so the row never wraps and moves the board.
                     if (ui.san.isNotEmpty() && !ui.inTheory && !ui.survival && !ui.punish) {
                         Text(

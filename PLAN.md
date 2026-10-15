@@ -153,6 +153,10 @@ Capped 2026-10-13, when 73 were due (partly from the stricter Lichess steps): `M
 
 The openings list took 10–15 seconds after a cold start on the phone (2026-10-13). Fixed: the opening book is indexed (replies by position, lines by name) and read as written instead of replayed (`OpeningBookTest` checks every line against the replay); lines are ranked by popularity with each line replayed once, not once per comparison; each game's accuracies are kept in `accuracy.tsv` until its analysis changes (`AccuracyCache`); a refresh that a newer one replaced stops early. Now about 5 seconds from a cold start of the debug build, starting at launch. A release build would be faster still (no debug JIT), but it's signed differently, so switching means reinstalling.
 
+## Play the line for me
+
+- [x] Train has a "Play line" chip beside Explain, Ideas and History whenever the opening's line you are drilling can continue from the board (phone play, not Survival or Punish). It plays the rest of the line, both sides, one move at a time. Ideas on, with sound: each move is said and its note spoken, and the next move waits for the voice. Ideas on, no sound: the note stays up for a time proportional to its length. Ideas off: half a second between moves. The chip becomes "Stop". Not graded: the line isn't marked as learned. All openings' lines use it. Not yet checked on a device (the emulator would not run the app on 2026-10-15).
+
 ## Flagged moves
 
 - [x] A quiet hollow bookmark on the master game screen, in Train (beside the status line) and on the analysis screen, next to the navigation keys. Tap to flag the move just played, with an optional question; filled means flagged, tap again to edit the question or remove it. Flags are kept in `files/flags.tsv` on the phone (`MoveFlag`, `FlagStore`, core); the key is the position before the move plus the move (`FlagKey`), so a move reached by another order is the same flag.

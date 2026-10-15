@@ -250,6 +250,10 @@ data class PlayUi(
     val survival: Boolean = false,
     /** Punish mode: the opponent has just made a common mistake and you find the refutation. */
     val punish: Boolean = false,
+    /** The drilled line is being played for you, move by move. */
+    val autoplay: Boolean = false,
+    /** The drilled line can be played for you from here. */
+    val canAutoplay: Boolean = false,
     /** The mistake being punished, to show it explained afterwards. */
     val punishName: String? = null,
     /** Punish mode's result mark, seen without sound: true a pass, false a miss or a wrong try. */
@@ -372,6 +376,10 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private var trap: Trap? = null
     private var trapStep = 0
     private var trapJob: Job? = null
+    private var autoJob: Job? = null
+
+    /** The line is being played for the user: not graded, and the replies are the line's own. */
+    private var watching = false
     private var survival = false
     /** The mistake Punish mode is setting, or null outside it. */
     private var punishTrap: Trap? = null
@@ -821,6 +829,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         // Save the last game's run under its own opening before this one replaces it.
         endDepthRun()
         trapJob?.cancel()
+        stopAutoplay(publish = false)
         trap = null
         trapStep = 0
         val previous = job
@@ -1257,6 +1266,77 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /**
+     * Plays the rest of the drilled line for you: both sides' moves, one at a time. With Ideas on, each move is
+     * said and explained, and the next waits for the voice (or, without sound, for the note to be read); otherwise
+     * the moves go by half a second apart. It isn't graded: it's watching, not remembering.
+     */
+    fun toggleAutoplay() {
+        if (watching) {
+            stopAutoplay(publish = true)
+            return
+        }
+        if (kind != PlayKind.Trainer || physical || survival || punishTrap != null || trap != null || finished != null ||
+            prompt != null || busy || drillMove() == null
+        ) return
+        job?.cancel()
+        speech.stop()
+        retry = false
+        rejectUci = null
+        retryAt = null
+        choiceOffer = null
+        watching = true
+        busy = true
+        publish()
+        autoJob = viewModelScope.launch {
+            try {
+                delay(AUTO_PAUSE_MS)
+                while (finished == null) {
+                    val uci = drillMove() ?: break
+                    if (!apply(uci)) break
+                    light(null)
+                    val explained = state.value.ideas
+                    when {
+                        explained && app.phoneSounds -> awaitSpeech()
+                        explained -> delay((idea.orEmpty().length * READ_MS_PER_CHAR).coerceIn(AUTO_PAUSE_MS, MAX_READ_MS))
+                    }
+                    delay(AUTO_PAUSE_MS)
+                }
+                if (drillMove() == null && finished == null) {
+                    lineNote = "That's the line, played for you and not marked. Restart to play it yourself."
+                    status = "End of the line"
+                    if (app.phoneSounds && state.value.ideas) speech.narrate(lineNote.orEmpty())
+                }
+            } finally {
+                watching = false
+                busy = false
+                autoJob = null
+                publish()
+            }
+        }
+    }
+
+    private fun stopAutoplay(publish: Boolean) {
+        val running = autoJob
+        autoJob = null
+        if (running == null && !watching) return
+        running?.cancel()
+        watching = false
+        busy = false
+        speech.stop()
+        if (publish) publish()
+    }
+
+    /** Waits for the voice to finish; a phrase just queued gets a moment to start. */
+    private suspend fun awaitSpeech() {
+        delay(SPEECH_START_MS)
+        var waited = 0L
+        while (speech.speaking() && waited < MAX_SPEECH_WAIT_MS) {
+            delay(SPEECH_POLL_MS)
+            waited += SPEECH_POLL_MS
+        }
+    }
+
     /** Leaves the trap and goes back to the game where it was. */
     fun backToLine() {
         trapJob?.cancel()
@@ -1359,6 +1439,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         startFen = null
         restoreTiming()
         state.update { it.copy(startFen = null) }
+        stopAutoplay(publish = false)
         job?.cancel()
         job = null
         clockJob?.cancel()
@@ -1837,7 +1918,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private fun gradeDrill() {
         punishTrap?.let { gradePunish(it); return }
         val line = drillLine ?: return
-        if (drillGraded) return
+        if (drillGraded || watching) return
         val onLine = line.take(sanMoves.size) == sanMoves.take(line.size)
         if (sanMoves.size < line.size && onLine) return
         drillGraded = true
@@ -2099,7 +2180,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         }
         if (kind == PlayKind.Bot && finished != null) clock.freeze(System.currentTimeMillis())
         publish()
-        if (app.phoneSounds) {
+        // Playing the line for you without the ideas, the moves go by on the half second, not on the voice.
+        if (app.phoneSounds && !(watching && !state.value.ideas)) {
             val mate = ChessLines.terminalOf(fen) == Terminal.Checkmate
             speech.say(step.first, mate = mate)
         }
@@ -2414,6 +2496,16 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         /** How long each trap move stays on screen before the next. */
         const val TRAP_STEP_MS = 2600L
 
+        /** The half second between moves when a line is played for you. */
+        const val AUTO_PAUSE_MS = 500L
+
+        /** Without sound, how long a move's note stays up per character before the next move, and at most. */
+        const val READ_MS_PER_CHAR = 55L
+        const val MAX_READ_MS = 9000L
+        const val SPEECH_START_MS = 250L
+        const val SPEECH_POLL_MS = 120L
+        const val MAX_SPEECH_WAIT_MS = 25_000L
+
         /** How much winning chance (in %) another punishing move may give up against the book refutation. */
         const val PUNISH_SLACK = 6.0
 
@@ -2544,6 +2636,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 lineClean = lineClean,
                 survival = survival,
                 punish = punishTrap != null,
+                autoplay = watching,
+                canAutoplay = kind == PlayKind.Trainer && !physical && !survival && punishTrap == null && trap == null &&
+                    finished == null && prompt == null && (watching || (!busy && drillMove() != null)),
                 punishName = punishTrap?.name,
                 punishPass = punishMark()?.first,
                 punishMark = punishMark()?.second,
