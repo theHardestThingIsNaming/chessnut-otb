@@ -92,7 +92,7 @@ fun PuzzleScreen(model: PuzzleViewModel, onBack: () -> Unit) {
 @Composable
 private fun Summary(summary: PuzzleSummary, model: PuzzleViewModel, tone: Color, onDone: () -> Unit) {
     Column(Modifier.fillMaxWidth().padding(top = 24.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        Text(if (summary.nothingDue) "Nothing due right now" else "Session complete", color = tone, style = MaterialTheme.typography.headlineSmall)
+        Text(if (summary.nothingDue) "Nothing to review right now" else "Session complete", color = tone, style = MaterialTheme.typography.headlineSmall)
         if (!summary.nothingDue) {
             Tally(summary.clean, "solved without help", Palette.Best)
             Tally(summary.helped, "solved with a hint or another try", Palette.Inaccuracy)

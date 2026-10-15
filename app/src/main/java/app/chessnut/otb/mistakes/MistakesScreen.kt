@@ -132,7 +132,7 @@ fun MistakesScreen(model: MistakesViewModel, onBack: () -> Unit, onOpenGame: (St
 private fun Summary(summary: SessionSummary, model: MistakesViewModel, onDone: () -> Unit) {
     Column(Modifier.fillMaxWidth().padding(top = 24.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Text(
-            if (summary.nothingDue) "Nothing due right now" else "Session complete",
+            if (summary.nothingDue) "Nothing to review right now" else "Session complete",
             color = Palette.Accent,
             style = MaterialTheme.typography.headlineSmall,
         )
@@ -163,7 +163,7 @@ private fun Summary(summary: SessionSummary, model: MistakesViewModel, onDone: (
                 contentColor = if (missed > 0) Palette.Accent else Palette.OnAccent,
             ),
             modifier = Modifier.fillMaxWidth(),
-        ) { Text(if (summary.nothingDue) "Practise anyway (${summary.all})" else "Practise all ${summary.all}") }
+        ) { Text(if (summary.nothingDue) "Practise anyway" else "Practise everything") }
         TextButton(onClick = onDone, colors = clubTextButtonColors(), modifier = Modifier.align(Alignment.CenterHorizontally)) {
             Text("Done", color = Palette.Accent)
         }

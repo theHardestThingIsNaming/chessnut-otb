@@ -1339,7 +1339,7 @@ private fun BeyondTheOpening(opening: String, white: Boolean, onPuzzles: (String
         if (counts.total > 0 && (!counts.resting || showSolved)) {
             BeyondRow(
                 "Middlegame tactics",
-                if (counts.due > 0) "${counts.due} due" else "${counts.solved}/${counts.total}",
+                if (counts.due > 0) "Next for review" else "${counts.solved}/${counts.total}",
                 if (counts.due > 0) Palette.Gold else Palette.Accent,
             ) { onPuzzles(key) }
         }
