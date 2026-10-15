@@ -778,6 +778,7 @@ private fun Playing(
             Arrow.ofUci(ui.branchUci, Palette.Gold),
             Arrow.ofUci(ui.promptUci, Palette.ArrowBetter),
             Arrow.ofUci(ui.rejectUci, Palette.Blunder),
+            Arrow.ofUci(ui.threatUci, Palette.Blunder),
         )
     }
     val highlights = moveSquares(ui.hintUci) + moveSquares(ui.promptUci)

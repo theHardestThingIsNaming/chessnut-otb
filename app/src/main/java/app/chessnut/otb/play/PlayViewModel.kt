@@ -252,6 +252,8 @@ data class PlayUi(
     val punish: Boolean = false,
     /** The drilled line is being played for you, move by move. */
     val autoplay: Boolean = false,
+    /** While a line plays itself: the capture or check the side that just moved is threatening. */
+    val threatUci: String? = null,
     /** The drilled line can be played for you from here. */
     val canAutoplay: Boolean = false,
     /** The mistake being punished, to show it explained afterwards. */
@@ -380,6 +382,11 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
 
     /** The line is being played for the user: not graded, and the replies are the line's own. */
     private var watching = false
+    /** The threat arrow while a line plays itself: what the side that just moved would do next if it could. */
+    private var threatFen: String? = null
+    private var threatMove: String? = null
+    private var threatTarget: String? = null
+    private var threatJob: Job? = null
     private var survival = false
     /** The mistake Punish mode is setting, or null outside it. */
     private var punishTrap: Trap? = null
@@ -1269,7 +1276,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * Plays the rest of the drilled line for you: both sides' moves, one at a time. With Ideas on, each move is
      * said and explained, and the next waits for the voice (or, without sound, for the note to be read); otherwise
-     * the moves go by half a second apart. It isn't graded: it's watching, not remembering.
+     * the moves go by a second apart, with only the threat in view. It isn't graded: it's watching, not remembering.
      */
     fun toggleAutoplay() {
         if (watching) {
@@ -1314,6 +1321,33 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 publish()
             }
         }
+    }
+
+    /**
+     * The one arrow shown while a line plays itself: the capture or check the side that just moved would
+     * make next if it could move again. The first call for a position starts the analysis and publishes when done.
+     */
+    private fun threatArrow(): String? {
+        if (threatFen == fen) return threatMove
+        if (threatJob?.isActive == true && threatTarget == fen) return null
+        threatJob?.cancel()
+        val target = fen
+        threatTarget = target
+        threatJob = viewModelScope.launch {
+            val found = runCatching {
+                val parts = target.split(" ").toMutableList()
+                parts[1] = if (parts[1] == "w") "b" else "w"
+                parts[3] = "-"
+                val flipped = parts.joinToString(" ")
+                val uci = engine().analyseMillis(flipped, 300, 1).firstOrNull()?.uci?.firstOrNull()
+                val san = uci?.let { PlayPosition.after(flipped, it)?.first }
+                if (uci != null && san != null && san.any { it == 'x' || it == '+' || it == '#' }) uci else null
+            }.getOrNull()
+            threatMove = found
+            threatFen = target
+            if (fen == target && watching) publish()
+        }
+        return null
     }
 
     private fun stopAutoplay(publish: Boolean) {
@@ -2497,7 +2531,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         const val TRAP_STEP_MS = 2600L
 
         /** The half second between moves when a line is played for you. */
-        const val AUTO_PAUSE_MS = 500L
+        const val AUTO_PAUSE_MS = 1000L
 
         /** Without sound, how long a move's note stays up per character before the next move, and at most. */
         const val READ_MS_PER_CHAR = 55L
@@ -2567,7 +2601,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         // The line's own move comes first, green, on either side's turn: the book's favourite isn't always
         // this line's, and on the board you play the opponent's moves too.
         val lineMove = if (punishTrap == null) drillMove() else null
-        val explained = if (at == null && kind == PlayKind.Trainer && explain && finished == null && !retry) {
+        val explained = if (at == null && kind == PlayKind.Trainer && explain && !watching && finished == null && !retry) {
             val book = legalBookSteps().ifEmpty { engineIdeas() }
             val line = lineMove?.let { uci -> book.firstOrNull { it.second == uci } ?: PlayPosition.after(fen, uci)?.first?.let { it to uci } }
             (listOfNotNull(line) + book.filter { it.second != lineMove }).take(MAX_BOOK_ARROWS)
@@ -2637,6 +2671,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 survival = survival,
                 punish = punishTrap != null,
                 autoplay = watching,
+                threatUci = if (watching && at == null) threatArrow() else null,
                 canAutoplay = kind == PlayKind.Trainer && !physical && !survival && punishTrap == null && trap == null &&
                     finished == null && prompt == null && (watching || (!busy && drillMove() != null)),
                 punishName = punishTrap?.name,
