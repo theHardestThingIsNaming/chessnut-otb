@@ -394,7 +394,7 @@ private fun ProgressCard(ui: PlayUi, onReview: () -> Unit) {
             }
         }
         if (ui.dueTotal > 0) {
-            PrimaryAction("Next for review", Modifier.height(40.dp).width(150.dp), onClick = onReview)
+            PrimaryAction("Review", Modifier.height(44.dp).width(108.dp), subtext = "next line due", onClick = onReview)
         }
     }
 }
@@ -546,8 +546,9 @@ private fun OpeningPage(
         Row(Modifier.fillMaxWidth().height(52.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             // Train, then Punish, then Survival: from learning the lines to testing them.
             PrimaryAction(
-                if (detail.due > 0) "Next for review" else "Train",
+                "Train",
                 Modifier.weight(1.3f).fillMaxHeight(),
+                subtext = if (detail.due > 0) "next line for review" else null,
                 onClick = viewModel::train,
             )
             if (detail.punishable > 0) {

@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -117,6 +118,7 @@ fun PrimaryAction(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     color: Color = Palette.Accent,
+    subtext: String? = null,
     onClick: () -> Unit,
 ) {
     Box(
@@ -126,12 +128,17 @@ fun PrimaryAction(
             .clickable(enabled = enabled, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
-        Text(
-            label,
-            color = if (enabled) Palette.OnAccent else Palette.TextMuted,
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp,
-            maxLines = 1,
-        )
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                label,
+                color = if (enabled) Palette.OnAccent else Palette.TextMuted,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                maxLines = 1,
+            )
+            subtext?.let {
+                Text(it, color = if (enabled) Palette.OnAccent.copy(alpha = 0.8f) else Palette.TextMuted, fontSize = 11.sp, maxLines = 1)
+            }
+        }
     }
 }
