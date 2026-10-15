@@ -199,18 +199,16 @@ fun GamesScreen(
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         HomeTile(
                             "Openings",
-                            if (linesDue > 0) "Next for review" else "Learn lines by heart",
+                            "Learn lines by heart",
                             Modifier.weight(1f),
                             onTrainer,
-                            highlight = linesDue > 0,
-                        ) { BookMark(it) }
+                                        ) { BookMark(it) }
                         HomeTile(
                             "Mistakes",
-                            if (mistakesDue > 0) "Next for review" else "Fix what went wrong",
+                            "Fix what went wrong",
                             Modifier.weight(1f),
                             onMistakes,
-                            highlight = mistakesDue > 0,
-                        ) { TargetMark(it) }
+                                        ) { TargetMark(it) }
                     }
                     HomeTile("Endgames", "Essential endings, and puzzles from real ones", Modifier.fillMaxWidth(), onEndgames, tint = Palette.Endgame) { KingMark(it) }
                 }
