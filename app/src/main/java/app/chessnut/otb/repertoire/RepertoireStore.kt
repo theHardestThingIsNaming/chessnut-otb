@@ -14,7 +14,10 @@ class RepertoireStore(directory: File) {
     private val root = directory.apply { mkdirs() }
     private val linesFile = File(root, "lines.tsv")
     private val reviewsFile = File(root, "reviews.tsv")
-    private var chapters: List<StudyChapter> = load()
+    /** Imported chapters; the ones that ship with the app are in [builtin]. */
+    private var imported: List<StudyChapter> = load()
+    private val builtin: List<StudyChapter> = shipped()
+    private val chapters: List<StudyChapter> get() = builtin.filter { b -> imported.none { it.name == b.name } } + imported
     private val reviews: MutableMap<String, LineReview> = loadReviews()
 
     init {
@@ -39,7 +42,7 @@ class RepertoireStore(directory: File) {
     @Synchronized
     fun add(imported: List<StudyChapter>): Pair<Int, Int> {
         val names = imported.map { it.name }.toSet()
-        chapters = chapters.filter { it.name !in names } + imported
+        this.imported = this.imported.filter { it.name !in names } + imported
         save()
         register()
         return imported.size to imported.sumOf { it.lines.size }
@@ -47,7 +50,7 @@ class RepertoireStore(directory: File) {
 
     @Synchronized
     fun clear() {
-        chapters = emptyList()
+        imported = emptyList()
         reviews.clear()
         linesFile.delete()
         reviewsFile.delete()
@@ -73,7 +76,7 @@ class RepertoireStore(directory: File) {
 
     private fun save() {
         linesFile.writeText(buildString {
-            chapters.forEach { chapter ->
+            imported.forEach { chapter ->
                 chapter.lines.forEach { line ->
                     append(chapter.name.replace('\t', ' ')).append('\t')
                     append(if (chapter.userWhite) "w" else "b").append('\t')
@@ -88,6 +91,15 @@ class RepertoireStore(directory: File) {
         linesFile.readLines().mapNotNull { row ->
             val parts = row.split('\t')
             if (parts.size == 3) Triple(parts[0], parts[1] == "w", parts[2].split(' ')) else null
+        }.groupBy { it.first }.map { (name, rows) -> StudyChapter(name, rows.first().second, rows.map { it.third }) }
+    }.getOrDefault(emptyList())
+
+    /** White's lines against Black's replies to 1.e4, from the app's own resources: chapter, w, line. */
+    private fun shipped(): List<StudyChapter> = runCatching {
+        val text = RepertoireStore::class.java.classLoader?.getResourceAsStream("white-repertoire.tsv")?.bufferedReader()?.readText().orEmpty()
+        text.lines().mapNotNull { row ->
+            val parts = row.split('\t')
+            if (parts.size == 3 && !row.startsWith("#")) Triple(parts[0], parts[1] == "w", parts[2].trim().split(' ')) else null
         }.groupBy { it.first }.map { (name, rows) -> StudyChapter(name, rows.first().second, rows.map { it.third }) }
     }.getOrDefault(emptyList())
 
