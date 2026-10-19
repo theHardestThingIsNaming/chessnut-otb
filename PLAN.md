@@ -208,3 +208,5 @@ Next for master games:
 - [x] 130 plans in `white-plans.tsv` (chapter, name, before, moves, summary, notes joined by " ¦ "), each from the lines' shared moves; `WhiteRepertoireTest` checks every line is covered. Only the moves were engine-checked (`plancheck.py`); the note wording was not.
 - [x] 18 master games (the French, Sicilian, Pirc and Philidor chapters, plus one Caro-Kann Panov) added to `master-games.tsv`, found by position in the PGN Mentor files (`data-cache/white/masters/scan.py`, `mkwork.py`). No master data exists for the Caro-Kann, Scandinavian, Alekhine, Modern or Nimzowitsch lines, so those have none.
 - [ ] Not done: tactics for these lines; an engine pass over the master-game and plan note wording; the newer Alekhine/Philidor/Nimzowitsch lines the agent rewrote after the build (`data-cache/white/other2.tsv`, reviewed 14:56 or later).
+
+- Caro-Kann Advance (Short) and Fantasy extended with 6 more lines and plans (Black replies ...Qb6, ...h5, ...Nd7 to 4.Nf3; Fantasy ...e6 with ...dxe4, and ...Nf6). Still thin: French Horwitz, Nimzowitsch/Owen.
