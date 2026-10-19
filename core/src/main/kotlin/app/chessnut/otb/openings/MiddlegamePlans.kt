@@ -21,9 +21,22 @@ data class MiddlegamePlan(
 }
 
 object MiddlegamePlans {
-    fun of(opening: String, white: Boolean): List<MiddlegamePlan> = ALL.filter { it.opening == opening && it.white == white }
+    fun of(opening: String, white: Boolean): List<MiddlegamePlan> = (ALL + SHIPPED).filter { it.opening == opening && it.white == white }
 
-    val all: List<MiddlegamePlan> get() = ALL
+    val all: List<MiddlegamePlan> get() = ALL + SHIPPED
+
+    /**
+     * Plans for the White repertoire against 1.e4, from `white-plans.tsv`: chapter, plan name, the line it follows (SAN),
+     * the moves (Black's first), the summary, and one note per move joined by " ¦ ". A chapter is the opening named
+     * "Repertoire: <chapter>" in the trainer.
+     */
+    private val SHIPPED: List<MiddlegamePlan> by lazy {
+        MiddlegamePlans::class.java.getResourceAsStream("/white-plans.tsv")?.bufferedReader()?.readLines().orEmpty()
+            .filter { it.isNotBlank() && !it.startsWith("#") }
+            .map { it.split('\t') }
+            .filter { it.size == 6 }
+            .map { p -> MiddlegamePlan(p[1], "Repertoire: ${p[0]}", true, san(p[2]), san(p[3]), p[5].split(" ¦ "), p[4]) }
+    }
 
     private fun san(line: String) = line.split(' ').filter { it.isNotBlank() }
 

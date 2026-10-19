@@ -11,7 +11,7 @@ import kotlin.test.assertTrue
 class MiddlegamePlansTest {
     @Test
     fun everyPlanIsLegalAndStartsFromYourLines() {
-        for (plan in MiddlegamePlans.all) {
+        for (plan in MiddlegamePlans.all.filter { !it.opening.startsWith("Repertoire: ") }) {
             val replay = runCatching { ChessLines.replay(plan.before + plan.moves) }.getOrNull()
             assertTrue(replay != null && replay.uci.size == plan.before.size + plan.moves.size, "${plan.name} is legal")
             val lines = OpeningTree.lines(plan.opening, plan.white)

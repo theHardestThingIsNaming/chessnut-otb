@@ -1,6 +1,7 @@
 package app.chessnut.otb
 
 import app.chessnut.otb.analysis.ChessLines
+import app.chessnut.otb.openings.MiddlegamePlans
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -20,5 +21,21 @@ class WhiteRepertoireTest {
             assertTrue(moves.size % 2 == 0, "$chapter ends after Black's reply: $line")
         }
         assertEquals(rows.size, rows.map { it[2] }.toSet().size, "no repeated lines")
+    }
+
+    @Test
+    fun everyLineLeadsIntoALegalPlan() {
+        val plans = MiddlegamePlans.all.filter { it.opening.startsWith("Repertoire: ") }
+        for (plan in plans) {
+            assertEquals(plan.moves.size, ChessLines.replay(plan.before + plan.moves).uci.size - plan.before.size, "${plan.name} replays")
+            assertTrue(plan.before.size % 2 == 1, "${plan.name} starts after White's move")
+        }
+        for ((chapter, _, line) in rows) {
+            val moves = line.split(' ')
+            assertTrue(
+                plans.any { it.opening == "Repertoire: $chapter" && moves.size >= it.before.size && moves.take(it.before.size) == it.before },
+                "$chapter: no plan after $line",
+            )
+        }
     }
 }
