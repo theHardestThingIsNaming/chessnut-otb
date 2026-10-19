@@ -20,7 +20,12 @@ class MasterGamesTest {
             // The game reaches the line's last position, with the same side to move, at its start.
             val lineEnd = ChessLines.replay(game.line).fens.last().split(' ').take(2)
             assertEquals(lineEnd, replay.fens[game.start].split(' ').take(2), "${game.id} reaches its line at ply ${game.start}")
-            assertTrue(game.line in OpeningTree.lines(game.opening, game.userWhite), "${game.id} follows a drilled line")
+            if (game.opening.startsWith("Repertoire: ")) {
+                val drilled = WhiteRepertoireTest.lines(game.opening.removePrefix("Repertoire: "))
+                assertTrue(game.line in drilled, "${game.id} follows a line of its repertoire chapter")
+            } else {
+                assertTrue(game.line in OpeningTree.lines(game.opening, game.userWhite), "${game.id} follows a drilled line")
+            }
             assertEquals(game, MasterGames.forLine(game.opening, game.userWhite, game.line))
             assertTrue(game.end in game.start + 1..game.moves.size, "${game.id} has a stretch to guess")
             assertTrue(game.yourPlies.isNotEmpty())

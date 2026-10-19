@@ -7,6 +7,14 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class WhiteRepertoireTest {
+    companion object {
+        /** The lines of a bundled White chapter, in drilled order. */
+        fun lines(chapter: String): List<List<String>> =
+            WhiteRepertoireTest::class.java.classLoader.getResourceAsStream("white-repertoire.tsv")!!.bufferedReader().readLines()
+                .filter { it.isNotBlank() && !it.startsWith("#") }.map { it.split('\t') }
+                .filter { it[0] == chapter }.map { it[2].split(' ') }
+    }
+
     private val rows = WhiteRepertoireTest::class.java.classLoader.getResourceAsStream("white-repertoire.tsv")!!
         .bufferedReader().readLines().filter { it.isNotBlank() && !it.startsWith("#") }.map { it.split('\t') }
 

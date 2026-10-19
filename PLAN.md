@@ -200,3 +200,11 @@ Next for master games:
 - [x] Board play: with the board connected, set up the starting position (squares still wrong are lit, up to 8), then the opponent's moves are lit for you to play, your moves are read from the pieces, and a different move lights the squares to put right. Hints light the piece, then the move. Play leaves the board alone meanwhile (`OtbApp.boardBorrowed`). Check it with the real board.
 - [ ] Re-derive later plan moves from master practice where data is dense (from about move 10 of each plan).
 
+
+
+## White repertoire against 1.e4 (2026-10-19)
+
+- [x] 21 chapters, 178 lines, bundled in `core/src/main/resources/white-repertoire.tsv` (chapter, w, line; most played first) and loaded by `RepertoireStore` as built-in chapters named "Repertoire: <chapter>" (Caro-Kann Advance/Tal, Short, Fantasy, Panov; French Advance, Tarrasch, Exchange, Horwitz; Sicilian Alapin, Grand Prix, Closed, Smith-Morra, Bb5; Scandinavian x2, Pirc Austrian, Modern, Alekhine x2, Philidor, Nimzowitsch/Owen). Lines were Stockfish-checked and trimmed (`data-cache/white/check.py`, `trim.py`; White moves losing 0.9 or more cut, the Tal and Smith-Morra chapters looser).
+- [x] 130 plans in `white-plans.tsv` (chapter, name, before, moves, summary, notes joined by " ¦ "), each from the lines' shared moves; `WhiteRepertoireTest` checks every line is covered. Only the moves were engine-checked (`plancheck.py`); the note wording was not.
+- [x] 18 master games (the French, Sicilian, Pirc and Philidor chapters, plus one Caro-Kann Panov) added to `master-games.tsv`, found by position in the PGN Mentor files (`data-cache/white/masters/scan.py`, `mkwork.py`). No master data exists for the Caro-Kann, Scandinavian, Alekhine, Modern or Nimzowitsch lines, so those have none.
+- [ ] Not done: tactics for these lines; an engine pass over the master-game and plan note wording; the newer Alekhine/Philidor/Nimzowitsch lines the agent rewrote after the build (`data-cache/white/other2.tsv`, reviewed 14:56 or later).

@@ -9333,3 +9333,915 @@ REVIEW	0jsdb11	20	Queen trade	White takes on e7 with check and the queens are of
 REVIEW	0jsdb11	43	Ba6	Black develops the bishop to a6, a mistake as Bh3 was better. What did Black miss?	a6f1:R
 REVIEW	0jsdb11	66	Rh8	White's rook goes to h8, a mistake. How does Black use it?	h8h7:R
 OUTRO	0jsdb11	Farago won this endgame when White's rooks drifted away from the queen's side. Lesson for the Nimzo-Indian: the early ...Ne4 trade of queens leads to a roughly equal endgame, and the side with the more active rooks wins.
+GAME	176cdf1	Repertoire: Sicilian: Grand Prix 2.Nc3 and f4	w	e4 c5 Nc3 Nc6 f4 g6 Nf3 Bg7 Bb5 Nd4 O-O Nxb5 Nxb5 d6 d3 Nf6 Nc3 O-O	Rogelio Jr Antonio	Eduardo Ortiz	1999	PHI-ch	1-0	18	53	e4 c5 Nc3 Nc6 f4 g6 Nf3 Bg7 Bb5 Nd4 O-O Nxb5 Nxb5 d6 d3 Nf6 Nc3 O-O Qe1 e6 e5 Ne8 Be3 b6 Rd1 Ba6 Rf2 Bb7 d4 cxd4 Bxd4 dxe5 Nxe5 Nf6 Bc5 Qc8 Bxf8 Bxf8 Rfd2 Be7 Kh1 Kg7 Qf2 h5 h3 Bc5 Qh4 Be7 Qe1 Qc5 Rd4 a5 Rc4	Antonio (2558) against Ortiz (2356) at the Philippine championship, 1999. Your Grand Prix line has ended with Black castled in a Closed-Sicilian-style set-up and your pieces ready for the centre break. White's plan is e5 and d4, opening lines against the king on g8. Play your line, then find Antonio's moves.	2558	2356
+NOTE	176cdf1	18	White's queen goes to e1, heading for the king's side and clearing the f-file. From e1 it can swing to h4 or g3 to support an attack.	good:a2a4,c1d2
+NOTE	176cdf1	19	Black plays the pawn to e6.	
+NOTE	176cdf1	20	White plays the pawn to e5.	good:e1h4,c1d2
+NOTE	176cdf1	21	Black's knight goes to e8.	
+NOTE	176cdf1	22	White develops the bishop to e3.	good:c1d2,e1g3
+NOTE	176cdf1	23	Black plays the pawn to b6.	
+NOTE	176cdf1	24	White's rook goes to d1.	good:d3d4,e1g3
+NOTE	176cdf1	25	Black develops the bishop to a6.	
+NOTE	176cdf1	26	White's rook goes to f2.	good:e1g3,h2h4
+NOTE	176cdf1	27	Black's bishop goes to b7. It threatens Bxf3.	threat:b7f3
+NOTE	176cdf1	28	White plays the pawn to d4.	good:
+NOTE	176cdf1	29	Black's pawn takes the pawn on d4. It threatens dxc3.	threat:d4c3
+NOTE	176cdf1	30	White's bishop takes the pawn on d4.	good:
+NOTE	176cdf1	31	Black takes the pawn on e5, a mistake. It opens the position for White's pieces. Black needed a quieter reply such as Bh6 or Qc7.	threat:e5d4
+NOTE	176cdf1	32	White's knight takes the pawn on e5.	good:d4c5
+NOTE	176cdf1	33	Black develops the knight to f6. It threatens Qe7.	
+NOTE	176cdf1	34	White's bishop goes to c5.	good:
+NOTE	176cdf1	35	Black's queen goes to c8. It threatens Qxc5.	threat:c8c5
+NOTE	176cdf1	36	White's bishop takes the rook on f8.	good:
+NOTE	176cdf1	37	Black's bishop takes the bishop on f8. It threatens Bc5.	
+NOTE	176cdf1	38	White's rook goes to d2.	good:g1h1
+NOTE	176cdf1	39	Black develops the bishop to e7.	
+NOTE	176cdf1	40	White's king goes to h1.	good:h2h3,a2a3
+NOTE	176cdf1	41	Black's king goes to g7, off the back rank, but it steps onto the diagonal of the bishop on d4 and weakens f6.	
+NOTE	176cdf1	42	White's queen goes to f2. Playing f5 at once was stronger, because it attacks e6 and keeps the initiative.	good:f4f5,e1e2
+NOTE	176cdf1	43	Black plays the pawn to h5, a mistake: it weakens g5 and the king's side. Qe8 or Bc5 were better.	
+NOTE	176cdf1	44	White plays the pawn to h3, a slight slip. Rd7 was stronger: it hits the bishop on e7 and the one on b7.	good:d2d7
+NOTE	176cdf1	45	Black's bishop goes to c5, attacking the queen on f2. It gains time but allows White to continue the pressure.	threat:c5f2
+NOTE	176cdf1	46	White's queen goes to h4, keeping the pin on f6. Qe1 was a little better.	good:f2e1,f2e2
+NOTE	176cdf1	47	Black's bishop goes to e7.	
+NOTE	176cdf1	48	White's queen goes to e1.	good:h4f2,h4g3
+NOTE	176cdf1	49	Black's queen goes to c5, a mistake. Qe8 was the engine's choice, keeping the knight on f6 covered while Black waits.	
+NOTE	176cdf1	50	White's rook goes to d4, attacking the queen. Rd7 was stronger still, but Rd4 keeps a clear advantage.	good:d2d7
+NOTE	176cdf1	51	Black plays the pawn to a5, a mistake: it weakens b5 and ignores the rook on d4. Rc8 was the best try.	
+NOTE	176cdf1	52	White's rook goes to c4, attacking the queen on c5 and keeping the initiative.	good:
+REVIEW	176cdf1	28	The d4 break	White has all the pieces ready, so d4 opens the centre while Black's pieces are still uncoordinated. What is the idea?	d3d4:G
+REVIEW	176cdf1	34	Bishop to c5	After Nxe5 the bishop jumps to c5, attacking the rook on f8. What does White win?	d4c5:G,c5f8:G
+REVIEW	176cdf1	44	Rd7 was the move	White's rook on d2 can leap into d7. What does it attack?	d2d7:G
+OUTRO	176cdf1	White won on the queen's side and in the centre after Black's pieces were driven back. The lesson for your Grand Prix line: the e5 push followed by d4 opens the centre for your pieces, and the rook on the d-file, with Bxd4 and Nxe5, wins material.
+GAME	3b000cd	Repertoire: Sicilian: Grand Prix 2.Nc3 and f4	w	e4 c5 Nc3 Nc6 f4 d6 Nf3 e6 Bb5 Bd7 O-O Nf6 d3 a6 Bxc6 Bxc6 Qe1 Be7	D Vocaturo	T1 Koch	2012	TCh-BEL 2011-12	1-0	18	66	e4 c5 Nc3 Nc6 f4 d6 Nf3 e6 Bb5 Bd7 O-O Nf6 d3 a6 Bxc6 Bxc6 Qe1 Be7 e5 Nd5 Ne4 O-O exd6 Bxd6 Ne5 Rc8 Nxd6 Qxd6 b3 b5 Ba3 Bb7 Qg3 Ne7 Rae1 Nf5 Qf2 Rfd8 Ng4 Qd4 Ne3 Nxe3 Rxe3 c4 c3 Qd5 bxc4 bxc4 d4 f5 Rfe1 Re8 Qe2 Kf7 Bc5 Ba8 h3 g6 Kh2 Rb8 Re5 Qc6 d5 Qa4 Rxe6 Qd7 Qe5	Vocaturo (2537) against Koch (2439) in the Belgian team championship, 2011-12. Your Grand Prix line has ended with the bishop pair gone, a queen on e1 and Black's bishop on e7 watching the king's side. White's plan is the e5 break: push the pawn, drive the knight back and open lines for the queen and rooks. Play your line, then find Vocaturo's moves.	2537	2439
+NOTE	3b000cd	18	White plays the pawn to e5. This is the key break of the line: it gains space, kicks the knight from f6, and prepares Ne4, with the queen on e1 and the f-pawn supporting an attack on the king's side.	good:c1d2,e1g3
+NOTE	3b000cd	19	Black's knight goes to d5.	
+NOTE	3b000cd	20	White's knight goes to e4.	good:e1g3
+NOTE	3b000cd	21	Black castles short, putting the king to safety and bringing a rook towards the centre.	
+NOTE	3b000cd	22	White's pawn takes the pawn on d6.	good:a2a3,e1g3,c2c3
+NOTE	3b000cd	23	Black's bishop takes the pawn on d6. It threatens Nxf4.	threat:d5f4
+NOTE	3b000cd	24	White's knight goes to e5.	good:e4d6,e1g3
+NOTE	3b000cd	25	Black's rook goes to c8.	
+NOTE	3b000cd	26	White's knight takes the bishop on d6.	good:e5c6,a2a4
+NOTE	3b000cd	27	Black's queen takes the knight on d6.	
+NOTE	3b000cd	28	White plays the pawn to b3.	good:a2a4,e5c4,e5c6
+NOTE	3b000cd	29	Black plays the pawn to b5.	
+NOTE	3b000cd	30	White develops the bishop to a3.	good:e5c6,e1f2,a2a4
+NOTE	3b000cd	31	Black's bishop goes to b7. It threatens f6.	
+NOTE	3b000cd	32	White's queen goes to g3, eyeing the king on g8 and the knight on e7. The engine preferred c4, hitting the knight on d5 first, but the queen move is fine.	good:c2c4,a1d1
+NOTE	3b000cd	33	Black's knight goes to e7, a slight slip: it blocks the e-file and puts the queen on d6 and the knight on e7 in the way of each other. The knight on d5 was already good, so it was better to keep it there.	
+NOTE	3b000cd	34	White's rook goes to e1.	good:e5g4,a1d1
+NOTE	3b000cd	35	Black's knight goes to f5. It threatens Nxg3.	threat:f5g3
+NOTE	3b000cd	36	White's queen goes to f2.	good:
+NOTE	3b000cd	37	Black's rook goes to d8.	
+NOTE	3b000cd	38	White's knight goes to g4.	good:h2h3
+NOTE	3b000cd	39	Black's queen goes to d4.	
+NOTE	3b000cd	40	White's knight goes to e3.	good:a3c1
+NOTE	3b000cd	41	Black's knight takes the knight on e3. It threatens Nxc2.	threat:e3c2
+NOTE	3b000cd	42	White's rook takes the knight on e3.	good:f2e3
+NOTE	3b000cd	43	Black plays the pawn to c4. It threatens cxb3.	threat:c4b3
+NOTE	3b000cd	44	White plays the pawn to c3.	good:f4f5,d3c4,b3c4
+NOTE	3b000cd	45	Black's queen goes to d5. It threatens cxd3.	threat:c4d3
+NOTE	3b000cd	46	White's pawn takes the pawn on c4.	good:e3g3
+NOTE	3b000cd	47	Black's pawn takes the pawn on c4. It threatens cxd3.	threat:c4d3
+NOTE	3b000cd	48	White plays the pawn to d4.	good:e3g3
+NOTE	3b000cd	49	Black plays the pawn to f5. A slight inaccuracy.	
+NOTE	3b000cd	50	White's rook goes to e1.	good:f2e2,f1b1
+NOTE	3b000cd	51	Black's rook goes to e8.	
+NOTE	3b000cd	52	White's queen goes to e2.	good:a3c5,e3e5
+NOTE	3b000cd	53	Black's king goes to f7.	
+NOTE	3b000cd	54	White's bishop goes to c5.	good:e2h5
+NOTE	3b000cd	55	Black's bishop goes to a8.	
+NOTE	3b000cd	56	White plays the pawn to h3.	good:e3e5,h2h4
+NOTE	3b000cd	57	Black plays the pawn to g6.	
+NOTE	3b000cd	58	White's king goes to h2.	good:a2a4,h3h4,e3e5
+NOTE	3b000cd	59	Black's rook goes to b8.	
+NOTE	3b000cd	60	White's rook goes to e5.	good:c5a7,c5a3
+NOTE	3b000cd	61	Black's queen goes to c6, a mistake. The queen had to leave d5 because of Re5, but now d5 hits it with a pawn. Qd7 was the best answer.	
+NOTE	3b000cd	62	White plays the pawn to d5, attacking the queen on c6 with tempo and opening lines against the black king on f7.	good:
+NOTE	3b000cd	63	Black's queen goes to a4, a mistake: it leaves the e6 pawn behind, and the black king on f7 is now short of defenders.	threat:a8d5
+NOTE	3b000cd	64	White's rook takes the pawn on e6. It wins a pawn, hits the bishop on b7's diagonal and keeps the king on f7 under fire from the bishop on c5.	good:
+NOTE	3b000cd	65	Black's queen goes to d7, attacking the rook on e6 and the d5 pawn, but it is too late.	threat:a8d5
+NOTE	3b000cd	66	White's queen goes to e5, defending the rook on e6 and threatening Qf6+ followed by Re7+. Black's king has no safe squares and the attack wins.	
+REVIEW	3b000cd	59	Rook to e5	Black's queen on d5 is loose. White's rook on e1 can go to e5 and attack it, gaining a tempo. Can you see where it goes?	e1e5:G
+REVIEW	3b000cd	61	The pawn push	After Qc6 the d4 pawn can go forward with tempo, hitting the queen and opening lines at the king. Can you find it?	d4d5:G
+REVIEW	3b000cd	33	White's queen swings over	White's queen on g3 eyes the king and Black's pieces are slightly loose. Black has just played Ne7. What is White's plan?	g3g7:G
+OUTRO	3b000cd	White broke through in the centre with e5 and then d5, winning the e6 pawn and the king. The lesson for your Grand Prix line: push e5 when your queen is on e1 and pieces are ready, and keep the d4 pawn ready to jump to d5 with tempo.
+GAME	4fe1494	Repertoire: Sicilian: Closed 2.Nc3 and g3	w	e4 c5 Nc3 Nc6 g3 g6 Bg2 Bg7 d3 d6 f4 e6 Nf3 Nge7 O-O O-O Be3 Nd4 Qd2 b6	Kamran G Shirazi	James Edward Tarjan	1983	USA-ch	1-0	20	70	e4 c5 Nc3 Nc6 g3 g6 Bg2 Bg7 d3 d6 f4 e6 Nf3 Nge7 O-O O-O Be3 Nd4 Qd2 b6 g4 Bb7 f5 d5 Bh6 dxe4 Bxg7 exf3 f6 fxg2 fxe7 gxf1=Q+ Rxf1 Qxe7 Bf6 Qxf6 Rxf6 Nf3+ Rxf3 Bxf3 Qf4 Bd5 Qf6 h6 h4 Kh7 Ne2 e5 Nc3 Rad8 Qxe5 Ba8 Nb5 Rde8 Qf4 Re7 Nd6 f5 gxf5 gxf5 Kf1 Kg6 Kf2 Re6 Nb5 Rfe8 h5+ Kg7 Nd6 Re2+ Kg3 R8e3+ Kh4 Rf3 Nxf5+ Kf6 Qxh6+ Kf7 Qh7+ Ke8 Nd6+ Kd8 Nf7+ Ke8 Nd6+	Shirazi (2470) against Tarjan (2535) in the US championship, 1983. Your Closed Sicilian line has just ended with White's queen on d2 and Black's knight on d4, where the bishop on e3 has to decide whether to take it. White now throws pawns at the king's side, a wild sequence the engine thinks favours Black for a while. Play your line, then find Shirazi's moves.	2470	2535
+NOTE	4fe1494	20	White plays the pawn to g4, starting a pawn storm on the king's side. It prepares f5 and takes squares from Black's pieces, though the engine rates it slightly worse for White than a quiet move such as Nh4.	good:a1e1,f3h4,e3f2
+NOTE	4fe1494	21	Black develops the bishop to b7.	
+NOTE	4fe1494	22	White plays the pawn to f5.	good:e3d4
+NOTE	4fe1494	23	Black plays the pawn to d5. It threatens Nxf3+.	threat:d4f3
+NOTE	4fe1494	24	White's bishop goes to h6. A slight inaccuracy. The engine prefers fxg6.	good:f5g6,f3h4,f3e1
+NOTE	4fe1494	25	Black's pawn takes the pawn on e4. It threatens Nxf3+.	threat:d4f3
+NOTE	4fe1494	26	White's bishop takes the bishop on g7. A slight inaccuracy. The engine prefers dxe4.	good:d3e4
+NOTE	4fe1494	27	Black's pawn takes the knight on f3. It threatens Kxg7.	threat:g8g7
+NOTE	4fe1494	28	White plays the pawn to f6.	good:
+NOTE	4fe1494	29	Black's pawn takes the bishop on g2. It threatens gxf1=R+. A slight inaccuracy.	threat:g2f1r
+NOTE	4fe1494	30	White's pawn takes the knight on e7.	good:
+NOTE	4fe1494	31	Black's pawn takes the rook on f1 and queens with check. White's rook simply takes the new queen, and the exchanges that follow leave the material level.	
+NOTE	4fe1494	32	White's rook takes the queen on f1.	good:
+NOTE	4fe1494	33	Black's queen takes the pawn on e7. It threatens Kxg7. A slight inaccuracy.	threat:g8g7
+NOTE	4fe1494	34	White's bishop goes to f6.	good:
+NOTE	4fe1494	35	Black's queen takes the bishop on f6. It threatens Nf3+.	threat:d4f3
+NOTE	4fe1494	36	White's rook takes the queen on f6.	good:
+NOTE	4fe1494	37	Black's knight goes to f3, with check.	
+NOTE	4fe1494	38	White's rook takes the knight on f3.	good:
+NOTE	4fe1494	39	Black's bishop takes the rook on f3. It threatens Bxg4.	threat:f3g4
+NOTE	4fe1494	40	White's queen goes to f4.	good:
+NOTE	4fe1494	41	Black's bishop goes to d5.	
+NOTE	4fe1494	42	White's queen goes to f6.	good:h2h4,b2b3
+NOTE	4fe1494	43	Black plays the pawn to h6.	
+NOTE	4fe1494	44	White plays the pawn to h4.	good:b2b3,g1f2
+NOTE	4fe1494	45	Black's king goes to h7.	
+NOTE	4fe1494	46	White's knight goes to e2.	good:g1f2,c3b5,f6e7
+NOTE	4fe1494	47	Black plays the pawn to e5.	
+NOTE	4fe1494	48	White's knight goes to c3.	good:
+NOTE	4fe1494	49	Black's rook goes to d8.	
+NOTE	4fe1494	50	White's queen takes the pawn on e5, a slight slip. h5 was stronger, keeping the king's side under pressure, but White still picks up a pawn.	good:h4h5
+NOTE	4fe1494	51	Black's bishop goes to a8. It threatens Rfe8.	
+NOTE	4fe1494	52	White's knight goes to b5.	good:
+NOTE	4fe1494	53	Black's rook goes to e8. It threatens Rxe5.	threat:e8e5
+NOTE	4fe1494	54	White's queen goes to f4.	good:e5c7,e5f6
+NOTE	4fe1494	55	Black's rook goes to e7. It threatens Rfe8.	
+NOTE	4fe1494	56	White's knight goes to d6.	good:
+NOTE	4fe1494	57	Black plays the pawn to f5. It threatens Rf6.	
+NOTE	4fe1494	58	White's pawn takes the pawn on f5.	good:b2b4,g1f2
+NOTE	4fe1494	59	Black's pawn takes the pawn on f5.	
+NOTE	4fe1494	60	White's king goes to f1.	good:g1f2,b2b4
+NOTE	4fe1494	61	Black's king goes to g6.	
+NOTE	4fe1494	62	White's king goes to f2.	good:b2b4,f1g1
+NOTE	4fe1494	63	Black's rook goes to e6.	
+NOTE	4fe1494	64	White's knight goes to b5.	good:b2b4,a2a4,a2a3
+NOTE	4fe1494	65	Black's rook goes to e8. It threatens Re2+.	threat:e6e2
+NOTE	4fe1494	66	White plays the pawn to h5, with check.	good:
+NOTE	4fe1494	67	Black's king goes to g7. It threatens Re2+. A slight inaccuracy.	threat:e6e2
+NOTE	4fe1494	68	White's knight goes to d6.	good:
+NOTE	4fe1494	69	Black's rook goes to e2 with check, a mistake. It looks active, but White's king steps up to g3 and Black's king and rooks become loose to Nxf5+ and queen checks. A quiet move such as Rf8 was safer.	
+NOTE	4fe1494	70	White's king goes to g3, stepping out of the check and heading for h4, away from Black's rooks. The knight on d6 and the queen on f4 keep an eye on f5.	
+NOTE	4fe1494	71	Black's rook goes to e3 with check, a slight inaccuracy: it chases the king, but the rook becomes a target for the queen.	
+NOTE	4fe1494	72	White's king goes to h4.	
+NOTE	4fe1494	73	Black's rook goes to f3, a mistake: it attacks the queen on f4 but the knight on d6 jumps in with Nxf5+, forking the king and winning material. Kg8 or Re5 were better.	
+NOTE	4fe1494	74	White's knight takes the pawn on f5 with check. It forks the king on g7 and attacks h6, the pawn that guards Black's king.	
+NOTE	4fe1494	75	Black's king goes to f6. It threatens Rxf4+.	
+NOTE	4fe1494	76	White's queen takes the pawn on h6 with check, and the king on f6 is exposed to the queen and the knight on f5.	
+NOTE	4fe1494	77	Black's king goes to f7, running toward safety, but the white queen and knight keep chasing it.	
+NOTE	4fe1494	78	White's queen goes to h7 with check, a slight inaccuracy. Qg6+ was a touch stronger, but the attack is overwhelming either way.	
+NOTE	4fe1494	79	Black's king goes to e8. It threatens Kd8.	
+NOTE	4fe1494	80	White's knight goes to d6, with check.	
+NOTE	4fe1494	81	Black's king goes to d8. It threatens Rh2+.	
+NOTE	4fe1494	82	White's knight goes to f7, with check.	
+NOTE	4fe1494	83	Black's king goes back to e8, repeating, but White has a winning attack and Black has no safe squares.	
+NOTE	4fe1494	84	White's knight goes to d6 with check, repeating the position. The record ends here with White's attack still on.	
+REVIEW	4fe1494	24	The h6 bishop	Black has taken the centre with d5. White jumps the bishop to h6 to hit the bishop on g7. What does White threaten?	e3h6:G
+REVIEW	4fe1494	33	The queen takes on e7	Black's queen has captured on e7 and attacks the bishop on g7. How does White meet the threat?	g7f6:G
+REVIEW	4fe1494	68	The knight on d6	White's knight jumps to d6, a strong outpost that attacks the rook on e8 and the pawn on f5. Black must be careful about its king.	b5d6:G
+OUTRO	4fe1494	White's knight sacrifices and queen checks produced a winning attack against the king in the open. The lesson for your Closed Sicilian line: g4 and f5 can create a storm, but when the position opens, keep your knight on d6 and your king safe from checks.
+GAME	4d778e5	Repertoire: Sicilian: Smith-Morra Gambit	w	e4 c5 d4 cxd4 c3 d5 exd5 Qxd5 cxd4 e6 Nf3 Nf6 Nc3 Qd8 Bd3 Nc6 O-O Be7 Re1 O-O	Le Vajda	M Kubik	2014	Grand Europe Cup 2014	1-0	20	50	e4 c5 d4 cxd4 c3 d5 exd5 Qxd5 cxd4 e6 Nf3 Nf6 Nc3 Qd8 Bd3 Nc6 O-O Be7 Re1 O-O a3 Re8 Bc2 Qa5 Bg5 Bd7 Ne5 Nxe5 dxe5 Nd5 Ne4 h6 Bxe7 Rxe7 Nd6 Qa6 b4 Bc6 Qg4 Ba4 Be4 Bb3 Qg3 Bc4 Rec1 Rc7 b5 Qa4 Bxd5 exd5 Nf5	Vajda (2601) against Kubik (2219) at the Grand Europe Cup, 2014. Your line has reached an isolated queen's pawn position where White has the d4 pawn and active pieces, with the rook on e1 behind it and the bishop aimed at h7. White's plan is to cramp Black with a3 and b4, then push e5 and use the d6 outpost. Play your line, then find Vajda's moves.	2601	2219
+NOTE	4d778e5	20	White plays the pawn to a3, preparing b4. This stops ...Qb4 or ...Nb4 and gains space on the queen's side, while the bishop on d3 keeps its diagonal to h7.	good:h2h4,c1g5
+NOTE	4d778e5	21	Black's rook goes to e8.	
+NOTE	4d778e5	22	White's bishop goes to c2.	good:c1f4,c1g5
+NOTE	4d778e5	23	Black's queen goes to a5. A slight inaccuracy.	
+NOTE	4d778e5	24	White develops the bishop to g5.	good:c1f4,h2h3
+NOTE	4d778e5	25	Black's bishop goes to d7, a mistake. It develops a piece but leaves the queen on a5 offside. Black could have kept control with h6 or Rd8, and White's b4 now gains a tempo on the queen.	
+NOTE	4d778e5	26	White's knight goes to e5, offering a trade that opens the diagonal to h7. The engine preferred b4 straight away, kicking the queen first.	good:b2b4
+NOTE	4d778e5	27	Black's knight takes the knight on e5. It threatens Nf3+. A slight inaccuracy.	threat:e5f3
+NOTE	4d778e5	28	White's pawn takes the knight on e5.	good:
+NOTE	4d778e5	29	Black's knight goes to d5. It threatens Bxg5.	threat:e7g5
+NOTE	4d778e5	30	White's knight goes to e4.	good:g5e7
+NOTE	4d778e5	31	Black plays the pawn to h6. It threatens hxg5.	threat:h6g5
+NOTE	4d778e5	32	White's bishop takes the bishop on e7.	good:b2b4
+NOTE	4d778e5	33	Black's rook takes the bishop on e7.	
+NOTE	4d778e5	34	White's knight goes to d6.	good:b2b4
+NOTE	4d778e5	35	Black's queen goes to a6.	
+NOTE	4d778e5	36	White plays the pawn to b4.	good:d1d4
+NOTE	4d778e5	37	Black's bishop goes to c6. A slight inaccuracy.	
+NOTE	4d778e5	38	White's queen goes to g4.	good:d1d2
+NOTE	4d778e5	39	Black's bishop goes to a4, attacking the bishop on c2 to remove it from the strong diagonal. White simply retreats it to e4, where it stays active.	threat:a4c2
+NOTE	4d778e5	40	White's bishop goes to e4.	good:
+NOTE	4d778e5	41	Black's bishop goes to b3. It threatens f5.	
+NOTE	4d778e5	42	White's queen goes to g3.	good:
+NOTE	4d778e5	43	Black's bishop goes to c4. It threatens f5. A slight inaccuracy.	
+NOTE	4d778e5	44	White's rook goes to c1, taking the open c-file with tempo against the bishop on c4 and the rook on c7. This is the standard plan: grab the open file while Black's pieces are scattered.	good:a3a4,a1c1
+NOTE	4d778e5	45	Black's rook goes to c7. It threatens b5.	
+NOTE	4d778e5	46	White plays the pawn to b5. A slight inaccuracy. The engine prefers h4.	good:h2h4
+NOTE	4d778e5	47	Black's queen goes to a4, a mistake. It was needed on b6 or a5 to guard the king's side and the d5 knight. Now White cuts through at d5.	
+NOTE	4d778e5	48	White's bishop takes the knight on d5.	good:
+NOTE	4d778e5	49	Black's pawn recaptures on d5. It was forced, but now the e6 and f5 squares are weak, and White's pawn on e5 and knight on d6 dominate the board.	
+NOTE	4d778e5	50	White's knight goes to f5. It threatens Nxh6+ and e6, and Black cannot hold both the h6 pawn and the f7 pawn.	
+REVIEW	4d778e5	24	Pressure on the queen	White has played Bg5 while Black's queen sits on a5. Black's queen is offside. What would you play to gain time against it?	b2b4:G
+REVIEW	4d778e5	38	Queen to g4	White's queen goes to g4, aiming at the king's side. Black's bishop on c6 can hit the bishop on c2. What is White's plan?	d1g4:G
+REVIEW	4d778e5	46	The pawn push	White pushes b5 to cramp Black's queen and the bishop on c6 square. What is Black's best, and where can White strike next?	b4b5:G,d6f5:B
+OUTRO	4d778e5	White cramped Black with b4, b5 and the d6 outpost, then broke through with Bxd5 and Nf5. The lesson for your line: with the isolated d-pawn structure, the knight on d6 and the pawn on e5 gain space for a kingside attack when Black's queen is far from home.
+GAME	63eaebd	Repertoire: Sicilian: 2.Nf3 anti-lines (Bb5)	w	e4 c5 Nf3 Nc6 Bb5 g6 O-O Bg7 c3 Nf6 Re1 O-O d4 cxd4 cxd4 d5 e5 Ne4 Nc3 Nxc3 bxc3 Bg4	D Campora	R Cifuentes Parada	2004	36th Olympiad	1-0	22	50	e4 c5 Nf3 Nc6 Bb5 g6 O-O Bg7 c3 Nf6 Re1 O-O d4 cxd4 cxd4 d5 e5 Ne4 Nc3 Nxc3 bxc3 Bg4 Bxc6 bxc6 h3 Bxf3 Qxf3 Qa5 Bg5 f6 exf6 exf6 Bf4 Rfe8 Re3 Qd8 Rae1 Qd7 Qe2 Rxe3 Qxe3 Kf7 Qd3 h5 Qa6 g5 Rb1 Qe8 Bb8 Kg6 Qb7 Qe4 Rc1	Olympiad 2004: Campora (2549) with White against Cifuentes Parada (2540), in the Bb5 Sicilian with an early d4 and e5 in the centre. Your line ends with Black's bishop on g4 pinning the knight. Campora gives up his bishop for the knight on c6 to wreck Black's pawns, and then plays on the weak c-pawns and the open b-file. Play your line, then find Campora's moves.	2549	2540
+NOTE	63eaebd	22	Bxc6 takes the knight that guards d4 and e5, and wrecks Black's pawns: after ...bxc6 Black has doubled, isolated c-pawns that can be attacked on the open b- and c-files.	good:h2h3,a1b1
+NOTE	63eaebd	23	Black's pawn takes the bishop on c6.	
+NOTE	63eaebd	24	h3 asks the bishop to decide at once. If it retreats, White keeps the bishop pair idea and the space; if it takes, White recaptures with the queen and Black's pawns stay weak.	good:c1a3
+NOTE	63eaebd	25	Black's bishop takes the knight on f3. It threatens Bxd1.	threat:f3d1
+NOTE	63eaebd	26	Qxf3 keeps the queen active and the pieces pointing at Black's king. White has given up a bishop for a knight and bishop, but the doubled c-pawns and the e5 pawn are what matter.	good:
+NOTE	63eaebd	27	Black's queen goes to a5.	
+NOTE	63eaebd	28	Bg5 attacks the queen's rook side: the bishop hits d8 and stops Black from setting up easily with ...Qd8 and ...Rb8 to hit the b-file.	good:a2a4,h3h4
+NOTE	63eaebd	29	Black plays the pawn to f6. It threatens fxg5.	threat:f6g5
+NOTE	63eaebd	30	White's pawn takes the pawn on f6.	good:
+NOTE	63eaebd	31	Black's pawn takes the pawn on f6. It threatens fxg5.	threat:f6g5
+NOTE	63eaebd	32	White's bishop goes to f4.	good:
+NOTE	63eaebd	33	Black's rook goes to e8.	
+NOTE	63eaebd	34	White's rook goes to e3.	good:a2a4,h3h4
+NOTE	63eaebd	35	Black's queen goes to d8.	
+NOTE	63eaebd	36	White's rook goes to e1.	good:e3e8,a2a4,a1b1
+NOTE	63eaebd	37	Black's queen goes to d7.	
+NOTE	63eaebd	38	White's queen goes to e2.	good:a2a4,e1b1,f4g3
+NOTE	63eaebd	39	Black's rook takes the rook on e3. It threatens Rxe2.	threat:e3e2
+NOTE	63eaebd	40	White's queen takes the rook on e3.	good:
+NOTE	63eaebd	41	Black's king goes to f7.	
+NOTE	63eaebd	42	White's queen goes to d3.	good:e1b1
+NOTE	63eaebd	43	Black plays the pawn to h5.	
+NOTE	63eaebd	44	White's queen goes to a6.	good:e1b1
+NOTE	63eaebd	45	Black plays the pawn to g5. It threatens gxf4. A slight inaccuracy.	threat:g5f4
+NOTE	63eaebd	46	White's rook goes to b1.	good:
+NOTE	63eaebd	47	Black's queen steps back to e8 to cover the rook and the back rank, but it leaves the b-file undefended against the rook on b1. The engine saw Kg6 as better, as then Bb8 is met by ...Bh6.	threat:g5f4
+NOTE	63eaebd	48	Bb8 is the point: the bishop attacks the rook on a8 and the a7 pawn, and Black's queen is tied to the defence of the rook.	good:a6b7
+NOTE	63eaebd	49	Kg6 walks the king out and threatens ...Rxb8, taking the bishop. White must keep the pressure with checks and threats.	threat:a8b8
+NOTE	63eaebd	50	Qb7 attacks the rook on a8, the pawn on a7 and, with the rook on b1, threatens to win material on the b-file.	
+NOTE	63eaebd	51	Black's queen jumps to e4, hitting the bishop and the g2 pawn side, and threatens ...g4. It is a desperate counter-attack.	
+NOTE	63eaebd	52	Rc1 puts the rook on the open c-file, hitting the c6 pawn, and keeps the bishop on b8 defended by the queen. White's extra material is decisive.	
+REVIEW	63eaebd	23	Doubled pawns	Black has doubled c-pawns, so White wants to keep the pieces on and attack them. Which pawn move asks the bishop on g4 a question? Can you find it?	h2h3:G
+REVIEW	63eaebd	25	The queen takes	Black trades the bishop for the knight. Which piece recaptures and keeps Black's pawns under fire?	d1f3:G
+REVIEW	63eaebd	47	The b-file	Black's queen has left the b-file and the a8 rook is loose. Which bishop move wins material? Can you find it?	f4b8:G
+OUTRO	63eaebd	Campora won by playing against the doubled c-pawns and taking the open b-file. The lesson for your line: after Bxc6 bxc6 the Black pawns are a long-term weakness, and the bishop on f4 plus the rook and queen on the b-file decide the game.
+GAME	05a6bbc	Repertoire: Sicilian: 2.Nf3 anti-lines (Bb5)	w	e4 c5 Nf3 Nc6 Bb5 e6 O-O Nge7 Re1 a6 Bxc6 Nxc6 d4 cxd4 Nxd4 Qc7 Nc3 Be7 Nxc6 bxc6	Zhao Zong Yuan	P Sinkevich	2001	SWYM	1-0	20	48	e4 c5 Nf3 Nc6 Bb5 e6 O-O Nge7 Re1 a6 Bxc6 Nxc6 d4 cxd4 Nxd4 Qc7 Nc3 Be7 Nxc6 bxc6 e5 O-O Bf4 f6 exf6 Qxf4 fxe7 Qxf2+ Kh1 Re8 Ne4 Qh4 Nd6 Rxe7 Re4 Qf6 Qd2 a5 Rf4 Qe5 Re1 Qc5 Rc4 Qh5 Qe3 h6 h3 a4 Qb6 Ba6 Rxa4 Qd5 Rxa6 Rxa6 Qd8+ Kh7 Qxe7 Rxa2 Rf1 Rxb2 Ne8	SWYM 2001: Zhao Zong Yuan (2390) with White against Sinkevich (2346). Your line leaves Black with a doubled c-pawn, and White pushes e5 to open lines towards Black's king. Black castles into it, the game turns sharp, and White's pieces come to the king's side while Black's queen's side pawns fall. Play your line, then find Zhao's moves.	2390	2346
+NOTE	05a6bbc	20	e5 gains space and hits d6 and f6: it takes away the f6 and d5 squares from Black's pieces and prepares Bf4 against the queen. Black's weak c-pawns mean he cannot easily counter in the centre.	good:e1e3,d1h5
+NOTE	05a6bbc	21	Black castles short, putting the king to safety and bringing a rook towards the centre. It threatens d5. A slight inaccuracy.	
+NOTE	05a6bbc	22	White develops the bishop to f4.	good:
+NOTE	05a6bbc	23	Black plays the pawn to f6.	
+NOTE	05a6bbc	24	White's pawn takes the pawn on f6.	good:
+NOTE	05a6bbc	25	Black's queen takes the bishop on f4. It threatens Qxf6.	threat:f4f6
+NOTE	05a6bbc	26	White's pawn takes the bishop on e7.	good:
+NOTE	05a6bbc	27	Qxf2+ wins a pawn but pulls the queen away from the king and lets White's rook and knight take over. The engine preferred ...Re8, which keeps pieces near the king.	
+NOTE	05a6bbc	28	White's king goes to h1.	good:
+NOTE	05a6bbc	29	Black's rook goes to e8. It threatens d5.	
+NOTE	05a6bbc	30	White's knight goes to e4.	good:
+NOTE	05a6bbc	31	Black's queen goes to h4. It threatens d5.	
+NOTE	05a6bbc	32	White's knight goes to d6.	good:
+NOTE	05a6bbc	33	Black's rook takes the pawn on e7. It threatens a5.	
+NOTE	05a6bbc	34	Re4 is a slip: it steps into ...Qf6 and ...d5 ideas. Qf3 was stronger, keeping the queen active and the rooks free to join in.	good:d1f3
+NOTE	05a6bbc	35	Black's queen goes to f6. It threatens a5.	
+NOTE	05a6bbc	36	White's queen goes to d2. A slight inaccuracy. The engine prefers Qd3.	good:d1d3
+NOTE	05a6bbc	37	Black plays the pawn to a5.	
+NOTE	05a6bbc	38	White's rook goes to f4.	good:c2c4,h2h3,a1d1
+NOTE	05a6bbc	39	Qe5 hits b2 with the queen, but it leaves the queen on an open file in front of White's rooks. White must choose between guarding b2 and attacking.	threat:e5b2
+NOTE	05a6bbc	40	Re1 brings the rook back and hits the queen on e5 at once, so Black cannot take b2 for free. Raf1 was a little better, using the other rook.	good:a1f1,c2c4
+NOTE	05a6bbc	41	Qc5 runs away and threatens ...Ba6, hitting the rook on c4. Black is busy with his queen while the king stays short of defenders.	
+NOTE	05a6bbc	42	Rc4 attacks the queen and keeps an eye on the c-file. Rf5 was slightly stronger, hitting the queen and the bishop on a6 together.	good:f4f5
+NOTE	05a6bbc	43	Black's queen goes to h5. It threatens e5.	
+NOTE	05a6bbc	44	White's queen goes to e3. A slight inaccuracy. The engine prefers Ra4.	good:c4a4,h2h3,c4e4
+NOTE	05a6bbc	45	Black plays the pawn to h6. It threatens Qg6. A slight inaccuracy.	
+NOTE	05a6bbc	46	White plays the pawn to h3.	good:c4c5
+NOTE	05a6bbc	47	a4 gives Black's pawns a chance to run: the pawn on a4 is attacked by White's rook, and ...Qa5 would hit both rook and queen. It is the start of the loss of material.	
+NOTE	05a6bbc	48	Qb6 is the key move. It attacks the queen's rook and the bishop on c8, and threatens Qd8 with check next. The engine liked it by a clear margin over Qg3.	
+NOTE	05a6bbc	49	Black develops the bishop to a6. It threatens Bxc4.	
+NOTE	05a6bbc	50	White's rook takes the pawn on a4.	
+NOTE	05a6bbc	51	Black's queen goes to d5. It threatens Qxd6. A slight inaccuracy.	
+NOTE	05a6bbc	52	White's rook takes the bishop on a6.	
+NOTE	05a6bbc	53	Black's rook takes the rook on a6. It threatens Rxb6. A slight inaccuracy.	
+NOTE	05a6bbc	54	White's queen goes to d8, with check.	
+NOTE	05a6bbc	55	Black's king goes to h7. It threatens Qxd6.	
+NOTE	05a6bbc	56	White's queen takes the rook on e7.	
+NOTE	05a6bbc	57	Black's rook takes the pawn on a2. It threatens Qa5.	
+NOTE	05a6bbc	58	White's rook goes to f1.	
+NOTE	05a6bbc	59	Rxb2 grabs another pawn and threatens Rxc2, but Black is already lost and White has a decisive reply.	
+NOTE	05a6bbc	60	Ne8 attacks the queen and threatens a fork or mate on f6 and g7. Black has no defence to the threats.	
+REVIEW	05a6bbc	25	Taking back	Black's queen takes the bishop on f4 and attacks f6. What does White play to recover and keep the attack? Can you find it?	f6e7:G
+REVIEW	05a6bbc	33	Rook on e4?	Black has taken on e7 and the rook now looks tempting on e4. The engine preferred a quieter queen move. Can you find Qf3?	d1f3:G
+REVIEW	05a6bbc	47	Rook and queen	Black pushes the a-pawn. White now has a queen move that attacks two pieces and prepares Qd8+. Can you find it?	e3b6:G
+OUTRO	05a6bbc	Zhao won by keeping his pieces active while Black's queen wandered about taking pawns. The lesson for your line: after Nxc6 bxc6 and e5, the f6 pawn break and the open lines against the king are worth more than a pawn or two.
+GAME	bb35638	Repertoire: Sicilian: 2.Nf3 anti-lines (Bb5)	w	e4 c5 Nf3 d6 Bb5+ Nc6 O-O Bd7 Re1 Nf6 c3 a6 Bf1 g6 d4 cxd4 cxd4 Bg7 h3 O-O Nc3 Rc8	A Kovalev	K Miton	2001	TCh-POL	1-0	22	56	e4 c5 Nf3 d6 Bb5+ Nc6 O-O Bd7 Re1 Nf6 c3 a6 Bf1 g6 d4 cxd4 cxd4 Bg7 h3 O-O Nc3 Rc8 e5 Ne8 Bg5 dxe5 dxe5 Nc7 Qb3 b5 Rad1 Qe8 Ne4 Be6 Qa3 b4 Qe3 Nxe5 Nxe5 Bxe5 Bh6 Bxb2 Bxf8 Qxf8 Qd2 Ba3 Nc5 a5 Re5 Bf5 Bc4 Ne8 Rxf5 gxf5 Ne6 fxe6 Bxe6+ Kh8 Bxc8 Nd6 Qd4+ Qg7 Qd5 Qf6 Qxa5 Kg7 Bd7 Qb2 Qd5 Qe2 Qd4+ Kf7 Ba4 Qxa2 Qe3 Qb2 Bb3+ Kf6 Qe6+ Kg7 Qg8+	Polish team championship 2001: Kovalev (2533) with White against Miton (2516). Your line is the Bf1 Sicilian where both sides have castled and Black has put a rook on c8. Kovalev breaks with e5, wins the exchange on f8, then uses his knight and rook against a weakened king. Play your line, then find Kovalev's moves.	2533	2516
+NOTE	bb35638	22	e5 is the central break White has been preparing with h3 and Nc3. It hits the knight on f6, opens the e-file for the rook on e1, and makes Black choose between giving up space and a messy exchange.	good:a2a4,c1f4,c1e3
+NOTE	bb35638	23	Black's knight goes to e8.	
+NOTE	bb35638	24	White develops the bishop to g5.	good:c1d2,a2a3
+NOTE	bb35638	25	Black's pawn takes the pawn on e5. It threatens exd4.	threat:e5d4
+NOTE	bb35638	26	White's pawn takes the pawn on e5.	good:f3e5
+NOTE	bb35638	27	Black develops the knight to c7.	
+NOTE	bb35638	28	White's queen goes to b3.	good:a2a3
+NOTE	bb35638	29	Black plays the pawn to b5.	
+NOTE	bb35638	30	White's rook goes to d1.	good:g5h4
+NOTE	bb35638	31	Black's queen goes to e8.	
+NOTE	bb35638	32	White's knight goes to e4.	good:b3c2,a2a4
+NOTE	bb35638	33	Black's bishop goes to e6. It threatens Bxb3.	threat:e6b3
+NOTE	bb35638	34	White's queen goes to a3.	good:b3c3
+NOTE	bb35638	35	Black plays the pawn to b4. It threatens bxa3.	threat:b4a3
+NOTE	bb35638	36	White's queen goes to e3.	good:
+NOTE	bb35638	37	Black's knight takes the pawn on e5. It threatens Nd5.	
+NOTE	bb35638	38	White's knight takes the knight on e5.	good:
+NOTE	bb35638	39	Black's bishop takes the knight on e5.	
+NOTE	bb35638	40	White's bishop goes to h6.	good:
+NOTE	bb35638	41	Black's bishop takes the pawn on b2.	
+NOTE	bb35638	42	White's bishop takes the rook on f8.	good:
+NOTE	bb35638	43	Black's queen takes the bishop on f8. It threatens Bg7.	
+NOTE	bb35638	44	White's queen goes to d2.	good:e3c5,e3b6
+NOTE	bb35638	45	Black's bishop goes to a3.	
+NOTE	bb35638	46	White's knight goes to c5.	good:e4g5,e1e3
+NOTE	bb35638	47	Black plays the pawn to a5.	
+NOTE	bb35638	48	White's rook goes to e5.	good:e1e4,e1e3,d2d4
+NOTE	bb35638	49	Bf5 is a mistake. It looks active, but the bishop is simply taken by the rook on e5, and White's pieces were already better placed. The engine saw White clearly ahead after this.	
+NOTE	bb35638	50	White develops the bishop to c4.	good:
+NOTE	bb35638	51	Ne8 tries to cover c7 and f6, but it does nothing for the bishop on f5, which falls next move.	
+NOTE	bb35638	52	White's rook takes the bishop on f5.	good:
+NOTE	bb35638	53	Black's pawn takes the rook on f5. It threatens Rxc5.	threat:c8c5
+NOTE	bb35638	54	White's knight goes to e6.	good:
+NOTE	bb35638	55	Black's pawn takes the knight on e6. It threatens Rxc4.	threat:c8c4
+NOTE	bb35638	56	Bxe6+ takes the pawn with check, opens Black's king and attacks the rook on c8 at the same time. That double purpose is why Ne6 was strong.	
+NOTE	bb35638	57	Black's king goes to h8. It threatens Rb8.	
+NOTE	bb35638	58	White's bishop takes the rook on c8.	
+NOTE	bb35638	59	Black develops the knight to d6. It threatens Qxc8.	
+NOTE	bb35638	60	White's queen goes to d4, with check.	
+NOTE	bb35638	61	Black's queen goes to g7. It threatens Qxd4.	
+NOTE	bb35638	62	White's queen goes to d5. A slight inaccuracy. The engine prefers Bd7.	
+NOTE	bb35638	63	Qf6 defends the king and the knight, but it leaves Black passive while White takes the a5 pawn.	
+NOTE	bb35638	64	White's queen takes the pawn on a5.	
+NOTE	bb35638	65	Black's king goes to g7. It threatens Nxc8.	
+NOTE	bb35638	66	White's bishop goes to d7.	
+NOTE	bb35638	67	Qb2 looks for counter-play against e2 and f2, but White's queen and bishop are already close to Black's king.	
+NOTE	bb35638	68	Qd5 is a little careless: Bxf5 was more accurate, taking the pawn with a threat. The advantage is still large.	
+NOTE	bb35638	69	Black's queen goes to e2.	
+NOTE	bb35638	70	White's queen goes to d4, with check.	
+NOTE	bb35638	71	Black's king goes to f7.	
+NOTE	bb35638	72	White's bishop goes to a4.	
+NOTE	bb35638	73	Qxa2 grabs a pawn, but the queen is a long way from the king and cannot help defend.	
+NOTE	bb35638	74	White's queen goes to e3.	
+NOTE	bb35638	75	Black's queen goes to b2. It threatens Qf6.	
+NOTE	bb35638	76	White's bishop goes to b3, with check.	
+NOTE	bb35638	77	Kf6 is the losing move. After Qe6+ White's queen and rook attack together, and the king has no cover.	
+NOTE	bb35638	78	White's queen goes to e6, with check. A forced mate follows.	
+NOTE	bb35638	79	Kg7 tries to run, but White's queen has too many checks.	
+NOTE	bb35638	80	Qg8+ keeps the attack going. The engine preferred Qxe7+, but White is still winning.	
+REVIEW	bb35638	21	Taking space	Both sides have castled. White now has pieces ready for a central break to open the e-file. What does White push? Can you find it?	e4e5:G
+REVIEW	bb35638	45	The knight jumps	Black's bishop has gone to a3 and White's queen is on d2. Where can the knight go to attack Black's pieces and prepare Re5? Can you find it?	e4c5:G
+REVIEW	bb35638	55	Open the king	Black has opened the f-file. Which bishop capture with check wins material and exposes the king? Can you find it?	c4e6:G
+OUTRO	bb35638	Kovalev won by playing e5 at the right moment, winning the exchange on f8 and then bringing his knight and rook to c5 and e5. The lesson for your line: when Black has a bishop on g7 and a king on g8, the e5 break and Bg5 or Bh6 pressure the dark squares.
+GAME	4e4d002	Repertoire: Pirc: Austrian Attack	w	e4 d6 d4 Nf6 Nc3 g6 f4 Bg7 Nf3 O-O Bd3 Bg4 Be3 Nc6 h3 Bxf3 Qxf3 e5 dxe5 dxe5 f5 Nd4 Qf2 b5	Bruno Parma	Albin Planinec	1977	Ljubljana/Portoroz	1-0	24	52	e4 d6 d4 Nf6 Nc3 g6 f4 Bg7 Nf3 O-O Bd3 Bg4 Be3 Nc6 h3 Bxf3 Qxf3 e5 dxe5 dxe5 f5 Nd4 Qf2 b5 O-O c5 Nxb5 Nxb5 Bxb5 Nxe4 Qf3 Nd2 Bxd2 Qxd2 Bd3 e4 Bxe4 Rae8 Rad1 Qb4 Bd5 Kh8 b3 gxf5 Bc4 Bd4+ Kh1 Qb6 Qxf5 Qg6 Bd3 Qxf5 Rxf5 f6 Rdf1 Re7 g3 Rfe8 Kg2 h6 h4 Rg7 Rh5 Be3 Rxf6	Ljubljana/Portoroz 1977: Parma (2530) with White against Planinec (2475). Your Austrian Attack line has reached a sharp middlegame: White has the f5 pawn, Black's knight sits on d4 and ...b5 has just challenged the centre. Parma castles, takes on b5, and trades into a position where his rooks, bishop and f-pawn pressure Black's king and f7. Play your line, then find Parma's moves.	2530	2475
+NOTE	4e4d002	24	O-O brings the king to safety before the position opens. It also puts the rook on f1 behind the f5 pawn, which will matter when the f-file opens.	good:g2g4
+NOTE	4e4d002	25	Black plays the pawn to c5. It threatens c4.	
+NOTE	4e4d002	26	White's knight takes the pawn on b5.	good:f5g6,a2a3,e3g5
+NOTE	4e4d002	27	Black's knight takes the knight on b5. It threatens Nd6. A slight inaccuracy.	
+NOTE	4e4d002	28	White's bishop takes the knight on b5.	good:
+NOTE	4e4d002	29	Black's knight takes the pawn on e4. It threatens Nxf2.	threat:e4f2
+NOTE	4e4d002	30	White's queen goes to f3.	good:f2e1
+NOTE	4e4d002	31	Black's knight goes to d2. It threatens Nxf3+.	threat:d2f3
+NOTE	4e4d002	32	White's bishop takes the knight on d2.	good:
+NOTE	4e4d002	33	Black's queen takes the bishop on d2.	
+NOTE	4e4d002	34	White's bishop goes to d3.	good:a1d1,a1e1
+NOTE	4e4d002	35	Black plays the pawn to e4. It threatens exf3.	threat:e4f3
+NOTE	4e4d002	36	White's bishop takes the pawn on e4.	good:f3e4
+NOTE	4e4d002	37	Black's rook goes to e8. It threatens Qd4+.	threat:d2d4
+NOTE	4e4d002	38	White's rook goes to d1.	good:g1h1
+NOTE	4e4d002	39	Black's queen goes to b4. It threatens Qxe4. A slight inaccuracy.	threat:b4e4
+NOTE	4e4d002	40	White's bishop goes to d5.	good:
+NOTE	4e4d002	41	Black's king goes to h8. It threatens Bxb2.	threat:g7b2
+NOTE	4e4d002	42	White plays the pawn to b3. A slight inaccuracy. The engine prefers f6.	good:f5f6
+NOTE	4e4d002	43	Black's pawn takes the pawn on f5. A slight inaccuracy.	
+NOTE	4e4d002	44	White's bishop goes to c4.	good:f3f5,g1h1
+NOTE	4e4d002	45	Black's bishop goes to d4, with check.	
+NOTE	4e4d002	46	White's king goes to h1.	good:g1h2
+NOTE	4e4d002	47	Black's queen goes to b6.	
+NOTE	4e4d002	48	White's queen takes the pawn on f5.	good:a2a4,c4d3
+NOTE	4e4d002	49	Black's queen goes to g6.	
+NOTE	4e4d002	50	White's bishop goes to d3.	good:a2a4,c4f7
+NOTE	4e4d002	51	Black's queen takes the queen on f5. It threatens Qg5.	
+NOTE	4e4d002	52	White's rook takes the queen on f5.	
+NOTE	4e4d002	53	f6 attacks nothing yet but gives the king a shelter on g7, and it fixes a pawn on f6 where White's rooks can attack it. The engine thought Rh5 first was a little more accurate.	
+NOTE	4e4d002	54	Rf1 doubles the rooks on the f-file, aiming at f6. Rh5 was more precise, hitting h6 and f6 before Black can regroup.	
+NOTE	4e4d002	55	Re7 guards the seventh rank and prepares ...Kg7, but the rook is passive on e7 and f6 stays a target.	
+NOTE	4e4d002	56	g3 gives the king air and covers f4 and h4. Rh5 was a little stronger, but White is still better.	
+NOTE	4e4d002	57	Rfe8 puts both rooks on the e-file, but Black has given up the plan of defending f6 with the king.	
+NOTE	4e4d002	58	White's king goes to g2.	
+NOTE	4e4d002	59	Black plays the pawn to h6. It threatens Re3. A slight inaccuracy.	
+NOTE	4e4d002	60	h4 stops ...Bg5 and gains space on the king's side. R1f4 was slightly sharper.	
+NOTE	4e4d002	61	Rg7 is a mistake: the rook leaves the e-file and the f6 pawn loses a defender. The engine thought White gained about two pawns' worth.	
+NOTE	4e4d002	62	White's rook goes to h5.	
+NOTE	4e4d002	63	Be3 attacks the rook and the f-file at once, but it does not stop Rxf6.	
+NOTE	4e4d002	64	Rxf6 wins the pawn on f6 and the game: White has a clear extra pawn and the rooks dominate Black's king.	
+REVIEW	4e4d002	25	A pawn to take	Black's pawn on b5 is defended only by the knight on d4. Can you find the capture that starts a series of exchanges?	c3b5:G
+REVIEW	4e4d002	47	Queen trade	Black's queen has gone to b6 and White's queen on f3 attacks the pawn on f5. Can you win a pawn and keep the initiative? Can you find it?	f3f5:G
+REVIEW	4e4d002	51	Rook takes queen	The queens come off and White's rooks take over the open f-file. Which rook captures? Can you find it?	f1f5:G
+OUTRO	4e4d002	Parma won a long rook endgame by keeping his rooks active and pressing on f6, until Black's rook on g7 let f6 fall. The lesson for your line: with the f5 pawn and rooks on the f-file, even when queens come off White keeps lasting pressure on Black's king's side.
+GAME	463b30c	Repertoire: Philidor: 3.d4 Nf6 4.Nc3	w	e4 d6 d4 Nd7 Nf3 e5 Bc4 c6 O-O Be7 Nc3 Ngf6 a4 O-O Re1 a5 Ba2 Qc7 h3 Re8	Z Andriasian	P Ponkratov	2010	Russia Cup Final KO	1-0	20	49	e4 d6 d4 Nd7 Nf3 e5 Bc4 c6 O-O Be7 Nc3 Ngf6 a4 O-O Re1 a5 Ba2 Qc7 h3 Re8 Be3 exd4 Bxd4 Ne5 Ng5 h6 Bxe5 hxg5 Bg3 Qb6 Bxd6 Qxb2 Bxe7 Rxe7 Qd8+ Re8 Qd3 Qb4 e5 Nh5 Ne4 Nf4 Bxf7+ Kf8 Qd1 Kxf7 Nd6+ Ke7 Rb1 Qc3 Re3 Qc5 Nxc8+ Kf8 Nb6	Russia Cup Final knockout, 2010: Zaven Andriasian (2585) as White against Pavel Ponkratov (2585). Your line is the Philidor with Nc3, Bc4 and a quiet Ba2, with Black's rook on e8 and queen on c7. Here White strikes in the centre with Be3 and d4 takes, then Black's queen goes pawn-hunting while its pieces are undeveloped. Play your line, then find Andriasian's moves.	2585	2585
+NOTE	463b30c	20	White develops the bishop to e3, eyeing d4 and the a7-g1 diagonal. It prepares to meet ...exd4 with Bxd4 and puts the bishop on a good square before Black can play ...Ng4.	good:f3g5,d1e2
+NOTE	463b30c	21	Black's pawn takes the pawn on d4. It threatens dxe3.	threat:d4e3
+NOTE	463b30c	22	White's bishop takes the pawn on d4.	good:f3d4
+NOTE	463b30c	23	Black's knight goes to e5.	
+NOTE	463b30c	24	White's knight goes to g5.	good:d1e2
+NOTE	463b30c	25	Black plays the pawn to h6. It threatens hxg5.	threat:h6g5
+NOTE	463b30c	26	White's bishop takes the knight on e5.	good:
+NOTE	463b30c	27	Black's pawn takes the knight on g5. It threatens dxe5.	threat:d6e5
+NOTE	463b30c	28	White's bishop goes to g3.	good:e5d4
+NOTE	463b30c	29	Black's queen goes to b6.	
+NOTE	463b30c	30	White's bishop takes the pawn on d6.	good:d1d3,d1d2
+NOTE	463b30c	31	Black's queen takes the pawn on b2, hitting the rook on a1 and the knight on c3. Greedy: Black's queen's side pieces are still at home and the d6 bishop trade is coming. The engine preferred Bxd6 first and a calm game; after this White's pieces gain time with check.	threat:e7d6
+NOTE	463b30c	32	White's bishop takes the bishop on e7.	good:a1b1
+NOTE	463b30c	33	Black's rook takes the bishop on e7. It threatens Qxc3.	threat:b2c3
+NOTE	463b30c	34	White's queen goes to d8 with check, a zwischenzug. Black must block with the rook, which takes it away from e7, and the queen then leaves with tempo.	good:
+NOTE	463b30c	35	Black's rook goes back to e8 to block the check. Rxd8 is now threatened, so White must move the queen, but it will find a good square.	threat:e8d8
+NOTE	463b30c	36	White's queen retreats to d3. It defends the knight on c3, is safe from the rook, and eyes the b5 and h7 squares while Black's queen is stranded on the queen's side.	good:
+NOTE	463b30c	37	Black's queen goes to b4, escaping the attack on its flank and eyeing c5, but it is far from the king.	
+NOTE	463b30c	38	White plays the pawn to e5.	good:
+NOTE	463b30c	39	Black's knight goes to h5 because e5 attacks the knight on f6. It heads for f4 to hit the queen on d3.	
+NOTE	463b30c	40	White's knight goes to e4, covering f2 and threatening Nxg5 and Nd6. A mistake: it drops about 1.7 pawns of advantage. The engine preferred Bxf7+ at once, which wins the f-pawn with check and keeps the queen safe.	good:a2f7,a1b1
+NOTE	463b30c	41	Black's knight goes to f4. It threatens Nxd3.	threat:f4d3
+NOTE	463b30c	42	White's bishop takes the pawn on f7 with check, since the queen on d3 is attacked by the knight. Kf8 is forced, then Qd1 saves the queen and keeps the bishop.	good:d3d1
+NOTE	463b30c	43	Black's king goes to f8. It threatens Nxd3.	threat:f4d3
+NOTE	463b30c	44	White's queen goes to d1.	good:d3b3
+NOTE	463b30c	45	Black's king takes the bishop on f7. It threatens Kg8.	
+NOTE	463b30c	46	White's knight goes to d6, with check.	good:
+NOTE	463b30c	47	Black's king goes to e7. A big mistake: it drops about 6 pawns. Kf8 was needed. On e7 the king is open to knight checks and the rook on b1 now hits the queen, which is also attacked by the knight on d6.	
+NOTE	463b30c	48	White's rook goes to b1.	good:
+NOTE	463b30c	49	Black's queen goes to c3. It threatens b5.	
+NOTE	463b30c	50	White's rook goes to e3.	
+NOTE	463b30c	51	Black's queen goes to c5. It threatens b6.	
+NOTE	463b30c	52	White's knight takes the bishop on c8 with check. It wins a whole piece because Black must save the king first, and the knight cannot be taken safely.	
+NOTE	463b30c	53	Black's king goes to f8, threatening Raxc8. But the knight is not lost.	
+NOTE	463b30c	54	White's knight goes to b6, saving itself with a threat on the rook on a8 and the d7 square. White is a piece up and winning.	
+REVIEW	463b30c	30	Bait on b2	White's bishop has just taken d6. Black can grab b2 with the queen, but Bxe7 and Qd8+ come with tempo. Who is better developed?	d6e7:G,d6c7:R
+REVIEW	463b30c	39	The knight heads for f4	Black's knight on h5 threatens ...Nf4 against the queen on d3. White's bishop on a2 can take f7 with check right away. Can you find the strongest move?	a2f7:G,d3d1:B
+REVIEW	463b30c	46	The knight fork	Nd6+ hits the king, the queen on b4 and the bishop on c8 at once. Kf8 was safer than Ke7. What does White play next?	d6b4:G,d6c8:G,a1b1:B
+REVIEW	463b30c	51	Cash in	Black's bishop on c8 is hanging, and the take comes with check. Find the knight's way out afterwards.	d6c8:G
+OUTRO	463b30c	Andriasian won a piece in the end. The lesson for your line: with the bishop on a2 and Re1 behind the e-pawn, strike with Be3 and d4 trades, use Bxe5 and Bxd6 tricks to pull Black's pieces out of play, and keep an eye on forks on d6 and c8 once the Black king wanders to f7 or e7.
+GAME	3430341	Repertoire: Philidor: 3.d4 Nf6 4.Nc3	w	e4 d6 d4 Nf6 Nc3 Nbd7 Nf3 e5 Bc4 Be7 O-O O-O a4 c6 Re1 Qc7 Ba2 b6 h3 Bb7	S Fedorchuk	J Moussard	2011	86th ch-Paris IdF	1-0	20	37	e4 d6 d4 Nf6 Nc3 Nbd7 Nf3 e5 Bc4 Be7 O-O O-O a4 c6 Re1 Qc7 Ba2 b6 h3 Bb7 Nh4 Rfe8 Nf5 Bf8 dxe5 dxe5 Qf3 Rad8 Bg5 g6 Ne3 Be7 Ng4 Nxg4 Qxf7+ Kh8 Bxe7 Rf8 Bxf8 Rxf8 Qe7 Ngf6 Rad1 Re8 Qd6 Qd8	86th Paris Ile-de-France championship, 2011: Sergey Fedorchuk (2618) as White against Jean Moussard (2426). Your line is the Philidor with Bc4-a2, a4, Re1, h3, and Black has played ...b6 and ...Bb7 against it. The plan here is to swing a knight to f5, open the centre with dxe5 and aim everything at f7: the bishop on a2, the queen and the knight. Play your line, then find Fedorchuk's moves.	2618	2426
+NOTE	3430341	20	White's knight goes to h4, heading for f5. From f5 it hits d6, e7 and g7, and the bishop on a2 already looks at f7. Black cannot easily kick it away.	good:
+NOTE	3430341	21	Black's rook goes to e8. It threatens exd4.	threat:e5d4
+NOTE	3430341	22	White's knight goes to f5.	good:c1g5
+NOTE	3430341	23	Black's bishop goes to f8. It threatens exd4. A slight inaccuracy.	threat:e5d4
+NOTE	3430341	24	White's pawn takes the pawn on e5.	good:
+NOTE	3430341	25	Black's pawn takes the pawn on e5. A mistake: it gives away about 1.6 pawns. ...Nxe5 was better, though White still keeps the initiative. After dxe5 the bishop on a2 and queen on f3 target f7 at once.	
+NOTE	3430341	26	White's queen goes to f3.	good:
+NOTE	3430341	27	Black's rook goes to d8. A slight inaccuracy.	
+NOTE	3430341	28	White develops the bishop to g5.	good:g2g4,e1d1
+NOTE	3430341	29	Black plays the pawn to g6, kicking the knight. A mistake: it gives away about 2 pawns. The pawn on g6 leaves the king's side dark squares and f7 weak, and the knight finds e3 and g4 with tempo.	threat:g6f5
+NOTE	3430341	30	White's knight goes to e3.	good:
+NOTE	3430341	31	Black develops the bishop to e7. It threatens Kh8. A slight inaccuracy.	
+NOTE	3430341	32	White's knight goes to g4.	good:
+NOTE	3430341	33	Black's knight takes the knight on g4. It threatens Ngf6.	
+NOTE	3430341	34	White's queen takes the pawn on f7 with check. Black's knight left f6 to take on g4, so f7 is lost: the bishop on a2 and the queen both hit it. The king must go to h8.	good:
+NOTE	3430341	35	Black's king goes to h8. It threatens Bxg5.	threat:e7g5
+NOTE	3430341	36	White's bishop takes the bishop on e7.	good:
+NOTE	3430341	37	Black's rook goes to f8. It threatens Rxf7.	
+NOTE	3430341	38	White's bishop takes the rook on f8.	
+NOTE	3430341	39	Black's rook takes the bishop on f8. It threatens Rxf7.	
+NOTE	3430341	40	White's queen goes to e7.	
+NOTE	3430341	41	Black's knight goes to f6.	
+NOTE	3430341	42	White's rook goes to d1.	
+NOTE	3430341	43	Black's rook goes to e8. It threatens Rxe7.	
+NOTE	3430341	44	White's queen goes to d6, offering a queen trade or an invasion. The engine slightly preferred Qf7, but White is a pawn up with the safer king and Black's rook is tied to the back rank.	
+NOTE	3430341	45	Black's queen goes to d8 to challenge the queen. It is a slight inaccuracy, because the position is already lost: White is a pawn up with the better pieces and an attack on f7.	
+REVIEW	3430341	25	Opening the f-file diagonal	After dxe5 dxe5, White's pieces all point at f7: bishop a2, knight f5 and queen f3 to come. Can you find the queen move that adds to the pressure?	d1f3:G,a2f7:B,f5e7:B
+REVIEW	3430341	29	The knight is kicked	Black has played ...g6 to chase the knight from f5. Where does it go to keep the pressure on f7 and the king?	f5e3:G,a2f7:B
+REVIEW	3430341	33	The f7 break	Black's knight took on g4. Can you find the winning capture on f7 with check?	f3f7:G,a2f7:B
+REVIEW	3430341	35	Trade into a won ending	Black's king has gone to h8. The bishop on g5 can take the bishop on e7. Is that the best way to cash in?	g5e7:G,f7e7:B
+OUTRO	3430341	Fedorchuk won a clean game by pressure on f7. The lesson for your line: when Black plays ...b6 and ...Bb7, swing the knight to f5, open the centre, and aim bishop a2 and the queen at f7. Black's ...g6 to kick the knight only weakens the king's side more.
+GAME	7057672	Repertoire: Philidor: 3.d4 Nf6 4.Nc3	w	e4 d6 d4 Nf6 Nc3 c6 Nf3 Bg4 Be2 Nbd7 h3 Bxf3 Bxf3 e5 Be3 Be7 O-O O-O Qd2 Qc7	Josef Pribyl	Frantisek Vykydal	1982	CSR-ch	1-0	20	63	e4 d6 d4 Nf6 Nc3 c6 Nf3 Bg4 Be2 Nbd7 h3 Bxf3 Bxf3 e5 Be3 Be7 O-O O-O Qd2 Qc7 a4 h6 Rfd1 Rfd8 Be2 Nh7 a5 Bg5 Bc4 Ndf8 d5 c5 a6 Rab8 b3 Ng6 axb7 Rxb7 Ra6 Ne7 Rda1 Rdb8 Bxg5 Nxg5 Qd3 Nc8 Rc6 Qd8 Ba6 Rb4 Bxc8 c4 Rxc4 Rxc4 bxc4 Qxc8 Nb5 Qc5 Rxa7 Qb4 Ra1 Rc8 h4 Nh7 Qa3 Qxa3 Rxa3 Rxc4 Nxd6 Rxc2 Ra8+ Nf8 Nf5 g6 Nxh6+ Kg7 Ng4 Rc7 Re8 f6 Nxf6	Czechoslovak championship, 1982: Josef Pribyl (2425) as White against Frantisek Vykydal (2265). Your line is the Philidor with Nc3, ...c6, Bg4 and Be2, both sides castled, White's queen on d2 and Black's on c7. White's plan is to gain space on the queen's side with a4-a5 and a quiet d5, then open the a-file against Black's knights. Play your line, then find Pribyl's moves.	2425	2265
+NOTE	7057672	20	White plays the pawn to a4, starting the queen's side expansion. The a-pawn will go to a5 and a6 to hit b7 and gain the a-file, while the centre stays closed.	good:f1e1,a2a3
+NOTE	7057672	21	Black plays the pawn to h6.	
+NOTE	7057672	22	White's rook goes to d1.	good:f3e2,g2g3,d4d5
+NOTE	7057672	23	Black's rook goes to d8. A slight inaccuracy.	
+NOTE	7057672	24	White's bishop goes to e2. A slight inaccuracy. The engine prefers d5.	good:d4d5
+NOTE	7057672	25	Black's knight goes to h7. A slight inaccuracy.	
+NOTE	7057672	26	White plays the pawn to a5.	good:d4d5
+NOTE	7057672	27	Black's bishop goes to g5.	
+NOTE	7057672	28	White's bishop goes to c4. A slight inaccuracy. The engine prefers b4.	good:b2b4,d4d5,e3g5
+NOTE	7057672	29	Black's knight goes to f8. A slight inaccuracy.	
+NOTE	7057672	30	White plays the pawn to d5.	good:e3g5
+NOTE	7057672	31	Black plays the pawn to c5 to block the queen's side. It is a slight inaccuracy, because after a6 the b7 pawn is hit and the a-file opens for White's rooks.	
+NOTE	7057672	32	White plays the pawn to a6.	good:e3g5,c3b5
+NOTE	7057672	33	Black's rook goes to b8.	
+NOTE	7057672	34	White plays the pawn to b3. A slight inaccuracy. The engine prefers Nb5.	good:c3b5
+NOTE	7057672	35	Black develops the knight to g6. A slight inaccuracy.	
+NOTE	7057672	36	White's pawn takes the pawn on b7.	good:c3b5
+NOTE	7057672	37	Black's rook takes the pawn on b7.	
+NOTE	7057672	38	White's rook goes to a6.	good:c4a6,d2e2
+NOTE	7057672	39	Black's knight goes to e7.	
+NOTE	7057672	40	White's rook goes to a1.	good:e3g5,c4d3
+NOTE	7057672	41	Black's rook goes to b8.	
+NOTE	7057672	42	White's bishop takes the bishop on g5.	good:c4d3,c4e2
+NOTE	7057672	43	Black's knight takes the bishop on g5.	
+NOTE	7057672	44	White's queen goes to d3, eyeing the c-file and the pawn on c4 break, while Black's knights are tangled on the king's side.	good:c4d3,d2e2,d2e3
+NOTE	7057672	45	Black's knight goes to c8.	
+NOTE	7057672	46	White's rook goes to c6.	good:
+NOTE	7057672	47	Black's queen goes to d8. It threatens Rb6.	
+NOTE	7057672	48	White's bishop goes to a6.	good:
+NOTE	7057672	49	Black's rook goes to b4, threatening ...Ne7 and counter-play against the pawn on e4. A slight inaccuracy: the bishop on c8 then goes with gain. White's queen's side pressure is already worth over 4 pawns.	
+NOTE	7057672	50	White's bishop takes the knight on c8.	good:h3h4
+NOTE	7057672	51	Black plays the pawn to c4. It threatens cxd3. A slight inaccuracy.	threat:c4d3
+NOTE	7057672	52	White's rook takes the pawn on c4. A slight inaccuracy: bxc4 was better, keeping the pawn structure and the bishop on a6 untouched. White still has a clear advantage.	good:b3c4
+NOTE	7057672	53	Black's rook takes the rook on c4. It threatens Rcxc8.	threat:c4c8
+NOTE	7057672	54	White's pawn takes the rook on c4.	good:d3c4
+NOTE	7057672	55	Black's queen takes the bishop on c8. It threatens Rb4.	
+NOTE	7057672	56	White's knight goes to b5.	good:
+NOTE	7057672	57	Black's queen goes to c5.	
+NOTE	7057672	58	White's rook takes the pawn on a7.	good:c2c3
+NOTE	7057672	59	Black's queen goes to b4. It threatens Qe1+.	threat:b4e1
+NOTE	7057672	60	White's rook goes to a1. A slight inaccuracy. The engine prefers h4.	good:h3h4
+NOTE	7057672	61	Black's rook goes to c8, attacking the pawn on c4. A mistake: it gives away about 3 pawns, because after h4 and c3 Black's queen is cut off and White's queen's side pawns and knight win material. Black needed something sharper like ...Nxe4.	threat:c8c4
+NOTE	7057672	62	White plays the pawn to h4.	good:c2c3
+NOTE	7057672	63	Black's knight goes to h7. It threatens Nf6.	
+NOTE	7057672	64	White's queen goes to a3.	
+NOTE	7057672	65	Black's queen takes the queen on a3. It threatens Qxa1+.	
+NOTE	7057672	66	White's rook takes the queen on a3.	
+NOTE	7057672	67	Black's rook takes the pawn on c4. It threatens Nf6.	
+NOTE	7057672	68	White's knight takes the pawn on d6.	
+NOTE	7057672	69	Black's rook takes the pawn on c2. It threatens Nf6.	
+NOTE	7057672	70	White's rook goes to a8, with check.	
+NOTE	7057672	71	Black's knight goes to f8. It threatens Rc7.	
+NOTE	7057672	72	White's knight goes to f5.	
+NOTE	7057672	73	Black plays the pawn to g6. It threatens gxf5.	
+NOTE	7057672	74	White's knight takes the pawn on h6 with check, winning another pawn. Black's king is drawn to g7, and the rook on a8 rules the back rank.	
+NOTE	7057672	75	Black's king goes to g7. It threatens Rc1+.	
+NOTE	7057672	76	White's knight goes to g4.	
+NOTE	7057672	77	Black's rook goes to c7. It threatens Nd7.	
+NOTE	7057672	78	White's rook goes to e8.	
+NOTE	7057672	79	Black plays the pawn to f6, attacking the knight on g4 and giving White an easy tactic. A slight inaccuracy, but Black was already worse.	
+NOTE	7057672	80	White's knight takes the pawn on f6, keeping the extra pawns and the winning attack. The rook on e8 and knight together threaten mate ideas around the king.	
+REVIEW	7057672	31	Closing the queen's side	Black has played c5 against your a-pawn. White can now push a6 and use the a-file. Which pawn move opens it?	a5a6:G,a1a5:B
+REVIEW	7057672	52	Which recapture?	White's rook took on c4. The engine preferred bxc4, keeping the structure and the rook on c6. What would you have played, and why?	b3c4:G,c6c4:R
+REVIEW	7057672	60	The queen's side collapses	White's rook is back on a1. Black's queen threatens Qe1+. Can you find how White keeps control?	a7a1:G,d3e2:B
+REVIEW	7057672	62	Cut off the queen	Black's rook has gone to c8 and the queen is far from the king. White plays h4 and trades queens with Qa3. Why does this win?	h3h4:G,d3a3:B
+OUTRO	7057672	Pribyl won by queen's side pressure: a4, a5, a6 and the a-file, with a knight on b5 hitting the d6 pawn. The lesson for your line: when the centre is closed by d5, use your queen's side pawns to open the a-file and win the weak pawns on b7 and d6.
+GAME	f6e0c54	Repertoire: Caro-Kann: Panov 4.c4	w	e4 c6 d4 d5 exd5 cxd5 c4 Nf6 Nc3 Nc6 Nf3 Bg4 cxd5 Nxd5 Qb3 Bxf3 gxf3 e6 Qxb7 Nxd4 Bb5+ Nxb5	Peter Acs	Miklos Ezsol	1995	HUN-chT2 9596	1-0	22	59	e4 c6 d4 d5 exd5 cxd5 c4 Nf6 Nc3 Nc6 Nf3 Bg4 cxd5 Nxd5 Qb3 Bxf3 gxf3 e6 Qxb7 Nxd4 Bb5+ Nxb5 Qc6+ Ke7 Qxb5 Rc8 O-O Nxc3 bxc3 Qd7 Qa6 Rc6 Qe2 Kf6 Rd1 Qc7 Qe4 Rc4 Rd4 Rxd4 cxd4 Qa5 Bf4 Qf5 Rb1 Qxe4 fxe4 Ba3 Rb3 Be7 Rg3 Bf8 Be5+ Ke7 Ra3 f6 Rxa7+ Ke8 Bd6 h5 Ra8+ Kf7 a4	Hungary, 1995, a team championship game between Peter Acs (2240) and Miklos Ezsol (2295). It follows your Caro-Kann Panov line: you have grabbed the b7 pawn with the queen and Black has hit back on d4 and b5. White ends up a pawn up with a broken pawn structure, so the lesson is how to turn a small material edge into a win. Play your line, then find Acs's moves.	2240	2295
+NOTE	f6e0c54	22	White's queen jumps to c6 with check. It checks the king and attacks the knight on b5, so after the king moves White regains the piece.	good:b7b5
+NOTE	f6e0c54	23	Black's king goes to e7. It threatens Nbxc3.	threat:b5c3
+NOTE	f6e0c54	24	White's queen takes the knight on b5. White has won the b7 pawn for the d4 pawn, so White is a pawn up. Black's king is stuck in the centre.	good:c6c5,c3b5
+NOTE	f6e0c54	25	Black's rook goes to c8.	
+NOTE	f6e0c54	26	White castles. The king is safe, and the rook now supports the f-pawn and the open files. Do not rush to win more material before the king is safe.	good:a2a4,c1d2
+NOTE	f6e0c54	27	Black's knight takes the knight on c3. It threatens Nxb5.	threat:c3b5
+NOTE	f6e0c54	28	White retakes with the b-pawn. The doubled pawns are ugly, but the b-file is open for the rook and the extra pawn stays.	good:
+NOTE	f6e0c54	29	Black's queen goes to d7. It threatens Qxb5. A slight inaccuracy.	threat:d7b5
+NOTE	f6e0c54	30	White's queen goes to a6, hitting a7 and tying Black's pieces down. The engine preferred a4, keeping the queen safer from Rc6, but Qa6 is still fine.	good:a2a4,b5e2
+NOTE	f6e0c54	31	Black's rook goes to c6. It threatens Rxa6.	threat:c6a6
+NOTE	f6e0c54	32	White's queen goes to e2.	good:a6b5,a6a5
+NOTE	f6e0c54	33	Black's king goes to f6. It threatens Qc7. A slight inaccuracy.	
+NOTE	f6e0c54	34	White's rook goes to d1.	good:
+NOTE	f6e0c54	35	Black's queen goes to c7. It threatens h6.	
+NOTE	f6e0c54	36	White's queen centralises on e4. It eyes the c6 rook and the king, and it keeps the d-pawn guarded from the centre.	good:
+NOTE	f6e0c54	37	Black's rook goes to c4. It threatens Rxe4.	threat:c4e4
+NOTE	f6e0c54	38	White offers the rook trade on d4. Trading rooks when a pawn up is the simple plan: fewer pieces, fewer counter-chances.	good:
+NOTE	f6e0c54	39	Black's rook takes the rook on d4. It threatens Rxe4.	threat:d4e4
+NOTE	f6e0c54	40	White retakes with the c-pawn, which gives a strong pawn on d4 that blocks the d-file and shields the king.	good:
+NOTE	f6e0c54	41	Black's queen goes to a5.	
+NOTE	f6e0c54	42	White develops the last minor piece to f4. It attacks the c7 square and stops ...e5, and it is the bishop's best diagonal.	good:d4d5,h2h4
+NOTE	f6e0c54	43	Black's queen goes to f5.	
+NOTE	f6e0c54	44	White's rook goes to the open b-file, ready to invade on b7. Open files are where a pawn-up side makes progress.	good:
+NOTE	f6e0c54	45	Black's queen takes the queen on e4. It threatens Qxb1+. A slight inaccuracy.	threat:e4b1
+NOTE	f6e0c54	46	White recaptures with the f-pawn, which keeps the pawn centre d4 and e4 intact. The doubled f-pawn is now gone and the structure is healthy.	good:
+NOTE	f6e0c54	47	Black's bishop jumps to a3, aiming at the rook on b1. But the bishop soon has to return and Black has lost time. Be7 at once was better, and the engine score jumps in White's favour after this.	
+NOTE	f6e0c54	48	White's rook goes to b3, hitting the bishop and gaining a tempo.	good:
+NOTE	f6e0c54	49	Black's bishop goes to e7. It threatens Rg8.	
+NOTE	f6e0c54	50	White's rook swings to g3, attacking the g7 pawn. A rook lift to a new target keeps Black's pieces busy.	good:f4e5
+NOTE	f6e0c54	51	Black's bishop retreats to f8 to guard g7. Black is passive now and the engine preferred ...e5 to free the position.	
+NOTE	f6e0c54	52	White's bishop goes to e5 with check, a strong central post that the black pawns can no longer challenge easily. It drives the king back.	good:
+NOTE	f6e0c54	53	Black's king goes to e7. It threatens f6.	
+NOTE	f6e0c54	54	White's rook goes to a3, switching to the a7 pawn. The weak queen's side pawn is the target.	good:
+NOTE	f6e0c54	55	Black plays the pawn to f6. It threatens fxe5.	threat:f6e5
+NOTE	f6e0c54	56	White's rook takes on a7 with check. Black's king is driven back and White is now two pawns up.	good:
+NOTE	f6e0c54	57	Black's king goes to e8. It threatens fxe5.	threat:f6e5
+NOTE	f6e0c54	58	White's bishop goes to d6, forcing the f8 bishop's trade or driving it away, and it takes control of the dark squares.	good:
+NOTE	f6e0c54	59	Black plays the pawn to h5.	
+NOTE	f6e0c54	60	White's rook goes to a8 with check, hitting the f8 bishop. The rook invasion wins more material.	
+NOTE	f6e0c54	61	Black's king steps to f7. The rook on h8 and bishop on f8 are both under pressure now.	
+NOTE	f6e0c54	62	White pushes the a-pawn. With two pawns extra and an active rook, the a-pawn becomes a passed pawn too.	
+REVIEW	f6e0c54	24	Count the material	White has regained the piece with Qc6+ and Qxb5. Count the material: White has the b7 pawn for the d4 pawn it lost, so White is a pawn up. What should White do now, grab more or make the king safe?	e1g1:G
+REVIEW	f6e0c54	38	Trade rooks	White is a pawn up with a safe king. The simple plan is to trade pieces. How does White do it?	d1d4:G,c4d4:R
+REVIEW	f6e0c54	47	A tempo to gain	Black's bishop has gone to a3 to hit the rook. White's rook has a tempo move available. Can you find the follow up that gains time?	b1b3:G,a3b4:R
+REVIEW	f6e0c54	56	Winning the pawn	White's rook is on a3 and Black has just weakened the king's side with f6. Where is the weakness?	a3a7:G
+OUTRO	f6e0c54	White won on move 32. Black was passive on the queen's side, and the a7 pawn fell to the rook, then White's pieces dominated. The lesson for the line: after the queen grab on b7 and the forks on c6, stay calm, castle, trade rooks, then use the open b-file and the dominating bishop on e5 to win a second pawn.
+GAME	bda429f	Repertoire: French: Advance 3.e5	w	e4 e6 d4 d5 e5 c5 c3 Nc6 Nf3 Qb6 Be2 cxd4 cxd4 Nge7 Na3 Nf5 Nc2 Be7 O-O O-O	Daniel Kopylov	D Nedic	2024	Leer Open 2024	1-0	20	51	e4 e6 d4 d5 e5 c5 c3 Nc6 Nf3 Qb6 Be2 cxd4 cxd4 Nge7 Na3 Nf5 Nc2 Be7 O-O O-O Bd3 Kh8 g4 Nh6 Bxh6 gxh6 Qd2 Kg7 g5 hxg5 Nxg5 h6 Nh7 Nxd4 Kh1 Nf5 Nxf8 Kxf8 Rg1 Bd7 Bxf5 exf5 Nd4 Bg5 f4 Bh4 Rac1 Rc8 Rxc8+ Bxc8 Qc3 Bd7 Qa3+ Be7 Qg3 Ke8 Qd3 Qxb2 Nxf5 d4 Nxd4 Qxa2 Qe4 Qa6 f5 Bg5 h4 Qa3 Kh2 Qb4 hxg5 Bc6 Qe3 Qb2+ Kg3	Leer Open 2024: Daniel Kopylov (2369) as White against D. Nedic (2345). Your line is the Advance French with the classic ...Qb6 and ...cxd4 sequence, and both sides have castled. White now has the usual plan: bring the bishop to d3 and attack the king with g4 and g5, backed by the knight on c2 and the queen. It is a sharp game with errors on both sides, so look at the plan and the pattern rather than every move. Play your line, then find Kopylov's moves.	2369	2345
+NOTE	bda429f	20	White's bishop goes to d3, aiming straight at the black king's side. With Black's knight on f5 the bishop and the g-pawn can work together against it.	good:g2g4,b2b4
+NOTE	bda429f	21	Black's king goes to h8, a passive move. The engine preferred ...f6, hitting the e5 pawn and opening the position before White starts the attack.	
+NOTE	bda429f	22	White plays g4, kicking the knight on f5. The king's side pawn storm is the thematic plan in the Advance French when Black has no counterplay in the centre.	good:
+NOTE	bda429f	23	Black's knight goes to h6. It threatens Nxg4.	threat:h6g4
+NOTE	bda429f	24	White's bishop takes the knight on h6.	good:
+NOTE	bda429f	25	Black's pawn takes the bishop on h6. It threatens f6.	
+NOTE	bda429f	26	White's queen goes to d2.	good:d1c1
+NOTE	bda429f	27	Black's king goes to g7. It threatens f6.	
+NOTE	bda429f	28	White pushes the pawn to g5, opening the g-file against the black king. The pawn is a lever: when it is taken, White's knight lands on g5 with tempo.	good:
+NOTE	bda429f	29	Black takes on g5. It opens the g-file for White, which is what White wanted. Keeping the file shut was better.	
+NOTE	bda429f	30	White's knight takes the pawn on g5.	good:
+NOTE	bda429f	31	Black plays the pawn to h6. It threatens hxg5.	threat:h6g5
+NOTE	bda429f	32	White's knight goes to h7.	good:
+NOTE	bda429f	33	Black's knight takes the pawn on d4. It threatens Nf3+. A slight inaccuracy.	threat:d4f3
+NOTE	bda429f	34	White's king goes to h1.	good:c2d4
+NOTE	bda429f	35	Black's knight goes to f5. It threatens Kxh7.	threat:g7h7
+NOTE	bda429f	36	White's knight takes the rook on f8. It wins the exchange and is good, but the engine preferred Nf6, which keeps more of the attack and wins more.	good:h7f6
+NOTE	bda429f	37	Black's king takes the knight on f8. It threatens Bd7.	
+NOTE	bda429f	38	White's rook goes to g1.	good:d3f5,a1c1
+NOTE	bda429f	39	Black develops the bishop to d7. It threatens Bc6.	
+NOTE	bda429f	40	White's bishop takes the knight on f5.	good:
+NOTE	bda429f	41	Black's pawn takes the bishop on f5. It threatens Rc8.	
+NOTE	bda429f	42	White's knight goes to d4.	good:
+NOTE	bda429f	43	Black's bishop goes to g5. It threatens Bxd2. A slight inaccuracy.	threat:g5d2
+NOTE	bda429f	44	White plays the pawn to f4.	good:
+NOTE	bda429f	45	Black's bishop goes to h4.	
+NOTE	bda429f	46	White's rook goes to c1.	good:g1g2
+NOTE	bda429f	47	Black's rook goes to c8. It threatens Rxc1.	threat:c8c1
+NOTE	bda429f	48	White takes the rook on c8 with check. Trading a pair of rooks on the open file is safe when Black's king is the exposed one.	good:
+NOTE	bda429f	49	Black's bishop takes the rook on c8.	
+NOTE	bda429f	50	White's queen goes to c3. A slight inaccuracy. The engine prefers a3.	good:a2a3,b2b4,h2h3
+NOTE	bda429f	51	Black develops the bishop to d7.	
+NOTE	bda429f	52	White's queen goes to a3, with check.	
+NOTE	bda429f	53	Black's bishop goes to e7. It threatens Bxa3.	
+NOTE	bda429f	54	White's queen goes to g3.	
+NOTE	bda429f	55	Black's king goes to e8. It threatens Qxd4.	
+NOTE	bda429f	56	White's queen goes to d3. It threatens the knight on f5 but it leaves the queen's side pawns to be eaten. The engine preferred Qc3, keeping an eye on b2 and the e5 square.	
+NOTE	bda429f	57	Black's queen takes the pawn on b2. It threatens Bc5.	
+NOTE	bda429f	58	White's knight takes the pawn on f5.	
+NOTE	bda429f	59	Black pushes the pawn to d4, trying to open lines against the white king. A slight inaccuracy, since it loses a pawn for little.	
+NOTE	bda429f	60	White takes the pawn on d4 with the knight. The engine liked Rg8+ even more, forcing the king to run.	
+NOTE	bda429f	61	Black's queen takes the pawn on a2. It threatens Qd5+.	
+NOTE	bda429f	62	White's queen goes to e4, stepping out of the check threats and centralising so the queen guards the king.	
+NOTE	bda429f	63	Black's queen goes to a6. It threatens Bc5.	
+NOTE	bda429f	64	White plays the pawn to f5.	
+NOTE	bda429f	65	Black's bishop goes to g5, hoping for ...Qc4. A slight inaccuracy; the bishop is soon lost.	
+NOTE	bda429f	66	White plays h4, which wins the bishop in the end, but the engine preferred f6, keeping the attack on the black king.	
+NOTE	bda429f	67	Black's queen goes to a3 and threatens mate on h3. But White has a simple defence and Black loses the bishop on g5.	
+NOTE	bda429f	68	White's king goes to h2.	
+NOTE	bda429f	69	Black's queen goes to b4, threatening a check on d2. A mistake, since White simply takes the bishop on g5.	
+NOTE	bda429f	70	White's pawn takes the bishop on g5.	
+NOTE	bda429f	71	Black's bishop goes to c6. It threatens Bxe4.	
+NOTE	bda429f	72	White's queen goes to e3.	
+NOTE	bda429f	73	Black's queen checks on b2. Black has only checks left.	
+NOTE	bda429f	74	White's king steps to g3. The engine preferred Kh3, but White is winning anyway.	
+OUTRO	bda429f	White won in 37 moves. Black's king was pushed back by g4 and g5 and the exchange fell to the knight sacrifice on h7. Both sides went wrong later (Qd3 and h4 were inaccuracies by White, and Black blundered under pressure), but the lesson for the line is the plan: after the usual Advance structure, Bd3 and the g-pawn storm give White a lasting initiative against the castled king.
+GAME	ac76f06	Repertoire: French: Tarrasch 3.Nd2	w	e4 e6 d4 d5 Nd2 Nf6 e5 Nfd7 Bd3 c5 c3 Nc6 Ne2 cxd4 cxd4 f6 exf6 Nxf6 Nf3 Bd6 O-O O-O Nc3 a6	K Spraggett	J Oms Pallisse	2012	14th Sants Open A	1-0	24	66	e4 e6 d4 d5 Nd2 Nf6 e5 Nfd7 Bd3 c5 c3 Nc6 Ne2 cxd4 cxd4 f6 exf6 Nxf6 Nf3 Bd6 O-O O-O Nc3 a6 Re1 Qc7 h3 Bd7 Be3 Rae8 Rc1 Qb8 a3 Kh8 b4 e5 dxe5 Nxe5 Nxe5 Bxe5 Bb1 Bc6 Qd3 Ne4 Nxe4 dxe4 Qb3 Qd6 Bc5 Qf6 Bxe4 Bd4 Bxd4 Qxd4 Bf3 Qd2 Red1 Qf4 Rc3 Re2 Re3 Rxe3 Qxe3 Qxe3 fxe3 Bxf3 gxf3 h6 Kf2 Rc8 Rd3 Kg8 e4 Rc7 Kg3 Kf7 Rd6 Ke7 Rb6 Kd8 h4 Ke8 a4	14th Sants Open A, 2012: Spraggett (2595) as White against Oms Pallisse (2461). Your line is the Tarrasch French where Black has played ...f6 and both sides have castled. The game comes down to a quiet middlegame in which White keeps small pluses, Black drifts, and White cashes in with a pawn and a won rook ending. Play your line, then find Spraggett's moves.	2595	2461
+NOTE	ac76f06	24	White's rook goes to e1, taking the half-open e-file. Black's e6 pawn is the target, and the rook also supports the Bg5 and Bb1 ideas that come later.	good:c1g5,h2h3
+NOTE	ac76f06	25	Black's queen goes to c7. A slight inaccuracy.	
+NOTE	ac76f06	26	White plays the pawn to h3.	good:a2a3
+NOTE	ac76f06	27	Black develops the bishop to d7.	
+NOTE	ac76f06	28	White develops the bishop to e3.	good:c1d2,a2a3,c1g5
+NOTE	ac76f06	29	Black's rook goes to e8.	
+NOTE	ac76f06	30	White's rook goes to c1.	good:a2a3,a1b1
+NOTE	ac76f06	31	Black's queen goes to b8.	
+NOTE	ac76f06	32	White plays the pawn to a3.	good:c3a4,d1b3
+NOTE	ac76f06	33	Black's king goes to h8.	
+NOTE	ac76f06	34	White plays the pawn to b4.	good:d3b1,d3e2,e3g5
+NOTE	ac76f06	35	Black plays the pawn to e5. It threatens e4.	
+NOTE	ac76f06	36	White's pawn takes the pawn on e5.	good:f3e5,b4b5
+NOTE	ac76f06	37	Black's knight takes the pawn on e5. It threatens Nxf3+.	threat:e5f3
+NOTE	ac76f06	38	White's knight takes the knight on e5.	good:d3e2,e3d4
+NOTE	ac76f06	39	Black's bishop takes the knight on e5. It threatens d4.	
+NOTE	ac76f06	40	White's bishop goes to b1.	good:c3e2,d3f1
+NOTE	ac76f06	41	Black's bishop goes to c6.	
+NOTE	ac76f06	42	White's queen goes to d3.	good:e3d4,g1h1
+NOTE	ac76f06	43	Black's knight goes to e4. It threatens Bh2+.	threat:e5h2
+NOTE	ac76f06	44	White's knight takes the knight on e4.	good:c3d5
+NOTE	ac76f06	45	Black's pawn takes the knight on e4. It threatens exd3.	threat:e4d3
+NOTE	ac76f06	46	White's queen goes to b3.	good:d3e2,d3c4,d3c2
+NOTE	ac76f06	47	Black's queen goes to d6, but the bishop on e3 jumps to c5 with a hit on it. Black loses a tempo and then the pawn on e4. The engine preferred Qb8 or similar quiet moves.	
+NOTE	ac76f06	48	White's bishop goes to c5.	good:
+NOTE	ac76f06	49	Black's queen goes to f6.	
+NOTE	ac76f06	50	White's bishop takes the pawn on e4.	good:c1d1
+NOTE	ac76f06	51	Black's bishop goes to d4. It threatens Qxf2+.	threat:f6f2
+NOTE	ac76f06	52	White's bishop takes the bishop on d4.	good:b3f3,e4f3
+NOTE	ac76f06	53	Black's queen takes the bishop on d4. It threatens Qxf2+.	threat:d4f2
+NOTE	ac76f06	54	White's bishop goes to f3.	good:
+NOTE	ac76f06	55	Black's queen goes to d2. It threatens Rxe1+.	threat:e8e1
+NOTE	ac76f06	56	White's rook goes to d1.	good:b3d1
+NOTE	ac76f06	57	Black's queen goes to f4, threatening to take on f3. A slight inaccuracy: the engine preferred Rxf3, which would have kept the balance. After this White can trade the active black rook.	threat:c6f3
+NOTE	ac76f06	58	White's rook goes to c3.	good:
+NOTE	ac76f06	59	Black's rook goes to e2. A slight inaccuracy.	
+NOTE	ac76f06	60	White's rook goes to e3.	good:
+NOTE	ac76f06	61	Black's rook takes the rook on e3. It threatens Rxb3.	threat:e3b3
+NOTE	ac76f06	62	White's queen takes the rook on e3.	good:
+NOTE	ac76f06	63	Black takes on e3. With queens off, the question is whether Black can hold a pawn-down rook ending.	
+NOTE	ac76f06	64	White retakes with the f-pawn. The pawn now guards d4 and f4 and the rook on d1 comes into the game with the d-file open.	good:
+NOTE	ac76f06	65	Black swaps bishops on f3. Trades help the side that is ahead, and White's king is safe behind the doubled f-pawns.	threat:f3d1
+NOTE	ac76f06	66	White's pawn takes the bishop on f3.	
+NOTE	ac76f06	67	Black plays the pawn to h6. It threatens Rxf3.	
+NOTE	ac76f06	68	White's king goes to f2.	
+NOTE	ac76f06	69	Black's rook goes to c8. It threatens Rc2+.	
+NOTE	ac76f06	70	White's rook goes to d3.	
+NOTE	ac76f06	71	Black's king goes to g8.	
+NOTE	ac76f06	72	White plays the pawn to e4.	
+NOTE	ac76f06	73	Black's rook goes to c7. A slight inaccuracy: it is a passive defender and the black king has no good squares. The rook on d3 now dominates the d-file.	
+NOTE	ac76f06	74	White's king goes to g3.	
+NOTE	ac76f06	75	Black's king goes to f7. It threatens Ke6. A slight inaccuracy.	
+NOTE	ac76f06	76	White's rook goes to d6.	
+NOTE	ac76f06	77	Black's king goes to e7. It threatens Kxd6.	
+NOTE	ac76f06	78	White's rook goes to b6.	
+NOTE	ac76f06	79	Black's king goes to d8.	
+NOTE	ac76f06	80	White plays the pawn to h4.	
+NOTE	ac76f06	81	Black's king goes to e8 and is squeezed. All Black can do is shuffle while White improves.	
+NOTE	ac76f06	82	White plays a4, making a queen's side passed-pawn threat. The black king can never leave the back rank while the rook on b6 hits b7.	
+REVIEW	ac76f06	47	The queen walks into it	Black's queen sits on d6 and your bishop is on e3, pointing at c5. Can you find the move that wins a tempo and a pawn?	e3c5:G
+REVIEW	ac76f06	55	The queen on d2	Black's queen is on d2, attacking your b-pawn and e1 rook. Which rook hits it, and where?	e1d1:G,d2b2:R
+REVIEW	ac76f06	64	Into a rook ending	The queens have just come off. How should White recapture, and what is the plan for the rooks?	f2e3:G
+REVIEW	ac76f06	75	The rook cuts the king off	Black's king is heading to e6. The rook can take away the d-file and start attacking the queen's side pawns. Where does it go?	d3d6:G
+OUTRO	ac76f06	White won in 42 moves. Black lost the e4 pawn after the queen walked into Bc5, and the endgame rook on d6 and b6 attacked the weak pawns. The lesson for the line: if Black gets a stable ...f6 structure, keep pieces active, wait for a slip on the e-pawn, and when ahead trade queens and use the rook on the open file.
+GAME	1e1a880	Repertoire: French: Tarrasch 3.Nd2	w	e4 e6 d4 d5 Nd2 c5 exd5 Qxd5 Ngf3 cxd4 Bc4 Qd6 O-O Nf6 Nb3 Nc6 Nbxd4 Nxd4 Nxd4 a6 Re1 Bd7 Bb3 O-O-O	D Pavasovic	B Kovacevic	2006	SK Liburnija GM	1-0	24	64	e4 e6 d4 d5 Nd2 c5 exd5 Qxd5 Ngf3 cxd4 Bc4 Qd6 O-O Nf6 Nb3 Nc6 Nbxd4 Nxd4 Nxd4 a6 Re1 Bd7 Bb3 O-O-O Be3 Qc7 Qe2 Kb8 h3 Bc5 Rad1 Rhe8 Nf3 Bxe3 Qxe3 Bc6 Ne5 Be4 Qf4 Bg6 Ba4 Rg8 c4 Kc8 b4 Rxd1 Rxd1 Rd8 Rd4 a5 a3 axb4 axb4 Rxd4 Qxd4 Qe7 b5 Nd7 Nxd7 Qxd7 Qa7 Qd2 Qc5+ Kd8 b6	SK Liburnija GM, 2006: Pavasovic (2575) against Kovacevic (2471). In your Tarrasch line Black took on d5 with the queen and castled long, so Black's king sits on the queen's side where White's pieces can aim at it. White's bishop on b3 and the pieces on e3 and d4 do exactly this. Play your line, then find Pavasovic's moves.	2575	2471
+NOTE	1e1a880	24	White develops the bishop to e3, aiming across at a7 and the queen's side. Black has castled there, so each developing move should point at that king.	good:c1g5,d4f3
+NOTE	1e1a880	25	Black's queen goes to c7.	
+NOTE	1e1a880	26	White's queen goes to e2.	good:c2c3
+NOTE	1e1a880	27	Black's king goes to b8.	
+NOTE	1e1a880	28	White plays the pawn to h3.	good:a1d1,c2c3
+NOTE	1e1a880	29	Black develops the bishop to c5.	
+NOTE	1e1a880	30	White's rook goes to d1.	good:c2c3,d4f3
+NOTE	1e1a880	31	Black's rook goes to e8.	
+NOTE	1e1a880	32	White's knight goes to f3.	good:c2c3
+NOTE	1e1a880	33	Black's bishop takes the bishop on e3. It threatens Bb6.	
+NOTE	1e1a880	34	White's queen takes the bishop on e3.	good:
+NOTE	1e1a880	35	Black's bishop goes to c6.	
+NOTE	1e1a880	36	White's knight goes to e5.	good:c2c4,d1d8
+NOTE	1e1a880	37	Black's bishop goes to e4. It threatens Rxd1.	threat:d8d1
+NOTE	1e1a880	38	White's queen goes to f4.	good:e3g3,e3g5
+NOTE	1e1a880	39	Black's bishop goes to g6. A slight inaccuracy.	
+NOTE	1e1a880	40	White's bishop goes to a4.	good:c2c4
+NOTE	1e1a880	41	Black's rook goes to g8. It threatens Nd5.	
+NOTE	1e1a880	42	White plays the pawn to c4.	good:
+NOTE	1e1a880	43	Black's king goes to c8. It threatens Rxd1. A slight inaccuracy.	threat:d8d1
+NOTE	1e1a880	44	White plays the pawn to b4.	good:c4c5,d1c1
+NOTE	1e1a880	45	Black's rook takes the rook on d1. It threatens Rxe1+.	threat:d1e1
+NOTE	1e1a880	46	White's rook takes the rook on d1.	good:a4d1
+NOTE	1e1a880	47	Black's rook goes to d8. It threatens Rxd1+.	threat:d8d1
+NOTE	1e1a880	48	White's rook goes to d4.	good:d1d8
+NOTE	1e1a880	49	Black plays the pawn to a5. It threatens axb4.	threat:a5b4
+NOTE	1e1a880	50	White plays the pawn to a3.	good:
+NOTE	1e1a880	51	Black's pawn takes the pawn on b4. It threatens bxa3.	threat:b4a3
+NOTE	1e1a880	52	White's pawn takes the pawn on b4.	good:
+NOTE	1e1a880	53	Black's rook takes the rook on d4. It threatens Rxf4.	threat:d4f4
+NOTE	1e1a880	54	White's queen takes the rook on d4.	good:
+NOTE	1e1a880	55	Black's queen goes to e7, hitting b4. A slight inaccuracy, it is passive and lets White advance with gain of time.	threat:e7b4
+NOTE	1e1a880	56	White pushes the b-pawn to b5. It cramps Black's queen's side and gets the pawn rolling towards b6. The pawn on b5 is protected by the bishop on a4.	good:
+NOTE	1e1a880	57	Black's knight goes to d7. It threatens Nc5.	
+NOTE	1e1a880	58	White's knight takes the knight on d7.	good:
+NOTE	1e1a880	59	Black's queen takes the knight on d7. It threatens Qxd4.	threat:d7d4
+NOTE	1e1a880	60	White's queen goes to a7.	good:
+NOTE	1e1a880	61	Black's queen goes to d2, grabbing nothing, and White's queen comes to c5 with check. A mistake: the queen is far from the king and Black cannot stop b6 with mate threats.	threat:d2c1
+NOTE	1e1a880	62	White's queen goes to c5, with check.	good:
+NOTE	1e1a880	63	Black's king goes to d8, the only way to stay in the game.	
+NOTE	1e1a880	64	White pushes the pawn to b6, with the bishop on a4 and queen on c5 creating mating threats on c7 and d7.	
+REVIEW	1e1a880	37	Where does the queen go?	The knight on e5 is strong and Black's bishop on e4 hits your d1 rook. The queen can step out with tempo. Where should it go?	e3f4:G,e4d1:R
+REVIEW	1e1a880	41	Space on the queen's side	Black's bishop has gone to g6 and the rook to g8. What pawn push cuts down the black pieces?	c2c4:G
+REVIEW	1e1a880	55	The b-pawn runs	The queens and knights are the only pieces left and Black's queen has come to e7. How does White use the extra space on the queen's side?	b4b5:G
+REVIEW	1e1a880	61	Mating attack	Black's queen has taken the pawn on d2 but is far from the king. Can you find the check?	a7c5:G
+OUTRO	1e1a880	White won in 33 moves. The knight on e5 and pawn majority on the queen's side gave White space, then b5 and b6 with the queen and bishop produced mating threats. The lesson for the line: with Black castled long, the b-pawn is your battering ram.
+GAME	1a8361f	Repertoire: French: Tarrasch 3.Nd2	w	e4 e6 d4 d5 Nd2 dxe4 Nxe4 Nd7 Nf3 Ngf6 Nxf6+ Nxf6 c3 c5 Bd3 Be7 Qe2 cxd4 Nxd4 O-O O-O Qc7	S Zhigalko	S Yudin	2010	Chigorin Mem Classic Open	1-0	22	70	e4 e6 d4 d5 Nd2 dxe4 Nxe4 Nd7 Nf3 Ngf6 Nxf6+ Nxf6 c3 c5 Bd3 Be7 Qe2 cxd4 Nxd4 O-O O-O Qc7 Nb5 Qc6 Bg5 Bd7 Rad1 h6 Bxf6 Bxf6 Nd6 Rab8 Bb5 Qc7 Bxd7 Qxd7 Ne4 Qe7 Qe3 Be5 Qxa7 Ra8 Qc5 Bxh2+ Kxh2 Qh4+ Kg1 Qxe4 a3 Rad8 Qb6 Rxd1 Rxd1 h5 Qd4 Qe2 Rd2 Qe1+ Kh2 Rc8 Qf4 Rc5 Rd8+ Kh7 Qxf7 Rf5 Qg8+ Kg6 Rd3 Qe5+ Kg1 Qe1+ Kh2 Qe5+ Rg3+ Rg5 f4 Qxf4 Qxe6+ Kh7 Qe3 Qh4+ Rh3 Qg4 Qf3 Qxf3 Rxf3 Re5 c4 b6 b4 Re6 Rc3 g5 c5 bxc5 Rxc5 Kg6 Rc3 h4 b5 Re1 Rb3	Chigorin Memorial Classic Open, 2010: Sergei Zhigalko (2640) as White against S. Yudin (2521). Your line is the main Tarrasch with ...dxe4, where White has the open d-file and a free development. The game stays balanced for a long time and then Black slips in a queen and rook ending. Play your line, then find Zhigalko's moves.	2640	2521
+NOTE	1a8361f	22	White's knight goes to b5, attacking the queen on c7 and eyeing d6 and a7. The engine rates it the best move here.	good:f1e1,c1g5
+NOTE	1a8361f	23	Black's queen goes to c6.	
+NOTE	1a8361f	24	White develops the bishop to g5.	good:b5d4,f1e1
+NOTE	1a8361f	25	Black develops the bishop to d7.	
+NOTE	1a8361f	26	White's rook goes to d1.	good:f1d1,g5f4
+NOTE	1a8361f	27	Black plays the pawn to h6. It threatens hxg5.	threat:h6g5
+NOTE	1a8361f	28	White's bishop takes the knight on f6.	good:g5f4,g5h4,b5d4
+NOTE	1a8361f	29	Black's bishop takes the bishop on f6.	
+NOTE	1a8361f	30	White's knight goes to d6.	good:b5a3,b2b3
+NOTE	1a8361f	31	Black's rook goes to b8.	
+NOTE	1a8361f	32	White's bishop goes to b5.	good:d3c2,d3b1
+NOTE	1a8361f	33	Black's queen goes to c7.	
+NOTE	1a8361f	34	White's bishop takes the bishop on d7.	good:d6e4
+NOTE	1a8361f	35	Black's queen takes the bishop on d7.	
+NOTE	1a8361f	36	White's knight goes to e4.	good:f1e1,d1d2
+NOTE	1a8361f	37	Black's queen goes to e7.	
+NOTE	1a8361f	38	White's queen goes to e3.	good:d1d2,e4f6
+NOTE	1a8361f	39	Black's bishop goes to e5.	
+NOTE	1a8361f	40	White's queen takes the pawn on a7.	good:f1e1,e4c5
+NOTE	1a8361f	41	Black's rook goes to a8. It threatens Rxa7.	threat:a8a7
+NOTE	1a8361f	42	White's queen goes to c5.	good:a7b6,a7e3
+NOTE	1a8361f	43	Black takes on h2 with check. It is a tactical resource: after Kxh2 Qh4+ Kg1 Qxe4 the loose knight on e4 falls, so material is back to level. The other capture, Qxc5, was weaker.	
+NOTE	1a8361f	44	White's king takes the bishop on h2.	good:
+NOTE	1a8361f	45	Black's queen goes to h4, with check.	
+NOTE	1a8361f	46	White's king goes to g1.	good:
+NOTE	1a8361f	47	Black's queen takes the knight on e4. It threatens Rxa2.	threat:a8a2
+NOTE	1a8361f	48	White plays the pawn to a3.	good:c5b6
+NOTE	1a8361f	49	Black's rook goes to d8.	
+NOTE	1a8361f	50	White's queen goes to b6.	good:c5b5
+NOTE	1a8361f	51	Black's rook takes the rook on d1. It threatens Rxf1+.	threat:d1f1
+NOTE	1a8361f	52	White's rook takes the rook on d1.	good:
+NOTE	1a8361f	53	Black plays the pawn to h5.	
+NOTE	1a8361f	54	White's queen goes to d4.	good:b6b5,b6b3
+NOTE	1a8361f	55	Black's queen goes to e2. It threatens Qxb2.	threat:e2b2
+NOTE	1a8361f	56	White's rook goes to d2.	good:d4d2,b2b4
+NOTE	1a8361f	57	Black's queen goes to e1, with check.	
+NOTE	1a8361f	58	White's king goes to h2.	good:
+NOTE	1a8361f	59	Black's rook goes to c8.	
+NOTE	1a8361f	60	White's queen goes to f4.	good:d2d1,g2g3,d2d3
+NOTE	1a8361f	61	Black's rook goes to c5.	
+NOTE	1a8361f	62	White's rook goes to d8, with check.	good:b2b4,a3a4
+NOTE	1a8361f	63	Black's king goes to h7. It threatens Rf5.	
+NOTE	1a8361f	64	White's queen takes the pawn on f7.	good:d8e8,f4d2
+NOTE	1a8361f	65	Black's rook goes to f5. It threatens Rxf7.	threat:f5f7
+NOTE	1a8361f	66	White's queen goes to g8, with check.	good:f7b7,f7e8
+NOTE	1a8361f	67	Black's king goes to g6. A mistake: Kh6 would have held the balance, but now the white rook swings across with Rd3 and Rg3+, and the king is exposed.	threat:e1e5
+NOTE	1a8361f	68	White's rook goes to d3.	good:
+NOTE	1a8361f	69	Black's queen goes to e5, with check.	
+NOTE	1a8361f	70	White's king goes to g1.	
+NOTE	1a8361f	71	Black's queen goes to e1, with check.	
+NOTE	1a8361f	72	White's king steps to h2, out of the checks and behind the pawns. The queen and rook then threaten to harass the black king.	
+NOTE	1a8361f	73	Black's queen goes to e5, with check.	
+NOTE	1a8361f	74	White's rook goes to g3, with check.	
+NOTE	1a8361f	75	Black's rook goes to g5. It threatens h4.	
+NOTE	1a8361f	76	White plays the pawn to f4.	
+NOTE	1a8361f	77	Black's queen takes the pawn on f4. It threatens Qxg3+.	
+NOTE	1a8361f	78	White's queen takes on e6 with check, winning a pawn. The black king is bare and the rook on g3 keeps threatening.	
+NOTE	1a8361f	79	Black's king goes to h7. It threatens Qxg3+.	
+NOTE	1a8361f	80	White's queen goes to e3.	
+NOTE	1a8361f	81	Black's queen goes to h4, with check.	
+NOTE	1a8361f	82	White's rook goes to h3.	
+NOTE	1a8361f	83	Black's queen goes to g4. It threatens Qxg2#.	
+NOTE	1a8361f	84	White's queen goes to f3.	
+NOTE	1a8361f	85	Black's queen takes the queen on f3. It threatens Qxg2#.	
+NOTE	1a8361f	86	White's rook takes the queen on f3.	
+NOTE	1a8361f	87	Black's rook goes to e5. It threatens Re2.	
+NOTE	1a8361f	88	White plays the pawn to c4.	
+NOTE	1a8361f	89	Black plays b6. A slight inaccuracy: it weakens c6 and allows White to open the c-file. The engine liked the position better for White after this.	
+NOTE	1a8361f	90	White plays the pawn to b4.	
+NOTE	1a8361f	91	Black's rook goes to e6.	
+NOTE	1a8361f	92	White's rook goes to c3.	
+NOTE	1a8361f	93	Black plays the pawn to g5. It threatens Kg6.	
+NOTE	1a8361f	94	White plays the pawn to c5.	
+NOTE	1a8361f	95	Black's pawn takes the pawn on c5. It threatens cxb4.	
+NOTE	1a8361f	96	White's rook takes the pawn on c5.	
+NOTE	1a8361f	97	Black's king goes to g6. It threatens Re1.	
+NOTE	1a8361f	98	White's rook goes to c3.	
+NOTE	1a8361f	99	Black plays the pawn to h4. It threatens Re1. A slight inaccuracy.	
+NOTE	1a8361f	100	White plays the pawn to b5.	
+NOTE	1a8361f	101	Black's rook goes to e1, looking for activity against the white king. But the white passed pawn on b5 is far advanced and Black's pieces are scattered.	
+NOTE	1a8361f	102	White's rook goes to b3, behind the passed pawn. Rooks belong behind passed pawns, and the pawn on b5 will run.	
+REVIEW	1a8361f	21	The knight jumps	Black's queen has gone to c7. White's knight on d4 can attack it. Where does it go, and what does it threaten?	d4b5:G
+REVIEW	1a8361f	43	A sacrifice from Black	Black's bishop has taken on h2 with check. White must take it. What does Black win back after that?	g1h2:G
+REVIEW	1a8361f	67	The rook swing	Black's king has stepped to g6. White's rook is still on the d-file. What is the rook's next move, and why?	d8d3:G
+OUTRO	1a8361f	White won in 52 moves. The game was level until Black's king went to g6 in the queen ending. Then Rd3 and Rg3+ gave White the initiative, and the passed b-pawn decided it. The lesson for the line: keep making small threats in a level position, because one inaccurate king move is often all it takes.
+GAME	1532659	Repertoire: Sicilian: Alapin 2.c3	w	e4 c5 c3 Nf6 e5 Nd5 Nf3 Nc6 Bc4 Nb6 Bb3 d5 exd6 Qxd6 O-O g6 d4 cxd4 cxd4 Bg7 Nc3 O-O	M Paragua	S Kalygin	2004	1st Autumn	1-0	22	42	e4 c5 c3 Nf6 e5 Nd5 Nf3 Nc6 Bc4 Nb6 Bb3 d5 exd6 Qxd6 O-O g6 d4 cxd4 cxd4 Bg7 Nc3 O-O Nb5 Qd8 h3 a6 Nc3 Nxd4 Nxd4 Qxd4 Qe2 e6 Be3 Qb4 Rfd1 Nd7 Rac1 Ne5 Na4 Qh4 Nb6 Rb8 Bc5 Nc6 Bxf8 Bxf8 Ba4 Qb4 Bxc6 Qxb6 Bf3	Paragua (2529) against Kalygin (2440) at the 1st Autumn, 2004. Your Alapin line has just ended with Black castled and both sides developed. Black has the d-file and a knight on b6, while your bishop on b3 eyes f7 and your knight heads for b5. Play your line, then find Paragua's moves.	2529	2440
+NOTE	1532659	22	White's knight jumps to b5, hitting the queen on d6 and threatening Nxd6. It also eyes c7 and d4 and gains a tempo, which is typical of this line: the queen has to move.	good:d4d5,h2h3
+NOTE	1532659	23	Black's queen goes to d8.	
+NOTE	1532659	24	White plays the pawn to h3.	good:d4d5,c1f4,f1e1
+NOTE	1532659	25	Black plays the pawn to a6. It threatens axb5.	threat:a6b5
+NOTE	1532659	26	White's knight goes to c3.	good:
+NOTE	1532659	27	Black's knight takes the pawn on d4. It threatens Nxb3.	threat:d4b3
+NOTE	1532659	28	White's knight takes the knight on d4.	good:
+NOTE	1532659	29	Black's queen takes the knight on d4.	
+NOTE	1532659	30	White's queen goes to e2.	good:c1e3,d1d4
+NOTE	1532659	31	Black plays the pawn to e6.	
+NOTE	1532659	32	White develops the bishop to e3.	good:f1d1
+NOTE	1532659	33	Black's queen goes to b4. It threatens Bd7.	
+NOTE	1532659	34	White's rook goes to d1.	good:e3d2,a1d1
+NOTE	1532659	35	Black's knight goes to d7. A slight inaccuracy.	
+NOTE	1532659	36	White's rook goes to c1.	good:
+NOTE	1532659	37	Black's knight goes to e5.	
+NOTE	1532659	38	White's knight goes to a4.	good:f2f4,c1c2
+NOTE	1532659	39	Black's queen goes to h4, a mistake. It leaves the b4 square and the queen no longer watches the b6 and c5 squares. Now Nb6 forks the rook on a8 and the bishop on c8. Black needed to keep control, for example by moving the bishop out first.	
+NOTE	1532659	40	White's knight goes to b6, forking the rook on a8 and the bishop on c8. Nothing of Black's attacks the knight, so one of the two must fall.	good:
+NOTE	1532659	41	Black's rook goes to b8. It threatens Nc6.	
+NOTE	1532659	42	White's bishop goes to c5.	
+NOTE	1532659	43	Black's knight goes to c6. It threatens Rd8.	
+NOTE	1532659	44	White's bishop takes the rook on f8, winning the exchange. Rc4 was a little stronger, but this is clear enough.	
+NOTE	1532659	45	Black's bishop takes the bishop on f8.	
+NOTE	1532659	46	White's bishop goes to a4.	
+NOTE	1532659	47	Black's queen goes to b4. It threatens Qxb6.	
+NOTE	1532659	48	White's bishop takes the knight on c6.	
+NOTE	1532659	49	Black's queen takes the knight on b6, a fair trade for the knight lost on c6. White is still the exchange up.	
+NOTE	1532659	50	White's bishop retreats to f3 and keeps the exchange. Black's pieces are scattered, so White just has to convert.	
+REVIEW	1532659	22	The knight lands on b5	After Nb5 the queen on d6 is attacked and must move. Where will it go?	c3b5:G,b3f7:B
+REVIEW	1532659	38	Black's queen leaves b4	Black's queen on b4 hits the a4 knight but guards the queen's side. If it leaves, a fork waits on b6. Can you see it?	a4b6:G
+REVIEW	1532659	40	The fork lands	The knight on b6 attacks a8 and c8, and Black cannot save both. Can you find how to finish the job?	b6a8:G,b6c8:G
+REVIEW	1532659	22	The knight lands on b5	After Nb5 the queen on d6 is attacked and must move. Where will it go?	c3b5:G,b3f7:B
+REVIEW	1532659	38	Black's queen leaves b4	Black's queen on b4 hits the a4 knight but guards the queen's side. If it leaves, a fork waits on b6. Can you see it?	a4b6:G
+REVIEW	1532659	40	The fork lands	The knight on b6 attacks a8 and c8, and Black cannot save both. Can you find how to finish the job?	b6a8:G,b6c8:G
+REVIEW	1532659	22	The knight lands on b5	After Nb5 the queen on d6 is attacked and must move. Where will it go?	c3b5:G,b3f7:B
+REVIEW	1532659	38	Black's queen leaves b4	Black's queen on b4 hits the a4 knight but guards the queen's side. If it leaves, a fork waits on b6. Can you see it?	a4b6:G
+REVIEW	1532659	40	The fork lands	The knight on b6 attacks a8 and c8, and Black cannot save both. Can you find how to finish the job?	b6a8:G,b6c8:G
+OUTRO	1532659	White won a piece with the fork on b6 after Black's queen left the queen's side. The lesson for your Alapin line: pieces on b3 and the knight on c3 give you tactical jumps to b5, a4 and b6, so always check forks when the enemy queen wanders off.
+GAME	0d2cee8	Repertoire: Sicilian: Alapin 2.c3	w	e4 c5 c3 e6 d4 d5 e5 Nc6 Nf3 Bd7 Be2 Nge7 O-O Nf5 Na3 cxd4 cxd4 Be7 Nc2 O-O	A Giri	W So	2021	Magnus Carlsen Inv KO	1-0	20	53	e4 c5 c3 e6 d4 d5 e5 Nc6 Nf3 Bd7 Be2 Nge7 O-O Nf5 Na3 cxd4 cxd4 Be7 Nc2 O-O Bd2 Rc8 Bd3 f6 exf6 Bxf6 Bc3 Qb6 Qd2 Kh8 Bxf5 exf5 Ne5 Be6 Nxc6 Rxc6 Rfe1 Bg8 Re2 h6 Rae1 Bg5 f4 Bf6 Re8 Rxe8 Rxe8 Kh7 Qd3 Be6 g4 Qc7 Rxe6	Giri (2776) against So (2770) in the Magnus Carlsen Invitational knockout, 2021. Your Alapin line has ended with the isolated-pawn structure: White's d4 pawn is solid, Black has the c-file and the knight on f5. Play your line, then find Giri's moves.	2776	2770
+NOTE	0d2cee8	20	White develops the bishop to d2, heading for c3 where it pressures the long diagonal and the d4 pawn is backed up. It also clears the way for the rooks to join the centre.	good:g1h1,e2d3,c1f4
+NOTE	0d2cee8	21	Black's rook goes to c8.	
+NOTE	0d2cee8	22	White's bishop goes to d3.	good:b2b4
+NOTE	0d2cee8	23	Black plays the pawn to f6.	
+NOTE	0d2cee8	24	White's pawn takes the pawn on f6.	good:d1e2,d3f5
+NOTE	0d2cee8	25	Black's bishop takes the pawn on f6. It threatens Ncxd4.	threat:c6d4
+NOTE	0d2cee8	26	White's bishop goes to c3.	good:d3f5
+NOTE	0d2cee8	27	Black's queen goes to b6.	
+NOTE	0d2cee8	28	White's queen goes to d2.	good:f1e1,a1c1
+NOTE	0d2cee8	29	Black's king goes to h8. It threatens Ncxd4.	threat:c6d4
+NOTE	0d2cee8	30	White's bishop takes the knight on f5. Black's knight was the best defender of the king's side, and after exf5 Black has a ragged pawn on f5 and a weak e-file.	good:a1e1,d2f4
+NOTE	0d2cee8	31	Black's pawn takes the bishop on f5.	
+NOTE	0d2cee8	32	White's knight jumps to e5, a strong outpost the f6 pawn used to guard. It attacks c6 and, with the e-file open, White controls the centre.	good:f1e1,c2e3,h2h3
+NOTE	0d2cee8	33	Black's bishop goes to e6.	
+NOTE	0d2cee8	34	White's knight takes the knight on c6, trading off Black's active piece. After Rxc6 White owns the e-file and Black's f5 pawn is a target.	good:e5f3,a1c1,f1e1
+NOTE	0d2cee8	35	Black's rook takes the knight on c6.	
+NOTE	0d2cee8	36	White's rook goes to e1.	good:a2a4,a1e1
+NOTE	0d2cee8	37	Black's bishop goes to g8.	
+NOTE	0d2cee8	38	White's rook goes to e2.	good:a2a3,a1d1
+NOTE	0d2cee8	39	Black plays the pawn to h6.	
+NOTE	0d2cee8	40	White's rook goes to e1.	good:a2a4,d2d3,c2e1
+NOTE	0d2cee8	41	Black's bishop goes to g5. It threatens Bxd2.	threat:g5d2
+NOTE	0d2cee8	42	White plays the pawn to f4.	good:d2d1,d2d3
+NOTE	0d2cee8	43	Black's bishop goes to f6.	
+NOTE	0d2cee8	44	White's rook takes over the e-file at e8, forcing the rooks off and heading for a lone-bishop ending where Black's pawn on f5 and bishops are weaker.	good:h2h3,c2e3,a2a3
+NOTE	0d2cee8	45	Black's rook takes the rook on e8. It threatens Rec8.	
+NOTE	0d2cee8	46	White's rook takes the rook on e8.	good:
+NOTE	0d2cee8	47	Black's king goes to h7.	
+NOTE	0d2cee8	48	White's queen goes to d3.	good:a2a4,a2a3
+NOTE	0d2cee8	49	Black develops the bishop to e6.	
+NOTE	0d2cee8	50	White plays the pawn to g4, attacking the f5 pawn and Black's bishop on e6 behind it. The engine preferred h3, but the idea is to open the king's side.	good:h2h3,c2e1,g2g3
+NOTE	0d2cee8	51	Black's queen goes to c7 hoping to hit the f4 pawn, but it loses the bishop: the queen no longer guards e6. Qb6 had to stay, defending the bishop.	threat:c7f4
+NOTE	0d2cee8	52	White's rook takes the bishop on e6. Black cannot recapture, so White is a piece up with Black's king exposed.	good:
+REVIEW	0d2cee8	25	Black recaptures on f6	White took on f6 and Black's bishop recaptured, eyeing the d4 pawn. How does White reinforce the centre and prepare to attack?	d2c3:G
+REVIEW	0d2cee8	30	Trading the defender	Bxf5 removes Black's best king's side defender and leaves a weak pawn on f5. Which knight move shows the new outpost?	d3f5:G
+REVIEW	0d2cee8	50	Pressure on f5	Black's bishop and pawn on e6 and f5 are tied to the queen on b6. Where could Black go wrong?	g2g4:G,b6e6:R
+OUTRO	0d2cee8	White won a bishop when Black's queen left its guard of e6. The lesson for your Alapin line: after the isolated d-pawn structure appears, keep a knight on e5 and a rook on the e-file, because every loose piece on e6 or f5 becomes a target.
