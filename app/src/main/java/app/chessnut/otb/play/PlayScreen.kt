@@ -20,6 +20,7 @@ import app.chessnut.otb.analysis.ChessLines
 import app.chessnut.otb.ui.FlagControl
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -903,7 +904,7 @@ private fun Segmented(options: List<String>, selected: Int, enabled: Boolean, on
                     .fillMaxHeight()
                     .background(if (on) Palette.Accent else Color.Transparent)
                     .clickable(enabled = enabled && !on) { onSelect(index) }
-                    .padding(horizontal = 20.dp),
+                    .padding(horizontal = 16.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
@@ -997,64 +998,47 @@ private fun Playing(
     Column(modifier.padding(bottom = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             if (ui.boardWrong) BoardBanner("Check the board", ui.status)
-            // One line of fixed height, so the board never jumps: the status when there is one, otherwise the variation.
-            val status = if (ui.status == ui.openingName || ui.status == ui.san.lastOrNull()) "" else ui.status
-            Row(Modifier.fillMaxWidth().height(40.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(
-                    // The opening's name is in the title bar already: the row says only what the title doesn't.
-                    status.ifEmpty { ui.variation?.takeIf { it != ui.openingName?.removePrefix("Repertoire: ") && it != ui.openingName }.orEmpty() },
-                    color = when {
-                        status.isEmpty() -> Palette.Accent
-                        ui.retry -> Palette.Error
-                        else -> Palette.Text
-                    },
-                    style = MaterialTheme.typography.titleMedium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f),
-                )
-                if (ui.thinking) {
-                    CircularProgressIndicator(
-                        Modifier.padding(4.dp).size(22.dp),
-                        color = Palette.Accent,
-                        strokeWidth = 2.dp,
-                    )
-                }
-                // The move just played: ask for a closer look at it.
-                if (ui.san.isNotEmpty()) {
-                    val played = remember(ui.san) { runCatching { ChessLines.replay(ui.san).uci }.getOrDefault(emptyList()) }
-                    FlagControl(played, "train", ui.openingName.orEmpty(), ui.idea ?: ui.status, Modifier.height(28.dp))
-                }
-            }
             if (ui.kind == PlayKind.Trainer) {
-                Row(Modifier.fillMaxWidth().heightIn(min = 40.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                // One header row of fixed height, so the board never jumps: the switch, one short thing to say, the spinner
+                // while the opponent thinks (the line's label stays), and the flag for the move just played.
+                Row(Modifier.fillMaxWidth().height(40.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     // Two ways to work on a line, one choice: Learn steps through it for you, Practise is you playing it.
                     // What comes after (plans, tactics, a master game) shows under the board once the line is done.
                     Segmented(listOf("Learn", "Practise"), if (ui.learning) 0 else 1, enabled = ui.canLearn) { index ->
                         if (index == 0) viewModel.learn() else viewModel.practise()
                     }
-                    // What Learn says and shows is chosen where it happens: the notes spoken, and the opening's story.
-                    // Out of theory takes the line label's place; Learn has no room for either.
-                    if (!ui.learning) {
-                        if (ui.san.isNotEmpty() && !ui.inTheory && !ui.survival && !ui.punish) {
-                            Text("Out of theory", color = Palette.Gold, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.End, modifier = Modifier.weight(1f))
-                        } else {
-                            ui.lineLabel?.let { label ->
-                                Text(
-                                    label,
-                                    color = if (ui.survival) Palette.Survival else if (ui.punish) Palette.Mistake else Palette.TextMuted,
-                                    fontWeight = if (ui.survival || ui.punish) FontWeight.Bold else FontWeight.Normal,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    maxLines = 1,
-                                    textAlign = TextAlign.End,
-                                    modifier = Modifier.weight(1f),
-                                )
-                            }
-                        }
-                    }
                     if (ui.learning) {
-                        FilterChip(selected = ui.ideas, onClick = { viewModel.setIdeas(!ui.ideas) }, label = { Text(if (ui.ideas) "🔊 Voice" else "🔇 Voice") }, colors = clubChipColors())
-                        FilterChip(selected = ui.history, onClick = { viewModel.setHistory(!ui.history) }, label = { Text("History") }, colors = clubChipColors())
+                        // What Learn says and shows is chosen where it happens: the notes spoken, and the opening's story.
+                        FilterChip(selected = ui.ideas, onClick = { viewModel.setIdeas(!ui.ideas) }, label = { Text(if (ui.ideas) "🔊" else "🔇") }, colors = clubChipColors())
+                        FilterChip(selected = ui.history, onClick = { viewModel.setHistory(!ui.history) }, label = { Text("📖") }, colors = clubChipColors())
+                        Spacer(Modifier.weight(1f))
+                    } else {
+                        // What a move or the board has to say first (a rejected move, the board's state), then Out of theory,
+                        // then which line this is. Plain "Your move" and the move's own name say nothing new.
+                        val plain = ui.status == ui.openingName || ui.status == ui.san.lastOrNull() || ui.status == "Your move" || ui.status == "Your opponent's move"
+                        val say = when {
+                            !plain && ui.status.isNotEmpty() -> ui.status to (if (ui.retry) Palette.Error else Palette.Text)
+                            ui.san.isNotEmpty() && !ui.inTheory && !ui.survival && !ui.punish -> "Out of theory" to Palette.Gold
+                            else -> ui.lineLabel.orEmpty() to (if (ui.survival) Palette.Survival else if (ui.punish) Palette.Mistake else Palette.TextMuted)
+                        }
+                        Text(
+                            say.first,
+                            color = say.second,
+                            fontWeight = if (say.second == Palette.TextMuted) FontWeight.Normal else FontWeight.Bold,
+                            style = MaterialTheme.typography.bodyMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                    if (ui.thinking) {
+                        CircularProgressIndicator(Modifier.padding(4.dp).size(22.dp), color = Palette.Accent, strokeWidth = 2.dp)
+                    }
+                    // The move just played: ask for a closer look at it.
+                    if (ui.san.isNotEmpty()) {
+                        val played = remember(ui.san) { runCatching { ChessLines.replay(ui.san).uci }.getOrDefault(emptyList()) }
+                        FlagControl(played, "train", ui.openingName.orEmpty(), ui.idea ?: ui.status, Modifier.height(28.dp))
                     }
                 }
             }

@@ -2270,7 +2270,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             drillBook && key in app.lineProgress.learned(name, userWhite) -> "review"
             else -> "practice"
         }
-        return "Line ${index + 1} of ${drillLines.size} · $state"
+        return "Line ${index + 1}/${drillLines.size} · $state"
     }
 
     /** Trainer, opponent to move: the book move (or, past the book, the explained idea) the board now shows. */
