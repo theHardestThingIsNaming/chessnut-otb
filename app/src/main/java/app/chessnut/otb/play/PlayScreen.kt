@@ -558,7 +558,7 @@ private fun OpeningPage(
                 Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
                     ChessBoard(
                         fen = replay?.fens?.getOrNull(step) ?: detail.fen,
-                        modifier = Modifier.size(216.dp).clip(RoundedCornerShape(6.dp)).clickable(enabled = replay != null) { held = !held },
+                        modifier = Modifier.size(244.dp).clip(RoundedCornerShape(6.dp)).clickable(enabled = replay != null) { held = !held },
                         flipped = !ui.userWhite,
                         coordinates = false,
                         lastUci = if (step > 0) replay?.uci?.getOrNull(step - 1) else null,
