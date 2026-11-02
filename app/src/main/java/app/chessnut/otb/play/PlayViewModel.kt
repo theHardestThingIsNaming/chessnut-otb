@@ -90,6 +90,8 @@ data class OpeningRow(
     val depthBest: Int? = null,
     /** How well you know it, from lines learned and your Survival best. */
     val medal: OpeningMedal? = null,
+    /** You have learned or reviewed a line of it. */
+    val started: Boolean = false,
 )
 
 data class OpeningSection(val title: String, val rows: List<OpeningRow>)
@@ -2444,7 +2446,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             val started = app.lineProgress.started()
             val side = state.value.userWhite
             val sections = catalog.mapNotNull { section ->
-                val rows = OpeningStats.sorted(section.names, rates)
+                // Alphabetical; the started ones are lifted out below.
+                val rows = section.names.sortedBy { it.lowercase() }
                     .filter { OpeningCatalog.matches(it, scores[it], filter) }
                     .map { name ->
                         // The clock says a review has come round; a chapter you haven't started isn't "due".
@@ -2461,18 +2464,28 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                             name, scores[name], rates[name], due, progress?.first, progress?.second,
                             depthBest = best,
                             medal = progress?.let { (learned, total) -> OpeningMedal.of(learned, total, best) },
+                            started = if (due != null) app.repertoire.known(name) else (name to side) in started,
                         )
                     }
                 val kept = if (!state.value.knownOnly) rows else rows.filter { row ->
                     if (app.repertoire.isRepertoire(row.name)) app.repertoire.known(row.name) else (row.learned ?: 0) > 0
                 }
                 if (kept.isEmpty()) null else OpeningSection(section.title, kept)
+            }.flatMap { section ->
+                // Two layers, each alphabetical: what you have started, then what you haven't looked at.
+                val (begun, fresh) = section.rows.partition { it.started }
+                when {
+                    section.title == OpeningCatalog.REPERTOIRE_SECTION -> listOf(section)
+                    section.title == "Openings" && begun.isNotEmpty() && fresh.isNotEmpty() ->
+                        listOf(OpeningSection("Started", begun), OpeningSection("Not started yet", fresh))
+                    else -> listOf(section.copy(rows = begun + fresh))
+                }
             }
             ensureActive()
             // What is due is told by the Review button and each row's clock, not by a list of its own.
             val now = System.currentTimeMillis()
             // Your chapters against each reply sit with the openings, not in a section of their own.
-            val shown = sections.sortedBy { if (it.title == OpeningCatalog.REPERTOIRE_SECTION) 1 else if (it.title == "Openings") 0 else 2 }
+            val shown = sections.sortedBy { if (it.title == OpeningCatalog.REPERTOIRE_SECTION) 1 else if (it.title == "Openings" || it.title == "Started" || it.title == "Not started yet") 0 else 2 }
             // The summary counts every opening and side, not only the one shown.
             var learnedTotal = 0
             var dueTotal = 0
