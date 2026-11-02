@@ -583,6 +583,11 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
         seekPipe = null
         viewModelScope.launch(Dispatchers.IO) { runCatching { seek?.close() } }
         gameId = id
+        // A game from an earlier seek must not leave its move count behind: moves up to that count would stay unspoken and unlit.
+        spokenMoves = 0
+        table = null
+        prompt = null
+        lastUci = null
         playing = true
         resumable = emptyList()
         warned.clear()
