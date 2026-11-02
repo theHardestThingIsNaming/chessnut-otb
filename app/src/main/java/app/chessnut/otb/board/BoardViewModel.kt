@@ -219,16 +219,23 @@ class BoardViewModel(application: Application) : AndroidViewModel(application) {
                     val now = System.currentTimeMillis()
                     val event = tracker.onPlacement(placement, now)
                     publishLive(now)
-                    if (event !is LiveEvent.Illegal && state.value.lost) state.update { it.copy(lost = false) }
+                    if (event !is LiveEvent.Illegal && state.value.lost) {
+                        state.update { it.copy(lost = false) }
+                        clearLights()
+                    }
                     when (event) {
                         is LiveEvent.Finished -> persistLive(event)
                         is LiveEvent.Move -> log.line("live ${(event.earlier + event.san).joinToString(" ")}${if (event.earlier.isEmpty()) "" else " (caught up)"}")
+                        is LiveEvent.TakenBack -> log.line("live taken back ${event.plies}: ${event.sans.joinToString(" ")}")
                         is LiveEvent.Illegal -> {
                             // A capture passes through boards like this (the taken piece nudged aside
                             // as the queen lands), so only a board that stays wrong gets the beep.
                             illegalJob = viewModelScope.launch {
                                 delay(BoardRead.MISMATCH_MS)
-                                log.line("live illegal")
+                                log.line("live illegal, game paused")
+                                // The clocks are held and the board stays lit until it matches the game again.
+                                tracker.pause(System.currentTimeMillis())
+                                publishLive(System.currentTimeMillis())
                                 state.update { it.copy(lost = true) }
                                 cue(event)
                             }
@@ -344,6 +351,7 @@ class BoardViewModel(application: Application) : AndroidViewModel(application) {
                 else -> {
                     if (event is LiveEvent.Move) log.line("live ${(event.earlier + event.san).joinToString(" ")} (caught up)")
                     state.update { it.copy(catchingUp = false, lost = false, message = null) }
+                    clearLights()
                     cue(event)
                     if (event is LiveEvent.Finished) persistLive(event)
                 }
@@ -475,7 +483,7 @@ class BoardViewModel(application: Application) : AndroidViewModel(application) {
             // More than a handful of wrong squares only confuses; the beep still says something is off.
             is LiveEvent.Illegal -> event.squares.takeIf { it.size <= BoardRead.MAX_LIT }.orEmpty()
             is LiveEvent.Move -> event.squares
-            LiveEvent.Ignored -> return
+            is LiveEvent.TakenBack, LiveEvent.Ignored -> return
         }
         val pulse = event is LiveEvent.Finished && event.end == LiveEnd.Checkmate
         val check = event is LiveEvent.Move && event.check
@@ -485,6 +493,12 @@ class BoardViewModel(application: Application) : AndroidViewModel(application) {
         val connected = session ?: return
         lightsJob = viewModelScope.launch {
             try {
+                if (illegal) {
+                    // Stays lit, and follows the board as pieces are put right, until the game and board agree.
+                    if (app.boardSounds) connected.beep(240, 220)
+                    connected.setLeds(squares)
+                    return@launch
+                }
                 if (pulse) {
                     val towardWhite = (event as? LiveEvent.Finished)?.result == "1-0"
                     val half = LedCodec.winnerHalf(towardWhite)
@@ -511,6 +525,13 @@ class BoardViewModel(application: Application) : AndroidViewModel(application) {
                 log.line("leds: ${e.message}")
             }
         }
+    }
+
+    /** Puts the board's lights out, as when a wrong board has been put right. */
+    private fun clearLights() {
+        lightsJob?.cancel()
+        val connected = session ?: return
+        lightsJob = viewModelScope.launch { runCatching { connected.setLeds(emptyList()) } }
     }
 
     private fun publishLive(now: Long) {

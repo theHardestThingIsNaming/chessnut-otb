@@ -39,6 +39,55 @@ class LiveGameTest {
     }
 
     @Test
+    fun movesPutBackAreTakenBackAutomatically() {
+        val tracker = LiveGameTracker()
+        tracker.onPlacement(FakeChessnutBoard.START_PLACEMENT, 0)
+        tracker.onPlacement(after("1. e4"), 1_000)
+        tracker.onPlacement(after("1. e4 e5"), 2_000)
+        tracker.onPlacement(after("1. e4 e5 2. Nf3"), 3_000)
+        // The Knight goes home and the black pawn too: two plies struck.
+        val back = tracker.onPlacement(after("1. e4"), 5_000)
+        assertIs<LiveEvent.TakenBack>(back)
+        assertEquals(2, back.plies)
+        assertEquals(listOf("e4"), tracker.snapshot(5_000).sanMoves)
+        assertFalse(tracker.snapshot(5_000).toMoveWhite)
+        // The game carries on from there.
+        val next = tracker.onPlacement(after("1. e4 c5"), 6_000)
+        assertIs<LiveEvent.Move>(next)
+        assertEquals(listOf("e4", "c5"), tracker.snapshot(6_000).sanMoves)
+    }
+
+    @Test
+    fun theOnlyMoveTakenBackToTheStartDoesNotSaveAGame() {
+        val tracker = LiveGameTracker()
+        tracker.onPlacement(FakeChessnutBoard.START_PLACEMENT, 0)
+        tracker.onPlacement(after("1. e4"), 1_000)
+        val back = tracker.onPlacement(FakeChessnutBoard.START_PLACEMENT, 3_000)
+        assertIs<LiveEvent.TakenBack>(back)
+        assertTrue(tracker.snapshot(3_000).sanMoves.isEmpty())
+        assertTrue(tracker.snapshot(3_000).started)
+        assertIs<LiveEvent.Move>(tracker.onPlacement(after("1. d4"), 4_000))
+    }
+
+    @Test
+    fun theClocksHoldWhileThePausedBoardIsWrongAndRunAgainWhenItIsRight() {
+        val tracker = LiveGameTracker(TimeControl(initialMillis = 60_000, incrementMillis = 0))
+        tracker.onPlacement(FakeChessnutBoard.START_PLACEMENT, 0)
+        tracker.onPlacement(after("1. e4"), 1_000)
+        tracker.onPlacement(after("1. e4 e5"), 2_000)
+        // White is on the move since 2 s. The board goes wrong, and the game is paused at 12 s.
+        val wrong = "rnb1kbnr/pppp1ppp/8/4p3/4P3/3q4/PPPP1PPP/RNBQKBNR"
+        assertIs<LiveEvent.Illegal>(tracker.onPlacement(wrong, 10_000))
+        tracker.pause(12_000)
+        assertTrue(tracker.snapshot(12_000).paused)
+        assertEquals(50_000, tracker.snapshot(40_000).whiteMillis)
+        // The board is put right at 40 s: the clock runs again from there.
+        tracker.onPlacement(after("1. e4 e5"), 40_000)
+        assertFalse(tracker.snapshot(40_000).paused)
+        assertEquals(40_000, tracker.snapshot(50_000).whiteMillis)
+    }
+
+    @Test
     fun aBoardThatIsReallyWrongIsStillIllegal() {
         val tracker = LiveGameTracker()
         tracker.onPlacement(FakeChessnutBoard.START_PLACEMENT, 0)

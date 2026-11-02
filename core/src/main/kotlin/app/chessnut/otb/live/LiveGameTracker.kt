@@ -31,10 +31,14 @@ data class LiveSnapshot(
     val control: TimeControl = TimeControl.Default,
     val whiteOfferedDraw: Boolean = false,
     val blackOfferedDraw: Boolean = false,
+    /** The board stopped matching the game: the clocks are held until it does again. */
+    val paused: Boolean = false,
 )
 
 sealed class LiveEvent {
     data object Ignored : LiveEvent()
+    /** The pieces went back to how they stood [plies] moves ago, so those moves are struck from the game. */
+    data class TakenBack(val plies: Int, val sans: List<String>) : LiveEvent()
     data class Illegal(val squares: List<String> = emptyList()) : LiveEvent()
     /** [earlier] are moves that came in with this one when the board jumped several plies between two readings. */
     data class Move(
@@ -63,6 +67,8 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
     private val moves = mutableListOf<String>()
     private val placements = mutableListOf<String>()
     private var lastUci: String? = null
+    private val ucis = mutableListOf<String>()
+    private var paused = false
     private var lastPlacement: String? = null
     private var started = false
     private var ended = false
@@ -85,6 +91,8 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
         board = Board()
         moves.clear()
         placements.clear()
+        ucis.clear()
+        paused = false
         lastUci = null
         lastPlacement = null
         started = false
@@ -134,6 +142,7 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
             control = control,
             whiteOfferedDraw = whiteOfferedDraw,
             blackOfferedDraw = blackOfferedDraw,
+            paused = paused,
         )
     }
 
@@ -177,7 +186,9 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
         val placement = placementOf(raw)
         if (sameSquares(placement, start)) {
             lastPlacement = placement
-            if (started && !ended && moves.isEmpty()) return LiveEvent.Ignored
+            if (started && !ended && moves.isEmpty()) { resume(now); return LiveEvent.Ignored }
+            // The only move taken back to the start is a takeback; a longer game returning to the start is saved and a new one begun.
+            if (started && !ended && moves.size <= TAKEBACK_AT_START) return takeBackTo(0, now)
             val finished = finishIfUnsaved(now)
             begin(now)
             placements += placement
@@ -186,7 +197,7 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
         if (placement == lastPlacement) return LiveEvent.Ignored
         lastPlacement = placement
         if (!started || ended) return LiveEvent.Ignored
-        if (sameSquares(placement, placementOf(board.fen))) return LiveEvent.Ignored
+        if (sameSquares(placement, placementOf(board.fen))) { resume(now); return LiveEvent.Ignored }
 
         val move = board.legalMoves().firstOrNull { matches(board, it, placement) }
         if (move != null) return play(listOf(move), placement, now)
@@ -195,6 +206,9 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
         // stepping out of check) used to be scored as taking the king.
         if (isLift(placementOf(board.fen), placement)) return LiveEvent.Ignored
         val current = placementOf(board.fen)
+        // Pieces put back as they stood a few moves ago: a takeback. Strike those moves from the game.
+        val back = (placements.size - 2 downTo maxOf(0, placements.size - 1 - MAX_TAKEBACK)).firstOrNull { sameSquares(placements[it], placement) }
+        if (back != null) return takeBackTo(back, now)
         // Moves played faster than the board reports, or a sensor that missed a piece for a moment,
         // can carry the board a few plies past what was last read. Catch up rather than stay lost.
         sequenceTo(placement)?.let { return play(it, placement, now) }
@@ -204,6 +218,38 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
             return stop(it, LiveEnd.Checkmate, now, lightsOf(kingAlgebraic(current, missingWhite)))
         }
         return LiveEvent.Illegal(mismatchedSquares(current, placement))
+    }
+
+    private fun resume(now: Long) {
+        if (!paused) return
+        paused = false
+        if (started && !ended && whitePressed) runningSince = now
+    }
+
+    /** Holds the clocks while the board doesn't match the game. [resume] (or the next move) lets them run again. */
+    @Synchronized
+    fun pause(now: Long): LiveEvent {
+        if (!started || ended || paused || !whitePressed) return LiveEvent.Ignored
+        val flagged = deduct(now)
+        if (flagged != null) return flagged
+        runningSince = null
+        paused = true
+        return LiveEvent.Ignored
+    }
+
+    private fun takeBackTo(ply: Int, now: Long): LiveEvent {
+        val struck = moves.drop(ply)
+        repeat(struck.size) { board.undoMove() }
+        while (moves.size > ply) moves.removeAt(moves.lastIndex)
+        while (placements.size > ply + 1) placements.removeAt(placements.lastIndex)
+        while (ucis.size > ply) ucis.removeAt(ucis.lastIndex)
+        lastUci = ucis.lastOrNull()
+        if (ply == 0) whitePressed = false
+        paused = false
+        runningSince = if (whitePressed) now else null
+        whiteOfferedDraw = false
+        blackOfferedDraw = false
+        return LiveEvent.TakenBack(struck.size, struck)
     }
 
     /** Plays [moves] in order, as one reading that jumped them; the last one decides the event. */
@@ -220,6 +266,8 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
             board.doMove(move)
             this.moves += san
             lastUci = move.toString().lowercase()
+            ucis += lastUci!!
+            paused = false
             placements += if (i == moves.lastIndex) placement else placementOf(board.fen)
             if (!whitePressed) whitePressed = true
             runningSince = now
@@ -328,6 +376,8 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
         board = Board()
         moves.clear()
         placements.clear()
+        ucis.clear()
+        paused = false
         lastUci = null
         started = true
         ended = false
@@ -502,6 +552,8 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
 
     private companion object {
         const val MAX_JUMP = 3
+        const val MAX_TAKEBACK = 8
+        const val TAKEBACK_AT_START = 1
         const val DEEP_JUMP = 6
         const val DEEP_BUDGET = 400_000
     }

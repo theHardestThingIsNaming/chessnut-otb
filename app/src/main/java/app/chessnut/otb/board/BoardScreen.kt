@@ -316,6 +316,25 @@ private fun LiveGamePanel(
     val playing = live.started && !live.ended
     val showActions = !live.ended
     Column(modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        if (ui.lost && playing) {
+            Column(
+                Modifier.fillMaxWidth().padding(horizontal = 12.dp).clip(RoundedCornerShape(14.dp))
+                    .background(Palette.Error.copy(alpha = 0.18f))
+                    .border(2.dp, Palette.Error, RoundedCornerShape(14.dp))
+                    .padding(14.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                Text("Game paused", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = Palette.Error)
+                Text(
+                    "The board doesn't match the game. Put the lit pieces right and the clocks carry on. " +
+                        "If the lit squares look wrong, the game may have fallen behind the board.",
+                    color = Palette.Text,
+                )
+                Button(onClick = onCatchUp, enabled = !ui.catchingUp, modifier = Modifier.fillMaxWidth()) {
+                    Text(if (ui.catchingUp) "Working it out…" else "Catch the game up to the board")
+                }
+            }
+        }
         Row(Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(
                 ui.connected!!.name.trim(),
@@ -396,11 +415,6 @@ private fun LiveGamePanel(
                     onResign = onResignWhite,
                     modifier = strips.weight(1f),
                 )
-            }
-        }
-        if (ui.lost && playing) {
-            Button(onClick = onCatchUp, enabled = !ui.catchingUp, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-                Text(if (ui.catchingUp) "Working it out…" else "Board out of step? Catch up")
             }
         }
         if (live.ended && ui.lastSavedGameId != null) {

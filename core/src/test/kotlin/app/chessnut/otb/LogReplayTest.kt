@@ -37,7 +37,7 @@ class LogReplayTest {
                 "10:00:02.000" to "rnbqkbnr/pppppppp/8/8/8/8/PPPPQPPP/RNB1KBNR", "10:00:06.000" to "rnbqkbnr/pppppppp/8/8/8/8/PPPPQPPP/RNB1KBNR",
             ),
         )
-        assertEquals(1, out.count { it.contains("illegal") }, out.toString())
+        assertEquals(1, out.count { it.contains("paused") }, out.toString())
     }
 
     /** `BOARD_LOG=/path/board-....txt ./gradlew :core:test --tests '*LogReplayTest*' -i` prints what the app did with a real session. */

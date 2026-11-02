@@ -24,6 +24,7 @@ object LogReplay {
             val event = tracker.onPlacement(placement, at)
             when (event) {
                 is LiveEvent.Move -> { illegalAt = null; out += "${stamp(at)} ${(event.earlier + event.san).joinToString(" ")}${if (event.earlier.isEmpty()) "" else " (caught up)"}" }
+                is LiveEvent.TakenBack -> { illegalAt = null; out += "${stamp(at)} taken back ${event.plies}: ${event.sans.joinToString(" ")}" }
                 is LiveEvent.Finished -> { illegalAt = null; out += "${stamp(at)} finished ${event.result} after ${event.sanMoves.size} moves" }
                 is LiveEvent.Illegal -> if (illegalAt == null) illegalAt = at
                 LiveEvent.Ignored -> illegalAt = null
@@ -35,7 +36,7 @@ object LogReplay {
                 if (upTo - at >= BOARD_SETTLE_MS) { settle(at + BOARD_SETTLE_MS, placement); pending = null }
             }
             illegalAt?.let { since ->
-                if (upTo - since >= MISMATCH_MS) { out += "${stamp(since + MISMATCH_MS)} illegal (board stayed wrong)"; illegalAt = null }
+                if (upTo - since >= MISMATCH_MS) { out += "${stamp(since + MISMATCH_MS)} paused: board stayed wrong"; illegalAt = null }
             }
         }
 
