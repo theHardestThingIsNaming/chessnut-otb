@@ -2843,7 +2843,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 learnPlaying = learning && autoJob != null,
                 learnPly = sanMoves.size,
                 learnTotal = drillLine?.size ?: 0,
-                canLearn = kind == PlayKind.Trainer && !physical && !survival && punishTrap == null && trap == null && drillLine != null,
+                canLearn = kind == PlayKind.Trainer && !survival && punishTrap == null && trap == null && drillLine != null,
                 threatUci = if (watching && at == null) threatArrow() else null,
                 canAutoplay = kind == PlayKind.Trainer && !physical && !survival && punishTrap == null && trap == null &&
                     finished == null && prompt == null && (watching || (!busy && drillMove() != null)),
