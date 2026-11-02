@@ -58,6 +58,24 @@ class LiveGameTest {
     }
 
     @Test
+    fun aTakebackCostsTimeAndTheIncrementsOfTheStruckMoves() {
+        val tracker = LiveGameTracker(TimeControl(initialMillis = 60_000, incrementMillis = 5_000))
+        tracker.onPlacement(FakeChessnutBoard.START_PLACEMENT, 0)
+        tracker.onPlacement(after("1. e4"), 10_000)
+        tracker.onPlacement(after("1. e4 e5"), 13_000)
+        tracker.onPlacement(after("1. e4 e5 2. Nf3"), 15_000)
+        assertEquals(62_000, tracker.snapshot(15_000).blackMillis)
+        assertEquals(63_000, tracker.snapshot(15_000).whiteMillis)
+        // Black's clock ran 5 s while the pieces went back; both struck moves lose their 5 s increment.
+        assertIs<LiveEvent.TakenBack>(tracker.onPlacement(after("1. e4"), 20_000))
+        val after = tracker.snapshot(20_000)
+        assertEquals(52_000, after.blackMillis)
+        assertEquals(58_000, after.whiteMillis)
+        // And Black's clock runs on from there.
+        assertEquals(50_000, tracker.snapshot(22_000).blackMillis)
+    }
+
+    @Test
     fun theOnlyMoveTakenBackToTheStartDoesNotSaveAGame() {
         val tracker = LiveGameTracker()
         tracker.onPlacement(FakeChessnutBoard.START_PLACEMENT, 0)

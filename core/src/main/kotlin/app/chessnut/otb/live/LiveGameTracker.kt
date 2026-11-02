@@ -68,6 +68,8 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
     private val placements = mutableListOf<String>()
     private var lastUci: String? = null
     private val ucis = mutableListOf<String>()
+    /** The increment each move earned its player, so a takeback can take it back. */
+    private val credits = mutableListOf<Long>()
     private var paused = false
     private var lastPlacement: String? = null
     private var started = false
@@ -92,6 +94,7 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
         moves.clear()
         placements.clear()
         ucis.clear()
+        credits.clear()
         paused = false
         lastUci = null
         lastPlacement = null
@@ -239,7 +242,15 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
 
     private fun takeBackTo(ply: Int, now: Long): LiveEvent {
         val struck = moves.drop(ply)
+        // Taking a move back costs: the clock keeps running while the pieces are put back, and the
+        // increment each struck move earned is taken off its player.
+        deduct(now)?.let { return it }
+        for (i in ply until moves.size) {
+            val white = i % 2 == 0
+            if (white) whiteMillis -= credits[i] else blackMillis -= credits[i]
+        }
         repeat(struck.size) { board.undoMove() }
+        while (credits.size > ply) credits.removeAt(credits.lastIndex)
         while (moves.size > ply) moves.removeAt(moves.lastIndex)
         while (placements.size > ply + 1) placements.removeAt(placements.lastIndex)
         while (ucis.size > ply) ucis.removeAt(ucis.lastIndex)
@@ -260,9 +271,9 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
             val flagged = deduct(now)
             if (flagged != null) return flagged
             val wasWhite = board.sideToMove == Side.WHITE
-            if (whitePressed) {
-                if (wasWhite) whiteMillis += control.incrementMillis else blackMillis += control.incrementMillis
-            }
+            val credit = if (whitePressed) control.incrementMillis else 0L
+            if (wasWhite) whiteMillis += credit else blackMillis += credit
+            credits += credit
             board.doMove(move)
             this.moves += san
             lastUci = move.toString().lowercase()
@@ -377,6 +388,7 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
         moves.clear()
         placements.clear()
         ucis.clear()
+        credits.clear()
         paused = false
         lastUci = null
         started = true
