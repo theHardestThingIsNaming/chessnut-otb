@@ -707,6 +707,8 @@ class OnlineViewModel(application: Application) : AndroidViewModel(application) 
             prompt = null
             light(null)
         }
+        // A reconnect brings the whole game again: put the lit move back in case the board missed the first request.
+        if (!terminal && physical() && rejected == null) prompt?.let { light(it) }
         if (status == RECONNECTING && prompt != null) {
             status = LichessPlay.position("startpos", next.moves).second.lastOrNull()?.let { "Play $it on the board" } ?: "Play the lit move"
         }

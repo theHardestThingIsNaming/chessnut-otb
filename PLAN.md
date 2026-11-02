@@ -277,3 +277,4 @@ One path per line instead of separate places for explaining, drilling and middle
 - [x] Learn works while the board is connected (it was blocked, so the Learn button opened Practise). Learn shows on the screen; Practise goes back to the board. Seen on the phone without the board connected only.
 - [x] Board-connected check (simulated board): opening page main button, Learn, Learn/Practise switching both ways, bot game start. Learn tab now also shows while the board is connected. Not yet checked: playing moves on the board in Practise, Punish, Survival.
 - [x] Online: a new game no longer inherits the last game's move count, which silenced voice and board lights until the new game passed it. Fixed by reset in openGame; found by reading the code, not reproduced.
+- [x] Online connection review: reconnect re-lights the pending move. Reads fine otherwise (keepalives, stale-stream check, backoff).
