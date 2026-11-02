@@ -234,8 +234,45 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
                             )
                         }
                     }
-                    items(section.rows, key = { "${section.title}-${it.name}" }) { row ->
-                        OpeningListRow(row, selected = row.name == ui.openingName) { viewModel.openDetail(row.name) }
+                    // Your repertoire's chapters are many: "Caro-Kann: Advance, Tal" and its sisters sit under one heading.
+                    val families = if (section.title == OpeningCatalog.REPERTOIRE_SECTION) {
+                        section.rows.groupBy { it.name.removePrefix("Repertoire: ").substringBefore(": ", "") }
+                    } else {
+                        mapOf("" to section.rows)
+                    }
+                    for ((family, rows) in families) {
+                        if (family.isEmpty() || rows.size < 2) {
+                            items(rows, key = { "${section.title}-${it.name}" }) { row ->
+                                OpeningListRow(row, selected = row.name == ui.openingName) { viewModel.openDetail(row.name) }
+                            }
+                        } else {
+                            item(key = "family-$family") {
+                                var open by rememberSaveable(family) { mutableStateOf(rows.any { it.name == ui.openingName }) }
+                                val due = rows.sumOf { it.due ?: 0 }
+                                Column(Modifier.animateContentSize()) {
+                                    Row(
+                                        Modifier.fillMaxWidth().clip(RoundedCornerShape(10.dp)).clickable { open = !open }.padding(start = 10.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                    ) {
+                                        Text("vs $family", color = Palette.Text, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+                                        Text("${rows.size} chapters", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
+                                        if (due > 0) ClockMark(Palette.Gold, Modifier.padding(start = 8.dp).size(13.dp))
+                                        Box(Modifier.size(44.dp).semantics { contentDescription = if (open) "Hide chapters" else "Show chapters" }, contentAlignment = Alignment.Center) {
+                                            Text(if (open) "▴" else "▾", color = Palette.TextMuted, style = MaterialTheme.typography.titleMedium)
+                                        }
+                                    }
+                                    if (open) {
+                                        for (row in rows) {
+                                            OpeningListRow(
+                                                row,
+                                                selected = row.name == ui.openingName,
+                                                title = row.name.removePrefix("Repertoire: ").removePrefix("$family: "),
+                                            ) { viewModel.openDetail(row.name) }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
                 item(key = "import") {
@@ -321,7 +358,7 @@ private fun medalColor(medal: OpeningMedal): Color = when (medal) {
 
 /** One opening in the list: name, then icons for what you know of it, and its medal. */
 @Composable
-private fun OpeningListRow(row: OpeningRow, selected: Boolean, onClick: () -> Unit) {
+private fun OpeningListRow(row: OpeningRow, selected: Boolean, title: String = row.name, onClick: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -333,7 +370,7 @@ private fun OpeningListRow(row: OpeningRow, selected: Boolean, onClick: () -> Un
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(row.name, color = if (selected) Palette.Accent else Palette.Text, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(title, color = if (selected) Palette.Accent else Palette.Text, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                 if (row.learned != null && row.lines != null) {
                     BookMark(if (row.learned == row.lines) Palette.Gold else Palette.TextMuted, Modifier.size(13.dp))
