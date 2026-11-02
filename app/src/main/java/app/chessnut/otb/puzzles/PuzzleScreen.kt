@@ -1,5 +1,7 @@
 package app.chessnut.otb.puzzles
 
+import app.chessnut.otb.ui.MenuIcon
+import app.chessnut.otb.ui.menuIcon
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -77,10 +79,10 @@ fun PuzzleScreen(model: PuzzleViewModel, onBack: () -> Unit) {
             Spacer(Modifier.weight(1f))
             Row(Modifier.fillMaxWidth().height(52.dp).padding(bottom = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (ui.solved) {
-                    PrimaryAction("Next", Modifier.weight(1f).fillMaxHeight(), color = tone, onClick = model::next)
+                    PrimaryAction("Next", Modifier.weight(1f).fillMaxHeight(), color = tone, icon = MenuIcon.Forward, onClick = model::next)
                 } else {
-                    GameAction("Skip", light = false, onClick = model::next, modifier = Modifier.weight(1f).fillMaxHeight())
-                    PrimaryAction("Hint", Modifier.weight(1.4f).fillMaxHeight(), color = tone, enabled = !ui.busy && ui.hintUci == null, onClick = model::hint)
+                    GameAction("Skip", light = false, onClick = model::next, modifier = Modifier.weight(1f).fillMaxHeight(), icon = menuIcon(MenuIcon.Forward))
+                    PrimaryAction("Hint", Modifier.weight(1.4f).fillMaxHeight(), color = tone, enabled = !ui.busy && ui.hintUci == null, icon = MenuIcon.Hint, onClick = model::hint)
                 }
             }
         }

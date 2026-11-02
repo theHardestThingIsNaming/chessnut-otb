@@ -1,5 +1,7 @@
 package app.chessnut.otb.masters
 
+import app.chessnut.otb.ui.MenuIcon
+import app.chessnut.otb.ui.menuIcon
 import androidx.activity.compose.BackHandler
 import app.chessnut.otb.ui.FlagControl
 import androidx.compose.foundation.background
@@ -107,17 +109,17 @@ fun MasterGameScreen(model: MasterGameViewModel, onBack: () -> Unit, onAnalyse: 
             }
             Spacer(Modifier.height(0.dp))
             Row(Modifier.fillMaxWidth().height(52.dp).padding(bottom = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                GameAction("Restart", light = false, onClick = model::restart, modifier = Modifier.weight(1f).fillMaxHeight())
+                GameAction("Restart", light = false, onClick = model::restart, modifier = Modifier.weight(1f).fillMaxHeight(), icon = menuIcon(MenuIcon.Restart))
                 if (ui.review != null) {
-                    PrimaryAction("Continue", Modifier.weight(1.4f).fillMaxHeight(), onClick = model::continueOn)
+                    PrimaryAction("Continue", Modifier.weight(1.4f).fillMaxHeight(), icon = MenuIcon.Forward, onClick = model::continueOn)
                 } else if (ui.done && !ui.over) {
                     PrimaryAction(if (ui.watching) (if (ui.onBoard) "Play the lit moves" else "Playing out…") else "Play out the game", Modifier.weight(1.4f).fillMaxHeight(), enabled = !ui.watching, onClick = model::watchRest)
                 } else if (ui.done) {
                     // The whole game, with the engine, from your games' Master games folder.
-                    GameAction("Analyse", light = false, onClick = { model.saveForAnalysis()?.let(onAnalyse) }, modifier = Modifier.weight(1f).fillMaxHeight())
+                    GameAction("Analyse", light = false, onClick = { model.saveForAnalysis()?.let(onAnalyse) }, modifier = Modifier.weight(1f).fillMaxHeight(), icon = menuIcon(MenuIcon.Analyse))
                     PrimaryAction("Done", Modifier.weight(1.4f).fillMaxHeight(), onClick = onBack)
                 } else {
-                    PrimaryAction("Hint", Modifier.weight(1.4f).fillMaxHeight(), enabled = !ui.busy, onClick = model::hint)
+                    PrimaryAction("Hint", Modifier.weight(1.4f).fillMaxHeight(), enabled = !ui.busy, icon = MenuIcon.Hint, onClick = model::hint)
                 }
             }
         }

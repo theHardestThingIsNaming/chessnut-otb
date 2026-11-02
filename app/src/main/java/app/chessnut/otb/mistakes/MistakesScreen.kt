@@ -1,5 +1,7 @@
 package app.chessnut.otb.mistakes
 
+import app.chessnut.otb.ui.MenuIcon
+import app.chessnut.otb.ui.menuIcon
 import androidx.compose.runtime.getValue
 import androidx.compose.foundation.layout.width
 import androidx.activity.compose.BackHandler
@@ -108,12 +110,12 @@ fun MistakesScreen(model: MistakesViewModel, onBack: () -> Unit, onOpenGame: (St
             // The actions sit at the bottom, under the thumb.
             Row(Modifier.fillMaxWidth().height(52.dp).padding(bottom = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (remember(mistake.gameId) { model.hasGame(mistake.gameId) }) {
-                    GameAction("Open game", light = false, onClick = { onOpenGame(mistake.gameId) }, modifier = Modifier.weight(1f).fillMaxHeight())
+                    GameAction("Open game", light = false, onClick = { onOpenGame(mistake.gameId) }, modifier = Modifier.weight(1f).fillMaxHeight(), icon = menuIcon(MenuIcon.Openings))
                 }
                 if (ui.solved) {
-                    PrimaryAction("Next", Modifier.weight(1.4f).fillMaxHeight(), onClick = model::next)
+                    PrimaryAction("Next", Modifier.weight(1.4f).fillMaxHeight(), icon = MenuIcon.Forward, onClick = model::next)
                 } else {
-                    GameAction("Skip", light = false, onClick = model::next, modifier = Modifier.weight(1f).fillMaxHeight())
+                    GameAction("Skip", light = false, onClick = model::next, modifier = Modifier.weight(1f).fillMaxHeight(), icon = menuIcon(MenuIcon.Forward))
                     PrimaryAction(
                         "Hint",
                         Modifier.weight(1.4f).fillMaxHeight(),

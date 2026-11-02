@@ -1,5 +1,7 @@
 package app.chessnut.otb.puzzles
 
+import app.chessnut.otb.ui.MenuIcon
+import app.chessnut.otb.ui.menuIcon
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -71,11 +73,11 @@ fun EssentialScreen(model: EssentialViewModel, onBack: () -> Unit) {
             )
             Spacer(Modifier.weight(1f))
             Row(Modifier.fillMaxWidth().height(52.dp).padding(bottom = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                GameAction("Restart", light = false, onClick = model::restart, modifier = Modifier.weight(1f).fillMaxHeight())
+                GameAction("Restart", light = false, onClick = model::restart, modifier = Modifier.weight(1f).fillMaxHeight(), icon = menuIcon(MenuIcon.Restart))
                 if (ui.done) {
                     PrimaryAction("Done", Modifier.weight(1.4f).fillMaxHeight(), color = Palette.Endgame, onClick = onBack)
                 } else {
-                    PrimaryAction("Hint", Modifier.weight(1.4f).fillMaxHeight(), color = Palette.Endgame, enabled = !ui.busy && ui.hintUci == null, onClick = model::hint)
+                    PrimaryAction("Hint", Modifier.weight(1.4f).fillMaxHeight(), color = Palette.Endgame, enabled = !ui.busy && ui.hintUci == null, icon = MenuIcon.Hint, onClick = model::hint)
                 }
             }
         }
