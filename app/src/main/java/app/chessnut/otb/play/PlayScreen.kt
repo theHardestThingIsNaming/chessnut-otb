@@ -1139,6 +1139,12 @@ private fun Playing(
                         .padding(12.dp),
                 )
             }
+            // The end of a line in Learn: nothing happens by itself; Practise is offered, and Back and Replay stay below.
+            if (ui.learning && ui.learnTotal > 0 && ui.learnPly >= ui.learnTotal) {
+                OutlinedButton(onClick = viewModel::practise, colors = clubOutlinedButtonColors(), modifier = Modifier.fillMaxWidth()) {
+                    Text("That's the line. Practise it", color = Palette.Accent, fontWeight = FontWeight.SemiBold)
+                }
+            }
             ui.retryMove?.let { move ->
                 Button(
                     onClick = viewModel::retryLine,
@@ -1183,8 +1189,8 @@ private fun Playing(
                     onClick = { viewModel.learnPlay() },
                     modifier = Modifier.weight(1f).fillMaxHeight(),
                 )
-                if (atEnd) PrimaryAction("Practise", Modifier.weight(1.3f).fillMaxHeight(), onClick = viewModel::practise)
-                else PrimaryAction("Next ▶", Modifier.weight(1.3f).fillMaxHeight(), onClick = { viewModel.learnBy(1) })
+                // The button stays where the thumb has been tapping; at the end it just goes quiet, so a quick extra tap does nothing.
+                PrimaryAction("Next ▶", Modifier.weight(1.3f).fillMaxHeight(), enabled = !atEnd, onClick = { viewModel.learnBy(1) })
             } else if (ui.survival) {
                 if (ui.survivalOver) {
                     GameAction(

@@ -1504,7 +1504,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         ideaMove = last?.let { "${moveNumber(sanMoves.lastIndex)}$it" }
         val lore = if (state.value.history) OpeningBook.view(sanMoves).name?.let { OpeningLore.exact(it) } else null
         story = if (sanMoves.isEmpty()) null else lore ?: story
-        lineNote = if (sanMoves.size >= line.size) "That's the line. Replay it, or practise it from memory." else null
+        lineNote = null
         publish()
         if (speak && last != null && app.phoneSounds) {
             speech.say(last, mate = ChessLines.terminalOf(fen) == Terminal.Checkmate)
