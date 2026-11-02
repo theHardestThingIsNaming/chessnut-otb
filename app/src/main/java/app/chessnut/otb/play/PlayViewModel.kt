@@ -233,6 +233,8 @@ data class PlayUi(
     val branchNote: String? = null,
     /** Every line of the chosen opening, for picking one to drill. */
     val lines: List<LineView> = emptyList(),
+    /** What the opening page's main button starts. */
+    val trainStep: Drill.Step = Drill.Step.Learn,
     /** The chosen opening's page is open. */
     val showDetail: Boolean = false,
     val detail: OpeningDetail? = null,
@@ -710,6 +712,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             }
             state.update { if (it.openingName == name && it.userWhite == white) it.copy(
                     lines = views,
+                    trainStep = Drill.openingStep(lines, reviews, now),
                     detail = detailOf(
                         name, white, chapter != null, views,
                         chapterStart = if (chapter != null) lines.firstOrNull()?.take(shared) else null,

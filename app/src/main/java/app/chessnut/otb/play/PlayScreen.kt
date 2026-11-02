@@ -676,8 +676,8 @@ private fun OpeningPage(
             }
         }
         Row(Modifier.fillMaxWidth().height(52.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            // Train, then Punish, then Survival: from learning the lines to testing them.
-            PrimaryAction("Train", Modifier.weight(1.3f).fillMaxHeight(), onClick = viewModel::train)
+            // Learn, Review or Practise by what the line it opens with needs; then Punish, then Survival: from learning the lines to testing them.
+            PrimaryAction(ui.trainStep.name, Modifier.weight(1.3f).fillMaxHeight(), onClick = viewModel::train)
             if (detail.punishable > 0) {
                 PrimaryAction("Punish", Modifier.weight(1f).fillMaxHeight(), color = Palette.Mistake, onClick = viewModel::startPunish)
             }

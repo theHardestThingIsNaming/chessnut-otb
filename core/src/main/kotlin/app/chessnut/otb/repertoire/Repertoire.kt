@@ -27,6 +27,16 @@ object Drill {
         return lines.firstOrNull()
     }
 
+    /** What the opening page's main button starts: a line you have not seen (Learn), one due for review, or one to keep fresh. */
+    enum class Step { Learn, Review, Practise }
+
+    /** The step for the line [opening] picks. */
+    fun openingStep(lines: List<List<String>>, reviews: Map<String, LineReview>, now: Long): Step {
+        val line = opening(lines, reviews, now) ?: return Step.Learn
+        val review = reviews[key(line)] ?: return Step.Learn
+        return if (review.dueAt <= now) Step.Review else Step.Practise
+    }
+
     /** When the line was last drilled: its due date less the wait its box gave it (a miss waits a day). */
     fun practisedAt(review: LineReview): Long =
         review.dueAt - INTERVAL_DAYS[review.box.coerceIn(0, INTERVAL_DAYS.lastIndex)] * DAY_MS

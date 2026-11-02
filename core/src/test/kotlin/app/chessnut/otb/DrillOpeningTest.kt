@@ -30,6 +30,25 @@ class DrillOpeningTest {
         val reviews = mapOf(Drill.key(b) to LineReview(4, now + 25 * day), Drill.key(c) to LineReview(1, now - day))
         assertEquals(c, Drill.opening(listOf(a, b, c), reviews, now))
     }
+
+    @Test
+    fun theButtonSaysLearnForANewLine() {
+        assertEquals(Drill.Step.Learn, Drill.openingStep(listOf(a, b), emptyMap(), 0))
+    }
+
+    @Test
+    fun theButtonSaysReviewWhenALineIsDue() {
+        val now = 100 * day
+        val reviews = mapOf(Drill.key(a) to LineReview(1, now - day))
+        assertEquals(Drill.Step.Review, Drill.openingStep(listOf(a, b), reviews, now))
+    }
+
+    @Test
+    fun theButtonSaysPractiseWhenNothingIsDueOrNew() {
+        val now = 100 * day
+        val reviews = mapOf(Drill.key(a) to LineReview(1, now + day), Drill.key(b) to LineReview(1, now + 3 * day))
+        assertEquals(Drill.Step.Practise, Drill.openingStep(listOf(a, b), reviews, now))
+    }
 }
 
 class OpeningSearchTest {
