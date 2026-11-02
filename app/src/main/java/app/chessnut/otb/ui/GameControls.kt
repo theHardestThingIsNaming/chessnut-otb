@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -119,6 +120,7 @@ fun PrimaryAction(
     enabled: Boolean = true,
     color: Color = Palette.Accent,
     subtext: String? = null,
+    icon: MenuIcon? = null,
     onClick: () -> Unit,
 ) {
     Box(
@@ -129,13 +131,11 @@ fun PrimaryAction(
         contentAlignment = Alignment.Center,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                label,
-                color = if (enabled) Palette.OnAccent else Palette.TextMuted,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
-                maxLines = 1,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                val ink = if (enabled) Palette.OnAccent else Palette.TextMuted
+                icon?.let { MenuIcon(it, ink, Modifier.size(20.dp)) }
+                Text(label, color = ink, fontWeight = FontWeight.Bold, fontSize = 16.sp, maxLines = 1)
+            }
             subtext?.let {
                 Text(it, color = if (enabled) Palette.OnAccent.copy(alpha = 0.8f) else Palette.TextMuted, fontSize = 11.sp, maxLines = 1)
             }

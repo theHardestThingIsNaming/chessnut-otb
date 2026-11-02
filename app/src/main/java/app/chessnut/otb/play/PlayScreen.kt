@@ -104,7 +104,9 @@ import app.chessnut.otb.ui.MedalMark
 import app.chessnut.otb.ui.BoltMark
 import app.chessnut.otb.ui.TargetMark
 import app.chessnut.otb.ui.BookMark
+import app.chessnut.otb.repertoire.Drill
 import app.chessnut.otb.ui.MenuIcon
+import app.chessnut.otb.ui.menuIcon
 import app.chessnut.otb.ui.PieceIcon
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.contentDescription
@@ -679,13 +681,13 @@ private fun OpeningPage(
         }
         Row(Modifier.fillMaxWidth().height(52.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             // Learn, Review or Practise by what the line it opens with needs; then Punish, then Survival: from learning the lines to testing them.
-            PrimaryAction(ui.trainStep.name, Modifier.weight(1.3f).fillMaxHeight(), onClick = viewModel::train)
+            PrimaryAction(ui.trainStep.name, Modifier.weight(1.3f).fillMaxHeight(), icon = when (ui.trainStep) { Drill.Step.Learn -> MenuIcon.Book; Drill.Step.Review -> MenuIcon.Clock; Drill.Step.Practise -> MenuIcon.Target }, onClick = viewModel::train)
             if (detail.punishable > 0) {
-                PrimaryAction("Punish", Modifier.weight(1f).fillMaxHeight(), color = Palette.Mistake, onClick = viewModel::startPunish)
+                PrimaryAction("Punish", Modifier.weight(1f).fillMaxHeight(), color = Palette.Mistake, icon = MenuIcon.Bolt, onClick = viewModel::startPunish)
             }
             // Survival needs a line you know; until then training comes first.
             if (detail.learned > 0) {
-                PrimaryAction("Survival", Modifier.weight(1f).fillMaxHeight(), color = Palette.Survival, onClick = viewModel::startSurvival)
+                PrimaryAction("Survival", Modifier.weight(1f).fillMaxHeight(), color = Palette.Survival, icon = MenuIcon.Shield, onClick = viewModel::startSurvival)
             }
         }
     }
@@ -1156,10 +1158,10 @@ private fun Playing(
         // The actions stay along the bottom, under the thumb.
         Row(Modifier.fillMaxWidth().height(52.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             // A finished line has two buttons, Try again and Next line: the back arrow leaves.
-            if (offer.openings) GameAction("Openings", light = false, onClick = viewModel::leave, modifier = Modifier.weight(1f).fillMaxHeight())
+            if (offer.openings) GameAction("Openings", light = false, onClick = viewModel::leave, modifier = Modifier.weight(1f).fillMaxHeight(), icon = menuIcon(MenuIcon.Openings))
             if (showingTrap) {
-                GameAction("Replay", light = false, onClick = viewModel::replayTrap, modifier = Modifier.weight(1f).fillMaxHeight())
-                PrimaryAction("Back to the line", Modifier.weight(1.3f).fillMaxHeight(), onClick = viewModel::backToLine)
+                GameAction("Replay", light = false, onClick = viewModel::replayTrap, modifier = Modifier.weight(1f).fillMaxHeight(), icon = menuIcon(MenuIcon.Restart))
+                PrimaryAction("Back to the line", Modifier.weight(1.3f).fillMaxHeight(), icon = MenuIcon.Back, onClick = viewModel::backToLine)
             } else if (ui.punish) {
                 if (ui.lineDone) {
                     GameAction(
@@ -1167,29 +1169,32 @@ private fun Playing(
                         light = false,
                         onClick = { ui.punishName?.let(viewModel::showTrap) },
                         modifier = Modifier.weight(1f).fillMaxHeight(),
+                        icon = menuIcon(MenuIcon.Book),
                     )
-                    PrimaryAction("Next mistake", Modifier.weight(1.3f).fillMaxHeight(), color = Palette.Mistake, onClick = viewModel::startPunish)
+                    PrimaryAction("Next mistake", Modifier.weight(1.3f).fillMaxHeight(), color = Palette.Mistake, icon = MenuIcon.Forward, onClick = viewModel::startPunish)
                 } else {
-                    GameAction("Skip", light = false, onClick = viewModel::startPunish, modifier = Modifier.weight(1f).fillMaxHeight())
+                    GameAction("Skip", light = false, onClick = viewModel::startPunish, modifier = Modifier.weight(1f).fillMaxHeight(), icon = menuIcon(MenuIcon.Forward))
                     PrimaryAction(
                         "Hint",
                         Modifier.weight(1.3f).fillMaxHeight(),
                         color = Palette.Mistake,
+                        icon = MenuIcon.Hint,
                         enabled = ui.finished == null && !ui.awaitingBoard,
                         onClick = viewModel::hint,
                     )
                 }
             } else if (ui.learning) {
                 val atEnd = ui.learnPly >= ui.learnTotal
-                GameAction("◀ Back", light = false, onClick = { viewModel.learnBy(-1) }, modifier = Modifier.weight(1f).fillMaxHeight())
+                GameAction("Back", light = false, onClick = { viewModel.learnBy(-1) }, modifier = Modifier.weight(1f).fillMaxHeight(), icon = menuIcon(MenuIcon.Back))
                 GameAction(
                     if (ui.learnPlaying) "Pause" else if (atEnd) "Replay" else "Play",
                     light = false,
                     onClick = { viewModel.learnPlay() },
                     modifier = Modifier.weight(1f).fillMaxHeight(),
+                    icon = menuIcon(if (ui.learnPlaying) MenuIcon.Pause else if (atEnd) MenuIcon.Restart else MenuIcon.PlayOut),
                 )
                 // The button stays where the thumb has been tapping; at the end it just goes quiet, so a quick extra tap does nothing.
-                PrimaryAction("Next ▶", Modifier.weight(1.3f).fillMaxHeight(), enabled = !atEnd, onClick = { viewModel.learnBy(1) })
+                PrimaryAction("Next", Modifier.weight(1.3f).fillMaxHeight(), enabled = !atEnd, icon = MenuIcon.Forward, onClick = { viewModel.learnBy(1) })
             } else if (ui.survival) {
                 if (ui.survivalOver) {
                     GameAction(
@@ -1197,26 +1202,28 @@ private fun Playing(
                         light = false,
                         onClick = { viewModel.analyse()?.let(onAnalyse) },
                         modifier = Modifier.weight(1f).fillMaxHeight(),
+                        icon = menuIcon(MenuIcon.Analyse),
                     )
-                    PrimaryAction("Play again", Modifier.weight(1.3f).fillMaxHeight(), color = Palette.Survival, onClick = viewModel::startSurvival)
+                    PrimaryAction("Play again", Modifier.weight(1.3f).fillMaxHeight(), color = Palette.Survival, icon = MenuIcon.Restart, onClick = viewModel::startSurvival)
                 } else {
-                    PrimaryAction("New line", Modifier.weight(1.3f).fillMaxHeight(), color = Palette.Survival, onClick = viewModel::startSurvival)
+                    PrimaryAction("New line", Modifier.weight(1.3f).fillMaxHeight(), color = Palette.Survival, icon = MenuIcon.Forward, onClick = viewModel::startSurvival)
                 }
             } else if (ui.lineDone) {
                 val next = if (ui.reviewLast) "Finish review" else "Next line"
                 // After a miss, another go at the same line comes first.
                 if (ui.lineClean) {
-                    GameAction("Try again", light = false, onClick = viewModel::againLine, modifier = Modifier.weight(1f).fillMaxHeight())
-                    PrimaryAction(next, Modifier.weight(1.3f).fillMaxHeight(), onClick = viewModel::nextLine)
+                    GameAction("Try again", light = false, onClick = viewModel::againLine, modifier = Modifier.weight(1f).fillMaxHeight(), icon = menuIcon(MenuIcon.Restart))
+                    PrimaryAction(next, Modifier.weight(1.3f).fillMaxHeight(), icon = MenuIcon.Forward, onClick = viewModel::nextLine)
                 } else {
-                    GameAction(next, light = false, onClick = viewModel::nextLine, modifier = Modifier.weight(1f).fillMaxHeight())
-                    PrimaryAction("Try again", Modifier.weight(1.3f).fillMaxHeight(), onClick = viewModel::againLine)
+                    GameAction(next, light = false, onClick = viewModel::nextLine, modifier = Modifier.weight(1f).fillMaxHeight(), icon = menuIcon(MenuIcon.Forward))
+                    PrimaryAction("Try again", Modifier.weight(1.3f).fillMaxHeight(), icon = MenuIcon.Restart, onClick = viewModel::againLine)
                 }
             } else {
-                GameAction("Restart", light = false, onClick = viewModel::againLine, modifier = Modifier.weight(1f).fillMaxHeight())
+                GameAction("Restart", light = false, onClick = viewModel::againLine, modifier = Modifier.weight(1f).fillMaxHeight(), icon = menuIcon(MenuIcon.Restart))
                 PrimaryAction(
                     "Hint",
                     Modifier.weight(1.3f).fillMaxHeight(),
+                    icon = MenuIcon.Hint,
                     enabled = ui.finished == null && !ui.awaitingBoard,
                     onClick = viewModel::hint,
                 )
