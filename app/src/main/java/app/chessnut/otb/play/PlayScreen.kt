@@ -892,23 +892,6 @@ private fun LinkChip(kind: String, name: String, color: Color, onClick: () -> Un
     }
 }
 
-/** What the coach shows while you train, each on its own switch. */
-@Composable
-private fun CoachDialog(ui: PlayUi, viewModel: PlayViewModel, onDismiss: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = { TextButton(onClick = onDismiss, colors = clubTextButtonColors()) { Text("Done", color = Palette.Accent) } },
-        title = { Text("Coach") },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                CoachSwitch("Explain", "Arrows for the book moves, and your move lit on the board.", ui.explain, viewModel::setExplain)
-                CoachSwitch("Ideas", "The idea behind each move, written and spoken.", ui.ideas, viewModel::setIdeas)
-                CoachSwitch("History", "The opening's story, as it comes up.", ui.history, viewModel::setHistory)
-            }
-        },
-    )
-}
-
 /** A row of joined segments with one selected: the two ways of working on a line. */
 @Composable
 private fun Segmented(options: List<String>, selected: Int, enabled: Boolean, onSelect: (Int) -> Unit) {
@@ -932,17 +915,6 @@ private fun Segmented(options: List<String>, selected: Int, enabled: Boolean, on
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun CoachSwitch(title: String, detail: String, on: Boolean, onChange: (Boolean) -> Unit) {
-    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        Column(Modifier.weight(1f)) {
-            Text(title, fontWeight = FontWeight.SemiBold)
-            Text(detail, style = MaterialTheme.typography.bodySmall, color = Palette.TextMuted)
-        }
-        Switch(checked = on, onCheckedChange = onChange)
     }
 }
 
@@ -1047,19 +1019,6 @@ private fun Playing(
                         strokeWidth = 2.dp,
                     )
                 }
-                // Explain, Ideas and History are settings you choose once: one chip opens them.
-                if (ui.kind == PlayKind.Trainer) {
-                    var coach by remember { mutableStateOf(false) }
-                    if (coach) CoachDialog(ui, viewModel) { coach = false }
-                    // Quiet text rather than a chip: it is a setting, not a step. Green once any of the three is on.
-                    Text(
-                        "Coach",
-                        color = if (ui.explain || ui.ideas || ui.history) Palette.Accent else Palette.TextMuted,
-                        fontWeight = FontWeight.SemiBold,
-                        style = MaterialTheme.typography.labelLarge,
-                        modifier = Modifier.clip(RoundedCornerShape(8.dp)).clickable { coach = true }.padding(horizontal = 10.dp, vertical = 8.dp),
-                    )
-                }
                 // The move just played: ask for a closer look at it.
                 if (ui.san.isNotEmpty()) {
                     val played = remember(ui.san) { runCatching { ChessLines.replay(ui.san).uci }.getOrDefault(emptyList()) }
@@ -1072,6 +1031,11 @@ private fun Playing(
                     // What comes after (plans, tactics, a master game) shows under the board once the line is done.
                     Segmented(listOf("Learn", "Practise"), if (ui.learning) 0 else 1, enabled = ui.canLearn) { index ->
                         if (index == 0) viewModel.learn() else viewModel.practise()
+                    }
+                    // What Learn says and shows is chosen where it happens: the notes spoken, and the opening's story.
+                    if (ui.learning) {
+                        FilterChip(selected = ui.ideas, onClick = { viewModel.setIdeas(!ui.ideas) }, label = { Text(if (ui.ideas) "🔊 Voice" else "🔇 Voice") }, colors = clubChipColors())
+                        FilterChip(selected = ui.history, onClick = { viewModel.setHistory(!ui.history) }, label = { Text("History") }, colors = clubChipColors())
                     }
                 }
             }

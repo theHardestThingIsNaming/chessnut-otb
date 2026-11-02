@@ -320,7 +320,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private val app = application as OtbApp
     private val state = MutableStateFlow(
         PlayUi(
-            explain = app.explainOpening, history = app.openingHistory, ideas = app.moveIdeas, chessComUser = app.chessComUser,
+            explain = false, history = app.openingHistory, ideas = app.moveIdeas, chessComUser = app.chessComUser,
             lichessLinked = LichessVault(application).token() != null,
         ),
     )
@@ -372,7 +372,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private var pendingPlacement: String? = null
     private var lastPlacement: String? = null
     private var heldPlacement: String? = null
-    private var explain = app.explainOpening
+    /** Always off now: Learn is where a line is shown and explained, Practise is from memory. */
+    private var explain = false
     /** Stories told this game, so none is repeated. */
     private val told = mutableSetOf<String>()
     /** The out-of-theory cue has been spoken for this game. */
@@ -2859,7 +2860,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 glancePly = at ?: sanMoves.size,
                 moveCount = sanMoves.size,
                 browsing = at != null,
-                inTheory = kind != PlayKind.Trainer || openingName == null || legalBookMove(),
+                inTheory = kind != PlayKind.Trainer || openingName == null || learning || legalBookMove(),
                 explain = explain,
                 bookUcis = explained.map { it.second },
                 bookSans = explained.map { it.first },
