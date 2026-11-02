@@ -167,7 +167,7 @@ fun PlayScreen(
             ui.kind == PlayKind.Bot -> BotGame(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp), onAnalyse)
             onPage -> OpeningPage(ui, ui.detail!!, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp), onPuzzles, onPlans, onMaster)
             !ui.playing -> Setup(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp))
-            else -> Playing(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp), onAnalyse, onPlans, onMaster, onPuzzles, onPlayOn)
+            else -> Playing(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp), onAnalyse, onPlans, onMaster, onPlayOn)
         }
     }
 }
@@ -973,7 +973,6 @@ private fun Playing(
     onAnalyse: (String) -> Unit,
     onPlans: (opening: String, white: Boolean, plan: String?) -> Unit,
     onMaster: (id: String) -> Unit,
-    onPuzzles: (String) -> Unit,
     onPlayOn: (fen: String, white: Boolean) -> Unit,
 ) {
     // Weakest first, so the main line is drawn on top where arrows overlap.
@@ -1072,7 +1071,6 @@ private fun Playing(
                             modifier = Modifier.fillMaxWidth(),
                         ) { Text("Plan: $plan", color = Palette.Accent) }
                     }
-                    TacticsButton(opening, ui.userWhite, onPuzzles)
                     ui.lineMaster?.let { (id, title) ->
                         OutlinedButton(
                             onClick = { onMaster(id) },
@@ -1546,17 +1544,5 @@ private fun TacticsChip(opening: String, white: Boolean, onPuzzles: (String) -> 
     ) {
         Text("Tactics", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
         Text(if (counts.due > 0) "Next ›" else "${counts.solved}/${counts.total} ›", color = color, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
-    }
-}
-
-/** Under a finished line: the opening's middlegame tactics, when there are any. */
-@Composable
-private fun TacticsButton(opening: String, white: Boolean, onPuzzles: (String) -> Unit) {
-    val key = PuzzleSets.middlegameKey(opening, white)
-    val context = LocalContext.current
-    val counts = remember(key) { PuzzleProgress(context.filesDir).counts(key, System.currentTimeMillis()) }
-    if (counts.total == 0) return
-    OutlinedButton(onClick = { onPuzzles(key) }, colors = clubOutlinedButtonColors(), modifier = Modifier.fillMaxWidth()) {
-        Text("Middlegame tactics · ${if (counts.due > 0) "next is due" else "${counts.solved}/${counts.total} solved"}", color = Palette.Accent)
     }
 }
