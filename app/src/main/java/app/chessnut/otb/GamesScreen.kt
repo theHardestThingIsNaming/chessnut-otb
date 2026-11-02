@@ -402,22 +402,16 @@ private fun SoundDialog(app: OtbApp, onDismiss: () -> Unit) {
         onDismissRequest = onDismiss,
         title = { Text("Settings") },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("The phone says each move and beeps. The board only buzzes. Lights stay on.", color = Palette.Text)
-                SoundSwitch("Phone", phone) {
+            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                SoundSwitch("Phone sound", "Says each move and beeps.", phone) {
                     phone = it
                     app.phoneSounds = it
                 }
-                SoundSwitch("Board", board) {
+                SoundSwitch("Board sound", "The board buzzes. Its lights stay on.", board) {
                     board = it
                     app.boardSounds = it
                 }
-                Text(
-                    "Club games from the board go to your Lichess account as soon as they are saved. Imported games are public on Lichess.",
-                    color = Palette.TextMuted,
-                    modifier = Modifier.padding(top = 8.dp),
-                )
-                SoundSwitch("Upload club games to Lichess", upload) {
+                SoundSwitch("Upload club games", "To your Lichess account when saved. They are public there.", upload) {
                     upload = it
                     app.autoUpload = it
                 }
@@ -428,13 +422,16 @@ private fun SoundDialog(app: OtbApp, onDismiss: () -> Unit) {
 }
 
 @Composable
-private fun SoundSwitch(label: String, checked: Boolean, onChecked: (Boolean) -> Unit) {
+private fun SoundSwitch(label: String, detail: String, checked: Boolean, onChecked: (Boolean) -> Unit) {
     Row(
         Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(label, color = Palette.Text)
+        Column(Modifier.weight(1f)) {
+            Text(label, color = Palette.Text, fontWeight = FontWeight.SemiBold)
+            Text(detail, color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
+        }
         Switch(checked = checked, onCheckedChange = onChecked)
     }
 }
