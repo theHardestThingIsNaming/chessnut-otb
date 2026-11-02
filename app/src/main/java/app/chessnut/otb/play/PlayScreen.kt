@@ -534,29 +534,22 @@ private fun OpeningPage(
         LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             item(key = "head") {
                 Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
-                    ChessBoard(fen = detail.fen, modifier = Modifier.size(168.dp).clip(RoundedCornerShape(6.dp)), flipped = !ui.userWhite, coordinates = false)
+                    ChessBoard(fen = detail.fen, modifier = Modifier.size(200.dp).clip(RoundedCornerShape(6.dp)), flipped = !ui.userWhite, coordinates = false)
                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         if (detail.moves.isNotBlank()) {
                             Text(detail.moves, color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium)
                         }
-                        if (!detail.study) {
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                SideChips(ui.userWhite, viewModel::setUserWhite)
-                            }
-                        }
+                        // The same two squares as the opening list: they take less room than two chips beside a bigger board.
+                        if (!detail.study) SideToggle(ui.userWhite, viewModel::setUserWhite)
                     }
                 }
             }
-            item(key = "scores") { PageStats(ui, detail) }
-            item(key = "beyond") {
-                // A variation's page has its own lines; the plans, tactics and Punish live on the main opening's page.
-                val family = OpeningCatalog.family(detail.name)
-                if (family != null) {
-                    FamilyLink(family) { viewModel.openDetail(family) }
-                } else {
-                    BeyondTheOpening(detail.name, ui.userWhite, onPuzzles)
-                }
+            // A variation's page has its own lines; the plans, tactics and Punish live on the main opening's page.
+            val family = OpeningCatalog.family(detail.name)
+            item(key = "scores") {
+                PageStats(ui, detail, tactics = if (family == null) { { TacticsChip(detail.name, ui.userWhite, onPuzzles) } } else null)
             }
+            if (family != null) item(key = "beyond") { FamilyLink(family) { viewModel.openDetail(family) } }
             item(key = "lines-head") {
                 Row(Modifier.padding(top = 4.dp), verticalAlignment = Alignment.Bottom) {
                     Text("Lines", color = Palette.Text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
@@ -662,7 +655,7 @@ private fun OpeningPage(
  * Survival best and mistakes punished. The ⓘ opens a legend that says what each one is.
  */
 @Composable
-private fun PageStats(ui: PlayUi, detail: OpeningDetail) {
+private fun PageStats(ui: PlayUi, detail: OpeningDetail, tactics: (@Composable () -> Unit)? = null) {
     var legend by rememberSaveable { mutableStateOf(false) }
     Column(
         Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface).clickable { legend = !legend }
@@ -676,6 +669,7 @@ private fun PageStats(ui: PlayUi, detail: OpeningDetail) {
             }
             IconStat("${detail.due}", if (detail.due > 0) Palette.Gold else Palette.Text) { ClockMark(if (detail.due > 0) Palette.Gold else Palette.TextMuted, Modifier.size(15.dp)) }
             detail.medal?.let { MedalMark(medalColor(it), Modifier.size(22.dp)) }
+            tactics?.invoke()
             Text("ⓘ", color = if (legend) Palette.Accent else Palette.TextMuted, fontSize = 16.sp)
         }
         if (legend) {
@@ -1489,40 +1483,21 @@ private fun FamilyLink(family: String, onOpen: () -> Unit) {
     }
 }
 
-/**
- * Past the book: tactics from games that began in your lines, so they're the ones your structures produce.
- * The middlegame plans hang off the lines they follow, so they aren't repeated here.
- */
+/** Middlegame tactics from games that began in your lines, as one chip on the stats row: what's solved, or that a review is next. */
 @Composable
-private fun BeyondTheOpening(opening: String, white: Boolean, onPuzzles: (String) -> Unit) {
+private fun TacticsChip(opening: String, white: Boolean, onPuzzles: (String) -> Unit) {
     val key = PuzzleSets.middlegameKey(opening, white)
     val context = LocalContext.current
     // Read each time the page shows, so solving some updates the numbers.
     val counts = remember(key, LocalLifecycleOwner.current.lifecycle.currentState) { PuzzleProgress(context.filesDir).counts(key, System.currentTimeMillis()) }
-    var showSolved by remember(key) { mutableStateOf(false) }
     if (counts.total == 0) return
-    Column(
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface),
+    val color = if (counts.due > 0) Palette.Gold else Palette.Accent
+    Row(
+        Modifier.clip(RoundedCornerShape(8.dp)).border(1.dp, color, RoundedCornerShape(8.dp)).clickable { onPuzzles(key) }.padding(horizontal = 10.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        if (counts.total > 0 && (!counts.resting || showSolved)) {
-            BeyondRow(
-                "Middlegame tactics",
-                if (counts.due > 0) "Next for review" else "${counts.solved}/${counts.total}",
-                if (counts.due > 0) Palette.Gold else Palette.Accent,
-            ) { onPuzzles(key) }
-        }
-        if (counts.resting) {
-            TextButton(onClick = { showSolved = !showSolved }, colors = clubTextButtonColors(), modifier = Modifier.padding(horizontal = 6.dp)) {
-                Text(if (showSolved) "Hide solved tactics" else "Show solved tactics", color = Palette.Accent)
-            }
-        }
-    }
-}
-
-@Composable
-private fun BeyondRow(title: String, badge: String, badgeColor: Color, onClick: () -> Unit) {
-    Row(Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 14.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(title, color = Palette.Text, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
-        Text("$badge ›", color = badgeColor, fontWeight = FontWeight.Bold)
+        Text("Tactics", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
+        Text(if (counts.due > 0) "Next ›" else "${counts.solved}/${counts.total} ›", color = color, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
     }
 }
