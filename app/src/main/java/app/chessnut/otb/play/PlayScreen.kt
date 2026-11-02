@@ -144,10 +144,10 @@ fun PlayScreen(
                 title = {
                     Text(
                         when {
-                            ui.playing && ui.kind == PlayKind.Trainer -> ui.openingName ?: "Trainer"
+                            ui.playing && ui.kind == PlayKind.Trainer -> ui.openingName?.removePrefix("Repertoire: ") ?: "Trainer"
                             ui.kind == PlayKind.Bot && ui.playing -> "Bot ${ui.elo}"
                             ui.kind == PlayKind.Bot -> "Bot"
-                            onPage -> ui.detail?.name ?: "Openings"
+                            onPage -> ui.detail?.name?.removePrefix("Repertoire: ") ?: "Openings"
                             else -> "Openings"
                         },
                         maxLines = 1,

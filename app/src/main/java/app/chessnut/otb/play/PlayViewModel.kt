@@ -685,18 +685,20 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                     group = labels[lineIndex],
                 )
             }
-            // Two lines with one name tell apart by the move where they part: "Main line 2…Nc6", "Main line 2…d6".
+            // Lines with one name tell apart by the move where each stops sharing its start with the others of that
+            // name: "Main line 4…Nd7", "Main line 6…Qb6".
             val views = rawViews.mapIndexed { i, view ->
-                val same = lines.indices.filter { rawViews[it].name == view.name }
-                if (same.size < 2) return@mapIndexed view
-                val ply = (0 until lines[i].size).firstOrNull { p -> same.any { lines[it].getOrNull(p) != lines[i][p] } }
-                    ?: return@mapIndexed view
+                val same = lines.indices.filter { it != i && rawViews[it].name == view.name }
+                if (same.isEmpty()) return@mapIndexed view
+                val ply = same.maxOf { j -> (0 until lines[i].size).firstOrNull { p -> lines[j].getOrNull(p) != lines[i][p] } ?: lines[i].size }
+                if (ply >= lines[i].size) return@mapIndexed view
                 view.copy(name = "${view.name} ${ply / 2 + 1}${if (ply % 2 == 0) "." else "…"}${lines[i][ply]}")
             }
             state.update { if (it.openingName == name && it.userWhite == white) it.copy(
                     lines = views,
                     detail = detailOf(
                         name, white, chapter != null, views,
+                        chapterStart = if (chapter != null) lines.firstOrNull()?.take(shared) else null,
                         learnedCount = learned?.count { key -> lines.any { Drill.key(it) == key } }
                             ?: views.count { it.status == LineStatus.Learned },
                     ).let { detail ->
@@ -714,8 +716,10 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         study: Boolean,
         lines: List<LineView>,
         learnedCount: Int,
+        /** A chapter's own start: the moves all its lines share. Null for a book opening, which has its own line. */
+        chapterStart: List<String>? = null,
     ): OpeningDetail {
-        val start = OpeningBook.line(name)?.san.orEmpty()
+        val start = chapterStart ?: OpeningBook.line(name)?.san.orEmpty()
         val fen = runCatching { ChessLines.replay(start).fens.last() }.getOrDefault(Board().fen)
         val row = state.value.sections.flatMap { it.rows }.firstOrNull { it.name == name }
         val depth = app.depthRecords.of(name, white)
@@ -788,10 +792,13 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         val roots = named.filterNotNull().distinct().sortedBy { it.length }
         val family = named.map { f -> f?.let { n -> roots.firstOrNull { it != n && n.startsWith("$it ") } ?: n } }
         val counts = family.filterNotNull().groupingBy { it }.eachCount()
-        return lines.mapIndexed { i, line ->
+        val labels = lines.mapIndexed { i, line ->
             family[i]?.takeIf { (counts[it] ?: 0) >= 3 }
                 ?: parting?.takeIf { it < line.size }?.let { ply -> "${ply / 2 + 1}${if (ply % 2 == 0) "." else "..."}${line[ply]}" }.orEmpty()
         }
+        // One group holding nearly every line is no grouping at all: the list stays flat.
+        val biggest = labels.groupingBy { it }.eachCount().values.maxOrNull() ?: 0
+        return if (biggest * 4 > lines.size * 3) List(lines.size) { "" } else labels
     }
 
     /** Fetches Lichess results for the lines on the open page that lack them, then shows them. Needs a Lichess login. */
