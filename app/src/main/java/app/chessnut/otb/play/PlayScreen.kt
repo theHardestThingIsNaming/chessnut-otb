@@ -1146,11 +1146,6 @@ private fun Playing(
                     modifier = Modifier.fillMaxWidth(),
                 ) { Text("Take back and play $move") }
             }
-            ui.choiceOffer?.let { move ->
-                TextButton(onClick = viewModel::adoptChoice, colors = clubTextButtonColors(), modifier = Modifier.fillMaxWidth()) {
-                    Text("Play $move here from now on", color = Palette.Accent)
-                }
-            }
             if (!showingTrap && !ui.lineDone) Text(numbered(ui.san), color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium)
         }
         // The actions stay along the bottom, under the thumb.

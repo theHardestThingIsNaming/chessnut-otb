@@ -239,7 +239,6 @@ data class PlayUi(
     val showDetail: Boolean = false,
     val detail: OpeningDetail? = null,
     /** A book move you played instead of the line's, offered as your move from now on, such as "4. c3". */
-    val choiceOffer: String? = null,
     /** The named variation the game is in now. */
     val variation: String? = null,
     /** The last move, numbered, and the idea behind it, when Ideas is on. */
@@ -467,8 +466,6 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     private var story: String? = null
     /** A line picked from the list, drilled next instead of the scheduled one. */
     private var pinnedLine: List<String>? = null
-    /** The moves before, and the book move you chose there, when it differs from the line. */
-    private var choiceOffer: Pair<List<String>, String>? = null
     private var linesJob: Job? = null
     private var lineStatsJob: Job? = null
     /** Explain past the book: the engine's top moves as (SAN, UCI), for [ideasFen]. */
@@ -999,7 +996,6 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         ideaMove = null
         idea = null
         story = null
-        choiceOffer = null
         status = when {
             awaitingBoard -> setupStatus(setupWrong)
             kind == PlayKind.Trainer -> trainerStart()
@@ -1355,7 +1351,6 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         retry = false
         rejectUci = null
         retryAt = null
-        choiceOffer = null
         watching = true
         busy = true
         publish()
@@ -1424,7 +1419,6 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         retry = false
         rejectUci = null
         retryAt = null
-        choiceOffer = null
         learning = true
         watching = true
         busy = false
@@ -2152,14 +2146,6 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         }
         // On the phone you can take the move back and play the line's; a physical board would need the pieces moved back.
         retryAt = split?.takeIf { !physical && (it % 2 == 0) == userWhite }
-        // A different book move on your turn can become your move here.
-        choiceOffer = if (drillBook && name != null && split != null && (split % 2 == 0) == userWhite &&
-            sanMoves[split] in OpeningBook.replies(sanMoves.take(split), name)
-        ) {
-            sanMoves.take(split) to sanMoves[split]
-        } else {
-            null
-        }
         // Short: one fact and one number. What the move was, and what the line plays instead.
         val mine = split != null && (split % 2 == 0) == userWhite
         val verdict = lastVerdict.takeIf { mine }
@@ -2239,25 +2225,14 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         retry = false
         glance = null
         retryAt = null
-        choiceOffer = null
+        // Back on the line and mid-way again: the miss's note and the finished-line buttons go. The miss still counts when the line ends.
+        lineNote = null
+        drillGraded = false
         ideaMove = null
         idea = null
         hint = PlayPosition.uciOfSan(fen, expected)
         status = "Play ${moveNumber(at)}$expected"
         publish()
-    }
-
-    /** Makes the offered book move your move in this opening, and rebuilds its lines around it. */
-    fun adoptChoice() {
-        val (before, move) = choiceOffer ?: return
-        val name = openingName ?: return
-        app.moveChoices.set(name, userWhite, before, move)
-        synchronized(treeCache) { treeCache.remove(name to userWhite) }
-        choiceOffer = null
-        lineNote = "Your $name now plays ${moveNumber(before.size)}$move. Its lines are rebuilt around it."
-        publish()
-        refreshOpenings(state.value.openingQuery)
-        refreshLines()
     }
 
     /** "Line 3 of 12 · new", for the drilled line. */
@@ -2880,7 +2855,6 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 depthOver = depthOver,
                 depthBest = if (survival) lineBest else depthBest,
                 reviewLast = reviewing && reviewQueue.isEmpty(),
-                choiceOffer = choiceOffer?.let { (before, move) -> "${moveNumber(before.size)}$move" },
                 retryMove = retryAt?.let { at -> drillLine?.getOrNull(at)?.let { "${moveNumber(at)}$it" } },
                 variation = if (kind == PlayKind.Trainer) OpeningBook.view(sanMoves).name else null,
                 ideaMove = when {
