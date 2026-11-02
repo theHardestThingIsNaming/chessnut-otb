@@ -65,6 +65,7 @@ import app.chessnut.otb.live.TimeControl
 import app.chessnut.otb.puzzles.PuzzleProgress
 import app.chessnut.otb.puzzles.PuzzleSets
 import app.chessnut.otb.ui.Arrow
+import app.chessnut.otb.ui.BoardBanner
 import app.chessnut.otb.ui.ChessBoard
 import app.chessnut.otb.ui.ClockMark
 import app.chessnut.otb.ui.FlagMark
@@ -932,6 +933,7 @@ private fun Playing(
     val highlights = moveSquares(ui.hintUci) + moveSquares(ui.promptUci)
     Column(modifier.padding(bottom = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            if (ui.boardWrong) BoardBanner("Check the board", ui.status)
             // One line of fixed height, so the board never jumps: the status when there is one, otherwise the variation.
             val status = if (ui.status == ui.openingName || ui.status == ui.san.lastOrNull()) "" else ui.status
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {

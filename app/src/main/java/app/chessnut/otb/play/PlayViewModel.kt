@@ -171,6 +171,8 @@ data class PlayUi(
     val fen: String = Board().fen,
     val san: List<String> = emptyList(),
     val status: String = "Play a bot, or train an opening.",
+    /** The board has stayed unlike the game: its squares are lit and the screen says so in a banner. */
+    val boardWrong: Boolean = false,
     val thinking: Boolean = false,
     val hintUci: String? = null,
     val promptUci: String? = null,
@@ -2623,6 +2625,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 fen = shownFen,
                 san = sanMoves.toList(),
                 status = if (at == null) status else glanceStatus(at),
+                boardWrong = physical && mismatchShown && playing,
                 hintUci = if (at == null) hint else null,
                 branchUci = if (at == null && hint == null) branch()?.let { PlayPosition.uciOfSan(fen, it.first) } else null,
                 branchNote = if (at == null) branch()?.let { (move, others) ->
