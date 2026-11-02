@@ -268,6 +268,12 @@ data class PlayUi(
     val threatUci: String? = null,
     /** The drilled line can be played for you from here. */
     val canAutoplay: Boolean = false,
+    /** The Learn step: stepping through the line with the arrows. */
+    val learning: Boolean = false,
+    val learnPlaying: Boolean = false,
+    val learnPly: Int = 0,
+    val learnTotal: Int = 0,
+    val canLearn: Boolean = false,
     /** The mistake being punished, to show it explained afterwards. */
     val punishName: String? = null,
     /** Punish mode's result mark, seen without sound: true a pass, false a miss or a wrong try. */
@@ -394,6 +400,10 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
 
     /** The line is being played for the user: not graded, and the replies are the line's own. */
     private var watching = false
+    /** The Learn step is on: the line is stepped through, not played, and nothing is graded. */
+    private var learning = false
+    /** Set by Restart and Try again, so a new line goes straight to Practise rather than back to Learn. */
+    private var skipLearn = false
     /** The threat arrow while a line plays itself: what the side that just moved would do next if it could. */
     private var threatFen: String? = null
     private var threatMove: String? = null
@@ -928,6 +938,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         clockNoted = null
         speech.stop()
         told.clear()
+        learning = false
         leftTheory = false
         drillMissed = false
         drillGraded = false
@@ -1022,8 +1033,11 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             userWhite -> "You have White · $elo"
             else -> "You have Black · $elo"
         }
+        val enterLearn = !skipLearn && !reviewing && !physical && !survival && kind == PlayKind.Trainer && punishTrap == null &&
+            drillLine != null && lineLabelShown?.endsWith("new") == true
+        skipLearn = false
         publish()
-        if (ready) kickoff()
+        if (enterLearn) learn() else if (ready) kickoff()
     }
 
     fun hint() {
@@ -1089,7 +1103,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
 
     fun tap(square: Int) {
         if (glance != null) return
-        if (!playing || physical || awaitingBoard || busy || finished != null || prompt != null) {
+        if (!playing || physical || awaitingBoard || busy || learning || finished != null || prompt != null) {
             note("tap $square ignored playing=$playing physical=$physical awaiting=$awaitingBoard busy=$busy prompt=$prompt")
             return
         }
@@ -1427,6 +1441,116 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         return null
     }
 
+    /** The Learn step: the drilled line stepped through with the arrows, a note for each move. Not graded. */
+    fun learn() {
+        val line = drillLine ?: return
+        if (learning || kind != PlayKind.Trainer || physical || survival || punishTrap != null || trap != null) return
+        stopAutoplay(publish = false)
+        job?.cancel()
+        speech.stop()
+        retry = false
+        rejectUci = null
+        retryAt = null
+        choiceOffer = null
+        learning = true
+        watching = true
+        busy = false
+        learnTo(if (line.take(sanMoves.size) == sanMoves) sanMoves.size else 0)
+    }
+
+    /** Leaves Learn for the line played from the start, from memory. */
+    fun practise() {
+        if (!learning) return
+        endLearn()
+        againLine()
+    }
+
+    private fun endLearn() {
+        autoJob?.cancel()
+        autoJob = null
+        speech.stop()
+        learning = false
+        watching = false
+        busy = false
+    }
+
+    fun learnBy(delta: Int) {
+        if (!learning) return
+        autoJob?.cancel()
+        autoJob = null
+        speech.stop()
+        learnTo(sanMoves.size + delta, speak = delta > 0)
+    }
+
+    fun learnFromStart() = learnBy(-sanMoves.size)
+
+    /** Plays the rest of the line from here, a move at a time, waiting on the voice when the ideas are spoken. */
+    fun learnPlay() {
+        val line = drillLine ?: return
+        if (!learning) return
+        if (autoJob != null) {
+            autoJob?.cancel()
+            autoJob = null
+            speech.stop()
+            publish()
+            return
+        }
+        autoJob = viewModelScope.launch {
+            try {
+                if (sanMoves.size >= line.size) learnTo(0)
+                delay(AUTO_PAUSE_MS)
+                while (sanMoves.size < line.size) {
+                    learnTo(sanMoves.size + 1, speak = true)
+                    val explained = state.value.ideas
+                    when {
+                        explained && app.phoneSounds -> awaitSpeech()
+                        explained -> delay((idea.orEmpty().length * READ_MS_PER_CHAR).coerceIn(AUTO_PAUSE_MS, MAX_READ_MS))
+                    }
+                    delay(AUTO_PAUSE_MS)
+                }
+            } finally {
+                autoJob = null
+                publish()
+            }
+        }
+        publish()
+    }
+
+    /** Sets the board to the first [count] moves of the line, with the note for the last one. */
+    private fun learnTo(count: Int, speak: Boolean = false) {
+        val line = drillLine ?: return
+        var position = origin()
+        var before = position
+        sanMoves.clear()
+        uciMoves.clear()
+        lastUci = null
+        for (san in line.take(count.coerceIn(0, line.size))) {
+            val uci = PlayPosition.uciOfSan(position, san) ?: break
+            val next = PlayPosition.after(position, uci)?.second ?: break
+            before = position
+            position = next
+            sanMoves += san
+            uciMoves += uci
+            lastUci = uci
+        }
+        fen = position
+        glance = null
+        hint = null
+        hintPiece = null
+        selected = null
+        finished = null
+        val last = sanMoves.lastOrNull()
+        status = last ?: trainerStart()
+        idea = last?.let { MoveIdeas.explain(sanMoves, before, uciMoves.last()) }
+        ideaMove = last?.let { "${moveNumber(sanMoves.lastIndex)}$it" }
+        lineNote = if (sanMoves.size >= line.size) "That's the line. Replay it, or practise it from memory." else null
+        publish()
+        if (speak && last != null && app.phoneSounds) {
+            speech.say(last, mate = ChessLines.terminalOf(fen) == Terminal.Checkmate)
+            if (state.value.ideas) idea?.let { speech.narrate(it) }
+        }
+    }
+
     private fun stopAutoplay(publish: Boolean) {
         val running = autoJob
         autoJob = null
@@ -1501,6 +1625,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
 
     /** Plays the same line again from the first move, as when you missed it and want another go. */
     fun againLine() {
+        skipLearn = true
         val line = drillLine
         val label = lineLabelShown
         if (line != null) pinnedLine = line
@@ -2760,7 +2885,12 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 lineClean = lineClean,
                 survival = survival,
                 punish = punishTrap != null,
-                autoplay = watching,
+                autoplay = watching && !learning,
+                learning = learning,
+                learnPlaying = learning && autoJob != null,
+                learnPly = sanMoves.size,
+                learnTotal = drillLine?.size ?: 0,
+                canLearn = kind == PlayKind.Trainer && !physical && !survival && punishTrap == null && trap == null && drillLine != null,
                 threatUci = if (watching && at == null) threatArrow() else null,
                 canAutoplay = kind == PlayKind.Trainer && !physical && !survival && punishTrap == null && trap == null &&
                     finished == null && prompt == null && (watching || (!busy && drillMove() != null)),

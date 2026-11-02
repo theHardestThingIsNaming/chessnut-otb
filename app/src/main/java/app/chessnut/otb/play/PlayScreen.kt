@@ -1046,8 +1046,8 @@ private fun Playing(
                     // The three steps of a line. Learn plays it for you (spoken with the ideas on, otherwise a half second a move),
                     // Practise is you playing it, Play on carries into the middlegame once the line is done.
                     val opening = ui.openingName
-                    StepChip("Learn", ui.autoplay, ui.canAutoplay || ui.autoplay) { viewModel.toggleAutoplay() }
-                    StepChip("Practise", !ui.autoplay && !ui.lineDone, true) { if (ui.autoplay) viewModel.toggleAutoplay() }
+                    StepChip("Learn", ui.learning, ui.canLearn) { viewModel.learn() }
+                    StepChip("Practise", !ui.learning && !ui.lineDone, true) { viewModel.practise() }
                     StepChip("Play on", ui.lineDone, ui.lineDone && opening != null) {
                         val plan = ui.linePlans.firstOrNull()
                         if (plan != null) onPlans(opening!!, ui.userWhite, plan) else onPuzzles(PuzzleSets.middlegameKey(opening!!, ui.userWhite))
@@ -1163,7 +1163,7 @@ private fun Playing(
         }
         // The actions stay along the bottom, under the thumb.
         Row(Modifier.fillMaxWidth().height(52.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            GameAction("Openings", light = false, onClick = viewModel::leave, modifier = Modifier.weight(1f).fillMaxHeight())
+            if (!ui.learning) GameAction("Openings", light = false, onClick = viewModel::leave, modifier = Modifier.weight(1f).fillMaxHeight())
             if (showingTrap) {
                 GameAction("Replay", light = false, onClick = viewModel::replayTrap, modifier = Modifier.weight(1f).fillMaxHeight())
                 PrimaryAction("Back to the line", Modifier.weight(1.3f).fillMaxHeight(), onClick = viewModel::backToLine)
@@ -1186,6 +1186,17 @@ private fun Playing(
                         onClick = viewModel::hint,
                     )
                 }
+            } else if (ui.learning) {
+                val atEnd = ui.learnPly >= ui.learnTotal
+                GameAction("◀ Back", light = false, onClick = { viewModel.learnBy(-1) }, modifier = Modifier.weight(1f).fillMaxHeight())
+                GameAction(
+                    if (ui.learnPlaying) "Pause" else if (atEnd) "Replay" else "Play",
+                    light = false,
+                    onClick = { viewModel.learnPlay() },
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                )
+                if (atEnd) PrimaryAction("Practise", Modifier.weight(1.3f).fillMaxHeight(), onClick = viewModel::practise)
+                else PrimaryAction("Next ▶", Modifier.weight(1.3f).fillMaxHeight(), onClick = { viewModel.learnBy(1) })
             } else if (ui.survival) {
                 if (ui.survivalOver) {
                     GameAction(
