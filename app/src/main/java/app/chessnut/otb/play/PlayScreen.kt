@@ -166,7 +166,7 @@ fun PlayScreen(
             ui.kind == PlayKind.Bot -> BotGame(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp), onAnalyse)
             onPage -> OpeningPage(ui, ui.detail!!, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp), onPuzzles, onPlans, onMaster)
             !ui.playing -> Setup(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp))
-            else -> Playing(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp), onAnalyse, onPlans, onMaster)
+            else -> Playing(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp), onAnalyse, onPlans, onMaster, onPuzzles)
         }
     }
 }
@@ -909,6 +909,11 @@ private fun CoachDialog(ui: PlayUi, viewModel: PlayViewModel, onDismiss: () -> U
 }
 
 @Composable
+private fun StepChip(label: String, selected: Boolean, enabled: Boolean, onClick: () -> Unit) {
+    FilterChip(selected = selected, onClick = onClick, enabled = enabled, label = { Text(label) }, colors = clubChipColors())
+}
+
+@Composable
 private fun CoachSwitch(title: String, detail: String, on: Boolean, onChange: (Boolean) -> Unit) {
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         Column(Modifier.weight(1f)) {
@@ -974,6 +979,7 @@ private fun Playing(
     onAnalyse: (String) -> Unit,
     onPlans: (opening: String, white: Boolean, plan: String?) -> Unit,
     onMaster: (id: String) -> Unit,
+    onPuzzles: (String) -> Unit,
 ) {
     // Weakest first, so the main line is drawn on top where arrows overlap.
     val bookArrows = ui.bookUcis.mapIndexedNotNull { index, uci ->
@@ -1018,15 +1024,8 @@ private fun Playing(
                         strokeWidth = 2.dp,
                     )
                 }
-                // The move just played: ask for a closer look at it.
-                if (ui.san.isNotEmpty()) {
-                    val played = remember(ui.san) { runCatching { ChessLines.replay(ui.san).uci }.getOrDefault(emptyList()) }
-                    FlagControl(played, "train", ui.openingName.orEmpty(), ui.idea ?: ui.status, Modifier.height(28.dp))
-                }
-            }
-            if (ui.kind == PlayKind.Trainer) {
-                FlowRow(Modifier.fillMaxWidth().heightIn(min = 40.dp), itemVerticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    // Explain, Ideas and History are settings you choose once: one chip opens them.
+                // Explain, Ideas and History are settings you choose once: one chip opens them.
+                if (ui.kind == PlayKind.Trainer) {
                     var coach by remember { mutableStateOf(false) }
                     if (coach) CoachDialog(ui, viewModel) { coach = false }
                     FilterChip(
@@ -1035,33 +1034,23 @@ private fun Playing(
                         label = { Text("Coach") },
                         colors = clubChipColors(),
                     )
-                    // The drilled line, played for you: spoken with the ideas on, otherwise a half second a move.
-                    if (ui.canAutoplay || ui.autoplay) {
-                        FilterChip(
-                            selected = ui.autoplay,
-                            onClick = viewModel::toggleAutoplay,
-                            label = { Text(if (ui.autoplay) "Stop" else "Play line") },
-                            colors = clubChipColors(),
-                        )
-                    }
-                    // Out of theory takes the line label's place, so the row never wraps and moves the board.
-                    if (ui.san.isNotEmpty() && !ui.inTheory && !ui.survival && !ui.punish) {
-                        Text(
-                            "Out of theory",
-                            color = Palette.Gold,
-                            fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    } else {
-                        ui.lineLabel?.let { label ->
-                            Text(
-                                label,
-                                color = if (ui.survival) Palette.Survival else if (ui.punish) Palette.Mistake else Palette.TextMuted,
-                                fontWeight = if (ui.survival || ui.punish) FontWeight.Bold else FontWeight.Normal,
-                                style = MaterialTheme.typography.bodyMedium,
-                                maxLines = 1,
-                            )
-                        }
+                }
+                // The move just played: ask for a closer look at it.
+                if (ui.san.isNotEmpty()) {
+                    val played = remember(ui.san) { runCatching { ChessLines.replay(ui.san).uci }.getOrDefault(emptyList()) }
+                    FlagControl(played, "train", ui.openingName.orEmpty(), ui.idea ?: ui.status, Modifier.height(28.dp))
+                }
+            }
+            if (ui.kind == PlayKind.Trainer) {
+                FlowRow(Modifier.fillMaxWidth().heightIn(min = 40.dp), itemVerticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    // The three steps of a line. Learn plays it for you (spoken with the ideas on, otherwise a half second a move),
+                    // Practise is you playing it, Play on carries into the middlegame once the line is done.
+                    val opening = ui.openingName
+                    StepChip("Learn", ui.autoplay, ui.canAutoplay || ui.autoplay) { viewModel.toggleAutoplay() }
+                    StepChip("Practise", !ui.autoplay && !ui.lineDone, true) { if (ui.autoplay) viewModel.toggleAutoplay() }
+                    StepChip("Play on", ui.lineDone, ui.lineDone && opening != null) {
+                        val plan = ui.linePlans.firstOrNull()
+                        if (plan != null) onPlans(opening!!, ui.userWhite, plan) else onPuzzles(PuzzleSets.middlegameKey(opening!!, ui.userWhite))
                     }
                 }
             }
@@ -1076,6 +1065,22 @@ private fun Playing(
                 slide = true,
                 onSquare = viewModel::tap,
             )
+            // Out of theory takes the line label's place.
+            if (ui.kind == PlayKind.Trainer) {
+                if (ui.san.isNotEmpty() && !ui.inTheory && !ui.survival && !ui.punish) {
+                    Text("Out of theory", color = Palette.Gold, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium)
+                } else {
+                    ui.lineLabel?.let { label ->
+                        Text(
+                            label,
+                            color = if (ui.survival) Palette.Survival else if (ui.punish) Palette.Mistake else Palette.TextMuted,
+                            fontWeight = if (ui.survival || ui.punish) FontWeight.Bold else FontWeight.Normal,
+                            style = MaterialTheme.typography.bodyMedium,
+                            maxLines = 1,
+                        )
+                    }
+                }
+            }
             // In Punish mode the eval would give the mistake away, so it waits until you've answered.
             if (!showingTrap && !(ui.punish && !ui.lineDone)) EvalBar(ui.evalScore, ui.evalTerminal, ui.fen)
             if (!showingTrap) ui.punishPass?.let { ResultMark(it, ui.punishMark.orEmpty()) }
