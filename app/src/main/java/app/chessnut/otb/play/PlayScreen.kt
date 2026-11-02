@@ -577,9 +577,12 @@ private fun OpeningPage(
                 }
             }
             // A long list is grouped under the move where its lines part; a short one stays flat.
+            // Best win rate first within the list or the group; lines with no rate yet keep their order after. The number
+            // stays the line's own (as in "Line 9 of 10" while training), so training order is unchanged.
+            val byRate = compareByDescending<IndexedValue<LineView>> { it.value.winRate ?: -1 }
             val groups = ui.lines.withIndex().groupBy { it.value.group }
             if (groups.size < 2 || ui.lines.size < 6 || "" in groups) {
-                itemsIndexed(ui.lines, key = { index, _ -> "line-$index" }) { index, line ->
+                items(ui.lines.withIndex().sortedWith(byRate), key = { "line-${it.index}" }) { (index, line) ->
                     LineRow(index, line, onPlan = { plan -> onPlans(detail.name, ui.userWhite, plan) }, onMaster = onMaster) { viewModel.trainLine(index) }
                 }
             } else {
@@ -593,7 +596,7 @@ private fun OpeningPage(
                         LineGroupHeader(group, rows.map { it.value }, open) { flipped = !flipped }
                         if (open) {
                             Column(Modifier.padding(top = 6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                for ((index, line) in rows) {
+                                for ((index, line) in rows.sortedWith(byRate)) {
                                     LineRow(index, line, onPlan = { plan -> onPlans(detail.name, ui.userWhite, plan) }, onMaster = onMaster) { viewModel.trainLine(index) }
                                 }
                             }
