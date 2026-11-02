@@ -170,6 +170,8 @@ data class PlayUi(
     val memesOnly: Boolean = false,
     /** Only openings and chapters you have learned a line of. */
     val knownOnly: Boolean = false,
+    /** The line groups you have opened on opening pages, as "opening|side|group"; all start closed and stay as you leave them. */
+    val openGroups: Set<String> = emptySet(),
     val sections: List<OpeningSection> = emptyList(),
     val playing: Boolean = false,
     val fen: String = Board().fen,
@@ -558,6 +560,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     fun setMemesOnly(on: Boolean) = setListFilter { it.copy(memesOnly = on) }
 
     fun setKnownOnly(on: Boolean) = setListFilter { it.copy(knownOnly = on) }
+
+    fun toggleGroup(key: String) = state.update { it.copy(openGroups = if (key in it.openGroups) it.openGroups - key else it.openGroups + key) }
 
     fun setIdeas(on: Boolean) {
         app.moveIdeas = on

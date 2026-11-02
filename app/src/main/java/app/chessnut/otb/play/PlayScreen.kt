@@ -537,7 +537,8 @@ private fun OpeningPage(
                     ChessBoard(fen = detail.fen, modifier = Modifier.size(200.dp).clip(RoundedCornerShape(6.dp)), flipped = !ui.userWhite, coordinates = false)
                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         if (detail.moves.isNotBlank()) {
-                            Text(detail.moves, color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium)
+                            // One numbered move pair to a line: "1. e4 e5" over "2. Nf3 Nc6".
+                            Text(detail.moves.trim().split(Regex("\\s+(?=\\d+\\.)")).joinToString("\n"), color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium)
                         }
                         // The same two squares as the opening list: they take less room than two chips beside a bigger board.
                         if (!detail.study) SideToggle(ui.userWhite, viewModel::setUserWhite)
@@ -577,9 +578,6 @@ private fun OpeningPage(
                     LineRow(index + 1, line, onPlan = { plan -> onPlans(detail.name, ui.userWhite, plan) }, onMaster = onMaster) { viewModel.trainLine(index) }
                 }
             } else {
-                // The group with something to do opens first; the rest wait behind their headings.
-                val first = groups.entries.firstOrNull { (_, rows) -> rows.any { it.value.status == LineStatus.Due || it.value.status == LineStatus.Missed } }?.key
-                    ?: groups.keys.first()
                 for ((group, rows) in groups) {
                     // A heading over one line says nothing: the line stands on its own.
                     if (rows.size == 1) {
@@ -590,9 +588,10 @@ private fun OpeningPage(
                         continue
                     }
                     item(key = "group-$group") {
-                        var flipped by rememberSaveable(detail.name, group) { mutableStateOf(false) }
-                        val open = (group == first) != flipped
-                        LineGroupHeader(group, "", rows.map { it.value }, open) { flipped = !flipped }
+                        // Closed to begin with, and left as you leave them; "N to do" on the heading says where something waits.
+                        val groupKey = "${detail.name}|${ui.userWhite}|$group"
+                        val open = groupKey in ui.openGroups
+                        LineGroupHeader(group, "", rows.map { it.value }, open) { viewModel.toggleGroup(groupKey) }
                         if (open) {
                             Column(Modifier.padding(top = 6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                 for ((index, line) in rows) {
