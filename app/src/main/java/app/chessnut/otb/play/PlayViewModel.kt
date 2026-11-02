@@ -2341,7 +2341,10 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         return choices[random.nextInt(choices.size)]
     }
 
-    private fun legalBookMove(): Boolean = legalBookChoices().isNotEmpty()
+    /** In theory: the opening book has a move here, or the game is still on one of the opening's lines (which run deeper than the book). */
+    private fun legalBookMove(): Boolean = legalBookChoices().isNotEmpty() || onALine()
+
+    private fun onALine(): Boolean = kind == PlayKind.Trainer && drillLines.any { it.size >= sanMoves.size && it.take(sanMoves.size) == sanMoves }
 
     private fun legalBookChoices(): List<String> = legalBookSteps().map { it.second }
 
