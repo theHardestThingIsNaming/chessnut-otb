@@ -1544,11 +1544,14 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         status = last ?: trainerStart()
         idea = last?.let { MoveIdeas.explain(sanMoves, before, uciMoves.last()) }
         ideaMove = last?.let { "${moveNumber(sanMoves.lastIndex)}$it" }
+        val lore = if (state.value.history) OpeningBook.view(sanMoves).name?.let { OpeningLore.exact(it) } else null
+        story = if (sanMoves.isEmpty()) null else lore ?: story
         lineNote = if (sanMoves.size >= line.size) "That's the line. Replay it, or practise it from memory." else null
         publish()
         if (speak && last != null && app.phoneSounds) {
             speech.say(last, mate = ChessLines.terminalOf(fen) == Terminal.Checkmate)
             if (state.value.ideas) idea?.let { speech.narrate(it) }
+            if (lore != null && told.add(lore)) speech.narrate(lore)
         }
     }
 
@@ -2126,7 +2129,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
 
     /** Shows [story] once per game when history is on, and speaks it when sound is on. */
     private fun tell(story: String?) {
-        if (story == null || !state.value.history) return
+        if (story == null || !learning || !state.value.history) return
         if (!told.add(story)) return
         this.story = story
         publish()
@@ -2432,7 +2435,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             idea = punishing.notes.getOrNull(index)?.takeIf { sanMoves.take(punishing.before.size + index + 1) == punishing.before + punishing.moves.take(index + 1) }
             ideaMove = idea?.let { "${moveNumber(sanMoves.lastIndex)}${step.first}" }
             publish()
-        } else if (kind == PlayKind.Trainer && state.value.ideas) {
+        } else if (kind == PlayKind.Trainer && learning && state.value.ideas) {
             val explained = MoveIdeas.explain(sanMoves, before, uci)
             ideaMove = "${moveNumber(sanMoves.lastIndex)}${step.first}"
             idea = explained
@@ -2934,7 +2937,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 trapUci = trap?.let { trapPosition(it).second },
                 trapMistake = trapStep == 1,
                 // History belongs to the opening moves; past them it only crowds the screen.
-                story = if (kind == PlayKind.Trainer && trap == null && sanMoves.size <= HISTORY_PLIES) story else null,
+                story = if (kind == PlayKind.Trainer && learning && trap == null && sanMoves.size <= HISTORY_PLIES) story else null,
             )
         }
     }
