@@ -171,6 +171,7 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
         return LiveEvent.Ignored
     }
 
+    @Synchronized
     fun onPlacement(raw: String, now: Long): LiveEvent {
         flagIfExpired(now)?.let { return it }
         val placement = placementOf(raw)
@@ -235,30 +236,51 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
         )
     }
 
-    /** The shortest run of two to [MAX_JUMP] legal moves from here that leaves [target] on the board, or null. */
-    private fun sequenceTo(target: String): List<Move>? {
+    /**
+     * The shortest run of two to [maxPlies] legal moves from here that leaves [target] on the board, or
+     * null. Gives up after [budget] positions so a hopeless board can't hold the app up.
+     */
+    private fun sequenceTo(target: String, maxPlies: Int = MAX_JUMP, budget: Int = 30_000): List<Move>? {
         val want = squares(target)
+        var visited = 0
         fun gap(): Int {
             val have = squares(placementOf(board.fen))
             return (0 until 64).count { have[it] != want[it] }
         }
         fun search(left: Int, path: MutableList<Move>): Boolean {
             for (m in board.legalMoves()) {
+                if (++visited > budget) return false
                 board.doMove(m)
                 path += m
                 val remaining = gap()
-                val hit = if (left == 1) remaining == 0 else remaining <= 4 * (left - 1) && search(left - 1, path)
+                // A move changes two squares (four for castling), so what's left must fit in the plies left.
+                val hit = if (left == 1) remaining == 0 else remaining <= 2 * (left - 1) + 2 && search(left - 1, path)
                 board.undoMove()
                 if (hit) return true
                 path.removeAt(path.lastIndex)
             }
             return false
         }
-        for (plies in 2..MAX_JUMP) {
+        for (plies in 2..maxPlies) {
             val path = mutableListOf<Move>()
             if (search(plies, path)) return path.toList()
+            if (visited > budget) return null
         }
         return null
+    }
+
+    /**
+     * A longer look than [onPlacement] allows itself: for a board that has stayed wrong, finds the moves
+     * (up to [DEEP_JUMP]) that lead from the recorded game to it, and plays them. Ignored when none do.
+     */
+    @Synchronized
+    fun catchUp(raw: String, now: Long): LiveEvent {
+        if (!started || ended) return LiveEvent.Ignored
+        val placement = placementOf(raw)
+        if (sameSquares(placement, placementOf(board.fen))) return LiveEvent.Ignored
+        val path = sequenceTo(placement, DEEP_JUMP, DEEP_BUDGET) ?: return LiveEvent.Illegal(mismatchedSquares(placementOf(board.fen), placement))
+        lastPlacement = placement
+        return play(path, placement, now)
     }
 
     fun finishNow(now: Long): LiveEvent.Finished? = finishIfUnsaved(now)
@@ -480,5 +502,7 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
 
     private companion object {
         const val MAX_JUMP = 3
+        const val DEEP_JUMP = 6
+        const val DEEP_BUDGET = 400_000
     }
 }

@@ -55,6 +55,9 @@ data class BoardUiState(
     val live: LiveSnapshot = LiveSnapshot(),
     val lastSavedGameId: String? = null,
     val batteryPercent: Int? = null,
+    /** The board has stayed different from the recorded game; offers a longer look. */
+    val lost: Boolean = false,
+    val catchingUp: Boolean = false,
     val log: List<String> = emptyList(),
 )
 
@@ -216,6 +219,7 @@ class BoardViewModel(application: Application) : AndroidViewModel(application) {
                     val now = System.currentTimeMillis()
                     val event = tracker.onPlacement(placement, now)
                     publishLive(now)
+                    if (event !is LiveEvent.Illegal && state.value.lost) state.update { it.copy(lost = false) }
                     when (event) {
                         is LiveEvent.Finished -> persistLive(event)
                         is LiveEvent.Move -> log.line("live ${(event.earlier + event.san).joinToString(" ")}${if (event.earlier.isEmpty()) "" else " (caught up)"}")
@@ -225,6 +229,7 @@ class BoardViewModel(application: Application) : AndroidViewModel(application) {
                             illegalJob = viewModelScope.launch {
                                 delay(BoardRead.MISMATCH_MS)
                                 log.line("live illegal")
+                                state.update { it.copy(lost = true) }
                                 cue(event)
                             }
                             return@launch
@@ -317,6 +322,33 @@ class BoardViewModel(application: Application) : AndroidViewModel(application) {
         val now = System.currentTimeMillis()
         tracker.setControl(control, now)
         publishLive(now)
+    }
+
+    /**
+     * For a board that stayed wrong: looks further back for the moves that lead from the recorded game to
+     * the pieces as they stand, and plays them. If there are none, says so.
+     */
+    fun catchUp() {
+        val placement = state.value.livePlacement ?: return
+        if (state.value.catchingUp) return
+        state.update { it.copy(catchingUp = true) }
+        viewModelScope.launch {
+            val event = withContext(Dispatchers.Default) { tracker.catchUp(placement, System.currentTimeMillis()) }
+            val now = System.currentTimeMillis()
+            publishLive(now)
+            when (event) {
+                is LiveEvent.Illegal -> {
+                    log.line("catch up: no moves found")
+                    state.update { it.copy(catchingUp = false, message = "Couldn't match the board to the game. End the game here and set up the start position for a new one.") }
+                }
+                else -> {
+                    if (event is LiveEvent.Move) log.line("live ${(event.earlier + event.san).joinToString(" ")} (caught up)")
+                    state.update { it.copy(catchingUp = false, lost = false, message = null) }
+                    cue(event)
+                    if (event is LiveEvent.Finished) persistLive(event)
+                }
+            }
+        }
     }
 
     fun saveLiveGame() {

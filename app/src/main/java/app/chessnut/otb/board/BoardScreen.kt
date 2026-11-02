@@ -288,6 +288,7 @@ fun BoardScreen(
                     onDrawWhite = model::offerDrawWhite,
                     onDrawBlack = model::offerDrawBlack,
                     onAnalyze = { ui.lastSavedGameId?.let(onAnalyze) },
+                    onCatchUp = model::catchUp,
                 )
             }
             if (ui.connected != null) {
@@ -309,6 +310,7 @@ private fun LiveGamePanel(
     onDrawWhite: () -> Unit,
     onDrawBlack: () -> Unit,
     onAnalyze: () -> Unit,
+    onCatchUp: () -> Unit,
 ) {
     val live = ui.live
     val playing = live.started && !live.ended
@@ -394,6 +396,11 @@ private fun LiveGamePanel(
                     onResign = onResignWhite,
                     modifier = strips.weight(1f),
                 )
+            }
+        }
+        if (ui.lost && playing) {
+            Button(onClick = onCatchUp, enabled = !ui.catchingUp, modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+                Text(if (ui.catchingUp) "Working it out…" else "Board out of step? Catch up")
             }
         }
         if (live.ended && ui.lastSavedGameId != null) {
