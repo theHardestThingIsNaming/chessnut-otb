@@ -126,6 +126,7 @@ class MainActivity : ComponentActivity() {
                             screen = "puzzles:$key"
                         },
                         onMaster = { id -> screen = "master:$id" },
+                        onPlayOn = playPosition,
                         onPlans = { opening, white, plan ->
                             firstPlan = plan
                             screen = "plans:$opening:${if (white) "w" else "b"}"

@@ -120,6 +120,7 @@ fun PlayScreen(
     onPuzzles: (String) -> Unit = {},
     onPlans: (opening: String, white: Boolean, plan: String?) -> Unit = { _, _, _ -> },
     onMaster: (id: String) -> Unit = {},
+    onPlayOn: (fen: String, white: Boolean) -> Unit = { _, _ -> },
 ) {
     KeepScreenOn()
     val ui by viewModel.ui.collectAsStateWithLifecycle()
@@ -166,7 +167,7 @@ fun PlayScreen(
             ui.kind == PlayKind.Bot -> BotGame(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp), onAnalyse)
             onPage -> OpeningPage(ui, ui.detail!!, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp), onPuzzles, onPlans, onMaster)
             !ui.playing -> Setup(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp))
-            else -> Playing(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp), onAnalyse, onPlans, onMaster, onPuzzles)
+            else -> Playing(ui, viewModel, Modifier.fillMaxSize().padding(padding).padding(horizontal = 12.dp), onAnalyse, onPlans, onMaster, onPuzzles, onPlayOn)
         }
     }
 }
@@ -1001,6 +1002,7 @@ private fun Playing(
     onPlans: (opening: String, white: Boolean, plan: String?) -> Unit,
     onMaster: (id: String) -> Unit,
     onPuzzles: (String) -> Unit,
+    onPlayOn: (fen: String, white: Boolean) -> Unit,
 ) {
     // Weakest first, so the main line is drawn on top where arrows overlap.
     val bookArrows = ui.bookUcis.mapIndexedNotNull { index, uci ->
@@ -1114,6 +1116,13 @@ private fun Playing(
                     ) { Text("Continue with the plan: $plan", color = Palette.Accent) }
                 }
                 if (ui.lineDone && !showingTrap) TacticsButton(opening, ui.userWhite, onPuzzles)
+                if (ui.lineDone && !showingTrap && !ui.survival && !ui.punish && !ui.reviewing) {
+                    OutlinedButton(
+                        onClick = { onPlayOn(ui.fen, ui.userWhite) },
+                        colors = clubOutlinedButtonColors(),
+                        modifier = Modifier.fillMaxWidth(),
+                    ) { Text("Play on from here against the engine", color = Palette.Accent) }
+                }
                 ui.lineMaster?.let { (id, title) ->
                     OutlinedButton(
                         onClick = { onMaster(id) },
