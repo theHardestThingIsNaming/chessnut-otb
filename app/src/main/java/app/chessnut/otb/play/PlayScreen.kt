@@ -636,6 +636,10 @@ private fun Stat(value: String, label: String, modifier: Modifier, color: Color 
 
 /** One line of the opening: its variation, its moves past the opening, how you're doing and when it's next due. */
 @OptIn(ExperimentalLayoutApi::class)
+/**
+ * One line of an opening, collapsed to its name, moves and status. The chevron opens its stats, its
+ * middlegame plans and its master game; tapping the row itself trains the line.
+ */
 @Composable
 private fun LineRow(index: Int, line: LineView, onPlan: (String) -> Unit, onMaster: (String) -> Unit, onClick: () -> Unit) {
     val (label, tint) = when (line.status) {
@@ -644,67 +648,81 @@ private fun LineRow(index: Int, line: LineView, onPlan: (String) -> Unit, onMast
         LineStatus.Missed -> "Missed" to Palette.Error
         LineStatus.New -> "New" to Palette.TextMuted
     }
+    var open by rememberSaveable(line.moves) { mutableStateOf(false) }
     Column(
         Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
             .background(Palette.Surface)
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 10.dp),
-        verticalArrangement = Arrangement.spacedBy(2.dp),
+            .animateContentSize()
+            .padding(start = 12.dp, top = 6.dp, bottom = 6.dp),
     ) {
-        Text("${index + 1}. ${line.name}", color = Palette.Text, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
-        Text(line.moves, color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
-        // Everything else about the line on one row: status and next review, Lichess result, Survival best.
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text("${index + 1}. ${line.name}", color = Palette.Text, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                Text(
+                    line.moves,
+                    color = Palette.TextMuted,
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = if (open) Int.MAX_VALUE else 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
             Text(
                 // "Due · review now" said due twice.
-                if (line.status == LineStatus.Due) "Due now" else line.next?.let { "$label · ${it.replaceFirstChar { c -> c.lowercase() }}" } ?: label,
+                if (line.status == LineStatus.Due) "Due now" else label,
                 color = tint,
                 style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier.padding(start = 8.dp),
             )
-            line.winRate?.let { Text("Wins $it%", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium) }
-            Box(Modifier.weight(1f))
-            line.best?.let {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
-                    BoltMark(Palette.Survival, Modifier.size(12.dp))
-                    Text("$it", color = Palette.Survival, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
+            Box(
+                Modifier.size(44.dp).clickable { open = !open }.semantics { contentDescription = if (open) "Hide details" else "Show details" },
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(if (open) "▴" else "▾", color = Palette.TextMuted, style = MaterialTheme.typography.titleMedium)
+            }
+        }
+        if (open) {
+            Column(Modifier.padding(end = 12.dp, bottom = 6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                // Next review, Lichess result and Survival best on one row.
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
+                    line.next?.let { Text(it.replaceFirstChar { c -> c.uppercase() }, color = tint, style = MaterialTheme.typography.labelMedium) }
+                    line.winRate?.let { Text("Wins $it%", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium) }
+                    Box(Modifier.weight(1f))
+                    line.best?.let {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+                            BoltMark(Palette.Survival, Modifier.size(12.dp))
+                            Text("$it", color = Palette.Survival, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
+                        }
+                    }
+                }
+                // Where the line leads: its middlegame plans and a master game, side by side when they fit.
+                if (line.plans.isNotEmpty() || line.master != null) {
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        for (plan in line.plans) LinkChip("Plan", plan, Palette.Accent) { onPlan(plan) }
+                        line.master?.let { (id, title) -> LinkChip("Master game", title, Palette.Gold) { onMaster(id) } }
+                    }
                 }
             }
         }
-        // Where the line leads: its middlegame plans and a master game, side by side when they fit.
-        if (line.plans.isNotEmpty() || line.master != null) {
-            FlowRow(Modifier.padding(top = 6.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            for (plan in line.plans) {
-                Row(
-                    Modifier
-                                                .clip(RoundedCornerShape(8.dp))
-                        .border(1.dp, Palette.Accent, RoundedCornerShape(8.dp))
-                        .clickable { onPlan(plan) }
-                        .padding(horizontal = 10.dp, vertical = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                    Text("Plan", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
-                    Text("$plan ›", color = Palette.Accent, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.labelMedium)
-                }
-            }
-                line.master?.let { (id, title) ->
-                Row(
-                    Modifier
-                                                .clip(RoundedCornerShape(8.dp))
-                        .border(1.dp, Palette.Gold, RoundedCornerShape(8.dp))
-                        .clickable { onMaster(id) }
-                        .padding(horizontal = 10.dp, vertical = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                    Text("Master game", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
-                    Text("$title ›", color = Palette.Gold, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.labelMedium)
-                }
-            }
-            }
-        }
+    }
+}
+
+/** A bordered link to something a line leads to: a kind in grey, its name in colour. */
+@Composable
+private fun LinkChip(kind: String, name: String, color: Color, onClick: () -> Unit) {
+    Row(
+        Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .border(1.dp, color, RoundedCornerShape(8.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 10.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Text(kind, color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
+        Text("$name ›", color = color, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.labelMedium)
     }
 }
 
