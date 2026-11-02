@@ -226,7 +226,7 @@ From the code and UX review. Principle: three levels (glance: a headline, the pr
 
 - [x] 1. Opening page: each line row collapsed (name and status, moves on one line), a chevron opens its stats, plans and master game. Tapping the row still trains it.
 - [x] 2. Opening page: lines grouped under Black's reply ("3...c5 · 4 lines"), and the Chess.com import and History behind a "More" row.
-- [ ] 3. Train screen: Explain, Ideas and History in one "Coach" sheet that remembers its choices; only Play line and the line label stay on the screen; the coach card is one line with a "More" expander.
+- [x] 3. Train screen (the coach card's History already had More/Less): Explain, Ideas and History in one "Coach" dialog that remembers its choices; only Play line and the line label stay on the screen; the coach card is one line with a "More" expander.
 - [ ] 4. Opening list: grouped by family, "My repertoire" grouped by the opponent's first move, the filters behind one Filter button.
 - [ ] 5. Review screen: Moves, Engine and Summary tabs with one accuracy headline.
 - [ ] 6. Plans and master games: only the current move's note, with "Why?" for the rest; the plan summary as two lines and "More".

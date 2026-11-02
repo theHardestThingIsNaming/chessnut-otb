@@ -46,6 +46,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -790,6 +791,34 @@ private fun LinkChip(kind: String, name: String, color: Color, onClick: () -> Un
     }
 }
 
+/** What the coach shows while you train, each on its own switch. */
+@Composable
+private fun CoachDialog(ui: PlayUi, viewModel: PlayViewModel, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = { TextButton(onClick = onDismiss, colors = clubTextButtonColors()) { Text("Done", color = Palette.Accent) } },
+        title = { Text("Coach") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                CoachSwitch("Explain", "Arrows for the book moves, and your move lit on the board.", ui.explain, viewModel::setExplain)
+                CoachSwitch("Ideas", "The idea behind each move, written and spoken.", ui.ideas, viewModel::setIdeas)
+                CoachSwitch("History", "The opening's story, as it comes up.", ui.history, viewModel::setHistory)
+            }
+        },
+    )
+}
+
+@Composable
+private fun CoachSwitch(title: String, detail: String, on: Boolean, onChange: (Boolean) -> Unit) {
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Column(Modifier.weight(1f)) {
+            Text(title, fontWeight = FontWeight.SemiBold)
+            Text(detail, style = MaterialTheme.typography.bodySmall, color = Palette.TextMuted)
+        }
+        Switch(checked = on, onCheckedChange = onChange)
+    }
+}
+
 /** What the coach says: the idea behind the last move, and the opening's history as it comes up. */
 @Composable
 private fun CoachCard(ui: PlayUi) {
@@ -896,22 +925,13 @@ private fun Playing(
             }
             if (ui.kind == PlayKind.Trainer) {
                 FlowRow(itemVerticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    // Explain, Ideas and History are settings you choose once: one chip opens them.
+                    var coach by remember { mutableStateOf(false) }
+                    if (coach) CoachDialog(ui, viewModel) { coach = false }
                     FilterChip(
-                        selected = ui.explain,
-                        onClick = { viewModel.setExplain(!ui.explain) },
-                        label = { Text("Explain") },
-                        colors = clubChipColors(),
-                    )
-                    FilterChip(
-                        selected = ui.ideas,
-                        onClick = { viewModel.setIdeas(!ui.ideas) },
-                        label = { Text("Ideas") },
-                        colors = clubChipColors(),
-                    )
-                    FilterChip(
-                        selected = ui.history,
-                        onClick = { viewModel.setHistory(!ui.history) },
-                        label = { Text("History") },
+                        selected = ui.explain || ui.ideas || ui.history,
+                        onClick = { coach = true },
+                        label = { Text("Coach") },
                         colors = clubChipColors(),
                     )
                     // The drilled line, played for you: spoken with the ideas on, otherwise a half second a move.
