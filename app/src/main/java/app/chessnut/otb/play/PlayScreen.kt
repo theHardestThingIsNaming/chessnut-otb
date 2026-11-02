@@ -1071,28 +1071,40 @@ private fun Playing(
             if (!showingTrap) ui.punishPass?.let { ResultMark(it, ui.punishMark.orEmpty()) }
             // The line is done and a middlegame plan starts where it ends: carry on into it, first thing under the board.
             val opening = ui.openingName
-            if (opening != null) {
-                for (plan in ui.linePlans) {
-                    OutlinedButton(
-                        onClick = { onPlans(opening, ui.userWhite, plan) },
-                        colors = clubOutlinedButtonColors(),
-                        modifier = Modifier.fillMaxWidth(),
-                    ) { Text("Continue with the plan: $plan", color = Palette.Accent) }
+            // After a clean run, one "Play on" button opens what comes next; after a miss there is just Try again.
+            if (opening != null && ui.lineDone && ui.lineClean && !showingTrap) {
+                var more by remember(ui.fen) { mutableStateOf(false) }
+                OutlinedButton(onClick = { more = !more }, colors = clubOutlinedButtonColors(), modifier = Modifier.fillMaxWidth()) {
+                    Text(if (more) "Play on ▴" else "Play on ▾", color = Palette.Accent, fontWeight = FontWeight.SemiBold)
                 }
-                if (ui.lineDone && !showingTrap) TacticsButton(opening, ui.userWhite, onPuzzles)
-                if (ui.lineDone && !showingTrap && !ui.survival && !ui.punish && !ui.reviewing) {
+                if (more) {
+                    for (plan in ui.linePlans) {
+                        OutlinedButton(
+                            onClick = { onPlans(opening, ui.userWhite, plan) },
+                            colors = clubOutlinedButtonColors(),
+                            modifier = Modifier.fillMaxWidth(),
+                        ) { Text("Plan: $plan", color = Palette.Accent) }
+                    }
+                    TacticsButton(opening, ui.userWhite, onPuzzles)
+                    ui.lineMaster?.let { (id, title) ->
+                        OutlinedButton(
+                            onClick = { onMaster(id) },
+                            colors = clubOutlinedButtonColors(),
+                            modifier = Modifier.fillMaxWidth(),
+                        ) { Text("Master game: $title", color = Palette.Gold) }
+                    }
+                    if (!ui.survival && !ui.punish && !ui.reviewing) {
+                        OutlinedButton(
+                            onClick = { onPlayOn(ui.fen, ui.userWhite) },
+                            colors = clubOutlinedButtonColors(),
+                            modifier = Modifier.fillMaxWidth(),
+                        ) { Text("Play it out against the engine", color = Palette.Accent) }
+                    }
                     OutlinedButton(
-                        onClick = { onPlayOn(ui.fen, ui.userWhite) },
+                        onClick = { viewModel.analyse()?.let(onAnalyse) },
                         colors = clubOutlinedButtonColors(),
                         modifier = Modifier.fillMaxWidth(),
-                    ) { Text("Play on from here against the engine", color = Palette.Accent) }
-                }
-                ui.lineMaster?.let { (id, title) ->
-                    OutlinedButton(
-                        onClick = { onMaster(id) },
-                        colors = clubOutlinedButtonColors(),
-                        modifier = Modifier.fillMaxWidth(),
-                    ) { Text("Master game: $title", color = Palette.Gold) }
+                    ) { Text("Analyse this game", color = Palette.Accent) }
                 }
             }
             ui.trapName?.let { TrapBanner(it, ui.trapStep, ui.trapLength, ui.trapSummary, ui.trapInfo) }
@@ -1148,7 +1160,7 @@ private fun Playing(
                 ) { Text("Take back and play $move") }
             }
             ui.choiceOffer?.let { move ->
-                OutlinedButton(onClick = viewModel::adoptChoice, colors = clubOutlinedButtonColors(), modifier = Modifier.fillMaxWidth()) {
+                TextButton(onClick = viewModel::adoptChoice, colors = clubTextButtonColors(), modifier = Modifier.fillMaxWidth()) {
                     Text("Play $move here from now on", color = Palette.Accent)
                 }
             }
@@ -1156,7 +1168,8 @@ private fun Playing(
         }
         // The actions stay along the bottom, under the thumb.
         Row(Modifier.fillMaxWidth().height(52.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            if (!ui.learning) GameAction("Openings", light = false, onClick = viewModel::leave, modifier = Modifier.weight(1f).fillMaxHeight())
+            // A finished line has two buttons, Try again and Next line: the back arrow leaves.
+            if (!ui.learning && !(ui.lineDone && !showingTrap && !ui.punish && !ui.survival)) GameAction("Openings", light = false, onClick = viewModel::leave, modifier = Modifier.weight(1f).fillMaxHeight())
             if (showingTrap) {
                 GameAction("Replay", light = false, onClick = viewModel::replayTrap, modifier = Modifier.weight(1f).fillMaxHeight())
                 PrimaryAction("Back to the line", Modifier.weight(1.3f).fillMaxHeight(), onClick = viewModel::backToLine)
@@ -1204,12 +1217,6 @@ private fun Playing(
                 }
             } else if (ui.lineDone) {
                 val next = if (ui.reviewLast) "Finish review" else "Next line"
-                GameAction(
-                    "Analyse",
-                    light = false,
-                    onClick = { viewModel.analyse()?.let(onAnalyse) },
-                    modifier = Modifier.weight(1f).fillMaxHeight(),
-                )
                 // After a miss, another go at the same line comes first.
                 if (ui.lineClean) {
                     GameAction("Try again", light = false, onClick = viewModel::againLine, modifier = Modifier.weight(1f).fillMaxHeight())
