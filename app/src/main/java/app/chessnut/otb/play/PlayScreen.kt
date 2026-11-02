@@ -527,18 +527,60 @@ private fun OpeningPage(
                     }
                 }
             }
-            itemsIndexed(ui.lines, key = { index, _ -> "line-$index" }) { index, line ->
-                LineRow(index, line, onPlan = { plan -> onPlans(detail.name, ui.userWhite, plan) }, onMaster = onMaster) { viewModel.trainLine(index) }
+            // A long list is grouped under the move where its lines part; a short one stays flat.
+            val groups = ui.lines.withIndex().groupBy { it.value.group }
+            if (groups.size < 2 || ui.lines.size < 6 || "" in groups) {
+                itemsIndexed(ui.lines, key = { index, _ -> "line-$index" }) { index, line ->
+                    LineRow(index, line, onPlan = { plan -> onPlans(detail.name, ui.userWhite, plan) }, onMaster = onMaster) { viewModel.trainLine(index) }
+                }
+            } else {
+                // The group with something to do opens first; the rest wait behind their headings.
+                val first = groups.entries.firstOrNull { (_, rows) -> rows.any { it.value.status == LineStatus.Due || it.value.status == LineStatus.Missed } }?.key
+                    ?: groups.keys.first()
+                for ((group, rows) in groups) {
+                    item(key = "group-$group") {
+                        var flipped by rememberSaveable(detail.name, group) { mutableStateOf(false) }
+                        val open = (group == first) != flipped
+                        LineGroupHeader(group, rows.map { it.value }, open) { flipped = !flipped }
+                        if (open) {
+                            Column(Modifier.padding(top = 6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                for ((index, line) in rows) {
+                                    LineRow(index, line, onPlan = { plan -> onPlans(detail.name, ui.userWhite, plan) }, onMaster = onMaster) { viewModel.trainLine(index) }
+                                }
+                            }
+                        }
+                    }
+                }
             }
-            item(key = "chess-com") { ChessComImport(ui, viewModel::importChessCom) }
-            detail.story?.let { story ->
-                item(key = "story") {
-                    Column(
-                        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface).padding(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
+            // The history and the Chess.com import are for reading and setting up, not for every visit.
+            item(key = "more") {
+                var more by rememberSaveable(detail.name) { mutableStateOf(false) }
+                Column(Modifier.animateContentSize(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Row(
+                        Modifier.fillMaxWidth().clip(RoundedCornerShape(10.dp)).clickable { more = !more }.padding(start = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text("History", color = Palette.Gold, style = MaterialTheme.typography.labelMedium)
-                        Text(story, color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
+                        Text(
+                            if (detail.story != null) "History and import" else "Import games",
+                            color = Palette.TextMuted,
+                            style = MaterialTheme.typography.titleSmall,
+                            modifier = Modifier.weight(1f),
+                        )
+                        Box(Modifier.size(44.dp), contentAlignment = Alignment.Center) {
+                            Text(if (more) "▴" else "▾", color = Palette.TextMuted, style = MaterialTheme.typography.titleMedium)
+                        }
+                    }
+                    if (more) {
+                        detail.story?.let { story ->
+                            Column(
+                                Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Palette.Surface).padding(12.dp),
+                                verticalArrangement = Arrangement.spacedBy(4.dp),
+                            ) {
+                                Text("History", color = Palette.Gold, style = MaterialTheme.typography.labelMedium)
+                                Text(story, color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall)
+                            }
+                        }
+                        ChessComImport(ui, viewModel::importChessCom)
                     }
                 }
             }
@@ -705,6 +747,28 @@ private fun LineRow(index: Int, line: LineView, onPlan: (String) -> Unit, onMast
                     }
                 }
             }
+        }
+    }
+}
+
+/** The heading over lines that part at the same move: the move, how many lines, and how many want you. */
+@Composable
+private fun LineGroupHeader(group: String, lines: List<LineView>, open: Boolean, onToggle: () -> Unit) {
+    val due = lines.count { it.status == LineStatus.Due || it.status == LineStatus.Missed }
+    Row(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(10.dp)).clickable(onClick = onToggle).padding(start = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(group, color = Palette.Accent, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleSmall)
+        Text(
+            "  ·  ${lines.size} line${if (lines.size == 1) "" else "s"}",
+            color = Palette.TextMuted,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.weight(1f),
+        )
+        if (due > 0) Text("$due to do", color = Palette.Gold, style = MaterialTheme.typography.labelMedium)
+        Box(Modifier.size(44.dp).semantics { contentDescription = if (open) "Hide lines" else "Show lines" }, contentAlignment = Alignment.Center) {
+            Text(if (open) "▴" else "▾", color = Palette.TextMuted, style = MaterialTheme.typography.titleMedium)
         }
     }
 }

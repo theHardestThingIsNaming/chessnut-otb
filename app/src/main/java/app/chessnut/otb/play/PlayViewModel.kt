@@ -154,6 +154,8 @@ data class LineView(
     val plans: List<String> = emptyList(),
     /** A master game that reached this line's end: its id and title. */
     val master: Pair<String, String>? = null,
+    /** The move where this line parts from the others, such as "3...c5", for grouping a long list; blank when all share it. */
+    val group: String = "",
 )
 
 data class PlayUi(
@@ -638,6 +640,10 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             fetchLineStats(lines)
             val traps = OpeningTraps.all.filter { trap -> (trap.before.size % 2 == 1) == white && OpeningTraps.fits(trap, lines) }
             fetchTrapStats(traps)
+            // Lines that part at the same move belong together: "3...c5" over four of them.
+            val parting = lines.firstOrNull()?.let { first ->
+                (0 until first.size).firstOrNull { ply -> lines.any { it.size <= ply || it[ply] != first[ply] } }
+            }
             val views = lines.map { line ->
                 val key = Drill.key(line)
                 val review = reviews[key]
@@ -669,6 +675,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                     lineStatKey(line)?.let { openingStats.record(it) }?.winPercent(if (white) OpeningSide.White else OpeningSide.Black),
                     plansAfter(name, white, line),
                     MasterGames.forLine(name, white, line)?.let { it.id to it.title },
+                    group = parting?.takeIf { it < line.size }?.let { ply ->
+                        "${ply / 2 + 1}${if (ply % 2 == 0) "." else "..."}${line[ply]}"
+                    }.orEmpty(),
                 )
             }
             state.update { if (it.openingName == name && it.userWhite == white) it.copy(
