@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -103,6 +104,7 @@ import app.chessnut.otb.ui.MedalMark
 import app.chessnut.otb.ui.BoltMark
 import app.chessnut.otb.ui.TargetMark
 import app.chessnut.otb.ui.BookMark
+import app.chessnut.otb.ui.MenuIcon
 import app.chessnut.otb.ui.PieceIcon
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.contentDescription
@@ -892,6 +894,21 @@ private fun LinkChip(kind: String, name: String, color: Color, onClick: () -> Un
     }
 }
 
+/** One option in the Play on list: a picture, then the words, left-aligned so the pictures line up down the list. */
+@Composable
+private fun PlayOnOption(icon: MenuIcon, label: String, color: Color, onClick: () -> Unit) {
+    OutlinedButton(
+        onClick = onClick,
+        colors = clubOutlinedButtonColors(),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        MenuIcon(icon, color)
+        Spacer(Modifier.width(14.dp))
+        Text(label, color = color, style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
+    }
+}
+
 /** A row of joined segments with one selected: the two ways of working on a line. */
 @Composable
 private fun Segmented(options: List<String>, selected: Int, enabled: Boolean, onSelect: (Int) -> Unit) {
@@ -1065,31 +1082,15 @@ private fun Playing(
                 }
                 if (more) {
                     for (plan in ui.linePlans) {
-                        OutlinedButton(
-                            onClick = { onPlans(opening, ui.userWhite, plan) },
-                            colors = clubOutlinedButtonColors(),
-                            modifier = Modifier.fillMaxWidth(),
-                        ) { Text("Plan: $plan", color = Palette.Accent) }
+                        PlayOnOption(MenuIcon.Plan, "Plan: $plan", Palette.Accent) { onPlans(opening, ui.userWhite, plan) }
                     }
                     ui.lineMaster?.let { (id, title) ->
-                        OutlinedButton(
-                            onClick = { onMaster(id) },
-                            colors = clubOutlinedButtonColors(),
-                            modifier = Modifier.fillMaxWidth(),
-                        ) { Text("Master game: $title", color = Palette.Gold) }
+                        PlayOnOption(MenuIcon.MasterGame, "Master game: $title", Palette.Gold) { onMaster(id) }
                     }
                     if (offer.engine) {
-                        OutlinedButton(
-                            onClick = { onPlayOn(ui.fen, ui.userWhite) },
-                            colors = clubOutlinedButtonColors(),
-                            modifier = Modifier.fillMaxWidth(),
-                        ) { Text("Play it out against the engine", color = Palette.Accent) }
+                        PlayOnOption(MenuIcon.PlayOut, "Play it out against the engine", Palette.Accent) { onPlayOn(ui.fen, ui.userWhite) }
                     }
-                    OutlinedButton(
-                        onClick = { viewModel.analyse()?.let(onAnalyse) },
-                        colors = clubOutlinedButtonColors(),
-                        modifier = Modifier.fillMaxWidth(),
-                    ) { Text("Analyse this game", color = Palette.Accent) }
+                    PlayOnOption(MenuIcon.Analyse, "Analyse this game", Palette.Accent) { viewModel.analyse()?.let(onAnalyse) }
                 }
             }
             ui.trapName?.let { TrapBanner(it, ui.trapStep, ui.trapLength, ui.trapSummary, ui.trapInfo) }
