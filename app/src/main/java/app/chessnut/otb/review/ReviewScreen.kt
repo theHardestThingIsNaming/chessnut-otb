@@ -194,8 +194,24 @@ fun ReviewScreen(
             Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(horizontal = 12.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            if (!ui.position) AccuracyRow(ui, onAnalyse = model::reanalyse)
-            if (ui.report != null && model.asksForSide()) PractiseCard(ui.game?.practise.orEmpty(), model::setPractise)
+            if (!ui.position) {
+                // The counts of each kind of move are for when you ask; the board comes first.
+                var quality by rememberSaveable { mutableStateOf(false) }
+                if (ui.report != null) {
+                    Row(
+                        Modifier.fillMaxWidth().clip(RoundedCornerShape(10.dp)).clickable { quality = !quality }.padding(start = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text("Move quality", color = Palette.TextMuted, style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
+                        Box(Modifier.size(44.dp), contentAlignment = Alignment.Center) {
+                            Text(if (quality) "▴" else "▾", color = Palette.TextMuted, style = MaterialTheme.typography.titleMedium)
+                        }
+                    }
+                    if (quality) AccuracyRow(ui, onAnalyse = model::reanalyse)
+                } else {
+                    AccuracyRow(ui, onAnalyse = model::reanalyse)
+                }
+            }
             Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 ReviewPlayer(game.black, white = false, ui, Modifier, show = !ui.flipped)
                 ReviewPlayer(game.white, white = true, ui, Modifier, show = ui.flipped)
@@ -226,6 +242,8 @@ fun ReviewScreen(
                 }
                 if (engineTab) EnginePanel(ui, onPlay = model::play) else MoveList(ui, onSelect = model::goTo)
             }
+            // Asked once, after the moves: which side to practise the mistakes of.
+            if (ui.report != null && model.asksForSide()) PractiseCard(ui.game?.practise.orEmpty(), model::setPractise)
         }
     }
 
