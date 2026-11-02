@@ -626,7 +626,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         if (playing) return
         val ui = state.value
         val name = ui.openingName ?: return
-        val lines = displayOrder(app.repertoire.chapter(name)?.lines ?: bookLines(name, ui.userWhite), ui.userWhite)
+        val lines = displayOrder(name, app.repertoire.chapter(name)?.lines ?: bookLines(name, ui.userWhite), ui.userWhite)
         pinnedLine = lines.getOrNull(index) ?: return
         start()
     }
@@ -639,7 +639,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         val white = ui.userWhite
         linesJob = viewModelScope.launch(Dispatchers.Default) {
             val chapter = app.repertoire.chapter(name)
-            val lines = displayOrder(chapter?.lines ?: bookLines(name, white), white)
+            val lines = displayOrder(name, chapter?.lines ?: bookLines(name, white), white)
+            val labels = groupLabels(name, lines)
             val reviews = if (chapter != null) app.repertoire.reviews() else app.lineProgress.reviews(name, white)
             val learned = if (chapter != null) null else app.lineProgress.learned(name, white)
             val now = System.currentTimeMillis()
@@ -648,11 +649,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             fetchLineStats(lines)
             val traps = OpeningTraps.all.filter { trap -> (trap.before.size % 2 == 1) == white && OpeningTraps.fits(trap, lines) }
             fetchTrapStats(traps)
-            // Lines that part at the same move belong together: "3...c5" over four of them.
-            val parting = lines.firstOrNull()?.let { first ->
-                (0 until first.size).firstOrNull { ply -> lines.any { it.size <= ply || it[ply] != first[ply] } }
-            }
-            val rawViews = lines.map { line ->
+            val rawViews = lines.mapIndexed { lineIndex, line ->
                 val key = Drill.key(line)
                 val review = reviews[key]
                 val status = when {
@@ -661,11 +658,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                     learned != null && key !in learned -> LineStatus.Missed
                     else -> LineStatus.Learned
                 }
-                val variation = OpeningBook.view(line).name
-                    ?.removePrefix("$name: ")
-                    ?.removePrefix(name)
-                    ?.trim(' ', ',', ':')
-                    ?.ifBlank { null }
+                val variation = variationOf(name, line)
                 val next = review?.let {
                     val days = Drill.days(it, now)
                     when {
@@ -683,9 +676,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                     lineStatKey(line)?.let { openingStats.record(it) }?.winPercent(if (white) OpeningSide.White else OpeningSide.Black),
                     plansAfter(name, white, line),
                     MasterGames.forLine(name, white, line)?.let { it.id to it.title },
-                    group = parting?.takeIf { it < line.size }?.let { ply ->
-                        "${ply / 2 + 1}${if (ply % 2 == 0) "." else "..."}${line[ply]}"
-                    }.orEmpty(),
+                    group = labels[lineIndex],
                 )
             }
             // Two lines with one name tell apart by the move where they part: "Main line 2…Nc6", "Main line 2…d6".
@@ -758,13 +749,39 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
      * without a rate after in their own order. A long list is kept in groups, by the move where its lines part,
      * and sorted within each group.
      */
-    private fun displayOrder(lines: List<List<String>>, white: Boolean): List<List<String>> {
+    private fun displayOrder(name: String, lines: List<List<String>>, white: Boolean): List<List<String>> {
+        val labels = groupLabels(name, lines)
+        val byRate = compareByDescending<List<String>> { rateOf(it, white) ?: -1 }
+        val groups = lines.indices.groupBy { labels[it] }
+        return if (groups.size < 2 || lines.size < 6 || "" in groups) {
+            lines.sortedWith(byRate)
+        } else {
+            groups.values.flatMap { rows -> rows.map { lines[it] }.sortedWith(byRate) }
+        }
+    }
+
+    /** The variation a line is named for in the book, without the opening's own name; null when it has none. */
+    private fun variationOf(name: String, line: List<String>): String? = OpeningBook.view(line).name
+        ?.removePrefix("$name: ")
+        ?.removePrefix(name)
+        ?.trim(' ', ',', ':')
+        ?.ifBlank { null }
+
+    /**
+     * Which group each of [lines] sits in on the page. Three or more lines of one named family ("Evans Gambit")
+     * are a group of their own; the rest are grouped by the move where they part ("3...Bc5"). Blank when
+     * the lines don't part at all.
+     */
+    private fun groupLabels(name: String, lines: List<List<String>>): List<String> {
         val parting = lines.firstOrNull()?.let { first ->
             (0 until first.size).firstOrNull { ply -> lines.any { it.size <= ply || it[ply] != first[ply] } }
         }
-        val byRate = compareByDescending<List<String>> { rateOf(it, white) ?: -1 }
-        val groups = lines.groupBy { line -> parting?.takeIf { it < line.size }?.let { line[it] }.orEmpty() }
-        return if (groups.size < 2 || lines.size < 6 || "" in groups) lines.sortedWith(byRate) else groups.values.flatMap { it.sortedWith(byRate) }
+        val family = lines.map { variationOf(name, it)?.substringBefore(", ")?.takeIf { f -> f.isNotBlank() } }
+        val counts = family.filterNotNull().groupingBy { it }.eachCount()
+        return lines.mapIndexed { i, line ->
+            family[i]?.takeIf { (counts[it] ?: 0) >= 3 }
+                ?: parting?.takeIf { it < line.size }?.let { ply -> "${ply / 2 + 1}${if (ply % 2 == 0) "." else "..."}${line[ply]}" }.orEmpty()
+        }
     }
 
     /** Fetches Lichess results for the lines on the open page that lack them, then shows them. Needs a Lichess login. */
@@ -902,8 +919,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         val chapter = trained?.let { app.repertoire.chapter(it) }
         drillBook = trained != null && chapter == null
         drillLines = when {
-            chapter != null -> displayOrder(chapter.lines, ui.userWhite)
-            trained != null -> displayOrder(bookLines(trained, ui.userWhite), ui.userWhite)
+            chapter != null -> displayOrder(trained, chapter.lines, ui.userWhite)
+            trained != null -> displayOrder(trained, bookLines(trained, ui.userWhite), ui.userWhite)
             else -> emptyList()
         }
         val pinned = pinnedLine?.takeIf { it in drillLines }

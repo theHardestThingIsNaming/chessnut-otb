@@ -534,7 +534,7 @@ private fun OpeningPage(
         LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             item(key = "head") {
                 Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
-                    ChessBoard(fen = detail.fen, modifier = Modifier.size(104.dp).clip(RoundedCornerShape(6.dp)), flipped = !ui.userWhite, coordinates = false)
+                    ChessBoard(fen = detail.fen, modifier = Modifier.size(168.dp).clip(RoundedCornerShape(6.dp)), flipped = !ui.userWhite, coordinates = false)
                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         if (detail.moves.isNotBlank()) {
                             Text(detail.moves, color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium)
@@ -591,11 +591,13 @@ private fun OpeningPage(
                     item(key = "group-$group") {
                         var flipped by rememberSaveable(detail.name, group) { mutableStateOf(false) }
                         val open = (group == first) != flipped
-                        LineGroupHeader(group, rows.map { it.value }, open) { flipped = !flipped }
+                        // "Evans Gambit, " on every row of a group is said once, on the heading.
+                        val shared = sharedNamePrefix(rows.map { it.value.name })
+                        LineGroupHeader(group, shared.removeSuffix(", ").takeIf { it != group }.orEmpty(), rows.map { it.value }, open) { flipped = !flipped }
                         if (open) {
                             Column(Modifier.padding(top = 6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                 for ((index, line) in rows) {
-                                    LineRow(index + 1, line, onPlan = { plan -> onPlans(detail.name, ui.userWhite, plan) }, onMaster = onMaster) { viewModel.trainLine(index) }
+                                    LineRow(index + 1, line.copy(name = line.name.removePrefix(shared)), onPlan = { plan -> onPlans(detail.name, ui.userWhite, plan) }, onMaster = onMaster) { viewModel.trainLine(index) }
                                 }
                             }
                         }
@@ -751,7 +753,7 @@ private fun LineRow(number: Int, line: LineView, onPlan: (String) -> Unit, onMas
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("$number. ${line.name}", color = Palette.Text, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f, fill = false))
+                    Text("$number. ${line.name}", color = Palette.Text, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
                     // How often your side wins from this line on Lichess, once fetched.
                     line.winRate?.let { Text("  $it%", color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium) }
                 }
@@ -802,9 +804,16 @@ private fun LineRow(number: Int, line: LineView, onPlan: (String) -> Unit, onMas
     }
 }
 
+/** What every name in a group starts with up to its first comma ("Evans Gambit, "), or nothing when they don't all share one. */
+private fun sharedNamePrefix(names: List<String>): String {
+    if (names.size < 3) return ""
+    val prefix = names.first().substringBefore(", ", "").takeIf { it.isNotEmpty() }?.let { "$it, " } ?: return ""
+    return if (names.all { it.startsWith(prefix) && it.length > prefix.length }) prefix else ""
+}
+
 /** The heading over lines that part at the same move: the move, how many lines, and how many want you. */
 @Composable
-private fun LineGroupHeader(group: String, lines: List<LineView>, open: Boolean, onToggle: () -> Unit) {
+private fun LineGroupHeader(group: String, title: String, lines: List<LineView>, open: Boolean, onToggle: () -> Unit) {
     val due = lines.count { it.status == LineStatus.Due || it.status == LineStatus.Missed }
     Row(
         Modifier.fillMaxWidth().clip(RoundedCornerShape(10.dp)).clickable(onClick = onToggle).padding(start = 4.dp),
@@ -812,7 +821,7 @@ private fun LineGroupHeader(group: String, lines: List<LineView>, open: Boolean,
     ) {
         Text(group, color = Palette.Accent, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleSmall)
         Text(
-            "  ·  ${lines.size} line${if (lines.size == 1) "" else "s"}",
+            "  ·  " + (if (title.isNotEmpty()) "$title  ·  " else "") + "${lines.size} line${if (lines.size == 1) "" else "s"}",
             color = Palette.TextMuted,
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.weight(1f),
