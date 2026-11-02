@@ -652,7 +652,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             val parting = lines.firstOrNull()?.let { first ->
                 (0 until first.size).firstOrNull { ply -> lines.any { it.size <= ply || it[ply] != first[ply] } }
             }
-            val views = lines.map { line ->
+            val rawViews = lines.map { line ->
                 val key = Drill.key(line)
                 val review = reviews[key]
                 val status = when {
@@ -687,6 +687,14 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                         "${ply / 2 + 1}${if (ply % 2 == 0) "." else "..."}${line[ply]}"
                     }.orEmpty(),
                 )
+            }
+            // Two lines with one name tell apart by the move where they part: "Main line 2…Nc6", "Main line 2…d6".
+            val views = rawViews.mapIndexed { i, view ->
+                val same = lines.indices.filter { rawViews[it].name == view.name }
+                if (same.size < 2) return@mapIndexed view
+                val ply = (0 until lines[i].size).firstOrNull { p -> same.any { lines[it].getOrNull(p) != lines[i][p] } }
+                    ?: return@mapIndexed view
+                view.copy(name = "${view.name} ${ply / 2 + 1}${if (ply % 2 == 0) "." else "…"}${lines[i][ply]}")
             }
             state.update { if (it.openingName == name && it.userWhite == white) it.copy(
                     lines = views,

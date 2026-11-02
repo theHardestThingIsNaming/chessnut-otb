@@ -749,7 +749,11 @@ private fun LineRow(index: Int, line: LineView, onPlan: (String) -> Unit, onMast
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text("${index + 1}. ${line.name}", color = Palette.Text, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("${index + 1}. ${line.name}", color = Palette.Text, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f, fill = false))
+                    // How often your side wins from this line on Lichess, once fetched.
+                    line.winRate?.let { Text("  $it%", color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium) }
+                }
                 Text(
                     line.moves,
                     color = Palette.TextMuted,
@@ -777,7 +781,6 @@ private fun LineRow(index: Int, line: LineView, onPlan: (String) -> Unit, onMast
                 // Next review, Lichess result and Survival best on one row.
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
                     line.next?.let { Text(it.replaceFirstChar { c -> c.uppercase() }, color = tint, style = MaterialTheme.typography.labelMedium) }
-                    line.winRate?.let { Text("Wins $it%", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium) }
                     Box(Modifier.weight(1f))
                     line.best?.let {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
