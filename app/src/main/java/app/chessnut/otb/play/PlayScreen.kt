@@ -526,7 +526,7 @@ private fun DepthStrip(run: Int, best: Int?, over: Boolean) {
 
 /** How long each move of the opening's preview stays, and how long the finished position does before it starts again. */
 private const val PREVIEW_STEP_MS = 850L
-private const val PREVIEW_END_MS = 1800L
+private const val PREVIEW_END_MS = 3000L
 
 /** One opening from one side: what you know of it, its lines and its history, with training a tap away. */
 @OptIn(ExperimentalLayoutApi::class)
