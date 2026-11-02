@@ -118,6 +118,8 @@ data class OpeningDetail(
     val name: String,
     /** The opening's own moves, numbered, such as "1. e4 e5 2. Nf3 Nc6 3. d4". */
     val moves: String,
+    /** The same moves, one SAN each, for the preview that plays them. */
+    val san: List<String> = emptyList(),
     /** The position the opening reaches. */
     val fen: String,
     val learned: Int,
@@ -723,6 +725,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         return OpeningDetail(
             name = name,
             moves = numberedFrom(start, 0),
+            san = start,
             fen = fen,
             learned = learnedCount,
             total = lines.size,

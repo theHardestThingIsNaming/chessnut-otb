@@ -52,11 +52,14 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.delay
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
@@ -521,6 +524,10 @@ private fun DepthStrip(run: Int, best: Int?, over: Boolean) {
     }
 }
 
+/** How long each move of the opening's preview stays, and how long the finished position does before it starts again. */
+private const val PREVIEW_STEP_MS = 850L
+private const val PREVIEW_END_MS = 1800L
+
 /** One opening from one side: what you know of it, its lines and its history, with training a tap away. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -536,12 +543,45 @@ private fun OpeningPage(
     Column(modifier.padding(bottom = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             item(key = "head") {
+                // The opening's moves played over and over on the board; a tap holds it where it is.
+                val replay = remember(detail.san) { if (detail.san.isEmpty()) null else runCatching { ChessLines.replay(detail.san) }.getOrNull() }
+                var step by remember(detail.name) { mutableIntStateOf(0) }
+                var held by remember(detail.name) { mutableStateOf(false) }
+                val total = detail.san.size
+                LaunchedEffect(detail.name, held, total) {
+                    if (replay == null || held || total == 0) return@LaunchedEffect
+                    while (true) {
+                        delay(if (step >= total) PREVIEW_END_MS else PREVIEW_STEP_MS)
+                        step = if (step >= total) 0 else step + 1
+                    }
+                }
                 Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.CenterVertically) {
-                    ChessBoard(fen = detail.fen, modifier = Modifier.size(200.dp).clip(RoundedCornerShape(6.dp)), flipped = !ui.userWhite, coordinates = false)
+                    ChessBoard(
+                        fen = replay?.fens?.getOrNull(step) ?: detail.fen,
+                        modifier = Modifier.size(216.dp).clip(RoundedCornerShape(6.dp)).clickable(enabled = replay != null) { held = !held },
+                        flipped = !ui.userWhite,
+                        coordinates = false,
+                        lastUci = if (step > 0) replay?.uci?.getOrNull(step - 1) else null,
+                    )
                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         if (detail.moves.isNotBlank()) {
-                            // One numbered move pair to a line: "1. e4 e5" over "2. Nf3 Nc6".
-                            Text(detail.moves.trim().split(Regex("\\s+(?=\\d+\\.)")).joinToString("\n"), color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium)
+                            // One numbered move pair to a line: "1. e4 e5" over "2. Nf3 Nc6", the move on the board lit.
+                            val text = buildAnnotatedString {
+                                detail.san.forEachIndexed { ply, san ->
+                                    if (ply % 2 == 0) {
+                                        if (ply > 0) append("\n")
+                                        append("${ply / 2 + 1}. ")
+                                    } else {
+                                        append(" ")
+                                    }
+                                    if (ply == step - 1) withStyle(SpanStyle(color = Palette.Accent, fontWeight = FontWeight.Bold)) { append(san) } else append(san)
+                                }
+                            }
+                            Text(
+                                if (detail.san.isEmpty()) AnnotatedString(detail.moves) else text,
+                                color = Palette.TextMuted,
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
                         }
                         // The same two squares as the opening list: they take less room than two chips beside a bigger board.
                         if (!detail.study) SideToggle(ui.userWhite, viewModel::setUserWhite)
