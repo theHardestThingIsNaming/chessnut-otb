@@ -2170,23 +2170,21 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         val words = when {
             drillBook && explain -> if (onLine) "End of this line." else "You've left this line, which continues $expected."
             drillBook && name != null -> {
-                val review = app.lineProgress.grade(name, userWhite, line, clean, now)
+                app.lineProgress.grade(name, userWhite, line, clean, now)
                 val keys = drillLines.map(Drill::key).toSet()
                 val learned = app.lineProgress.learned(name, userWhite).count { it in keys }
-                val back = backIn(Drill.days(review, now))
                 when {
-                    clean -> "Learned $learned of ${drillLines.size}. $back"
-                    expected != null -> "$offLine. The line plays $expected. $back"
-                    else -> "Not quite clean. $back"
+                    clean -> "Learned $learned of ${drillLines.size}."
+                    expected != null -> "$offLine. The line plays $expected."
+                    else -> "Not quite clean."
                 }
             }
             else -> {
-                val review = app.repertoire.grade(line, clean, now)
-                val back = backIn(Drill.days(review, now))
+                app.repertoire.grade(line, clean, now)
                 when {
-                    clean -> "Line complete. $back"
-                    expected != null -> "$offLine. Your repertoire plays $expected. $back"
-                    else -> "Strayed from your repertoire. $back"
+                    clean -> "Line complete."
+                    expected != null -> "$offLine. Your repertoire plays $expected."
+                    else -> "Strayed from your repertoire."
                 }
             }
         }
@@ -2197,8 +2195,6 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         refreshLines()
     }
 
-    /** When the line comes round again. */
-    private fun backIn(days: Int): String = if (days <= 1) "Back tomorrow." else "Back in $days days."
 
     /** "5. " for White's move at [ply], "5… " for Black's. */
     private fun moveNumber(ply: Int): String = "${ply / 2 + 1}${if (ply % 2 == 0) ". " else "… "}"

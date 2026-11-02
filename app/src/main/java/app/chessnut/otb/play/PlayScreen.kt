@@ -65,6 +65,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -1026,7 +1027,7 @@ private fun Playing(
                 }
             }
             if (ui.kind == PlayKind.Trainer) {
-                FlowRow(Modifier.fillMaxWidth().heightIn(min = 40.dp), itemVerticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(Modifier.fillMaxWidth().heightIn(min = 40.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     // Two ways to work on a line, one choice: Learn steps through it for you, Practise is you playing it.
                     // What comes after (plans, tactics, a master game) shows under the board once the line is done.
                     Segmented(listOf("Learn", "Practise"), if (ui.learning) 0 else 1, enabled = ui.canLearn) { index ->
@@ -1036,7 +1037,7 @@ private fun Playing(
                     // Out of theory takes the line label's place; Learn has no room for either.
                     if (!ui.learning) {
                         if (ui.san.isNotEmpty() && !ui.inTheory && !ui.survival && !ui.punish) {
-                            Text("Out of theory", color = Palette.Gold, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium)
+                            Text("Out of theory", color = Palette.Gold, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.End, modifier = Modifier.weight(1f))
                         } else {
                             ui.lineLabel?.let { label ->
                                 Text(
@@ -1045,6 +1046,8 @@ private fun Playing(
                                     fontWeight = if (ui.survival || ui.punish) FontWeight.Bold else FontWeight.Normal,
                                     style = MaterialTheme.typography.bodyMedium,
                                     maxLines = 1,
+                                    textAlign = TextAlign.End,
+                                    modifier = Modifier.weight(1f),
                                 )
                             }
                         }
