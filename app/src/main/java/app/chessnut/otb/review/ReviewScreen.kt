@@ -34,6 +34,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -214,8 +215,17 @@ fun ReviewScreen(
                 EvalBar(ui.engine?.score, ui.engine?.terminal, ui.fen)
             }
             NavigationRow(ui, model)
-            EnginePanel(ui, onPlay = model::play)
-            if (!ui.position) MoveList(ui, onSelect = model::goTo)
+            // Moves or the engine's lines, one at a time: both together fill the screen with text.
+            if (ui.position) {
+                EnginePanel(ui, onPlay = model::play)
+            } else {
+                var engineTab by rememberSaveable { mutableStateOf(false) }
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FilterChip(selected = !engineTab, onClick = { engineTab = false }, label = { Text("Moves") }, colors = clubChipColors())
+                    FilterChip(selected = engineTab, onClick = { engineTab = true }, label = { Text("Engine") }, colors = clubChipColors())
+                }
+                if (engineTab) EnginePanel(ui, onPlay = model::play) else MoveList(ui, onSelect = model::goTo)
+            }
         }
     }
 
