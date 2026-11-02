@@ -57,6 +57,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -579,19 +582,13 @@ private fun OpeningPage(
                 }
             } else {
                 for ((group, rows) in groups) {
-                    // A heading over one line says nothing: the line stands on its own.
-                    if (rows.size == 1) {
-                        item(key = "group-$group") {
-                            val (index, line) = rows.first()
-                            LineRow(index + 1, line, onPlan = { plan -> onPlans(detail.name, ui.userWhite, plan) }, onMaster = onMaster) { viewModel.trainLine(index) }
-                        }
-                        continue
-                    }
                     item(key = "group-$group") {
                         // Closed to begin with, and left as you leave them; "N to do" on the heading says where something waits.
                         val groupKey = "${detail.name}|${ui.userWhite}|$group"
                         val open = groupKey in ui.openGroups
-                        LineGroupHeader(group, "", rows.map { it.value }, open) { viewModel.toggleGroup(groupKey) }
+                        // A group of one is headed by the line's own name, so every row on the page opens the same way.
+                        val single = rows.singleOrNull()?.value
+                        LineGroupHeader(single?.name ?: group, single != null, rows.map { it.value }, open) { viewModel.toggleGroup(groupKey) }
                         if (open) {
                             Column(Modifier.padding(top = 6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                 for ((index, line) in rows) {
@@ -811,17 +808,21 @@ private fun withoutFamily(name: String, group: String): String {
 
 /** The heading over lines that part at the same move: the move, how many lines, and how many want you. */
 @Composable
-private fun LineGroupHeader(group: String, title: String, lines: List<LineView>, open: Boolean, onToggle: () -> Unit) {
+private fun LineGroupHeader(label: String, single: Boolean, lines: List<LineView>, open: Boolean, onToggle: () -> Unit) {
     val due = lines.count { it.status == LineStatus.Due || it.status == LineStatus.Missed }
     Row(
         Modifier.fillMaxWidth().clip(RoundedCornerShape(10.dp)).clickable(onClick = onToggle).padding(start = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(group, color = Palette.Accent, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleSmall)
+        // One text for the name and the count, so the "to do" and the chevron stay at the right edge.
         Text(
-            "  ·  " + (if (title.isNotEmpty()) "$title  ·  " else "") + "${lines.size} line${if (lines.size == 1) "" else "s"}",
-            color = Palette.TextMuted,
-            style = MaterialTheme.typography.bodyMedium,
+            buildAnnotatedString {
+                withStyle(SpanStyle(color = Palette.Accent, fontWeight = FontWeight.Bold)) { append(label) }
+                if (!single) withStyle(SpanStyle(color = Palette.TextMuted)) { append("  ·  ${lines.size} lines") }
+            },
+            style = MaterialTheme.typography.titleSmall,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),
         )
         if (due > 0) Text("$due to do", color = Palette.Gold, style = MaterialTheme.typography.labelMedium)
