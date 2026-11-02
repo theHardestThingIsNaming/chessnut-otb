@@ -1133,7 +1133,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     fun analyse(): String? {
         if (sanMoves.isEmpty()) return null
         // A game from a set-up position can't be saved as a normal game, so analyse where it stands now.
-        if (kind == PlayKind.Bot && startFen != null) return POSITION_PREFIX + fen
+        if (kind == PlayKind.Bot && startFen != null) return PositionGame.id(startFen!!, uciMoves.toList())
         clockJob?.cancel()
         if (kind == PlayKind.Bot) clock.freeze(System.currentTimeMillis())
         job?.cancel()

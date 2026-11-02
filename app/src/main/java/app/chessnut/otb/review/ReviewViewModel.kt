@@ -1,6 +1,7 @@
 package app.chessnut.otb.review
 
 import android.app.Application
+import app.chessnut.otb.play.PositionGame
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -89,7 +90,8 @@ data class ReviewState(
 
 class ReviewViewModel(application: Application, private val gameId: String) : AndroidViewModel(application) {
     val app = application as OtbApp
-    private val startFen: String? = gameId.takeIf { it.startsWith(POSITION_PREFIX) }?.removePrefix(POSITION_PREFIX)
+    private val replayed = PositionGame.parse(gameId)
+    private val startFen: String? = replayed?.start
     private val state = MutableStateFlow(ReviewState())
     val ui: StateFlow<ReviewState> = state.asStateFlow()
 
@@ -148,7 +150,18 @@ class ReviewViewModel(application: Application, private val gameId: String) : An
                 black = "Black",
                 label = "Position",
             )
-            state.update { it.copy(game = position, position = true, fens = listOf(fen), uci = emptyList(), flipped = fen.split(' ').getOrNull(1) == "b") }
+            // Moves played from the position (a game played on from a line) are stepped through; a bare position has none.
+            val steps = replayed ?: return
+            state.update {
+                it.copy(
+                    game = position.copy(sanMoves = steps.san),
+                    position = true,
+                    fens = steps.fens,
+                    uci = steps.uci,
+                    cursor = steps.fens.lastIndex,
+                    flipped = fen.split(' ').getOrNull(1) == "b",
+                )
+            }
             refreshEngine()
             return
         }
