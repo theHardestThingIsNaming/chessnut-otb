@@ -44,4 +44,21 @@ class LineWalkTest {
         val step = LineWalk.to(start, listOf("e4", "e5", "Qh8", "Nc6"), 4)
         assertEquals(listOf("e4", "e5"), step.san)
     }
+
+    @Test
+    fun aMoveOnAnyLineIsOnALine() {
+        val lines = listOf(listOf("e4", "e5", "Nf3"), listOf("e4", "c5", "Nf3"))
+        assertEquals(true, LineWalk.continues(lines, listOf("e4"), "c5"))
+        assertEquals(true, LineWalk.continues(lines, listOf("e4", "e5"), "Nf3"))
+        assertEquals(false, LineWalk.continues(lines, listOf("e4", "e5"), "Nc3"))
+        assertEquals(false, LineWalk.continues(lines, listOf("e4", "e5", "Nf3"), "Nc6"))
+    }
+
+    @Test
+    fun followingMeansStillAPrefixOfALine() {
+        val lines = listOf(listOf("e4", "e5", "Nf3"))
+        assertEquals(true, LineWalk.follows(lines, emptyList()))
+        assertEquals(true, LineWalk.follows(lines, listOf("e4", "e5", "Nf3")))
+        assertEquals(false, LineWalk.follows(lines, listOf("e4", "e5", "Nf3", "Nc6")))
+    }
 }

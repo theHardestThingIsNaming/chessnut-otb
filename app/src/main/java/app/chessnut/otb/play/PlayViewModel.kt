@@ -2283,7 +2283,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
 
     private suspend fun judge(uci: String): TrainerResult {
         val san = PlayPosition.after(fen, uci)?.first
-        val book = san != null && openingName != null && san in OpeningBook.replies(sanMoves.toList(), openingName)
+        // On one of the opening's lines counts as book even where the line runs deeper than the opening book does.
+        val book = san != null && openingName != null &&
+            (san in OpeningBook.replies(sanMoves.toList(), openingName) || LineWalk.continues(drillLines, sanMoves.toList(), san))
         if (book) return TrainerResult.Book
         val eng = engine()
         eng.limitStrength(null)
@@ -2325,7 +2327,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     /** In theory: the opening book has a move here, or the game is still on one of the opening's lines (which run deeper than the book). */
     private fun legalBookMove(): Boolean = legalBookChoices().isNotEmpty() || onALine()
 
-    private fun onALine(): Boolean = kind == PlayKind.Trainer && drillLines.any { it.size >= sanMoves.size && it.take(sanMoves.size) == sanMoves }
+    private fun onALine(): Boolean = kind == PlayKind.Trainer && LineWalk.follows(drillLines, sanMoves.toList())
 
     private fun legalBookChoices(): List<String> = legalBookSteps().map { it.second }
 

@@ -21,4 +21,12 @@ object LineWalk {
         }
         return Step(fen, san, uci, before)
     }
+
+    /** True when [move] is the next move of one of [lines], given the moves already [played]: on a line, whatever the book says. */
+    fun continues(lines: List<List<String>>, played: List<String>, move: String): Boolean =
+        lines.any { it.size > played.size && it.take(played.size) == played && it[played.size] == move }
+
+    /** True while [played] is still the start of one of [lines] (or all of one). */
+    fun follows(lines: List<List<String>>, played: List<String>): Boolean =
+        lines.any { it.size >= played.size && it.take(played.size) == played }
 }

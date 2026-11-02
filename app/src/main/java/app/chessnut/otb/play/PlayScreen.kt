@@ -1018,7 +1018,7 @@ private fun Playing(
                         val plain = ui.status == ui.openingName || ui.status == ui.san.lastOrNull() || ui.status == "Your move" || ui.status == "Your opponent's move"
                         val say = when {
                             !plain && ui.status.isNotEmpty() -> ui.status to (if (ui.retry) Palette.Error else Palette.Text)
-                            ui.san.isNotEmpty() && !ui.inTheory && !ui.survival && !ui.punish -> "Out of theory" to Palette.Gold
+                            ui.san.isNotEmpty() && !ui.inTheory && !ui.survival && !ui.punish && !ui.lineDone -> "Out of theory" to Palette.Gold
                             else -> ui.lineLabel.orEmpty() to (if (ui.survival) Palette.Survival else if (ui.punish) Palette.Mistake else Palette.TextMuted)
                         }
                         Text(
