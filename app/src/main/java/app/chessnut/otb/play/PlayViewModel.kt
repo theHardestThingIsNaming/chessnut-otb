@@ -626,7 +626,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         if (playing) return
         val ui = state.value
         val name = ui.openingName ?: return
-        val lines = app.repertoire.chapter(name)?.lines ?: bookLines(name, ui.userWhite)
+        val lines = displayOrder(app.repertoire.chapter(name)?.lines ?: bookLines(name, ui.userWhite), ui.userWhite)
         pinnedLine = lines.getOrNull(index) ?: return
         start()
     }
@@ -639,7 +639,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         val white = ui.userWhite
         linesJob = viewModelScope.launch(Dispatchers.Default) {
             val chapter = app.repertoire.chapter(name)
-            val lines = chapter?.lines ?: bookLines(name, white)
+            val lines = displayOrder(chapter?.lines ?: bookLines(name, white), white)
             val reviews = if (chapter != null) app.repertoire.reviews() else app.lineProgress.reviews(name, white)
             val learned = if (chapter != null) null else app.lineProgress.learned(name, white)
             val now = System.currentTimeMillis()
@@ -748,6 +748,24 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         runCatching { ChessLines.replay(line).uci.joinToString(",") }.getOrNull()
 
     private fun lineStatKey(line: List<String>): String? = linePlay(line)?.let { "line:$it" }
+
+    /** How often your side wins from the end of [line] on Lichess, once fetched. */
+    private fun rateOf(line: List<String>, white: Boolean): Int? =
+        lineStatKey(line)?.let { openingStats.record(it) }?.winPercent(if (white) OpeningSide.White else OpeningSide.Black)
+
+    /**
+     * The lines as the opening's page shows them, and as Train numbers them: best Lichess win rate first, lines
+     * without a rate after in their own order. A long list is kept in groups, by the move where its lines part,
+     * and sorted within each group.
+     */
+    private fun displayOrder(lines: List<List<String>>, white: Boolean): List<List<String>> {
+        val parting = lines.firstOrNull()?.let { first ->
+            (0 until first.size).firstOrNull { ply -> lines.any { it.size <= ply || it[ply] != first[ply] } }
+        }
+        val byRate = compareByDescending<List<String>> { rateOf(it, white) ?: -1 }
+        val groups = lines.groupBy { line -> parting?.takeIf { it < line.size }?.let { line[it] }.orEmpty() }
+        return if (groups.size < 2 || lines.size < 6 || "" in groups) lines.sortedWith(byRate) else groups.values.flatMap { it.sortedWith(byRate) }
+    }
 
     /** Fetches Lichess results for the lines on the open page that lack them, then shows them. Needs a Lichess login. */
     private fun fetchLineStats(lines: List<List<String>>) {
@@ -884,8 +902,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         val chapter = trained?.let { app.repertoire.chapter(it) }
         drillBook = trained != null && chapter == null
         drillLines = when {
-            chapter != null -> chapter.lines
-            trained != null -> bookLines(trained, ui.userWhite)
+            chapter != null -> displayOrder(chapter.lines, ui.userWhite)
+            trained != null -> displayOrder(bookLines(trained, ui.userWhite), ui.userWhite)
             else -> emptyList()
         }
         val pinned = pinnedLine?.takeIf { it in drillLines }
