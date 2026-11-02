@@ -172,8 +172,7 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
     Column(modifier.padding(bottom = 8.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         if (ui.kind == PlayKind.Bot) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FilterChip(selected = ui.userWhite, onClick = { viewModel.setUserWhite(true) }, label = { Text("White") }, colors = clubChipColors())
-                FilterChip(selected = !ui.userWhite, onClick = { viewModel.setUserWhite(false) }, label = { Text("Black") }, colors = clubChipColors())
+                SideChips(ui.userWhite, viewModel::setUserWhite)
             }
             Text("Strength", color = Palette.TextMuted, style = MaterialTheme.typography.titleSmall)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -285,6 +284,13 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
 
         }
     }
+}
+
+/** The two chips that pick the side you play. */
+@Composable
+private fun SideChips(white: Boolean, onChange: (Boolean) -> Unit) {
+    FilterChip(selected = white, onClick = { onChange(true) }, label = { Text("White") }, colors = clubChipColors())
+    FilterChip(selected = !white, onClick = { onChange(false) }, label = { Text("Black") }, colors = clubChipColors())
 }
 
 /** White or Black, as two small squares in the piece colours. */
@@ -530,8 +536,7 @@ private fun OpeningPage(
                         }
                         if (!detail.study) {
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                FilterChip(selected = ui.userWhite, onClick = { viewModel.setUserWhite(true) }, label = { Text("White") }, colors = clubChipColors())
-                                FilterChip(selected = !ui.userWhite, onClick = { viewModel.setUserWhite(false) }, label = { Text("Black") }, colors = clubChipColors())
+                                SideChips(ui.userWhite, viewModel::setUserWhite)
                             }
                         }
                     }
@@ -1192,8 +1197,7 @@ private fun BotGame(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier, on
         }
         if (!ui.playing) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FilterChip(selected = ui.userWhite, onClick = { viewModel.setUserWhite(true) }, label = { Text("White") }, colors = clubChipColors())
-                FilterChip(selected = !ui.userWhite, onClick = { viewModel.setUserWhite(false) }, label = { Text("Black") }, colors = clubChipColors())
+                SideChips(ui.userWhite, viewModel::setUserWhite)
                 Box(Modifier.weight(1f))
                 BotTimeChip(ui.controlLabel, enabled = true, onSelect = viewModel::setTime)
             }
