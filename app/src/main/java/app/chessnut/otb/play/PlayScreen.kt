@@ -582,22 +582,27 @@ private fun OpeningPage(
             val byRate = compareByDescending<IndexedValue<LineView>> { it.value.winRate ?: -1 }
             val groups = ui.lines.withIndex().groupBy { it.value.group }
             if (groups.size < 2 || ui.lines.size < 6 || "" in groups) {
-                items(ui.lines.withIndex().sortedWith(byRate), key = { "line-${it.index}" }) { (index, line) ->
-                    LineRow(index, line, onPlan = { plan -> onPlans(detail.name, ui.userWhite, plan) }, onMaster = onMaster) { viewModel.trainLine(index) }
+                val shown = ui.lines.withIndex().sortedWith(byRate)
+                itemsIndexed(shown, key = { _, row -> "line-${row.index}" }) { position, (index, line) ->
+                    LineRow(position + 1, line, onPlan = { plan -> onPlans(detail.name, ui.userWhite, plan) }, onMaster = onMaster) { viewModel.trainLine(index) }
                 }
             } else {
                 // The group with something to do opens first; the rest wait behind their headings.
                 val first = groups.entries.firstOrNull { (_, rows) -> rows.any { it.value.status == LineStatus.Due || it.value.status == LineStatus.Missed } }?.key
                     ?: groups.keys.first()
+                var before = 0
                 for ((group, rows) in groups) {
+                    val offset = before
+                    before += rows.size
                     item(key = "group-$group") {
                         var flipped by rememberSaveable(detail.name, group) { mutableStateOf(false) }
                         val open = (group == first) != flipped
                         LineGroupHeader(group, rows.map { it.value }, open) { flipped = !flipped }
                         if (open) {
                             Column(Modifier.padding(top = 6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                for ((index, line) in rows.sortedWith(byRate)) {
-                                    LineRow(index, line, onPlan = { plan -> onPlans(detail.name, ui.userWhite, plan) }, onMaster = onMaster) { viewModel.trainLine(index) }
+                                for ((position, row) in rows.sortedWith(byRate).withIndex()) {
+                                    val (index, line) = row
+                                    LineRow(offset + position + 1, line, onPlan = { plan -> onPlans(detail.name, ui.userWhite, plan) }, onMaster = onMaster) { viewModel.trainLine(index) }
                                 }
                             }
                         }
@@ -733,7 +738,7 @@ private fun Stat(value: String, label: String, modifier: Modifier, color: Color 
  * middlegame plans and its master game; tapping the row itself trains the line.
  */
 @Composable
-private fun LineRow(index: Int, line: LineView, onPlan: (String) -> Unit, onMaster: (String) -> Unit, onClick: () -> Unit) {
+private fun LineRow(number: Int, line: LineView, onPlan: (String) -> Unit, onMaster: (String) -> Unit, onClick: () -> Unit) {
     val (label, tint) = when (line.status) {
         LineStatus.Learned -> "Learned" to Palette.Best
         LineStatus.Due -> "Due" to Palette.Gold
@@ -753,7 +758,7 @@ private fun LineRow(index: Int, line: LineView, onPlan: (String) -> Unit, onMast
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("${index + 1}. ${line.name}", color = Palette.Text, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f, fill = false))
+                    Text("$number. ${line.name}", color = Palette.Text, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f, fill = false))
                     // How often your side wins from this line on Lichess, once fetched.
                     line.winRate?.let { Text("  $it%", color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium) }
                 }
