@@ -219,21 +219,44 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
                 // What the icons and medals mean, behind a tap.
                 Legend()
             }
+            var repertoireOpen by rememberSaveable { mutableStateOf(false) }
             LazyColumn(Modifier.weight(1f)) {
                 if (ui.sections.isEmpty()) {
                     item { Text("No openings match.", color = Palette.TextMuted, modifier = Modifier.padding(vertical = 8.dp)) }
                 }
                 ui.sections.forEach { section ->
+                    val isRepertoire = section.title == OpeningCatalog.REPERTOIRE_SECTION
+                    // Your repertoire is many chapters: one heading, closed until opened (open already for the chapter you are in).
+                    val shown = !isRepertoire || repertoireOpen || section.rows.any { it.name == ui.openingName }
                     if (section.title.isNotEmpty()) {
                         item(key = "head-${section.title}") {
-                            Text(
-                                section.title,
-                                color = Palette.Accent,
-                                style = MaterialTheme.typography.titleSmall,
-                                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
-                            )
+                            if (isRepertoire) {
+                                Row(
+                                    Modifier.fillMaxWidth().padding(top = 8.dp).clip(RoundedCornerShape(10.dp)).clickable { repertoireOpen = !repertoireOpen },
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Text(
+                                        section.title,
+                                        color = Palette.Accent,
+                                        style = MaterialTheme.typography.titleSmall,
+                                        modifier = Modifier.weight(1f),
+                                    )
+                                    Text("${section.rows.size} chapters", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
+                                    Box(Modifier.size(44.dp), contentAlignment = Alignment.Center) {
+                                        Text(if (shown) "▴" else "▾", color = Palette.TextMuted, style = MaterialTheme.typography.titleMedium)
+                                    }
+                                }
+                            } else {
+                                Text(
+                                    section.title,
+                                    color = Palette.Accent,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
+                                )
+                            }
                         }
                     }
+                    if (!shown) return@forEach
                     // Your repertoire's chapters are many: "Caro-Kann: Advance, Tal" and its sisters sit under one heading.
                     val families = if (section.title == OpeningCatalog.REPERTOIRE_SECTION) {
                         section.rows.groupBy { it.name.removePrefix("Repertoire: ").substringBefore(": ", "") }
@@ -243,7 +266,7 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
                     for ((family, rows) in families) {
                         if (family.isEmpty() || rows.size < 2) {
                             items(rows, key = { "${section.title}-${it.name}" }) { row ->
-                                OpeningListRow(row, selected = row.name == ui.openingName) { viewModel.openDetail(row.name) }
+                                OpeningListRow(row, selected = row.name == ui.openingName, title = row.name.removePrefix("Repertoire: ")) { viewModel.openDetail(row.name) }
                             }
                         } else {
                             item(key = "family-$family") {

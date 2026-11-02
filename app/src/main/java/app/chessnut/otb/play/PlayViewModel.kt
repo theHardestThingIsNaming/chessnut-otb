@@ -2461,21 +2461,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 if (rows.isEmpty()) null else OpeningSection(section.title, rows)
             }
             ensureActive()
-            // Book openings with reviews that have come due, first, so learned lines don't slip.
+            // What is due is told by the Review button and each row's clock, not by a list of its own.
             val now = System.currentTimeMillis()
-            val dueRows = if (query.isNotBlank()) emptyList() else started.filter { it.second == side }.mapNotNull { (name, white) ->
-                val overdue = Drill.overdue(bookLines(name, white), app.lineProgress.reviews(name, white), now)
-                if (overdue == 0) {
-                    null
-                } else {
-                    val lines = bookLines(name, white)
-                    val keys = lines.map(Drill::key).toSet()
-                    val learned = app.lineProgress.learned(name, white).count { it in keys }
-                    val best = app.depthRecords.of(name, white)?.best
-                    OpeningRow(name, scores[name], rates[name], due = overdue, learned = learned, lines = keys.size, depthBest = best, medal = OpeningMedal.of(learned, keys.size, best))
-                }
-            }.sortedByDescending { it.due }
-            val shown = if (dueRows.isEmpty()) sections else listOf(OpeningSection(DUE_SECTION, dueRows)) + sections
+            val shown = sections
             // The summary counts every opening and side, not only the one shown.
             var learnedTotal = 0
             var dueTotal = 0
@@ -2536,7 +2524,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         /** Opening history shows for the first moves only: six each. */
         const val HISTORY_PLIES = 12
 
-        const val DUE_SECTION = "Due for review"
+        const val DUE_SECTION = "Next for review"
+        /** The openings listed under it: the Review button holds the rest. */
+        const val DUE_SHOWN = 3
 
         /** How long each trap move stays on screen before the next. */
         const val TRAP_STEP_MS = 2600L
