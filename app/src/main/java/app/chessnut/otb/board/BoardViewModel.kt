@@ -218,7 +218,7 @@ class BoardViewModel(application: Application) : AndroidViewModel(application) {
                     publishLive(now)
                     when (event) {
                         is LiveEvent.Finished -> persistLive(event)
-                        is LiveEvent.Move -> log.line("live ${event.san}")
+                        is LiveEvent.Move -> log.line("live ${(event.earlier + event.san).joinToString(" ")}${if (event.earlier.isEmpty()) "" else " (caught up)"}")
                         is LiveEvent.Illegal -> {
                             // A capture passes through boards like this (the taken piece nudged aside
                             // as the queen lands), so only a board that stays wrong gets the beep.
@@ -414,8 +414,8 @@ class BoardViewModel(application: Application) : AndroidViewModel(application) {
     private fun cue(event: LiveEvent) {
         when (event) {
             is LiveEvent.Move -> {
-                if (app.phoneSounds) speech.say(event.san)
-                spokenPlies++
+                if (app.phoneSounds) for (san in event.earlier + event.san) speech.say(san)
+                spokenPlies += 1 + event.earlier.size
             }
             is LiveEvent.Finished -> {
                 if (app.phoneSounds && event.end == LiveEnd.Checkmate) {
@@ -440,7 +440,8 @@ class BoardViewModel(application: Application) : AndroidViewModel(application) {
     private fun light(event: LiveEvent) {
         val squares = when (event) {
             is LiveEvent.Finished -> event.squares
-            is LiveEvent.Illegal -> event.squares
+            // More than a handful of wrong squares only confuses; the beep still says something is off.
+            is LiveEvent.Illegal -> event.squares.takeIf { it.size <= BoardRead.MAX_LIT }.orEmpty()
             is LiveEvent.Move -> event.squares
             LiveEvent.Ignored -> return
         }

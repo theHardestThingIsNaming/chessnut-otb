@@ -36,7 +36,13 @@ data class LiveSnapshot(
 sealed class LiveEvent {
     data object Ignored : LiveEvent()
     data class Illegal(val squares: List<String> = emptyList()) : LiveEvent()
-    data class Move(val san: String, val check: Boolean = false, val squares: List<String> = emptyList()) : LiveEvent()
+    /** [earlier] are moves that came in with this one when the board jumped several plies between two readings. */
+    data class Move(
+        val san: String,
+        val check: Boolean = false,
+        val squares: List<String> = emptyList(),
+        val earlier: List<String> = emptyList(),
+    ) : LiveEvent()
     data class Finished(
         val result: String,
         val sanMoves: List<String>,
@@ -182,7 +188,27 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
         if (sameSquares(placement, placementOf(board.fen))) return LiveEvent.Ignored
 
         val move = board.legalMoves().firstOrNull { matches(board, it, placement) }
-        if (move != null) {
+        if (move != null) return play(listOf(move), placement, now)
+
+        // A piece in the air is not a result. King-lifts during a move (castling,
+        // stepping out of check) used to be scored as taking the king.
+        if (isLift(placementOf(board.fen), placement)) return LiveEvent.Ignored
+        val current = placementOf(board.fen)
+        // Moves played faster than the board reports, or a sensor that missed a piece for a moment,
+        // can carry the board a few plies past what was last read. Catch up rather than stay lost.
+        sequenceTo(placement)?.let { return play(it, placement, now) }
+        kingTaken(current, placement)?.let {
+            placements += placement
+            val missingWhite = 'K' !in placement
+            return stop(it, LiveEnd.Checkmate, now, lightsOf(kingAlgebraic(current, missingWhite)))
+        }
+        return LiveEvent.Illegal(mismatchedSquares(current, placement))
+    }
+
+    /** Plays [moves] in order, as one reading that jumped them; the last one decides the event. */
+    private fun play(moves: List<Move>, placement: String, now: Long): LiveEvent {
+        val sans = mutableListOf<String>()
+        for ((i, move) in moves.withIndex()) {
             val san = sanOf(board, move)
             val flagged = deduct(now)
             if (flagged != null) return flagged
@@ -191,27 +217,48 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
                 if (wasWhite) whiteMillis += control.incrementMillis else blackMillis += control.incrementMillis
             }
             board.doMove(move)
-            moves += san
+            this.moves += san
             lastUci = move.toString().lowercase()
-            placements += placement
+            placements += if (i == moves.lastIndex) placement else placementOf(board.fen)
             if (!whitePressed) whitePressed = true
             runningSince = now
             whiteOfferedDraw = false
             blackOfferedDraw = false
             terminalOf(board)?.let { return stop(it.first, it.second, now, if (it.second == LiveEnd.Checkmate) checkLights() else emptyList()) }
-            return LiveEvent.Move(san, check = board.isKingAttacked, squares = if (board.isKingAttacked) checkLights() else emptyList())
+            sans += san
         }
+        return LiveEvent.Move(
+            sans.last(),
+            check = board.isKingAttacked,
+            squares = if (board.isKingAttacked) checkLights() else emptyList(),
+            earlier = sans.dropLast(1),
+        )
+    }
 
-        // A piece in the air is not a result. King-lifts during a move (castling,
-        // stepping out of check) used to be scored as taking the king.
-        if (isLift(placementOf(board.fen), placement)) return LiveEvent.Ignored
-        val current = placementOf(board.fen)
-        kingTaken(current, placement)?.let {
-            placements += placement
-            val missingWhite = 'K' !in placement
-            return stop(it, LiveEnd.Checkmate, now, lightsOf(kingAlgebraic(current, missingWhite)))
+    /** The shortest run of two to [MAX_JUMP] legal moves from here that leaves [target] on the board, or null. */
+    private fun sequenceTo(target: String): List<Move>? {
+        val want = squares(target)
+        fun gap(): Int {
+            val have = squares(placementOf(board.fen))
+            return (0 until 64).count { have[it] != want[it] }
         }
-        return LiveEvent.Illegal(mismatchedSquares(current, placement))
+        fun search(left: Int, path: MutableList<Move>): Boolean {
+            for (m in board.legalMoves()) {
+                board.doMove(m)
+                path += m
+                val remaining = gap()
+                val hit = if (left == 1) remaining == 0 else remaining <= 4 * (left - 1) && search(left - 1, path)
+                board.undoMove()
+                if (hit) return true
+                path.removeAt(path.lastIndex)
+            }
+            return false
+        }
+        for (plies in 2..MAX_JUMP) {
+            val path = mutableListOf<Move>()
+            if (search(plies, path)) return path.toList()
+        }
+        return null
     }
 
     fun finishNow(now: Long): LiveEvent.Finished? = finishIfUnsaved(now)
@@ -430,4 +477,8 @@ class LiveGameTracker(control: TimeControl = TimeControl.Default) {
     }
 
     private fun placementOf(fen: String): String = fen.trim().substringBefore(' ')
+
+    private companion object {
+        const val MAX_JUMP = 3
+    }
 }

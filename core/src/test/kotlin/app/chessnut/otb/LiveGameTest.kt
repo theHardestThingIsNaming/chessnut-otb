@@ -21,6 +21,32 @@ class LiveGameTest {
     }
 
     @Test
+    fun aBoardThatJumpsSeveralPliesIsCaughtUpNotLost() {
+        // Played faster than the board reported, or a sensor missed a piece for a moment:
+        // the next steady reading is two or three plies on.
+        val tracker = LiveGameTracker()
+        tracker.onPlacement(FakeChessnutBoard.START_PLACEMENT, 0)
+        tracker.onPlacement(after("1. e4 e5 2. Nf3"), 1_000)
+        val jump = tracker.onPlacement(after("1. e4 e5 2. Nf3 Nc6 3. d4 exd4"), 3_000)
+        assertIs<LiveEvent.Move>(jump)
+        assertEquals("exd4", jump.san)
+        assertEquals(listOf("Nc6", "d4"), jump.earlier)
+        assertEquals(listOf("e4", "e5", "Nf3", "Nc6", "d4", "exd4"), tracker.snapshot(3_000).sanMoves)
+        // And it carries on from there.
+        val next = tracker.onPlacement(after("1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4"), 4_000)
+        assertIs<LiveEvent.Move>(next)
+        assertEquals("Nxd4", next.san)
+    }
+
+    @Test
+    fun aBoardThatIsReallyWrongIsStillIllegal() {
+        val tracker = LiveGameTracker()
+        tracker.onPlacement(FakeChessnutBoard.START_PLACEMENT, 0)
+        tracker.onPlacement(after("1. e4"), 1_000)
+        assertIs<LiveEvent.Illegal>(tracker.onPlacement("rnbqkbnr/pppppppp/8/8/8/8/PPPPQPPP/RNB1KBNR", 2_000))
+    }
+
+    @Test
     fun clocksCountDownAndGainIncrementAfterAMove() {
         val tracker = LiveGameTracker(TimeControl(initialMillis = 60_000, incrementMillis = 5_000))
         val start = FakeChessnutBoard.START_PLACEMENT

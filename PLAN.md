@@ -210,3 +210,8 @@ Next for master games:
 - [ ] Not done: tactics for these lines; an engine pass over the master-game and plan note wording; the newer Alekhine/Philidor/Nimzowitsch lines the agent rewrote after the build (`data-cache/white/other2.tsv`, reviewed 14:56 or later).
 
 - Caro-Kann Advance (Short) and Fantasy extended with 6 more lines and plans (Black replies ...Qb6, ...h5, ...Nd7 to 4.Nf3; Fantasy ...e6 with ...dxe4, and ...Nf6). Still thin: French Horwitz, Nimzowitsch/Owen.
+
+## Over-the-board recorder resilience (2026-11-02)
+
+From the phone logs of a 29 Oct session: the recorder (`LiveGameTracker`) accepted only one legal move per steady reading. Two causes of it getting lost for good: (1) a sensor misreading one piece for two seconds while a quick exchange (Rxb6 axb6 Qxb6) was played, so no clean position after the first move was ever steady; (2) moves played faster than the 350 ms settle. Once lost, every later board was "illegal" and the lights showed dozens of odd squares. Now the tracker catches up: if no single move matches, it looks for the shortest run of up to 3 legal moves that does (`sequenceTo`), plays them in order and says them. Independent moves can come out in the wrong order (a6 Bb5 Nc6 for Nc6 Bb5 a6); the position is right. Illegal lights are dropped past 8 squares. The log now writes a board frame only when it changes, with the squares read out, so a long evening fits (before, 10 minutes filled it).
+- [ ] Still to do: a way to resync by hand (mark the board as the truth), starting a game from a position that is not the start, and a replay tool that runs a log through the tracker.

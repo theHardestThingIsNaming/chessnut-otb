@@ -125,9 +125,19 @@ class ChessnutSession(
         log.line("disconnected")
     }
 
+    private var lastLoggedBoard: ByteArray? = null
+
     private fun onNotification(notification: GattNotification) {
         val source = notification.characteristic
-        log.line("<- ${ChessnutUuids.shortName(source)} ${notification.value.toHex()}")
+        // The board repeats its position about ten times a second. Log it only when it changes, with the
+        // squares read out, so a whole evening fits in the log instead of its last ten minutes.
+        val value = notification.value
+        val board = if (value.size >= 34 && value[0] == 0x01.toByte()) value.copyOfRange(0, 34) else null
+        if (board == null || !board.contentEquals(lastLoggedBoard)) {
+            val read = board?.let { PositionCodec.decodePlacement(value)?.let { p -> " $p" } }.orEmpty()
+            log.line("<- ${ChessnutUuids.shortName(source)} ${value.toHex()}$read")
+        }
+        if (board != null) lastLoggedBoard = board
         for (frame in split(source, notification.value)) {
             val isPosition = frame[0] == 0x01.toByte()
             if (frame.size >= 3 && frame[0] == 0x2A.toByte() && frame[1] == 0x02.toByte()) {
