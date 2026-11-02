@@ -229,8 +229,8 @@ From the code and UX review. Principle: three levels (glance: a headline, the pr
 - [x] 3. Train screen (the coach card's History already had More/Less): Explain, Ideas and History in one "Coach" dialog that remembers its choices; only Play line and the line label stay on the screen; the coach card is one line with a "More" expander.
 - [x] 4. Opening list: "My repertoire" chapters grouped under "vs Caro-Kann" and so on, collapsed until opened (the selected one's group is open). The 14 main openings are one short list already and the Gambits/Memes chips are one small row, so those stay.
 - [x] 5. Review screen: Moves and Engine chips show one at a time under the board (the accuracy row stays on top as the summary; a set-up position shows just the engine).
-- [ ] 6. Plans and master games: only the current move's note, with "Why?" for the rest; the plan summary as two lines and "More".
-- [ ] 7. Board screen during a game: resign and draw behind a "..." menu.
+- [x] 6. Plans: the viewer already shows only the current move's note; the plan list now shows a two-line summary and only says what is done (no "Not opened yet" on every card). Master games not yet looked at.
+- [x] 7. Board screen: left resign and draw where they are, because each player uses the pair facing them. Instead Resign is now two taps ("Sure?" for three seconds), as one stray touch ended the game.
 - [ ] 8. One board coordinator for Train, Online, Master and the recorder (settling, lights, pause banner, takeback, catch-up).
 - [ ] 9. Splits and clean-up: PlayViewModel by mode, a shared White/Black chips component, one chip for Plan and Master game, Python tools moved into tools/ with a README.
 - [ ] 10. First-run tour; later, accessibility (touch targets, content descriptions) and string resources.

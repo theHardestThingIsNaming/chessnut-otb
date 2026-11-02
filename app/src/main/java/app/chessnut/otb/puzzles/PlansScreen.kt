@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.chessnut.otb.analysis.ChessLines
 import app.chessnut.otb.openings.MiddlegamePlan
@@ -81,7 +82,7 @@ fun PlansScreen(opening: String, white: Boolean, firstPlan: String? = null, onBa
             LazyColumn(modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 item {
                     Text(
-                        "What to aim for once your $opening lines end. Step through each plan, then try it against the bot.",
+                        "What to aim for once your $opening lines end.",
                         color = Palette.TextMuted,
                         style = MaterialTheme.typography.bodyMedium,
                     )
@@ -92,17 +93,16 @@ fun PlansScreen(opening: String, white: Boolean, firstPlan: String? = null, onBa
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
                         Text(item.name, color = Palette.Text, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-                        Text(item.summary, color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall, maxLines = 3)
+                        Text(item.summary, color = Palette.TextMuted, style = MaterialTheme.typography.bodySmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
                         val mark = done[PlanMarks.key(item)]
-                        Text(
-                            when (mark) {
-                                PlanMarks.TRIED -> "✓ Stepped through and tried against the bot"
-                                PlanMarks.SEEN -> "✓ Stepped through"
-                                else -> "Not opened yet"
-                            },
-                            color = if (mark == null) Palette.TextMuted else Palette.Accent,
-                            style = MaterialTheme.typography.labelMedium,
-                        )
+                        // Only what's done is said; "not opened yet" is every plan's starting state.
+                        if (mark != null) {
+                            Text(
+                                if (mark == PlanMarks.TRIED) "✓ Tried against the bot" else "✓ Stepped through",
+                                color = Palette.Accent,
+                                style = MaterialTheme.typography.labelMedium,
+                            )
+                        }
                     }
                 }
             }

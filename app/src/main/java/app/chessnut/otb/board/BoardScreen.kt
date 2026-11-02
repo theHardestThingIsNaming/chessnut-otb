@@ -42,6 +42,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.delay
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -536,7 +537,17 @@ private fun PlayerStrip(
                     tone = if (drawLabel != "Draw") ActionTone.Active else ActionTone.Plain,
                     icon = { HalfMark(it) },
                 )
-                GameAction("Resign", light, onResign, Modifier.weight(0.6f).fillMaxHeight(), tone = ActionTone.Danger, icon = { FlagMark(it) })
+                // One tap only asks; a second within three seconds resigns. A stray touch can't end the game.
+                var sure by remember { mutableStateOf(false) }
+                LaunchedEffect(sure) { if (sure) { delay(3_000); sure = false } }
+                GameAction(
+                    if (sure) "Sure?" else "Resign",
+                    light,
+                    { if (sure) { sure = false; onResign() } else sure = true },
+                    Modifier.weight(0.6f).fillMaxHeight(),
+                    tone = ActionTone.Danger,
+                    icon = { FlagMark(it) },
+                )
             }
         }
     }
