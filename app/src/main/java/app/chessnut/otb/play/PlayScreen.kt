@@ -259,7 +259,10 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
                     if (!shown) return@forEach
                     // Your repertoire's chapters are many: "Caro-Kann: Advance, Tal" and its sisters sit under one heading.
                     val families = if (section.title == OpeningCatalog.REPERTOIRE_SECTION) {
+                        // The openings you meet most come first.
+                        val order = listOf("Sicilian", "French", "Caro-Kann", "Scandinavian", "Pirc", "Modern", "Alekhine", "Philidor", "Nimzowitsch")
                         section.rows.groupBy { it.name.removePrefix("Repertoire: ").substringBefore(": ", "") }
+                            .toList().sortedBy { (family, _) -> order.indexOf(family).let { if (it < 0) order.size else it } }.toMap()
                     } else {
                         mapOf("" to section.rows)
                     }

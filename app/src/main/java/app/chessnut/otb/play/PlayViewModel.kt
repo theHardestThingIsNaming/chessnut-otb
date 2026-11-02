@@ -2443,7 +2443,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 val rows = OpeningStats.sorted(section.names, rates)
                     .filter { OpeningCatalog.matches(it, scores[it], filter) }
                     .map { name ->
-                        val due = if (app.repertoire.isRepertoire(name)) app.repertoire.due(name, System.currentTimeMillis()) else null
+                        // The clock says a review has come round; a chapter you haven't started isn't "due".
+                        val due = if (app.repertoire.isRepertoire(name)) app.repertoire.overdue(name, System.currentTimeMillis()) else null
                         // Book openings you have drilled show how many of their lines you know.
                         val progress = if (due == null && (name to side) in started) {
                             val keys = bookLines(name, side).map(Drill::key).toSet()
