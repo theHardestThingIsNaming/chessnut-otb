@@ -2130,6 +2130,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         // Where you left the line, and what it plays there, to learn from the miss.
         val split = sanMoves.indices.firstOrNull { it < line.size && sanMoves[it] != line[it] }
         val expected = split?.let { "${moveNumber(it)}${line[it]}" }
+        val played = split?.let { "${moveNumber(it)}${sanMoves[it]}" }
         val bookToo = split != null && !drillMissed
         val name = openingName
         if (survival) {
@@ -2168,7 +2169,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 when {
                     clean -> "Nice one! Line learned: $learned of ${drillLines.size}. ${seeYou(days)}"
                     bookToo -> "That's a book move too, but this line continues $expected. Queuing this line for review."
-                    expected != null -> "Good effort! This line continues $expected. Queuing this line for review."
+                    expected != null -> "$played isn't in the book for this opening, so it leaves the line (that is what \"Out of theory\" means). The line continues $expected. Queuing it for review."
                     else -> "Nearly there! It wasn't quite clean. Queuing this line for review."
                 }
             }
@@ -2177,7 +2178,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                 val days = Drill.days(review, now)
                 when {
                     clean -> "Nice one! Line complete. ${seeYou(days)}"
-                    expected != null -> "Good effort! Your repertoire continues $expected. Queuing this line for review."
+                    expected != null -> "$played leaves your repertoire, which continues $expected. Queuing this line for review."
                     else -> "Good effort! This one strayed from your repertoire. Queuing this line for review."
                 }
             }
