@@ -215,48 +215,27 @@ private fun Setup(ui: PlayUi, viewModel: PlayViewModel, modifier: Modifier) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 FilterChip(selected = ui.gambitsOnly, onClick = { viewModel.setGambitsOnly(!ui.gambitsOnly) }, label = { Text("Gambits") }, colors = clubChipColors())
                 FilterChip(selected = ui.memesOnly, onClick = { viewModel.setMemesOnly(!ui.memesOnly) }, label = { Text("Memes") }, colors = clubChipColors())
+                FilterChip(selected = ui.knownOnly, onClick = { viewModel.setKnownOnly(!ui.knownOnly) }, label = { Text("Known") }, colors = clubChipColors())
                 Box(Modifier.weight(1f))
                 // What the icons and medals mean, behind a tap.
                 Legend()
             }
-            var repertoireOpen by rememberSaveable { mutableStateOf(false) }
             LazyColumn(Modifier.weight(1f)) {
                 if (ui.sections.isEmpty()) {
                     item { Text("No openings match.", color = Palette.TextMuted, modifier = Modifier.padding(vertical = 8.dp)) }
                 }
                 ui.sections.forEach { section ->
-                    val isRepertoire = section.title == OpeningCatalog.REPERTOIRE_SECTION
-                    // Your repertoire is many chapters: one heading, closed until opened (open already for the chapter you are in).
-                    val shown = !isRepertoire || repertoireOpen || section.rows.any { it.name == ui.openingName }
-                    if (section.title.isNotEmpty()) {
+                    // Your chapters against each reply sit among the openings, under "vs ..." headings, with no section of their own.
+                    if (section.title.isNotEmpty() && section.title != OpeningCatalog.REPERTOIRE_SECTION) {
                         item(key = "head-${section.title}") {
-                            if (isRepertoire) {
-                                Row(
-                                    Modifier.fillMaxWidth().padding(top = 8.dp).clip(RoundedCornerShape(10.dp)).clickable { repertoireOpen = !repertoireOpen },
-                                    verticalAlignment = Alignment.CenterVertically,
-                                ) {
-                                    Text(
-                                        section.title,
-                                        color = Palette.Accent,
-                                        style = MaterialTheme.typography.titleSmall,
-                                        modifier = Modifier.weight(1f),
-                                    )
-                                    Text("${section.rows.size} chapters", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
-                                    Box(Modifier.size(44.dp), contentAlignment = Alignment.Center) {
-                                        Text(if (shown) "▴" else "▾", color = Palette.TextMuted, style = MaterialTheme.typography.titleMedium)
-                                    }
-                                }
-                            } else {
-                                Text(
-                                    section.title,
-                                    color = Palette.Accent,
-                                    style = MaterialTheme.typography.titleSmall,
-                                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
-                                )
-                            }
+                            Text(
+                                section.title,
+                                color = Palette.Accent,
+                                style = MaterialTheme.typography.titleSmall,
+                                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
+                            )
                         }
                     }
-                    if (!shown) return@forEach
                     // Your repertoire's chapters are many: "Caro-Kann: Advance, Tal" and its sisters sit under one heading.
                     val families = if (section.title == OpeningCatalog.REPERTOIRE_SECTION) {
                         // The openings you meet most come first.
@@ -1415,8 +1394,8 @@ private fun StudyDialog(ui: PlayUi, viewModel: PlayViewModel, onDismiss: () -> U
                 )
                 message?.let { Text(it, color = Palette.Text) }
                 if (hasRepertoire) {
-                    TextButton(onClick = { viewModel.clearRepertoire(); message = "Repertoire removed." }) {
-                        Text("Remove my repertoire", color = Palette.Error)
+                    TextButton(onClick = { viewModel.clearRepertoire(); message = "Imported chapters removed." }) {
+                        Text("Remove imported chapters", color = Palette.Error)
                     }
                 }
             }

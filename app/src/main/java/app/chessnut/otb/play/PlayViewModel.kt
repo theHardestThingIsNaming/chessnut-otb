@@ -166,6 +166,8 @@ data class PlayUi(
     val openingName: String? = null,
     val gambitsOnly: Boolean = false,
     val memesOnly: Boolean = false,
+    /** Only openings and chapters you have learned a line of. */
+    val knownOnly: Boolean = false,
     val sections: List<OpeningSection> = emptyList(),
     val playing: Boolean = false,
     val fen: String = Board().fen,
@@ -552,6 +554,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     fun setGambitsOnly(on: Boolean) = setListFilter { it.copy(gambitsOnly = on) }
 
     fun setMemesOnly(on: Boolean) = setListFilter { it.copy(memesOnly = on) }
+
+    fun setKnownOnly(on: Boolean) = setListFilter { it.copy(knownOnly = on) }
 
     fun setIdeas(on: Boolean) {
         app.moveIdeas = on
@@ -2459,12 +2463,16 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
                             medal = progress?.let { (learned, total) -> OpeningMedal.of(learned, total, best) },
                         )
                     }
-                if (rows.isEmpty()) null else OpeningSection(section.title, rows)
+                val kept = if (!state.value.knownOnly) rows else rows.filter { row ->
+                    if (app.repertoire.isRepertoire(row.name)) app.repertoire.known(row.name) else (row.learned ?: 0) > 0
+                }
+                if (kept.isEmpty()) null else OpeningSection(section.title, kept)
             }
             ensureActive()
             // What is due is told by the Review button and each row's clock, not by a list of its own.
             val now = System.currentTimeMillis()
-            val shown = sections
+            // Your chapters against each reply sit with the openings, not in a section of their own.
+            val shown = sections.sortedBy { if (it.title == OpeningCatalog.REPERTOIRE_SECTION) 1 else if (it.title == "Openings") 0 else 2 }
             // The summary counts every opening and side, not only the one shown.
             var learnedTotal = 0
             var dueTotal = 0

@@ -42,6 +42,10 @@ class RepertoireStore(directory: File) {
     @Synchronized
     fun overdue(name: String, now: Long): Int = chapter(name)?.let { Drill.overdue(it.lines, reviews, now) } ?: 0
 
+    /** True once you have played any line of the chapter from memory. */
+    @Synchronized
+    fun known(name: String): Boolean = chapter(name)?.lines?.any { Drill.key(it) in reviews } ?: false
+
     /** Adds the chapters, replacing any with the same name. Returns how many chapters and lines were added. */
     @Synchronized
     fun add(imported: List<StudyChapter>): Pair<Int, Int> {
