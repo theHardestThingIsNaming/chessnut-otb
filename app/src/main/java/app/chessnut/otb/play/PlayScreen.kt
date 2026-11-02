@@ -561,6 +561,7 @@ private fun OpeningPage(
                         modifier = Modifier.size(244.dp).clip(RoundedCornerShape(6.dp)).clickable(enabled = replay != null) { held = !held },
                         flipped = !ui.userWhite,
                         coordinates = false,
+                        slide = true,
                         lastUci = if (step > 0) replay?.uci?.getOrNull(step - 1) else null,
                     )
                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -1071,6 +1072,7 @@ private fun Playing(
                 targets = ui.targets,
                 arrows = arrows,
                 highlights = highlights,
+                slide = true,
                 onSquare = viewModel::tap,
             )
             // In Punish mode the eval would give the mistake away, so it waits until you've answered.

@@ -1,5 +1,8 @@
 package app.chessnut.otb.ui
 
+import androidx.compose.animation.core.animate
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -7,6 +10,10 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -95,11 +102,40 @@ fun ChessBoard(
     arrows: List<Arrow> = emptyList(),
     highlights: Set<Int> = emptySet(),
     coordinates: Boolean = true,
+    /** The piece that just moved glides from its square to its new one, for moves the viewer didn't make by hand. */
+    slide: Boolean = false,
     onSquare: ((Int) -> Unit)? = null,
     onDrag: ((Int, Int) -> Unit)? = null,
 ) {
     val squares = squaresOf(fen)
     val lastMove = uciSquares(lastUci)
+    // A move shown after the board had the position before it: the moved piece slides across.
+    var shown by remember { mutableStateOf(fen) }
+    var progress by remember { mutableFloatStateOf(1f) }
+    var glideFrom by remember { mutableStateOf<Int?>(null) }
+    var lastDrag by remember { mutableLongStateOf(0L) }
+    var glideRun by remember { mutableIntStateOf(0) }
+    // Outside the branch below, so the slide isn't cancelled when the board draws again.
+    LaunchedEffect(glideRun) {
+        if (glideRun == 0) return@LaunchedEffect
+        animate(0f, 1f, animationSpec = tween(SLIDE_MS, easing = FastOutSlowInEasing)) { value, _ -> progress = value }
+        glideFrom = null
+    }
+    if (slide && shown != fen) {
+        val before = squaresOf(shown)
+        val from = lastMove?.first
+        val to = lastMove?.second
+        val moved = from != null && to != null && before[from] != '.' && squares[from] == '.' && squares[to] == before[from]
+        val byHand = System.currentTimeMillis() - lastDrag < 600
+        glideFrom = if (moved && !byHand) from else null
+        shown = fen
+        if (glideFrom != null) {
+            progress = 0f
+            glideRun++
+        }
+    } else if (shown != fen) {
+        shown = fen
+    }
     val measurer = rememberTextMeasurer()
     var dragFrom by remember { mutableStateOf<Int?>(null) }
     var dragAt by remember { mutableStateOf<Offset?>(null) }
@@ -133,6 +169,7 @@ fun ChessBoard(
                         }
                     }
                 } finally {
+                    if (dragFrom != null) lastDrag = System.currentTimeMillis()
                     dragFrom = null
                     dragAt = null
                 }
@@ -184,7 +221,8 @@ fun ChessBoard(
                 }
             }
             val piece = squares[index]
-            if (piece != '.' && index != held) drawPiece(piece, topLeft, cell)
+            val sliding = glideFrom != null && index == lastMove?.second
+            if (piece != '.' && index != held && !sliding) drawPiece(piece, topLeft, cell)
             if (index in targets) {
                 drawCircle(Color(0x66000000), cell * 0.16f, topLeft + Offset(cell / 2, cell / 2))
             }
@@ -196,6 +234,14 @@ fun ChessBoard(
         }
         for (arrow in arrows) {
             if (arrow.from != arrow.to) drawArrow(centre(arrow.from), centre(arrow.to), arrow.color, cell)
+        }
+        val glideStart = glideFrom
+        val glideEnd = lastMove?.second
+        if (glideStart != null && glideEnd != null && squares[glideEnd] != '.') {
+            val a = centre(glideStart)
+            val b = centre(glideEnd)
+            val at = a + (b - a) * progress
+            drawPiece(squares[glideEnd], at - Offset(cell / 2f, cell / 2f), cell)
         }
         if (held != null && finger != null && held in squares.indices && squares[held] != '.') {
             drawPiece(squares[held], finger - Offset(cell / 2f, cell / 2f), cell)
@@ -277,3 +323,6 @@ private fun DrawScope.drawPiece(piece: Char, topLeft: Offset, cell: Float) {
         }
     }
 }
+
+/** How long a piece takes to slide to its square. */
+private const val SLIDE_MS = 320

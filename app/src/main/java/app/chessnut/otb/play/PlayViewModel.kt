@@ -1949,6 +1949,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             publish()
             light(uci)
         } else {
+            // The trainer's replies come from the book, so they are ready at once: a short wait lets you see your own move land first.
+            if (kind == PlayKind.Trainer && !watching) delay(REPLY_PAUSE_MS)
+            if (finished != null) return
             apply(uci)
             light(null)
             if (finished != null) celebrate()
@@ -2605,6 +2608,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
 
         /** Opening history shows for the first moves only: six each. */
         const val HISTORY_PLIES = 12
+
+        /** How long the trainer waits before the opponent's book move appears. */
+        const val REPLY_PAUSE_MS = 650L
 
         const val DUE_SECTION = "Next for review"
         /** The openings listed under it: the Review button holds the rest. */
