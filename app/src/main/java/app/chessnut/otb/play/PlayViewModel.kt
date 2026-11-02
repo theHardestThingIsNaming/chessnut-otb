@@ -776,7 +776,10 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         val parting = lines.firstOrNull()?.let { first ->
             (0 until first.size).firstOrNull { ply -> lines.any { it.size <= ply || it[ply] != first[ply] } }
         }
-        val family = lines.map { variationOf(name, it)?.substringBefore(", ")?.takeIf { f -> f.isNotBlank() } }
+        val named = lines.map { variationOf(name, it)?.substringBefore(", ")?.takeIf { f -> f.isNotBlank() } }
+        // "Evans Gambit Declined" belongs with "Evans Gambit": a name that continues another is part of its family.
+        val roots = named.filterNotNull().distinct().sortedBy { it.length }
+        val family = named.map { f -> f?.let { n -> roots.firstOrNull { it != n && n.startsWith("$it ") } ?: n } }
         val counts = family.filterNotNull().groupingBy { it }.eachCount()
         return lines.mapIndexed { i, line ->
             family[i]?.takeIf { (counts[it] ?: 0) >= 3 }

@@ -591,13 +591,11 @@ private fun OpeningPage(
                     item(key = "group-$group") {
                         var flipped by rememberSaveable(detail.name, group) { mutableStateOf(false) }
                         val open = (group == first) != flipped
-                        // "Evans Gambit, " on every row of a group is said once, on the heading.
-                        val shared = sharedNamePrefix(rows.map { it.value.name })
-                        LineGroupHeader(group, shared.removeSuffix(", ").takeIf { it != group }.orEmpty(), rows.map { it.value }, open) { flipped = !flipped }
+                        LineGroupHeader(group, "", rows.map { it.value }, open) { flipped = !flipped }
                         if (open) {
                             Column(Modifier.padding(top = 6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                 for ((index, line) in rows) {
-                                    LineRow(index + 1, line.copy(name = line.name.removePrefix(shared)), onPlan = { plan -> onPlans(detail.name, ui.userWhite, plan) }, onMaster = onMaster) { viewModel.trainLine(index) }
+                                    LineRow(index + 1, line.copy(name = withoutFamily(line.name, group)), onPlan = { plan -> onPlans(detail.name, ui.userWhite, plan) }, onMaster = onMaster) { viewModel.trainLine(index) }
                                 }
                             }
                         }
@@ -804,11 +802,10 @@ private fun LineRow(number: Int, line: LineView, onPlan: (String) -> Unit, onMas
     }
 }
 
-/** What every name in a group starts with up to its first comma ("Evans Gambit, "), or nothing when they don't all share one. */
-private fun sharedNamePrefix(names: List<String>): String {
-    if (names.size < 3) return ""
-    val prefix = names.first().substringBefore(", ", "").takeIf { it.isNotEmpty() }?.let { "$it, " } ?: return ""
-    return if (names.all { it.startsWith(prefix) && it.length > prefix.length }) prefix else ""
+/** "Fontaine Countergambit" for "Evans Gambit, Fontaine Countergambit" under an "Evans Gambit" heading; "Declined, Lange Variation" for "Evans Gambit Declined, Lange Variation". */
+private fun withoutFamily(name: String, group: String): String {
+    val rest = name.removePrefix("$group, ").let { if (it == name) name.removePrefix("$group ") else it }
+    return rest.ifBlank { name }
 }
 
 /** The heading over lines that part at the same move: the move, how many lines, and how many want you. */
