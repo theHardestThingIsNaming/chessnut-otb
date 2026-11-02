@@ -17,10 +17,17 @@ class DrillOpeningTest {
     }
 
     @Test
-    fun picksTheLinePractisedLongestAgoOverANewOne() {
+    fun offersANewLineBeforeRepeatingOne() {
         val now = 100 * day
-        // b was drilled 5 days ago into box 2 (a 7-day wait); c yesterday, missed (back in a day). a is new.
+        // b was drilled 5 days ago, c yesterday; a is new.
         val reviews = mapOf(Drill.key(b) to LineReview(2, now + 2 * day), Drill.key(c) to LineReview(0, now + day))
+        assertEquals(a, Drill.opening(listOf(a, b, c), reviews, now))
+    }
+
+    @Test
+    fun picksTheLinePractisedLongestAgoWhenNoneIsNew() {
+        val now = 100 * day
+        val reviews = mapOf(Drill.key(a) to LineReview(2, now + 3 * day), Drill.key(b) to LineReview(2, now + 2 * day), Drill.key(c) to LineReview(0, now + day))
         assertEquals(b, Drill.opening(listOf(a, b, c), reviews, now))
     }
 

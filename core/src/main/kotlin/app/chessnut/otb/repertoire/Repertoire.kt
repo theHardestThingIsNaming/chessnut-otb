@@ -23,6 +23,7 @@ object Drill {
     fun opening(lines: List<List<String>>, reviews: Map<String, LineReview>, now: Long): List<String>? {
         val overdue = lines.filter { reviews[key(it)]?.let { r -> r.dueAt <= now } == true }
         overdue.minByOrNull { reviews.getValue(key(it)).dueAt }?.let { return it }
+        lines.firstOrNull { key(it) !in reviews }?.let { return it }
         lines.filter { key(it) in reviews }.minByOrNull { practisedAt(reviews.getValue(key(it))) }?.let { return it }
         return lines.firstOrNull()
     }
