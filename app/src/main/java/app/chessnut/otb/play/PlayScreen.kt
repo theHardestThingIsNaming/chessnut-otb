@@ -1000,7 +1000,8 @@ private fun Playing(
             val status = if (ui.status == ui.openingName || ui.status == ui.san.lastOrNull()) "" else ui.status
             Row(Modifier.fillMaxWidth().height(40.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    status.ifEmpty { ui.variation ?: ui.openingName.orEmpty() },
+                    // The opening's name is in the title bar already: the row says only what the title doesn't.
+                    status.ifEmpty { ui.variation?.takeIf { it != ui.openingName?.removePrefix("Repertoire: ") && it != ui.openingName }.orEmpty() },
                     color = when {
                         status.isEmpty() -> Palette.Accent
                         ui.retry -> Palette.Error
@@ -1032,6 +1033,22 @@ private fun Playing(
                         if (index == 0) viewModel.learn() else viewModel.practise()
                     }
                     // What Learn says and shows is chosen where it happens: the notes spoken, and the opening's story.
+                    // Out of theory takes the line label's place; Learn has no room for either.
+                    if (!ui.learning) {
+                        if (ui.san.isNotEmpty() && !ui.inTheory && !ui.survival && !ui.punish) {
+                            Text("Out of theory", color = Palette.Gold, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium)
+                        } else {
+                            ui.lineLabel?.let { label ->
+                                Text(
+                                    label,
+                                    color = if (ui.survival) Palette.Survival else if (ui.punish) Palette.Mistake else Palette.TextMuted,
+                                    fontWeight = if (ui.survival || ui.punish) FontWeight.Bold else FontWeight.Normal,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    maxLines = 1,
+                                )
+                            }
+                        }
+                    }
                     if (ui.learning) {
                         FilterChip(selected = ui.ideas, onClick = { viewModel.setIdeas(!ui.ideas) }, label = { Text(if (ui.ideas) "🔊 Voice" else "🔇 Voice") }, colors = clubChipColors())
                         FilterChip(selected = ui.history, onClick = { viewModel.setHistory(!ui.history) }, label = { Text("History") }, colors = clubChipColors())
@@ -1049,22 +1066,6 @@ private fun Playing(
                 slide = true,
                 onSquare = viewModel::tap,
             )
-            // Out of theory takes the line label's place.
-            if (ui.kind == PlayKind.Trainer) {
-                if (ui.san.isNotEmpty() && !ui.inTheory && !ui.survival && !ui.punish) {
-                    Text("Out of theory", color = Palette.Gold, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium)
-                } else {
-                    ui.lineLabel?.let { label ->
-                        Text(
-                            label,
-                            color = if (ui.survival) Palette.Survival else if (ui.punish) Palette.Mistake else Palette.TextMuted,
-                            fontWeight = if (ui.survival || ui.punish) FontWeight.Bold else FontWeight.Normal,
-                            style = MaterialTheme.typography.bodyMedium,
-                            maxLines = 1,
-                        )
-                    }
-                }
-            }
             // In Punish mode the eval would give the mistake away, so it waits until you've answered.
             if (!showingTrap && !(ui.punish && !ui.lineDone)) EvalBar(ui.evalScore, ui.evalTerminal, ui.fen)
             if (!showingTrap) ui.punishPass?.let { ResultMark(it, ui.punishMark.orEmpty()) }
@@ -1163,7 +1164,7 @@ private fun Playing(
                     Text("Play $move here from now on", color = Palette.Accent)
                 }
             }
-            if (!showingTrap) Text(numbered(ui.san), color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium)
+            if (!showingTrap && !ui.lineDone) Text(numbered(ui.san), color = Palette.TextMuted, style = MaterialTheme.typography.bodyMedium)
         }
         // The actions stay along the bottom, under the thumb.
         Row(Modifier.fillMaxWidth().height(52.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {

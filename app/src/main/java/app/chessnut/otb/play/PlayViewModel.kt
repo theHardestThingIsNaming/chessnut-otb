@@ -402,6 +402,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
 
     /** The line is being played for the user: not graded, and the replies are the line's own. */
     private var watching = false
+    /** How the last move you played was judged, for the note when it left the line. */
+    private var lastVerdict: TrainerResult? = null
     /** The Learn step is on: the line is stepped through, not played, and nothing is graded. */
     private var learning = false
     /** Set by Restart and Try again, so a new line goes straight to Practise rather than back to Learn. */
@@ -1701,6 +1703,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             // Only Survival scores moves past the line; training just carries on with the book.
             val pastBook = survival && openingName != null && (lineFinished || !legalBookMove())
             val verdict = if (kind == PlayKind.Trainer) judge(uci) else null
+            lastVerdict = verdict
             if (drillLine != null && verdict != null && verdict != TrainerResult.Book) drillMissed = true
             if (verdict != null && explain && !verdict.accepted) {
                 reject(uci, verdict)
@@ -2131,7 +2134,6 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         val split = sanMoves.indices.firstOrNull { it < line.size && sanMoves[it] != line[it] }
         val expected = split?.let { "${moveNumber(it)}${line[it]}" }
         val played = split?.let { "${moveNumber(it)}${sanMoves[it]}" }
-        val bookToo = split != null && !drillMissed
         val name = openingName
         if (survival) {
             // Survival doesn't touch the review schedule: the line just has to be known.
@@ -2155,31 +2157,36 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         } else {
             null
         }
+        // Short: one fact and one number. What the move was, and what the line plays instead.
+        val mine = split != null && (split % 2 == 0) == userWhite
+        val verdict = lastVerdict.takeIf { mine }
+        val offLine = when {
+            !mine -> "Your opponent played $played"
+            verdict == TrainerResult.Book -> "$played is a book move too"
+            verdict != null && verdict.accepted -> "$played is fine too"
+            verdict != null -> "$played is a ${verdict.label.lowercase()}"
+            else -> "$played leaves the line"
+        }
         val words = when {
-            drillBook && explain -> if (onLine) {
-                "End of this line. Turn off Explain to test yourself on it."
-            } else {
-                "You've left this line, which continues $expected."
-            }
+            drillBook && explain -> if (onLine) "End of this line." else "You've left this line, which continues $expected."
             drillBook && name != null -> {
                 val review = app.lineProgress.grade(name, userWhite, line, clean, now)
                 val keys = drillLines.map(Drill::key).toSet()
                 val learned = app.lineProgress.learned(name, userWhite).count { it in keys }
-                val days = Drill.days(review, now)
+                val back = backIn(Drill.days(review, now))
                 when {
-                    clean -> "Nice one! Line learned: $learned of ${drillLines.size}. ${seeYou(days)}"
-                    bookToo -> "That's a book move too, but this line continues $expected. Queuing this line for review."
-                    expected != null -> "$played isn't in the book for this opening, so it leaves the line (that is what \"Out of theory\" means). The line continues $expected. Queuing it for review."
-                    else -> "Nearly there! It wasn't quite clean. Queuing this line for review."
+                    clean -> "Learned $learned of ${drillLines.size}. $back"
+                    expected != null -> "$offLine. The line plays $expected. $back"
+                    else -> "Not quite clean. $back"
                 }
             }
             else -> {
                 val review = app.repertoire.grade(line, clean, now)
-                val days = Drill.days(review, now)
+                val back = backIn(Drill.days(review, now))
                 when {
-                    clean -> "Nice one! Line complete. ${seeYou(days)}"
-                    expected != null -> "$played leaves your repertoire, which continues $expected. Queuing this line for review."
-                    else -> "Good effort! This one strayed from your repertoire. Queuing this line for review."
+                    clean -> "Line complete. $back"
+                    expected != null -> "$offLine. Your repertoire plays $expected. $back"
+                    else -> "Strayed from your repertoire. $back"
                 }
             }
         }
@@ -2190,8 +2197,8 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         refreshLines()
     }
 
-    /** When a cleanly played line comes round again, said warmly. */
-    private fun seeYou(days: Int): String = if (days <= 1) "We'll see it again tomorrow." else "We'll see it again in $days days."
+    /** When the line comes round again. */
+    private fun backIn(days: Int): String = if (days <= 1) "Back tomorrow." else "Back in $days days."
 
     /** "5. " for White's move at [ply], "5… " for Black's. */
     private fun moveNumber(ply: Int): String = "${ply / 2 + 1}${if (ply % 2 == 0) ". " else "… "}"
