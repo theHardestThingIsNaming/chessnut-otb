@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -997,7 +998,7 @@ private fun Playing(
             if (ui.boardWrong) BoardBanner("Check the board", ui.status)
             // One line of fixed height, so the board never jumps: the status when there is one, otherwise the variation.
             val status = if (ui.status == ui.openingName || ui.status == ui.san.lastOrNull()) "" else ui.status
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(Modifier.fillMaxWidth().height(40.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
                     status.ifEmpty { ui.variation ?: ui.openingName.orEmpty() },
                     color = when {
@@ -1024,7 +1025,7 @@ private fun Playing(
                 }
             }
             if (ui.kind == PlayKind.Trainer) {
-                FlowRow(itemVerticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(Modifier.fillMaxWidth().heightIn(min = 40.dp), itemVerticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     // Explain, Ideas and History are settings you choose once: one chip opens them.
                     var coach by remember { mutableStateOf(false) }
                     if (coach) CoachDialog(ui, viewModel) { coach = false }
