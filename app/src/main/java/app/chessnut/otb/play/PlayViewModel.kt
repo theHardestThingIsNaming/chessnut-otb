@@ -1002,7 +1002,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
             userWhite -> "You have White · $elo"
             else -> "You have Black · $elo"
         }
-        val enterLearn = !skipLearn && !reviewing && !physical && !survival && kind == PlayKind.Trainer && punishTrap == null &&
+        val enterLearn = !skipLearn && !reviewing && !survival && kind == PlayKind.Trainer && punishTrap == null &&
             drillLine != null && lineLabelShown?.endsWith("new") == true
         skipLearn = false
         publish()
@@ -1412,7 +1412,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     /** The Learn step: the drilled line stepped through with the arrows, a note for each move. Not graded. */
     fun learn() {
         val line = drillLine ?: return
-        if (learning || kind != PlayKind.Trainer || physical || survival || punishTrap != null || trap != null) return
+        if (learning || kind != PlayKind.Trainer || survival || punishTrap != null || trap != null) return
         stopAutoplay(publish = false)
         job?.cancel()
         speech.stop()
@@ -1421,6 +1421,9 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         retryAt = null
         learning = true
         watching = true
+        // Learning is on the screen; the board's pieces are not read until Practise.
+        physical = false
+        awaitingBoard = false
         busy = false
         learnTo(if (line.take(sanMoves.size) == sanMoves) sanMoves.size else 0)
     }
