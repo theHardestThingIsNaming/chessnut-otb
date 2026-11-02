@@ -654,12 +654,7 @@ private fun OpeningPage(
         }
         Row(Modifier.fillMaxWidth().height(52.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             // Train, then Punish, then Survival: from learning the lines to testing them.
-            PrimaryAction(
-                "Train",
-                Modifier.weight(1.3f).fillMaxHeight(),
-                subtext = if (detail.due > 0) "next line for review" else null,
-                onClick = viewModel::train,
-            )
+            PrimaryAction("Train", Modifier.weight(1.3f).fillMaxHeight(), onClick = viewModel::train)
             if (detail.punishable > 0) {
                 PrimaryAction("Punish", Modifier.weight(1f).fillMaxHeight(), color = Palette.Mistake, onClick = viewModel::startPunish)
             }
@@ -690,16 +685,19 @@ private fun PageStats(ui: PlayUi, detail: OpeningDetail) {
             }
             IconStat("${detail.due}", if (detail.due > 0) Palette.Gold else Palette.Text) { ClockMark(if (detail.due > 0) Palette.Gold else Palette.TextMuted, Modifier.size(15.dp)) }
             detail.medal?.let { MedalMark(medalColor(it), Modifier.size(22.dp)) }
-            IconStat(detail.winRate?.let { "$it" } ?: "–", Palette.Text) {
-                Text("%", color = Palette.TextMuted, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-            }
-            IconStat(detail.depthBest?.toString() ?: "–", Palette.Survival) { BoltMark(Palette.Survival, Modifier.size(15.dp)) }
-            if (detail.punishable > 0) {
-                IconStat("${detail.punished}/${detail.punishable}", Palette.Mistake) { TargetMark(Palette.Mistake, Modifier.size(15.dp)) }
-            }
             Text("ⓘ", color = if (legend) Palette.Accent else Palette.TextMuted, fontSize = 16.sp)
         }
         if (legend) {
+            // The rest of the numbers wait for a tap: the three above are what you check each visit.
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                IconStat(detail.winRate?.let { "$it" } ?: "–", Palette.Text) {
+                    Text("%", color = Palette.TextMuted, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                }
+                IconStat(detail.depthBest?.toString() ?: "–", Palette.Survival) { BoltMark(Palette.Survival, Modifier.size(15.dp)) }
+                if (detail.punishable > 0) {
+                    IconStat("${detail.punished}/${detail.punishable}", Palette.Mistake) { TargetMark(Palette.Mistake, Modifier.size(15.dp)) }
+                }
+            }
             LegendLine({ BookMark(Palette.TextMuted, Modifier.size(14.dp)) }, "Lines learned, of the opening's lines")
             LegendLine({ ClockMark(Palette.Gold, Modifier.size(14.dp)) }, "Lines due for review today")
             LegendLine({ MedalMark(medalColor(detail.medal ?: OpeningMedal.Bronze), Modifier.size(16.dp)) }, "Medal: bronze for a line, silver for half and a Survival run of ${OpeningMedal.SILVER_RUN}, gold for all and a run of 5")
