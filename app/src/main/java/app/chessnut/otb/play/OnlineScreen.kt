@@ -54,7 +54,6 @@ import app.chessnut.otb.ui.PlayerBar
 import app.chessnut.otb.ui.clubAppBarColors
 import app.chessnut.otb.ui.clubChipColors
 import app.chessnut.otb.ui.clubTextButtonColors
-import app.chessnut.otb.ui.KeepScreenOn
 import app.chessnut.otb.ui.moveSquares
 import app.chessnut.otb.ui.GameAction
 import app.chessnut.otb.ui.ActionTone
@@ -69,7 +68,6 @@ fun OnlineScreen(
     oauthRedirect: String? = null,
     onOAuthHandled: () -> Unit = {},
 ) {
-    KeepScreenOn()
     val ui by viewModel.ui.collectAsStateWithLifecycle()
     var confirmLeave by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { viewModel.engage() }

@@ -71,7 +71,6 @@ import app.chessnut.otb.ui.clubAppBarColors
 import app.chessnut.otb.ui.clubChipColors
 import app.chessnut.otb.ui.clubPanel
 import app.chessnut.otb.ui.clubTextButtonColors
-import app.chessnut.otb.ui.KeepScreenOn
 import app.chessnut.otb.ui.GameAction
 import app.chessnut.otb.ui.ActionTone
 import app.chessnut.otb.ui.ClockFace
@@ -226,7 +225,6 @@ fun BoardScreen(
     onPositionAnalyse: (fen: String) -> Unit = {},
     onPositionPlay: (fen: String, userWhite: Boolean) -> Unit = { _, _ -> },
 ) {
-    KeepScreenOn()
     val ui by model.ui.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var position by remember { mutableStateOf<String?>(null) }

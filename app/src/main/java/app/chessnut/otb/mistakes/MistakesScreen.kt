@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.chessnut.otb.ui.Arrow
 import app.chessnut.otb.ui.ChessBoard
-import app.chessnut.otb.ui.KeepScreenOn
 import app.chessnut.otb.ui.Palette
 import app.chessnut.otb.ui.clubAppBarColors
 import app.chessnut.otb.ui.clubTextButtonColors
@@ -46,7 +45,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MistakesScreen(model: MistakesViewModel, onBack: () -> Unit, onOpenGame: (String) -> Unit) {
-    KeepScreenOn()
     val ui by model.ui.collectAsStateWithLifecycle()
     BackHandler(onBack = onBack)
     Scaffold(

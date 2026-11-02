@@ -83,7 +83,6 @@ import app.chessnut.otb.ui.ResultMark
 import app.chessnut.otb.ui.clubAppBarColors
 import app.chessnut.otb.ui.clubChipColors
 import app.chessnut.otb.ui.clubTextButtonColors
-import app.chessnut.otb.ui.KeepScreenOn
 import app.chessnut.otb.ui.moveSquares
 import app.chessnut.otb.ui.GameAction
 import app.chessnut.otb.ui.ActionTone
@@ -122,7 +121,6 @@ fun PlayScreen(
     onMaster: (id: String) -> Unit = {},
     onPlayOn: (fen: String, white: Boolean) -> Unit = { _, _ -> },
 ) {
-    KeepScreenOn()
     val ui by viewModel.ui.collectAsStateWithLifecycle()
     LaunchedEffect(mode) { viewModel.setKind(mode) }
     // Back steps out one level: from a line to the opening's page (or the list), from the page to the list, then leaves.
@@ -994,6 +992,7 @@ private fun Playing(
         )
     }
     val highlights = moveSquares(ui.hintUci) + moveSquares(ui.promptUci)
+    val offer = FinishedLine.offer(ui.lineDone, ui.lineClean, ui.learning, ui.survival, ui.punish, showingTrap, ui.reviewing)
     Column(modifier.padding(bottom = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             if (ui.boardWrong) BoardBanner("Check the board", ui.status)
@@ -1072,7 +1071,7 @@ private fun Playing(
             // The line is done and a middlegame plan starts where it ends: carry on into it, first thing under the board.
             val opening = ui.openingName
             // After a clean run, one "Play on" button opens what comes next; after a miss there is just Try again.
-            if (opening != null && ui.lineDone && ui.lineClean && !showingTrap) {
+            if (opening != null && offer.playOn) {
                 var more by remember(ui.fen) { mutableStateOf(false) }
                 OutlinedButton(onClick = { more = !more }, colors = clubOutlinedButtonColors(), modifier = Modifier.fillMaxWidth()) {
                     Text(if (more) "Play on ▴" else "Play on ▾", color = Palette.Accent, fontWeight = FontWeight.SemiBold)
@@ -1093,7 +1092,7 @@ private fun Playing(
                             modifier = Modifier.fillMaxWidth(),
                         ) { Text("Master game: $title", color = Palette.Gold) }
                     }
-                    if (!ui.survival && !ui.punish && !ui.reviewing) {
+                    if (offer.engine) {
                         OutlinedButton(
                             onClick = { onPlayOn(ui.fen, ui.userWhite) },
                             colors = clubOutlinedButtonColors(),
@@ -1169,7 +1168,7 @@ private fun Playing(
         // The actions stay along the bottom, under the thumb.
         Row(Modifier.fillMaxWidth().height(52.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             // A finished line has two buttons, Try again and Next line: the back arrow leaves.
-            if (!ui.learning && !(ui.lineDone && !showingTrap && !ui.punish && !ui.survival)) GameAction("Openings", light = false, onClick = viewModel::leave, modifier = Modifier.weight(1f).fillMaxHeight())
+            if (offer.openings) GameAction("Openings", light = false, onClick = viewModel::leave, modifier = Modifier.weight(1f).fillMaxHeight())
             if (showingTrap) {
                 GameAction("Replay", light = false, onClick = viewModel::replayTrap, modifier = Modifier.weight(1f).fillMaxHeight())
                 PrimaryAction("Back to the line", Modifier.weight(1.3f).fillMaxHeight(), onClick = viewModel::backToLine)

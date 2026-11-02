@@ -34,7 +34,6 @@ import app.chessnut.otb.ui.Arrow
 import app.chessnut.otb.ui.BackButton
 import app.chessnut.otb.ui.ChessBoard
 import app.chessnut.otb.ui.GameAction
-import app.chessnut.otb.ui.KeepScreenOn
 import app.chessnut.otb.ui.Palette
 import app.chessnut.otb.ui.PrimaryAction
 import app.chessnut.otb.ui.ResultMark
@@ -44,7 +43,6 @@ import app.chessnut.otb.ui.clubAppBarColors
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MasterGameScreen(model: MasterGameViewModel, onBack: () -> Unit, onAnalyse: (String) -> Unit = {}) {
-    KeepScreenOn()
     val ui by model.ui.collectAsStateWithLifecycle()
     BackHandler(onBack = onBack)
     val game = ui.game ?: return

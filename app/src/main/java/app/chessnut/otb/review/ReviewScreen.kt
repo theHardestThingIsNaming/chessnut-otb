@@ -84,7 +84,6 @@ import app.chessnut.otb.ui.clubChipColors
 import app.chessnut.otb.ui.clubPanel
 import app.chessnut.otb.ui.clubTextButtonColors
 import java.util.Locale
-import app.chessnut.otb.ui.KeepScreenOn
 import app.chessnut.otb.chess.uciSquares
 import app.chessnut.otb.ui.NavKey
 import androidx.compose.runtime.rememberCoroutineScope
@@ -103,7 +102,6 @@ fun ReviewScreen(
     onPractise: () -> Unit = {},
     onPlayFrom: (fen: String, userWhite: Boolean) -> Unit = { _, _ -> },
 ) {
-    KeepScreenOn()
     val ui by model.ui.collectAsStateWithLifecycle()
     val game = ui.game
     var editing by remember { mutableStateOf(false) }

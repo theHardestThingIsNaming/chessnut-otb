@@ -29,6 +29,7 @@ import app.chessnut.otb.games.SavedGame
 import app.chessnut.otb.live.TimeControl
 import app.chessnut.otb.openings.MasterGames
 import app.chessnut.otb.openings.MiddlegamePlans
+import app.chessnut.otb.openings.LineGroups
 import app.chessnut.otb.openings.OpeningBook
 import app.chessnut.otb.openings.OpeningLore
 import app.chessnut.otb.openings.MoveIdeas
@@ -771,46 +772,12 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
      * without a rate after in their own order. A long list is kept in groups, by the move where its lines part,
      * and sorted within each group.
      */
-    private fun displayOrder(name: String, lines: List<List<String>>, white: Boolean): List<List<String>> {
-        val labels = groupLabels(name, lines)
-        val byRate = compareByDescending<List<String>> { rateOf(it, white) ?: -1 }
-        val groups = lines.indices.groupBy { labels[it] }
-        return if (groups.size < 2 || lines.size < 6 || "" in groups) {
-            lines.sortedWith(byRate)
-        } else {
-            groups.values.flatMap { rows -> rows.map { lines[it] }.sortedWith(byRate) }
-        }
-    }
+    private fun displayOrder(name: String, lines: List<List<String>>, white: Boolean): List<List<String>> =
+        LineGroups.order(name, lines) { rateOf(it, white) }
 
-    /** The variation a line is named for in the book, without the opening's own name; null when it has none. */
-    private fun variationOf(name: String, line: List<String>): String? = OpeningBook.view(line).name
-        ?.removePrefix("$name: ")
-        ?.removePrefix(name)
-        ?.trim(' ', ',', ':')
-        ?.ifBlank { null }
+    private fun variationOf(name: String, line: List<String>): String? = LineGroups.variationOf(name, line)
 
-    /**
-     * Which group each of [lines] sits in on the page. Three or more lines of one named family ("Evans Gambit")
-     * are a group of their own; the rest are grouped by the move where they part ("3...Bc5"). Blank when
-     * the lines don't part at all.
-     */
-    private fun groupLabels(name: String, lines: List<List<String>>): List<String> {
-        val parting = lines.firstOrNull()?.let { first ->
-            (0 until first.size).firstOrNull { ply -> lines.any { it.size <= ply || it[ply] != first[ply] } }
-        }
-        val named = lines.map { variationOf(name, it)?.substringBefore(", ")?.takeIf { f -> f.isNotBlank() } }
-        // "Evans Gambit Declined" belongs with "Evans Gambit": a name that continues another is part of its family.
-        val roots = named.filterNotNull().distinct().sortedBy { it.length }
-        val family = named.map { f -> f?.let { n -> roots.firstOrNull { it != n && n.startsWith("$it ") } ?: n } }
-        val counts = family.filterNotNull().groupingBy { it }.eachCount()
-        val labels = lines.mapIndexed { i, line ->
-            family[i]?.takeIf { (counts[it] ?: 0) >= 3 }
-                ?: parting?.takeIf { it < line.size }?.let { ply -> "${ply / 2 + 1}${if (ply % 2 == 0) "." else "..."}${line[ply]}" }.orEmpty()
-        }
-        // One group holding nearly every line is no grouping at all: the list stays flat.
-        val biggest = labels.groupingBy { it }.eachCount().values.maxOrNull() ?: 0
-        return if (biggest * 4 > lines.size * 3) List(lines.size) { "" } else labels
-    }
+    private fun groupLabels(name: String, lines: List<List<String>>): List<String> = LineGroups.labels(name, lines)
 
     /** Fetches Lichess results for the lines on the open page that lack them, then shows them. Needs a Lichess login. */
     private fun fetchLineStats(lines: List<List<String>>) {
@@ -1520,21 +1487,13 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
     /** Sets the board to the first [count] moves of the line, with the note for the last one. */
     private fun learnTo(count: Int, speak: Boolean = false) {
         val line = drillLine ?: return
-        var position = origin()
-        var before = position
+        val walk = LineWalk.to(origin(), line, count)
         sanMoves.clear()
+        sanMoves += walk.san
         uciMoves.clear()
-        lastUci = null
-        for (san in line.take(count.coerceIn(0, line.size))) {
-            val uci = PlayPosition.uciOfSan(position, san) ?: break
-            val next = PlayPosition.after(position, uci)?.second ?: break
-            before = position
-            position = next
-            sanMoves += san
-            uciMoves += uci
-            lastUci = uci
-        }
-        fen = position
+        uciMoves += walk.uci
+        lastUci = walk.uci.lastOrNull()
+        fen = walk.fen
         glance = null
         hint = null
         hintPiece = null
@@ -1542,7 +1501,7 @@ class PlayViewModel(application: Application) : AndroidViewModel(application) {
         finished = null
         val last = sanMoves.lastOrNull()
         status = last ?: trainerStart()
-        idea = last?.let { MoveIdeas.explain(sanMoves, before, uciMoves.last()) }
+        idea = last?.let { MoveIdeas.explain(sanMoves, walk.before, uciMoves.last()) }
         ideaMove = last?.let { "${moveNumber(sanMoves.lastIndex)}$it" }
         val lore = if (state.value.history) OpeningBook.view(sanMoves).name?.let { OpeningLore.exact(it) } else null
         story = if (sanMoves.isEmpty()) null else lore ?: story
