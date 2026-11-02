@@ -16,7 +16,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 /** The small pictures beside menu options, so each can be told apart at a glance and not only by reading it. */
-enum class MenuIcon { Plan, MasterGame, PlayOut, Analyse, Back, Forward, Pause, Restart, Hint, Book, Clock, Target, Bolt, Shield, Openings }
+enum class MenuIcon { Plan, MasterGame, PlayOut, Analyse, Back, Forward, Pause, Restart, Hint, Book, Clock, Target, Bolt, Shield, Openings, First, Last, Cross, Check }
 
 @Composable
 fun MenuIcon(icon: MenuIcon, color: Color, modifier: Modifier = Modifier.size(26.dp)) {
@@ -128,6 +128,25 @@ fun MenuIcon(icon: MenuIcon, color: Color, modifier: Modifier = Modifier.size(26
                     quadraticBezierTo(w * 0.2f, w * 0.78f, w * 0.16f, w * 0.52f); lineTo(w * 0.14f, w * 0.2f); close()
                 }
                 drawPath(shield, color)
+            }
+            // A bar and an arrow: the start of the game, and the latest position.
+            MenuIcon.First -> {
+                drawLine(color, Offset(w * 0.18f, w * 0.2f), Offset(w * 0.18f, w * 0.8f), strokeWidth = w * 0.11f, cap = StrokeCap.Round)
+                drawLine(color, Offset(w * 0.78f, w * 0.2f), Offset(w * 0.36f, w * 0.5f), strokeWidth = w * 0.11f, cap = StrokeCap.Round)
+                drawLine(color, Offset(w * 0.78f, w * 0.8f), Offset(w * 0.36f, w * 0.5f), strokeWidth = w * 0.11f, cap = StrokeCap.Round)
+            }
+            MenuIcon.Last -> {
+                drawLine(color, Offset(w * 0.82f, w * 0.2f), Offset(w * 0.82f, w * 0.8f), strokeWidth = w * 0.11f, cap = StrokeCap.Round)
+                drawLine(color, Offset(w * 0.22f, w * 0.2f), Offset(w * 0.64f, w * 0.5f), strokeWidth = w * 0.11f, cap = StrokeCap.Round)
+                drawLine(color, Offset(w * 0.22f, w * 0.8f), Offset(w * 0.64f, w * 0.5f), strokeWidth = w * 0.11f, cap = StrokeCap.Round)
+            }
+            MenuIcon.Cross -> {
+                drawLine(color, Offset(w * 0.2f, w * 0.2f), Offset(w * 0.8f, w * 0.8f), strokeWidth = w * 0.12f, cap = StrokeCap.Round)
+                drawLine(color, Offset(w * 0.8f, w * 0.2f), Offset(w * 0.2f, w * 0.8f), strokeWidth = w * 0.12f, cap = StrokeCap.Round)
+            }
+            MenuIcon.Check -> {
+                drawLine(color, Offset(w * 0.15f, w * 0.55f), Offset(w * 0.4f, w * 0.78f), strokeWidth = w * 0.12f, cap = StrokeCap.Round)
+                drawLine(color, Offset(w * 0.4f, w * 0.78f), Offset(w * 0.87f, w * 0.25f), strokeWidth = w * 0.12f, cap = StrokeCap.Round)
             }
             // A board: back to the openings.
             MenuIcon.Openings -> for (r in 0..1) for (c in 0..1) {

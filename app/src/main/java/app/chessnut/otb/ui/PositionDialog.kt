@@ -58,8 +58,9 @@ fun PositionDialog(
                         light = false,
                         onClick = { fen?.let(onAnalyse) },
                         modifier = Modifier.weight(1f).height(48.dp),
+                        icon = menuIcon(MenuIcon.Analyse),
                     )
-                    PrimaryAction("Play the bot", Modifier.weight(1f).height(48.dp), enabled = fen != null) {
+                    PrimaryAction("Play the bot", Modifier.weight(1f).height(48.dp), enabled = fen != null, icon = MenuIcon.PlayOut) {
                         fen?.let { onPlay(it, youWhite) }
                     }
                 }

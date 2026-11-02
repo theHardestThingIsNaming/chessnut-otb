@@ -1,5 +1,8 @@
 package app.chessnut.otb.puzzles
 
+import app.chessnut.otb.ui.NavKey
+import app.chessnut.otb.ui.menuIcon
+import app.chessnut.otb.ui.MenuIcon
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -152,12 +155,12 @@ private fun PlanViewer(plan: MiddlegamePlan, modifier: Modifier, marks: PlanMark
         )
         Spacer(Modifier.weight(1f))
         Row(Modifier.fillMaxWidth().height(52.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            GameAction("|<", light = false, onClick = { playing = false; step = 0 }, modifier = Modifier.weight(1f).fillMaxHeight())
-            GameAction("<", light = false, onClick = { playing = false; if (step > 0) step-- }, modifier = Modifier.weight(1f).fillMaxHeight())
-            GameAction(if (playing) "Pause" else "Play", light = false, onClick = { if (step >= plan.moves.size) step = 0; playing = !playing }, modifier = Modifier.weight(1.2f).fillMaxHeight())
-            GameAction(">", light = false, onClick = { playing = false; if (step < plan.moves.size) step++ }, modifier = Modifier.weight(1f).fillMaxHeight())
+            NavKey("|<", Modifier.weight(1f).fillMaxHeight()) { playing = false; step = 0 }
+            NavKey("<", Modifier.weight(1f).fillMaxHeight()) { playing = false; if (step > 0) step-- }
+            GameAction(if (playing) "Pause" else "Play", light = false, onClick = { if (step >= plan.moves.size) step = 0; playing = !playing }, modifier = Modifier.weight(1.2f).fillMaxHeight(), icon = menuIcon(if (playing) MenuIcon.Pause else MenuIcon.PlayOut))
+            NavKey(">", Modifier.weight(1f).fillMaxHeight()) { playing = false; if (step < plan.moves.size) step++ }
         }
-        PrimaryAction("Try it against the bot", Modifier.fillMaxWidth().height(52.dp).padding(bottom = 4.dp)) {
+        PrimaryAction("Try it against the bot", Modifier.fillMaxWidth().height(52.dp).padding(bottom = 4.dp), icon = MenuIcon.PlayOut) {
             marks.mark(plan, PlanMarks.TRIED)
             onTry(replay.fens[start], plan.white)
         }

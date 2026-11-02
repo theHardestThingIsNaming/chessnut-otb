@@ -1,5 +1,7 @@
 package app.chessnut.otb.play
 
+import app.chessnut.otb.ui.menuIcon
+import app.chessnut.otb.ui.MenuIcon
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import android.content.Intent
@@ -10,6 +12,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -243,7 +247,7 @@ private fun Table(ui: OnlineUi, viewModel: OnlineViewModel, modifier: Modifier, 
                     HalfMark(it, Modifier.size(16.dp))
                 }
                 if (ui.drawOffered) {
-                    GameAction("Decline", ui.userWhite, viewModel::declineDraw, Modifier.weight(1f).fillMaxHeight())
+                    GameAction("Decline", ui.userWhite, viewModel::declineDraw, Modifier.weight(1f).fillMaxHeight(), icon = menuIcon(MenuIcon.Cross))
                 }
                 GameAction(
                     if (ui.canAbort) "Abort" else "Resign",
@@ -259,7 +263,11 @@ private fun Table(ui: OnlineUi, viewModel: OnlineViewModel, modifier: Modifier, 
                     onClick = viewModel::rematch,
                     colors = ButtonDefaults.buttonColors(containerColor = Palette.Gold, contentColor = Palette.Ink),
                     modifier = Modifier.fillMaxWidth(),
-                ) { Text("Rematch ${ui.opponent}") }
+                ) {
+                    MenuIcon(MenuIcon.Restart, Palette.Ink, Modifier.size(18.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text("Rematch ${ui.opponent}")
+                }
             }
             Button(
                 onClick = viewModel::again,

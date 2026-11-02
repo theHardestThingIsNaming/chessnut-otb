@@ -108,7 +108,10 @@ fun NavKey(label: String, modifier: Modifier = Modifier, enabled: Boolean = true
             .padding(vertical = 10.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Text(label, color = if (enabled) Palette.Text else Palette.Text.copy(alpha = 0.3f), fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        val ink = if (enabled) Palette.Text else Palette.Text.copy(alpha = 0.3f)
+        // The four stepping keys are pictures; any other label stays words.
+        val icon = when (label) { "|<" -> MenuIcon.First; "<" -> MenuIcon.Back; ">" -> MenuIcon.Forward; ">|" -> MenuIcon.Last; else -> null }
+        if (icon != null) MenuIcon(icon, ink, Modifier.size(22.dp)) else Text(label, color = ink, fontSize = 18.sp, fontWeight = FontWeight.Bold)
     }
 }
 
