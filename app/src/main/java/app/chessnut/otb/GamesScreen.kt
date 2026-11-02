@@ -120,7 +120,9 @@ fun GamesScreen(
     var moving by remember { mutableStateOf<SavedGame?>(null) }
 
     val folders = games.map { it.folder }.filter { it.isNotBlank() }.distinct().sorted()
-    val visible = if (browsing) games.filter { it.folder == folder } else games.filter { it.folder.isBlank() }
+    // A board game of a few moves, never finished, is a test of the board, not a game to list.
+    val listed = games.filter { it.source != GameSource.Board || it.sanMoves.size >= MIN_LISTED_PLIES || it.result != "*" }
+    val visible = if (browsing) listed.filter { it.folder == folder } else listed.filter { it.folder.isBlank() }
     val linesDue by produceState(0, games) {
         value = withContext(Dispatchers.Default) { app.openingLinesDue(System.currentTimeMillis()) }
     }
@@ -587,6 +589,9 @@ private fun MoveDialog(game: SavedGame, folders: List<String>, onDismiss: () -> 
         dismissButton = { TextButton(onClick = onDismiss, colors = clubTextButtonColors()) { Text("Cancel", color = Palette.Accent) } },
     )
 }
+
+/** Plies (half-moves): four moves each. */
+private const val MIN_LISTED_PLIES = 8
 
 private const val START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
 

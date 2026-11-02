@@ -540,6 +540,8 @@ class BoardViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun persistLive(event: LiveEvent.Finished?) {
         if (event == null || event.sanMoves.isEmpty()) return
+        // A few moves that never came to a result are the board being tried out: not kept.
+        if (event.sanMoves.size < MIN_SAVED_PLIES && event.result == "*") return
         val now = System.currentTimeMillis()
         val date = SimpleDateFormat("yyyy.MM.dd", Locale.ROOT).format(Date(now))
         val saved = SavedGame(
@@ -592,6 +594,8 @@ class BoardViewModel(application: Application) : AndroidViewModel(application) {
         const val MAX_LOG = 600
         /** Board log files kept on the phone, this session's included. */
         const val KEEP_LOGS = 5
+        /** Four moves each; a shorter unfinished game isn't saved. */
+        const val MIN_SAVED_PLIES = 8
         /** A log rolls over past this size, so one session keeps at most about twice it. */
         const val MAX_LOG_BYTES = 1_000_000L
         const val KEY_TIME = "time_control"

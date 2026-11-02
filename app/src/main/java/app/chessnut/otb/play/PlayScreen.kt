@@ -682,8 +682,8 @@ private fun PageStats(ui: PlayUi, detail: OpeningDetail) {
             }
             LegendLine({ BookMark(Palette.TextMuted, Modifier.size(14.dp)) }, "Lines learned, of the opening's lines")
             LegendLine({ ClockMark(Palette.Gold, Modifier.size(14.dp)) }, "Lines due for review today")
-            LegendLine({ MedalMark(medalColor(detail.medal ?: OpeningMedal.Bronze), Modifier.size(16.dp)) }, "Medal: bronze for a line, silver for half and a Survival run of ${OpeningMedal.SILVER_RUN}, gold for all and a run of 5")
-            LegendLine({ Text("%", color = Palette.TextMuted, fontWeight = FontWeight.Bold) }, if (detail.winRate == null && !ui.lichessLinked) "Lichess win rate for your side (log in to Lichess to see it)" else "How often your side wins on Lichess, club players")
+            LegendLine({ MedalMark(medalColor(detail.medal ?: OpeningMedal.Bronze), Modifier.size(16.dp)) }, "Medal: bronze, silver or gold as you learn the lines")
+            LegendLine({ Text("%", color = Palette.TextMuted, fontWeight = FontWeight.Bold) }, if (detail.winRate == null && !ui.lichessLinked) "Win rate on Lichess (log in to see it)" else "How often your side wins on Lichess")
             LegendLine({ BoltMark(Palette.Survival, Modifier.size(14.dp)) }, "Survival best" + (detail.depthLast?.let { ", last run $it" } ?: ""))
             if (detail.punishable > 0) LegendLine({ TargetMark(Palette.Mistake, Modifier.size(14.dp)) }, "Common mistakes you punished without help")
         }

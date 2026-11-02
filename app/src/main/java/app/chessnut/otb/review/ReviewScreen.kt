@@ -72,6 +72,7 @@ import app.chessnut.otb.analysis.MoveClass
 import app.chessnut.otb.analysis.MoveReport
 import app.chessnut.otb.analysis.Terminal
 import app.chessnut.otb.openings.OpeningBook
+import app.chessnut.otb.openings.shortOpening
 import app.chessnut.otb.ui.Arrow
 import app.chessnut.otb.ui.ChessBoard
 import app.chessnut.otb.ui.FlipMark
@@ -268,13 +269,6 @@ fun ReviewScreen(
             dismissButton = { TextButton(onClick = { confirmDelete = false }, colors = clubTextButtonColors()) { Text("Cancel", color = Palette.Accent) } },
         )
     }
-}
-
-/** The specific variation, so a long book name fits the title. "Miles Gambit" stays; "Falkbeer Countergambit Accepted" drops the trailing Accepted. */
-private fun shortOpening(name: String): String {
-    val specific = name.substringAfterLast(": ").substringAfterLast(", ").trim().ifBlank { name }
-    val base = specific.removeSuffix(" Accepted").removeSuffix(" Declined").trim()
-    return if (base != specific && ("Countergambit" in base || base.length > 22)) base else specific
 }
 
 private fun shownSan(ui: ReviewState): List<String> {

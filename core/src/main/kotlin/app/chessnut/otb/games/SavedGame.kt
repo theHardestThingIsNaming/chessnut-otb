@@ -1,6 +1,8 @@
 package app.chessnut.otb.games
 
 import app.chessnut.otb.chess.StoredGameReconstructor
+import app.chessnut.otb.openings.OpeningBook
+import app.chessnut.otb.openings.shortOpening
 import app.chessnut.otb.pgn.GameFingerprint
 import app.chessnut.otb.pgn.GameHeaders
 import app.chessnut.otb.pgn.applyHeaders
@@ -32,8 +34,11 @@ data class SavedGame(
      */
     val practise: String = "",
 ) {
+    /** The label, else the players, else (a board game with no names) the opening it played. */
     val title: String
-        get() = label.ifBlank { "${white.ifBlank { "White" }} vs ${black.ifBlank { "Black" }}" }
+        get() = label.ifBlank {
+            if (white.isBlank() && black.isBlank()) openingTitle(sanMoves) else "${white.ifBlank { "White" }} vs ${black.ifBlank { "Black" }}"
+        }
 
     fun toPgn(): String = applyHeaders(
         movetextOf(sanMoves),
@@ -41,6 +46,14 @@ data class SavedGame(
     )
 
     companion object {
+        private val openingTitles = java.util.concurrent.ConcurrentHashMap<List<String>, String>()
+
+        /** "Scotch Game" for a nameless game, found once per opening and kept; "Game" when the book has no name for it. */
+        private fun openingTitle(sanMoves: List<String>): String =
+            openingTitles.getOrPut(sanMoves.take(16)) {
+                OpeningBook.view(sanMoves.take(16)).name?.let(::shortOpening) ?: "Game"
+            }
+
         fun idFor(sanMoves: List<String>, placements: List<String>): String =
             if (sanMoves.isNotEmpty()) {
                 GameFingerprint.of(movetextOf(sanMoves))

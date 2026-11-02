@@ -112,7 +112,7 @@ fun EndgamesScreen(onBack: () -> Unit, onOpen: (String) -> Unit, onEssential: (S
             item {
                 Text("Puzzles", color = Palette.Endgame, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp))
                 Text(
-                    "From real games, rated 1800 and up. A clean solve comes back once, after 3 days.",
+                    "From real games, rated 1800 and up.",
                     color = Palette.TextMuted,
                     style = MaterialTheme.typography.bodyMedium,
                 )
