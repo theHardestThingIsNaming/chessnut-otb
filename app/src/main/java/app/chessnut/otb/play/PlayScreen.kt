@@ -588,6 +588,14 @@ private fun OpeningPage(
                 val first = groups.entries.firstOrNull { (_, rows) -> rows.any { it.value.status == LineStatus.Due || it.value.status == LineStatus.Missed } }?.key
                     ?: groups.keys.first()
                 for ((group, rows) in groups) {
+                    // A heading over one line says nothing: the line stands on its own.
+                    if (rows.size == 1) {
+                        item(key = "group-$group") {
+                            val (index, line) = rows.first()
+                            LineRow(index + 1, line, onPlan = { plan -> onPlans(detail.name, ui.userWhite, plan) }, onMaster = onMaster) { viewModel.trainLine(index) }
+                        }
+                        continue
+                    }
                     item(key = "group-$group") {
                         var flipped by rememberSaveable(detail.name, group) { mutableStateOf(false) }
                         val open = (group == first) != flipped
