@@ -219,3 +219,18 @@ From the phone logs of a 29 Oct session: the recorder (`LiveGameTracker`) accept
 - [ ] Not done: recording a game that starts from a position other than the start. Saved games, analysis, Mistakes and the openings all assume the standard start, so it needs a start position stored on `SavedGame` and used everywhere.
 - [x] Stopping the recorder getting lost in the first place (2026-11-02): a board that stays wrong for two seconds now pauses the game. The clocks are held (`LiveGameTracker.pause`), a large "Game paused" banner shows with the Catch up button, and the board keeps the misplaced squares lit (up to 8) until the board matches again, when the clocks run on by themselves. Moves put back are taken back by themselves: a board that matches how it stood up to 8 plies ago strikes those moves from the game (`LiveEvent.TakenBack`); the only move taken back to the start also counts, while a longer game returned to the start is still saved as a game. Quick moves are caught up as before (up to 3 plies without asking).
 - [x] A takeback costs time (2026-11-02): the clock keeps running while the pieces go back (charged to the side on move), and each struck move loses the increment it earned. Clocks are not restored. An option to restore them instead was offered and not chosen.
+
+## Less text on screen (started 2026-11-02)
+
+From the code and UX review. Principle: three levels (glance: a headline, the primary action and at most three other things; one tap: the detail for one item; deeper: history, settings, explanations). One shared expander so every screen behaves the same. Settings you set once go in a sheet, not in the flow.
+
+- [ ] 1. Opening page: each line row collapsed (name and status, moves on one line), a chevron opens its stats, plans and master game. Tapping the row still trains it.
+- [ ] 2. Opening page: lines grouped under Black's reply ("3...c5 · 4 lines"), and the Chess.com import and History behind a "More" row.
+- [ ] 3. Train screen: Explain, Ideas and History in one "Coach" sheet that remembers its choices; only Play line and the line label stay on the screen; the coach card is one line with a "More" expander.
+- [ ] 4. Opening list: grouped by family, "My repertoire" grouped by the opponent's first move, the filters behind one Filter button.
+- [ ] 5. Review screen: Moves, Engine and Summary tabs with one accuracy headline.
+- [ ] 6. Plans and master games: only the current move's note, with "Why?" for the rest; the plan summary as two lines and "More".
+- [ ] 7. Board screen during a game: resign and draw behind a "..." menu.
+- [ ] 8. One board coordinator for Train, Online, Master and the recorder (settling, lights, pause banner, takeback, catch-up).
+- [ ] 9. Splits and clean-up: PlayViewModel by mode, a shared White/Black chips component, one chip for Plan and Master game, Python tools moved into tools/ with a README.
+- [ ] 10. First-run tour; later, accessibility (touch targets, content descriptions) and string resources.
