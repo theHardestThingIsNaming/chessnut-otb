@@ -908,9 +908,30 @@ private fun CoachDialog(ui: PlayUi, viewModel: PlayViewModel, onDismiss: () -> U
     )
 }
 
+/** A row of joined segments with one selected: the two ways of working on a line. */
 @Composable
-private fun StepChip(label: String, selected: Boolean, enabled: Boolean, onClick: () -> Unit) {
-    FilterChip(selected = selected, onClick = onClick, enabled = enabled, label = { Text(label) }, colors = clubChipColors())
+private fun Segmented(options: List<String>, selected: Int, enabled: Boolean, onSelect: (Int) -> Unit) {
+    val shape = RoundedCornerShape(20.dp)
+    Row(Modifier.height(36.dp).clip(shape).border(1.dp, Palette.Outline, shape).background(Palette.SurfaceHigh)) {
+        options.forEachIndexed { index, label ->
+            val on = index == selected
+            Box(
+                Modifier
+                    .fillMaxHeight()
+                    .background(if (on) Palette.Accent else Color.Transparent)
+                    .clickable(enabled = enabled && !on) { onSelect(index) }
+                    .padding(horizontal = 20.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    label,
+                    color = if (on) Palette.OnAccent else if (enabled) Palette.Text else Palette.TextMuted,
+                    fontWeight = if (on) FontWeight.Bold else FontWeight.Normal,
+                    style = MaterialTheme.typography.labelLarge,
+                )
+            }
+        }
+    }
 }
 
 @Composable
@@ -1028,11 +1049,13 @@ private fun Playing(
                 if (ui.kind == PlayKind.Trainer) {
                     var coach by remember { mutableStateOf(false) }
                     if (coach) CoachDialog(ui, viewModel) { coach = false }
-                    FilterChip(
-                        selected = ui.explain || ui.ideas || ui.history,
-                        onClick = { coach = true },
-                        label = { Text("Coach") },
-                        colors = clubChipColors(),
+                    // Quiet text rather than a chip: it is a setting, not a step. Green once any of the three is on.
+                    Text(
+                        "Coach",
+                        color = if (ui.explain || ui.ideas || ui.history) Palette.Accent else Palette.TextMuted,
+                        fontWeight = FontWeight.SemiBold,
+                        style = MaterialTheme.typography.labelLarge,
+                        modifier = Modifier.clip(RoundedCornerShape(8.dp)).clickable { coach = true }.padding(horizontal = 10.dp, vertical = 8.dp),
                     )
                 }
                 // The move just played: ask for a closer look at it.
@@ -1043,14 +1066,10 @@ private fun Playing(
             }
             if (ui.kind == PlayKind.Trainer) {
                 FlowRow(Modifier.fillMaxWidth().heightIn(min = 40.dp), itemVerticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    // The three steps of a line. Learn plays it for you (spoken with the ideas on, otherwise a half second a move),
-                    // Practise is you playing it, Play on carries into the middlegame once the line is done.
-                    val opening = ui.openingName
-                    StepChip("Learn", ui.learning, ui.canLearn) { viewModel.learn() }
-                    StepChip("Practise", !ui.learning && !ui.lineDone, true) { viewModel.practise() }
-                    StepChip("Play on", ui.lineDone, ui.lineDone && opening != null) {
-                        val plan = ui.linePlans.firstOrNull()
-                        if (plan != null) onPlans(opening!!, ui.userWhite, plan) else onPuzzles(PuzzleSets.middlegameKey(opening!!, ui.userWhite))
+                    // Two ways to work on a line, one choice: Learn steps through it for you, Practise is you playing it.
+                    // What comes after (plans, tactics, a master game) shows under the board once the line is done.
+                    Segmented(listOf("Learn", "Practise"), if (ui.learning) 0 else 1, enabled = ui.canLearn) { index ->
+                        if (index == 0) viewModel.learn() else viewModel.practise()
                     }
                 }
             }
@@ -1094,6 +1113,7 @@ private fun Playing(
                         modifier = Modifier.fillMaxWidth(),
                     ) { Text("Continue with the plan: $plan", color = Palette.Accent) }
                 }
+                if (ui.lineDone && !showingTrap) TacticsButton(opening, ui.userWhite, onPuzzles)
                 ui.lineMaster?.let { (id, title) ->
                     OutlinedButton(
                         onClick = { onMaster(id) },
@@ -1558,5 +1578,17 @@ private fun TacticsChip(opening: String, white: Boolean, onPuzzles: (String) -> 
     ) {
         Text("Tactics", color = Palette.TextMuted, style = MaterialTheme.typography.labelMedium)
         Text(if (counts.due > 0) "Next ›" else "${counts.solved}/${counts.total} ›", color = color, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
+    }
+}
+
+/** Under a finished line: the opening's middlegame tactics, when there are any. */
+@Composable
+private fun TacticsButton(opening: String, white: Boolean, onPuzzles: (String) -> Unit) {
+    val key = PuzzleSets.middlegameKey(opening, white)
+    val context = LocalContext.current
+    val counts = remember(key) { PuzzleProgress(context.filesDir).counts(key, System.currentTimeMillis()) }
+    if (counts.total == 0) return
+    OutlinedButton(onClick = { onPuzzles(key) }, colors = clubOutlinedButtonColors(), modifier = Modifier.fillMaxWidth()) {
+        Text("Middlegame tactics · ${if (counts.due > 0) "next is due" else "${counts.solved}/${counts.total} solved"}", color = Palette.Accent)
     }
 }
